@@ -52,6 +52,8 @@ export async function POST(req: NextRequest) {
       stageId,
       pipelineId,
       telefone,
+      dataPrevista,
+      descricao,
     } = body
 
     if (!titulo) {
@@ -61,14 +63,16 @@ export async function POST(req: NextRequest) {
     const deal = await prisma.deal.create({
       data: {
         titulo,
-        valorEstimado: valorEstimado ? parseFloat(valorEstimado) : null,
+        valorEstimado: valorEstimado ? parseFloat(valorEstimado.toString().replace(/[^\d.,]/g, "").replace(",", ".")) : null,
         produtoInteresse,
         origem,
         prioridade,
-        contactId,
+        contactId: contactId || null,
         stageId,
         pipelineId,
         telefone,
+        dataPrevista: dataPrevista ? new Date(dataPrevista) : null,
+        descricao,
         userId: session.user.id,
       },
       include: {

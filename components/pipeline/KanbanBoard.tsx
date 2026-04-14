@@ -33,12 +33,19 @@ export interface Stage {
 interface KanbanBoardProps {
   stages: Stage[]
   onDealMove?: (dealId: string, fromStageId: string, toStageId: string) => void
+  onAddDeal?: (stageId: string) => void
+  onAddStage?: () => void
 }
 
-export function KanbanBoard({ stages: initialStages, onDealMove }: KanbanBoardProps) {
+export function KanbanBoard({ stages: initialStages, onDealMove, onAddDeal, onAddStage }: KanbanBoardProps) {
   const [stages, setStages] = useState(initialStages)
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
   const [activeId, setActiveId] = useState<string | null>(null)
+
+  // Update stages if props change
+  if (initialStages !== stages && initialStages.length !== stages.length) {
+    setStages(initialStages)
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -91,7 +98,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove }: KanbanBoardPr
         onDragStart={(e) => setActiveId(e.active.id as string)}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="flex gap-4 overflow-x-auto pb-4 items-start">
           {stages.map((stage) => {
             const totalValue = stage.deals
               .filter((d) => d.status === "OPEN")
@@ -100,7 +107,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove }: KanbanBoardPr
             return (
               <div
                 key={stage.id}
-                className="shrink-0 w-72 flex flex-col rounded-xl bg-card border border-border"
+                className="shrink-0 w-72 flex flex-col rounded-xl bg-card/50 border border-border"
                 id={stage.id}
               >
                 {/* Stage Header */}
@@ -111,23 +118,23 @@ export function KanbanBoard({ stages: initialStages, onDealMove }: KanbanBoardPr
                         className="w-2.5 h-2.5 rounded-full"
                         style={{ backgroundColor: stage.color }}
                       />
-                      <span className="text-sm font-semibold text-foreground truncate">
+                      <span className="text-sm font-bold text-foreground truncate">
                         {stage.name}
                       </span>
                     </div>
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge variant="secondary" className="text-[10px] h-5">
                       {stage.deals.filter((d) => d.status === "OPEN").length}
                     </Badge>
                   </div>
                   {totalValue > 0 && (
-                    <p className="text-xs text-muted-foreground pl-4">
+                    <p className="text-xs text-primary font-medium pl-4">
                       {formatCurrency(totalValue)}
                     </p>
                   )}
                 </div>
 
                 {/* Deals */}
-                <ScrollArea className="flex-1 p-2">
+                <ScrollArea className="flex-1 p-2 max-h-[calc(100vh-320px)]">
                   <SortableContext
                     items={stage.deals.map((d) => d.id)}
                     strategy={verticalListSortingStrategy}
@@ -143,15 +150,20 @@ export function KanbanBoard({ stages: initialStages, onDealMove }: KanbanBoardPr
                       ))}
                   </SortableContext>
                   {stage.deals.filter((d) => d.status === "OPEN").length === 0 && (
-                    <div className="py-8 text-center">
-                      <p className="text-xs text-muted-foreground">Nenhum deal</p>
+                    <div className="py-8 text-center bg-muted/5 rounded-lg border border-dashed border-border m-1">
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Sem deals</p>
                     </div>
                   )}
                 </ScrollArea>
 
                 {/* Add Deal */}
                 <div className="p-2 border-t border-border">
-                  <Button variant="ghost" size="sm" className="w-full text-muted-foreground text-xs">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-muted-foreground text-xs hover:text-primary transition-colors"
+                    onClick={() => onAddDeal?.(stage.id)}
+                  >
                     <Plus className="h-3 w-3 mr-1" />
                     Adicionar Deal
                   </Button>
@@ -159,6 +171,17 @@ export function KanbanBoard({ stages: initialStages, onDealMove }: KanbanBoardPr
               </div>
             )
           })}
+
+          {/* New Column ghost card */}
+          <div
+            className="shrink-0 w-72 h-32 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 hover:bg-muted/10 transition-colors cursor-pointer group"
+            onClick={onAddStage}
+          >
+            <div className="w-10 h-10 rounded-full bg-muted/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Plus className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Nova Coluna</span>
+          </div>
         </div>
 
         <DragOverlay>

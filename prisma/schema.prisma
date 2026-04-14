@@ -209,6 +209,8 @@ model Deal {
   motivoPerda       String?
   fechadoEm         DateTime?
   telefone          String?
+  dataPrevista      DateTime?
+  descricao         String?
 
   utmSource    String?
   utmMedium    String?
