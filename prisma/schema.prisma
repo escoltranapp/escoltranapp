@@ -264,6 +264,11 @@ model Contact {
   sobrenome     String?
   email         String?
   telefone      String?
+  empresa       String?
+  cargo         String?
+  status        String   @default("lead")
+  etapaFunil    String   @default("Lead")
+  canalOrigem   String?
   documento     String?
   dataNascimento DateTime?
   endereco      Json?

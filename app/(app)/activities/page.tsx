@@ -1,11 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Table,
   TableBody,
@@ -25,20 +29,22 @@ import {
   Search,
   Check,
   Clock,
+  CheckCircle2,
 } from "lucide-react"
 import { formatDate } from "@/lib/utils"
+import { toast } from "@/hooks/use-toast"
 
 interface Activity {
   id: string
   tipo: "CALL" | "MEETING" | "TASK" | "NOTE" | "WHATSAPP" | "EMAIL"
   status: "OPEN" | "DONE"
   titulo: string
-  descricao?: string
-  dueAt?: string
-  doneAt?: string
-  contactName?: string
-  dealTitle?: string
+  descricao?: string | null
+  dueAt?: string | null
+  doneAt?: string | null
   createdAt: string
+  contact?: { nome: string; sobrenome?: string | null } | null
+  deal?: { titulo: string } | null
 }
 
 const typeConfig = {
@@ -50,70 +56,168 @@ const typeConfig = {
   EMAIL: { icon: Mail, label: "Email", color: "text-primary", bg: "bg-primary/10" },
 }
 
-const mockActivities: Activity[] = [
-  {
-    id: "a1",
-    tipo: "CALL",
-    status: "OPEN",
-    titulo: "Ligar para João Santos",
-    descricao: "Discutir proposta enviada",
-    dueAt: new Date(Date.now() + 3600000 * 2).toISOString(),
-    contactName: "João Santos",
-    dealTitle: "Enterprise Deal",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "a2",
-    tipo: "MEETING",
-    status: "OPEN",
-    titulo: "Reunião de apresentação",
-    descricao: "Demo do produto para Empresa Beta",
-    dueAt: new Date(Date.now() + 86400000).toISOString(),
-    contactName: "Ana Lima",
-    dealTitle: "Plano Premium",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "a3",
+function SkeletonRow() {
+  return (
+    <TableRow>
+      {[...Array(6)].map((_, i) => (
+        <TableCell key={i}><div className="h-4 rounded bg-muted animate-pulse" /></TableCell>
+      ))}
+    </TableRow>
+  )
+}
+
+// ─── New Activity Modal ─────────────────────────────────────────────
+function NewActivityModal({ open, onOpenChange, onSuccess }: { open: boolean; onOpenChange: (v: boolean) => void; onSuccess: () => void }) {
+  const [form, setForm] = useState({
     tipo: "TASK",
-    status: "DONE",
-    titulo: "Enviar proposta comercial",
-    contactName: "Carlos Ferreira",
-    doneAt: new Date(Date.now() - 3600000).toISOString(),
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: "a4",
-    tipo: "WHATSAPP",
-    status: "DONE",
-    titulo: "Follow-up após proposta",
-    contactName: "Maria Silva",
-    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-  },
-  {
-    id: "a5",
-    tipo: "EMAIL",
-    status: "OPEN",
-    titulo: "Enviar contrato para assinatura",
-    dueAt: new Date(Date.now() + 86400000 * 2).toISOString(),
-    contactName: "Roberto Nunes",
-    dealTitle: "Renovação Anual",
-    createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-  },
-]
-
-export default function ActivitiesPage() {
-  const [search, setSearch] = useState("")
-  const [filter, setFilter] = useState<"all" | "OPEN" | "DONE">("all")
-
-  const filtered = mockActivities.filter((a) => {
-    const matchSearch = !search || a.titulo.toLowerCase().includes(search.toLowerCase())
-    const matchFilter = filter === "all" || a.status === filter
-    return matchSearch && matchFilter
+    titulo: "",
+    descricao: "",
+    dueAt: "",
   })
 
-  const openCount = mockActivities.filter((a) => a.status === "OPEN").length
-  const doneCount = mockActivities.filter((a) => a.status === "DONE").length
+  const mutation = useMutation({
+    mutationFn: async () => {
+      if (!form.titulo.trim()) throw new Error("Título é obrigatório")
+      const res = await fetch("/api/activities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tipo: form.tipo,
+          titulo: form.titulo,
+          descricao: form.descricao || null,
+          dueAt: form.dueAt || null,
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || "Erro ao criar atividade")
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      toast({ title: "Atividade criada!" })
+      onSuccess()
+      onOpenChange(false)
+      setForm({ tipo: "TASK", titulo: "", descricao: "", dueAt: "" })
+    },
+    onError: (err: Error) => {
+      toast({ variant: "destructive", title: err.message })
+    },
+  })
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>Nova Atividade</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-2">
+          <div className="space-y-1.5">
+            <Label>Tipo *</Label>
+            <Select value={form.tipo} onValueChange={(v) => setForm((p) => ({ ...p, tipo: v }))}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(typeConfig).map(([key, cfg]) => {
+                  const Icon = cfg.icon
+                  return (
+                    <SelectItem key={key} value={key}>
+                      <div className="flex items-center gap-2">
+                        <Icon className={`h-3.5 w-3.5 ${cfg.color}`} />
+                        {cfg.label}
+                      </div>
+                    </SelectItem>
+                  )
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Título *</Label>
+            <Input
+              placeholder="Descreva a atividade..."
+              value={form.titulo}
+              onChange={(e) => setForm((p) => ({ ...p, titulo: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Descrição</Label>
+            <Textarea
+              placeholder="Detalhes opcionais..."
+              value={form.descricao}
+              onChange={(e) => setForm((p) => ({ ...p, descricao: e.target.value }))}
+              rows={3}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Prazo</Label>
+            <Input
+              type="datetime-local"
+              value={form.dueAt}
+              onChange={(e) => setForm((p) => ({ ...p, dueAt: e.target.value }))}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button
+            className="escoltran-gradient-bg text-white"
+            onClick={() => mutation.mutate()}
+            disabled={mutation.isPending || !form.titulo.trim()}
+          >
+            {mutation.isPending ? "Criando..." : "Criar Atividade"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// ─── Main ───────────────────────────────────────────────────────────
+export default function ActivitiesPage() {
+  const queryClient = useQueryClient()
+  const [search, setSearch] = useState("")
+  const [filter, setFilter] = useState<"all" | "OPEN" | "DONE">("all")
+  const [showNew, setShowNew] = useState(false)
+
+  const { data: activities = [], isLoading } = useQuery<Activity[]>({
+    queryKey: ["activities", filter],
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      if (filter !== "all") params.set("status", filter)
+      const res = await fetch(`/api/activities?${params}`)
+      if (!res.ok) throw new Error("Falha ao carregar atividades")
+      return res.json()
+    },
+    staleTime: 15_000,
+  })
+
+  const toggleDone = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: "OPEN" | "DONE" }) => {
+      const res = await fetch(`/api/activities/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      })
+      if (!res.ok) throw new Error("Falha ao atualizar")
+      return res.json()
+    },
+    onSuccess: () => {
+      toast({ title: "Atividade atualizada!" })
+      queryClient.invalidateQueries({ queryKey: ["activities"] })
+    },
+    onError: () => toast({ variant: "destructive", title: "Erro ao atualizar atividade" }),
+  })
+
+  const filtered = activities.filter((a) => {
+    const q = search.toLowerCase()
+    return !q || a.titulo.toLowerCase().includes(q) ||
+      (a.contact ? `${a.contact.nome} ${a.contact.sobrenome || ""}`.toLowerCase().includes(q) : false)
+  })
+
+  const openCount = activities.filter((a) => a.status === "OPEN").length
+  const doneCount = activities.filter((a) => a.status === "DONE").length
 
   return (
     <div className="space-y-4">
@@ -121,10 +225,10 @@ export default function ActivitiesPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Atividades</h1>
           <p className="text-muted-foreground text-sm">
-            {openCount} abertas &bull; {doneCount} concluídas
+            {isLoading ? "Carregando..." : `${openCount} abertas • ${doneCount} concluídas`}
           </p>
         </div>
-        <Button className="escoltran-gradient-bg text-white">
+        <Button className="escoltran-gradient-bg text-white" onClick={() => setShowNew(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nova Atividade
         </Button>
@@ -134,15 +238,19 @@ export default function ActivitiesPage() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {Object.entries(typeConfig).map(([type, config]) => {
           const Icon = config.icon
-          const count = mockActivities.filter((a) => a.tipo === type).length
+          const count = activities.filter((a) => a.tipo === type).length
           return (
-            <Card key={type} className="bg-card border-border cursor-pointer hover:border-primary/40 transition-colors">
+            <Card key={type} className="bg-card border-border">
               <CardContent className="p-3 flex items-center gap-2">
                 <div className={`w-7 h-7 rounded-lg ${config.bg} flex items-center justify-center`}>
                   <Icon className={`h-3.5 w-3.5 ${config.color}`} />
                 </div>
                 <div>
-                  <p className="text-sm font-bold">{count}</p>
+                  {isLoading ? (
+                    <div className="h-4 w-6 rounded bg-muted animate-pulse" />
+                  ) : (
+                    <p className="text-sm font-bold">{count}</p>
+                  )}
                   <p className="text-[10px] text-muted-foreground">{config.label}</p>
                 </div>
               </CardContent>
@@ -190,16 +298,33 @@ export default function ActivitiesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.length === 0 ? (
+              {isLoading ? (
+                [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
+              ) : filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    Nenhuma atividade encontrada
+                  <TableCell colSpan={6} className="text-center py-12">
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <CheckCircle2 className="h-8 w-8 opacity-30" />
+                      <p className="text-sm">
+                        {search ? `Nenhuma atividade encontrada para "${search}"` : "Nenhuma atividade ainda"}
+                      </p>
+                      {!search && (
+                        <Button size="sm" className="mt-2 escoltran-gradient-bg text-white" onClick={() => setShowNew(true)}>
+                          <Plus className="h-4 w-4 mr-1" />
+                          Criar primeira atividade
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 filtered.map((activity) => {
                   const config = typeConfig[activity.tipo]
                   const Icon = config.icon
+                  const contactName = activity.contact
+                    ? `${activity.contact.nome}${activity.contact.sobrenome ? " " + activity.contact.sobrenome : ""}`
+                    : null
+
                   return (
                     <TableRow key={activity.id}>
                       <TableCell>
@@ -220,12 +345,9 @@ export default function ActivitiesPage() {
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">
                         <div>
-                          {activity.contactName && (
-                            <p className="text-xs font-medium">{activity.contactName}</p>
-                          )}
-                          {activity.dealTitle && (
-                            <p className="text-xs text-muted-foreground">{activity.dealTitle}</p>
-                          )}
+                          {contactName && <p className="text-xs font-medium">{contactName}</p>}
+                          {activity.deal && <p className="text-xs text-muted-foreground">{activity.deal.titulo}</p>}
+                          {!contactName && !activity.deal && <span className="text-xs text-muted-foreground">—</span>}
                         </div>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
@@ -252,11 +374,19 @@ export default function ActivitiesPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {activity.status === "OPEN" && (
-                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Concluir">
-                            <Check className="h-3 w-3 text-green-400" />
-                          </Button>
-                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={`h-7 w-7 ${activity.status === "OPEN" ? "text-green-400 hover:text-green-400" : "text-muted-foreground"}`}
+                          title={activity.status === "OPEN" ? "Concluir" : "Reabrir"}
+                          disabled={toggleDone.isPending}
+                          onClick={() => toggleDone.mutate({
+                            id: activity.id,
+                            status: activity.status === "OPEN" ? "DONE" : "OPEN",
+                          })}
+                        >
+                          <Check className="h-3 w-3" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   )
@@ -266,6 +396,12 @@ export default function ActivitiesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <NewActivityModal
+        open={showNew}
+        onOpenChange={setShowNew}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ["activities"] })}
+      />
     </div>
   )
 }

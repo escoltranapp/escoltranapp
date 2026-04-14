@@ -16,6 +16,7 @@ export async function GET() {
 
     const [
       totalContacts,
+      thisMonthContacts,
       lastMonthContacts,
       openDeals,
       lastMonthDeals,
@@ -24,6 +25,7 @@ export async function GET() {
       wonDeals,
       totalDeals,
     ] = await Promise.all([
+      prisma.contact.count({ where: { userId } }),
       prisma.contact.count({ where: { userId, createdAt: { gte: startOfMonth } } }),
       prisma.contact.count({ where: { userId, createdAt: { gte: startOfLastMonth, lt: startOfMonth } } }),
       prisma.deal.count({ where: { userId, status: "OPEN" } }),
@@ -45,7 +47,7 @@ export async function GET() {
 
     return NextResponse.json({
       totalContacts,
-      contactsGrowth: growth(totalContacts, lastMonthContacts),
+      contactsGrowth: growth(thisMonthContacts, lastMonthContacts),
       openDeals,
       dealsGrowth: growth(openDeals, lastMonthDeals),
       pipelineValue,
@@ -54,16 +56,7 @@ export async function GET() {
       conversionGrowth: 0,
     })
   } catch (error) {
-    // Return mock data if DB not available
-    return NextResponse.json({
-      totalContacts: 1247,
-      contactsGrowth: 12.5,
-      openDeals: 89,
-      dealsGrowth: -3.2,
-      pipelineValue: 458000,
-      pipelineGrowth: 22.1,
-      conversionRate: 18.4,
-      conversionGrowth: 5.7,
-    })
+    console.error("GET /api/dashboard/metrics error:", error)
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
   }
 }
