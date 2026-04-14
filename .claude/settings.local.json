@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git -C /mnt/d/Proejtos/Escoltran config user.email \"escoltran.app@gmail.com\")",
+      "Bash(git -C /mnt/d/Proejtos/Escoltran config user.name \"Escoltran App\")",
+      "Bash(git push:*)"
+    ]
+  }
+}
