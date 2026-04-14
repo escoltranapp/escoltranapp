@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Register error:", error)
     return NextResponse.json(
-      { message: "Erro interno do servidor" },
+      { message: error instanceof Error ? error.message : "Erro interno do banco de dados" },
       { status: 500 }
     )
   }
