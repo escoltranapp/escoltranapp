@@ -156,33 +156,26 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="pipeline-layout p-[32px] pt-[24px] space-y-[32px]">
-      {/* PAGE HEADER — REFINED ELEGANCE */}
-      <header className="flex items-end justify-between">
-        <div className="space-y-4">
-           {/* SUBTLE BRAND BADGE */}
-           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/[0.05] rounded-full">
-              <div className="w-1.5 h-1.5 rounded-full bg-[var(--pipeline-blue)] animate-pulse" />
-              <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.15em]">Espaço de Trabalho • Escoltran</span>
-           </div>
-           
-           <div>
-              <h1 className="text-[42px] font-bold text-[var(--text-primary)] leading-tight tracking-tight">Pipeline</h1>
-              <p className="text-[12px] font-medium text-[var(--text-muted)] uppercase tracking-[0.2em] mt-1 opacity-80">Gestão de Oportunidades • Visão Kanban</p>
-           </div>
+    <div className="pipeline-layout p-[28px] pt-[28px] space-y-[28px]">
+      {/* PAGE HEADER — STRICT TARGET V2 */}
+      <header className="flex items-start justify-between">
+        <div>
+           <h1 className="text-[32px] font-bold text-white leading-none tracking-tight">Pipeline</h1>
+           <p className="text-[11px] font-normal text-white/35 uppercase tracking-[0.1em] mt-1">Gestão de Oportunidades • Visão Kanban</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+            {/* BOARD SELECTOR */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2.5 px-[16px] py-[10px] bg-white/[0.03] border border-white/[0.08] rounded-[12px] text-[13px] font-semibold text-[var(--text-primary)] hover:bg-white/[0.06] transition-all outline-none">
-                  <div className="w-2 h-2 rounded-full bg-[var(--pipeline-blue)]" />
+                <button className="flex items-center gap-[10px] px-[14px] py-[8px] bg-white/[0.04] border border-white/10 rounded-[8px] text-[13px] font-medium text-white hover:bg-white/[0.08] transition-all outline-none shadow-sm">
+                  <div className="w-2 h-2 rounded-full bg-[#4299e1] shadow-[0_0_8px_rgba(66,153,225,0.4)]" />
                   {activeBoard}
-                  <ChevronDown size={14} className="opacity-40 ml-1" />
+                  <ChevronDown size={14} className="opacity-40" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-[#111520] border-white/10 text-white min-w-[200px] rounded-[12px]">
-                <DropdownMenuItem onClick={() => setActiveBoard("Pipeline Principal")} className="hover:bg-white/5 cursor-pointer py-2.5 px-4">
+              <DropdownMenuContent align="end" className="bg-[#111520] border-white/10 text-white min-w-[200px] rounded-[10px]">
+                <DropdownMenuItem onClick={() => setActiveBoard("Pipeline Principal")} className="hover:bg-white/5 cursor-pointer py-2 px-3">
                   Pipeline Principal
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -190,22 +183,22 @@ export default function PipelinePage() {
 
             <button 
               onClick={handleAddStage}
-              className="flex items-center gap-2 px-[20px] py-[10px] bg-[var(--pipeline-blue)] hover:brightness-110 text-white font-bold text-[13px] rounded-[12px] transition-all active:scale-95 shadow-[0_8px_30px_rgba(59,130,246,0.3)]"
+              className="flex items-center gap-2 px-[18px] py-[8px] bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold text-[13px] rounded-[8px] transition-all active:scale-95 shadow-lg shadow-[#2563eb]/20"
             >
-               <Plus size={16} strokeWidth={3} /> Nova Coluna
+               <Plus size={16} /> Nova Coluna
             </button>
 
             <button 
               onClick={() => toast({ title: "Módulo em Breve", description: "Capacidade de múltiplos boards em desenvolvimento." })}
-              className="flex items-center gap-1 px-[16px] py-[10px] bg-transparent border border-white/[0.1] hover:bg-white/[0.03] text-[var(--text-secondary)] font-semibold text-[13px] rounded-[12px] transition-all"
+              className="flex items-center gap-2 px-[14px] py-[8px] bg-transparent border border-white/15 hover:bg-white/5 text-white/70 font-medium text-[13px] rounded-[8px] transition-all"
             >
                <Plus size={16} /> Novo Board
             </button>
         </div>
       </header>
 
-      {/* METRICS BAR — REFINED DEPTH */}
-      <div className="flex gap-[18px]">
+      {/* METRICS BAR — STRICT TARGET (26px value) */}
+      <div className="flex gap-[16px]">
          <KPICard label="Oportunidades Ativas" value={deals.length} icon={LayoutGrid} type="blue" />
          <KPICard label="Pipeline de Valor" value={formatCurrency(totalValue)} icon={DollarSign} type="green" />
          <KPICard label="Alertas Críticos" value={expiredCount} icon={AlertTriangle} type="red" />
