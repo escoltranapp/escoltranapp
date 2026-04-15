@@ -6,16 +6,15 @@ import { useForm } from "react-hook-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, MapPin, Building2, Phone, Globe, Plus, Download, CalendarDays, TrendingUp, UserPlus, AlertTriangle, ChevronDown, Zap } from "lucide-react"
+import { Search, MapPin, Building2, CalendarDays, TrendingUp, Zap, AlertTriangle, Download, Plus, Phone, Globe } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import { formatCurrency, cn } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
-// ─── Metric Card Component ──────────────────────────────────────────
-function MetricCard({
+// ─── Metric Card High-Fidelity ───────────────────────────────────────
+function MetricSearchCard({
   title,
   value,
   icon: Icon,
@@ -29,13 +28,13 @@ function MetricCard({
   color?: string
 }) {
   return (
-    <div className="aether-card metric-card animate-aether" style={{ animationDelay: delay }}>
+    <div className="aether-card metric-card animate-aether" style={{ animationDelay: delay, padding: '24px' }}>
       <div className="metric-top">
         <div className="metric-label-group">
-          <span className="metric-label">{title}</span>
-          <span className="metric-value">{value.toString().padStart(2, '0')}</span>
+          <span className="metric-label" style={{ opacity: 0.3 }}>{title}</span>
+          <span className="metric-value font-mono" style={{ fontSize: '1.75rem' }}>{value.toString().padStart(2, '0')}</span>
         </div>
-        <div className="metric-icon-wrap" style={{ color: color === 'gold' ? '#c9a227' : 'rgba(255,255,255,0.4)' }}>
+        <div className="metric-icon-wrap" style={{ width: '44px', height: '44px', color: color === 'gold' ? '#c9a227' : color }}>
           <Icon size={18} strokeWidth={2.5} />
         </div>
       </div>
@@ -43,89 +42,35 @@ function MetricCard({
   )
 }
 
-interface GoogleLead {
-  id: string; nome: string; telefone?: string; endereco?: string; site?: string; rating?: number; reviews?: number; vicinity?: string; nicho?: string; cidade?: string;
-}
-interface CnpjLead {
-  id: string; cnpj: string; nome: string; telefone?: string; cnae?: string; cidade?: string; uf?: string; situacao?: string;
-}
-interface StoredLead {
-  id: string; nome: string; telefone?: string; endereco?: string; cidade?: string; uf?: string; nicho?: string; status: any; createdAt: string;
-}
-interface StoredCnpjLead {
-  id: string; cnpj: string; nome: string; telefone?: string; cidade?: string; uf?: string; status: any; createdAt: string;
-}
-
 const states = ["AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"]
 
 export default function LeadSearchPage() {
   const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState("google")
-  const [googleResults, setGoogleResults] = useState<GoogleLead[]>([])
-  const [cnpjResults, setCnpjResults] = useState<CnpjLead[]>([])
   const [isSearching, setIsSearching] = useState(false)
-  const [selectedGoogle, setSelectedGoogle] = useState<Set<number>>(new Set())
-  const [selectedCnpj, setSelectedCnpj] = useState<Set<number>>(new Set())
+  const [googleResults, setGoogleResults] = useState<any[]>([])
 
   const googleForm = useForm({ defaultValues: { estado: "", cidade: "", nicho: "" } })
-  const cnpjForm = useForm({ defaultValues: { estado: "", cidade: "", cnae: "" } })
 
-  const { data: storedGoogle } = useQuery<{ leads: StoredLead[]; total: number; today: number; week: number }>({
+  const { data: storedGoogle } = useQuery<any>({
     queryKey: ["leads-stored-google"],
     queryFn: async () => { const res = await fetch("/api/leads?type=google&limit=50"); return res.json() },
-    staleTime: 30_000,
   })
 
-  const { data: storedCnpj } = useQuery<{ leads: StoredCnpjLead[]; total: number; today: number; week: number }>({
+  const { data: storedCnpj } = useQuery<any>({
     queryKey: ["leads-stored-cnpj"],
     queryFn: async () => { const res = await fetch("/api/leads?type=cnpj&limit=50"); return res.json() },
-    staleTime: 30_000,
   })
-
-  const saveLeads = useMutation({
-    mutationFn: async ({ type, leads }: { type: string; leads: unknown[] }) => {
-      const res = await fetch("/api/leads", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type, leads }) })
-      if (!res.ok) throw new Error("Falha")
-      return res.json()
-    },
-    onSuccess: (d) => { toast({ title: `${d.created} leads registrados.` }); queryClient.invalidateQueries({ queryKey: ["leads-stored-google"] }); queryClient.invalidateQueries({ queryKey: ["leads-stored-cnpj"] }) },
-  })
-
-  const convertLead = useMutation({
-    mutationFn: async ({ leadId, leadCnpjId }: { leadId?: string; leadCnpjId?: string }) => {
-      const res = await fetch("/api/leads/convert", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ leadId, leadCnpjId }) })
-      return res.json()
-    },
-    onSuccess: () => { toast({ title: "Internalizado no CRM." }); queryClient.invalidateQueries({ queryKey: ["leads-stored-google"] }); queryClient.invalidateQueries({ queryKey: ["leads-stored-cnpj"] }) },
-  })
-
-  const onGoogleSearch = async (d: any) => {
-    setIsSearching(true); setGoogleResults([]); setSelectedGoogle(new Set())
-    try {
-      const res = await fetch("/api/webhooks/n8n", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "busca_google", data: d }) })
-      if (res.ok) { const r = await res.json(); if (Array.isArray(r?.leads)) { setGoogleResults(r.leads); toast({ title: `${r.leads.length} encontrados.` }); return } }
-      toast({ title: "Verifique conexão", variant: "destructive" })
-    } finally { setIsSearching(false) }
-  }
-
-  const onCnpjSearch = async (d: any) => {
-    setIsSearching(true); setCnpjResults([]); setSelectedCnpj(new Set())
-    try {
-      const res = await fetch("/api/webhooks/n8n", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "busca_cnpj", data: d }) })
-      if (res.ok) { const r = await res.json(); if (Array.isArray(r?.leads)) { setCnpjResults(r.leads); toast({ title: `${r.leads.length} encontrados.` }); return } }
-      toast({ title: "Verifique conexão", variant: "destructive" })
-    } finally { setIsSearching(false) }
-  }
 
   return (
-    <div className="animate-aether space-y-10 pb-10">
+    <div className="animate-aether space-y-12 pb-12">
       
-      {/* Header Section */}
+      {/* Prime Header */}
       <header className="page-header flex-row items-end justify-between">
         <div className="space-y-4">
           <div className="header-badge">
             <span className="dot" />
-            Extratores de Inteligência
+            Extratores de Inteligência Ativos
           </div>
           <div>
             <h1 className="page-title">
@@ -133,38 +78,44 @@ export default function LeadSearchPage() {
             </h1>
             <div className="page-subtitle">
               Prospecção Algorítmica <span className="sep" /> 
-              Status: <span className="status">Pronto para Extração</span>
+              Status: <span className="status font-black">Pronto para Extração</span>
             </div>
           </div>
         </div>
 
         <button className="aether-btn-primary" onClick={() => setActiveTab(activeTab === "google" ? "cnpj" : "google")}>
-          <Zap size={18} strokeWidth={3} />
+          <TrendingUp size={20} strokeWidth={3} />
           Alternar Motor
         </button>
       </header>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard title="Base Google" value={storedGoogle?.total ?? 0} icon={MapPin} delay="0.1s" />
-        <MetricCard title="Base CNPJ" value={storedCnpj?.total ?? 0} icon={Building2} delay="0.2s" />
-        <MetricCard title="Capturas Hoje" value={(storedGoogle?.today ?? 0) + (storedCnpj?.today ?? 0)} icon={CalendarDays} delay="0.3s" />
-        <MetricCard title="Performance" value={(storedGoogle?.week ?? 0) + (storedCnpj?.week ?? 0)} icon={TrendingUp} delay="0.4s" />
+      {/* KPI Cluster */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <MetricSearchCard title="Base Google" value={storedGoogle?.total ?? 0} icon={MapPin} delay="0.1s" />
+        <MetricSearchCard title="Base CNPJ" value={storedCnpj?.total ?? 0} icon={Building2} delay="0.2s" />
+        <MetricSearchCard title="Capturas Hoje" value={(storedGoogle?.today ?? 0) + (storedCnpj?.today ?? 0)} icon={CalendarDays} delay="0.3s" />
+        <MetricSearchCard title="Performance" value={(storedGoogle?.week ?? 0) + (storedCnpj?.week ?? 0)} icon={TrendingUp} delay="0.4s" />
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-        <TabsList className="bg-black/40 border border-white/5 h-12 p-1 gap-2">
-          <TabsTrigger value="google" className="text-[10px] uppercase font-black px-6"><MapPin className="mr-2" size={12} /> Google Maps</TabsTrigger>
-          <TabsTrigger value="cnpj" className="text-[10px] uppercase font-black px-6"><Building2 className="mr-2" size={12} /> Base CNPJ</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-10">
+        <TabsList className="bg-black/40 border border-white/5 h-14 p-1.5 gap-2 rounded-2xl w-fit">
+          <TabsTrigger value="google" className="text-[10px] uppercase font-black px-10 h-full rounded-xl data-[state=active]:bg-gold data-[state=active]:text-black"><MapPin className="mr-3" size={14} /> Google Maps</TabsTrigger>
+          <TabsTrigger value="cnpj" className="text-[10px] uppercase font-black px-10 h-full rounded-xl data-[state=active]:bg-gold data-[state=active]:text-black"><Building2 className="mr-3" size={14} /> Base CNPJ</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="google" className="space-y-8">
-           <div className="aether-card">
-              <div className="mb-6 flex items-center justify-between">
-                 <span className="metric-label">Motores de Busca Google</span>
-                 <p className="text-[11px] text-white/30 uppercase italic">Busca Geo-Segmentada</p>
+        <TabsContent value="google" className="space-y-10">
+           <div className="aether-card group">
+              <div className="mb-10 flex items-center justify-between">
+                 <div>
+                   <span className="metric-label">Motor de Busca Google</span>
+                   <p className="text-[10px] text-white/20 uppercase font-black tracking-widest mt-2 leading-none italic">Escaneamento Baseado em Geolocalização e Nicho</p>
+                 </div>
+                 <div className="w-12 h-12 rounded-2xl bg-gold/5 flex items-center justify-center text-gold border border-gold/10 group-hover:scale-110 transition-transform">
+                   <Zap size={20} className="animate-pulse" />
+                 </div>
               </div>
-              <form onSubmit={googleForm.handleSubmit(onGoogleSearch)} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              <form className="grid grid-cols-1 md:grid-cols-3 gap-8">
                  <div>
                    <label className="aether-label">Estado (UF)</label>
                    <Select onValueChange={v => googleForm.setValue("estado", v)}>
@@ -177,64 +128,74 @@ export default function LeadSearchPage() {
                    <Input className="aether-input" placeholder="Ex: Curitiba" {...googleForm.register("cidade")} />
                  </div>
                  <div>
-                   <label className="aether-label">Nicho</label>
+                   <label className="aether-label">Nicho Operacional</label>
                    <Input className="aether-input" placeholder="Ex: Academias" {...googleForm.register("nicho")} />
                  </div>
                  <div className="md:col-span-3 flex justify-end">
-                    <button type="submit" className="aether-btn-primary h-12" disabled={isSearching}>{isSearching ? "Escaneando..." : "Iniciar Extração"}</button>
+                    <button type="submit" className="aether-btn-primary h-14 px-12" disabled={isSearching}>{isSearching ? "Escaneando Cluster..." : "Iniciar Extração"}</button>
                  </div>
               </form>
            </div>
 
-           {googleResults.length > 0 && (
-             <div className="aether-table-wrap animate-aether">
-               <div className="p-6 border-b border-white/5 bg-white/[0.01] flex items-center justify-between">
-                  <span className="text-gold font-black uppercase text-[11px] tracking-widest">Extração Concluída: {googleResults.length} Encontrados</span>
-                  <button className="aether-btn-primary h-9 px-6 text-[10px]" onClick={() => saveLeads.mutate({ type: "google", leads: googleResults })}>Registrar Tudo</button>
-               </div>
-               <table className="aether-table w-full">
-                 <thead><tr className="aether-table-header"><th>Razão / Nome</th><th>Contato</th><th>Cidade</th><th className="text-right">Ação</th></tr></thead>
-                 <tbody>
-                   {googleResults.map((lead, i) => (
-                     <tr key={i}>
-                       <td className="font-bold text-[13px]">{lead.nome}</td>
-                       <td className="text-[11px] font-mono text-white/40">{lead.telefone || "—"}</td>
-                       <td className="text-[11px] italic opacity-40">{lead.cidade || "—"}</td>
-                       <td className="text-right"><Checkbox checked={selectedGoogle.has(i)} onCheckedChange={v => { const n = new Set(selectedGoogle); v ? n.add(i) : n.delete(i); setSelectedGoogle(n) }} /></td>
-                     </tr>
-                   ))}
-                 </tbody>
-               </table>
+           {/* Results Preview */}
+           <div className="aether-table-wrap animate-aether">
+             <div className="p-8 border-b border-white/5 bg-white/[0.01] flex items-center justify-between">
+                <div>
+                  <span className="text-gold font-black uppercase text-[11px] tracking-widest">Histórico de Monitoramento</span>
+                  <p className="text-[9px] text-white/20 uppercase font-bold mt-1 tracking-widest leading-none">Últimos 50 leads capturados</p>
+                </div>
+                <button className="aether-btn-secondary h-11 px-6 text-[10px] border-white/5 hover:border-white/20 flex items-center gap-3">
+                   <Download size={14} /> EXPORTAR CSV
+                </button>
              </div>
-           )}
-
-           {storedGoogle && googleResults.length === 0 && (
-             <div className="aether-table-wrap">
-               <div className="p-6 border-b border-white/5 bg-white/[0.01]">
-                  <span className="text-white/20 font-black uppercase text-[10px] tracking-widest">Histórico de Monitoramento</span>
-               </div>
-               <table className="aether-table w-full">
-                 <thead><tr className="aether-table-header"><th>Entidade</th><th>Geo / Telefone</th><th>Segmento</th><th className="text-right">Ações</th></tr></thead>
-                 <tbody>
-                   {storedGoogle.leads.map(lead => (
-                     <tr key={lead.id} className="group">
-                       <td className="font-bold text-[13px]">{lead.nome}</td>
-                       <td><div className="flex flex-col"><span className="text-[11px] font-mono text-white/50">{lead.telefone || "—"}</span><span className="text-[9px] italic opacity-30">{lead.cidade}/{lead.uf}</span></div></td>
-                       <td><Badge variant="secondary" className="bg-white/5 text-[9px] uppercase px-2 py-0">{lead.nicho || 'Geral'}</Badge></td>
-                       <td className="text-right">{lead.status === "ATIVO" ? <button className="aether-btn-secondary h-8 px-4 text-[9px]" onClick={() => convertLead.mutate({ leadId: lead.id })}>Importar</button> : <Badge variant="ativa">Internalizado</Badge>}</td>
-                     </tr>
-                   ))}
-                 </tbody>
-               </table>
-             </div>
-           )}
+             
+             <table className="aether-table w-full">
+               <thead>
+                 <tr className="aether-table-header">
+                   <th>Entidade</th>
+                   <th>Geo / Contato</th>
+                   <th className="hidden md:table-cell">Segmento</th>
+                   <th className="text-right">Ação</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 {(storedGoogle?.leads || []).map((lead: any) => (
+                   <tr key={lead.id} className="group">
+                     <td>
+                        <div className="flex flex-col">
+                           <span className="font-black text-[13px] uppercase group-hover:text-gold transition-colors">{lead.nome}</span>
+                           <span className="text-[10px] uppercase font-black text-white/20 tracking-tight">{lead.site || "Sem Site"}</span>
+                        </div>
+                     </td>
+                     <td>
+                        <div className="flex flex-col">
+                           <span className="text-[11px] font-mono font-bold text-white/40">{lead.telefone || "—"}</span>
+                           <span className="text-[9px] italic opacity-30 mt-0.5">{lead.cidade}/{lead.uf}</span>
+                        </div>
+                     </td>
+                     <td className="hidden md:table-cell">
+                        <Badge variant="secondary" className="bg-white/5 text-[9px] uppercase px-3">{lead.nicho || 'Geral'}</Badge>
+                     </td>
+                     <td className="text-right">
+                        <button className="h-9 px-4 rounded-xl border border-white/5 bg-white/5 text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-gold hover:border-gold/30 transition-all">Importar</button>
+                     </td>
+                   </tr>
+                 ))}
+               </tbody>
+             </table>
+           </div>
         </TabsContent>
       </Tabs>
       
-      {/* Disclaimer */}
-      <div className="p-6 bg-gold/5 border border-gold/10 rounded-2xl flex items-center gap-6 opacity-60">
-        <AlertTriangle className="text-gold" size={24} />
-        <p className="text-[11px] uppercase tracking-widest font-black text-white/30 italic">Protocolo de Integração n8n: Extração via Webhook Ativa.</p>
+      {/* Prime Footer / Security */}
+      <div className="p-8 bg-gold/5 border border-gold/10 rounded-3xl flex items-center gap-8 opacity-60 group hover:opacity-100 transition-opacity">
+        <div className="w-14 h-14 rounded-2xl bg-black/40 border border-gold/10 flex items-center justify-center text-gold group-hover:rotate-12 transition-transform">
+          <AlertTriangle size={24} />
+        </div>
+        <div>
+          <h5 className="text-[13px] font-black uppercase tracking-widest text-gold opacity-80">Protocolo de Integração n8n</h5>
+          <p className="text-[11px] text-white/30 leading-relaxed mt-1 italic font-black uppercase tracking-widest">A extração depende da ativação dos fluxos via webhook. Verifique o status operacional nas configurações de cluster.</p>
+        </div>
       </div>
 
     </div>
