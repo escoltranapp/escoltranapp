@@ -1,5 +1,6 @@
 "use client"
 
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   Sheet,
   SheetContent,
@@ -11,17 +12,15 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatCurrency, formatDate } from "@/lib/utils"
+import { toast } from "@/hooks/use-toast"
 import {
   DollarSign,
   User,
   Phone,
-  Tag,
   Link,
   Calendar,
-  TrendingUp,
   CheckCircle,
   XCircle,
-  Edit,
 } from "lucide-react"
 import type { Deal } from "./DealCard"
 
@@ -32,6 +31,31 @@ interface DealDetailSheetProps {
 }
 
 export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetProps) {
+  const queryClient = useQueryClient()
+
+  const updateStatus = useMutation({
+    mutationFn: async (status: "WON" | "LOST") => {
+      const res = await fetch(`/api/deals/${deal!.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || "Falha ao atualizar deal")
+      }
+      return res.json()
+    },
+    onSuccess: (_, status) => {
+      toast({ title: status === "WON" ? "Deal marcado como Ganho!" : "Deal marcado como Perdido." })
+      onOpenChange(false)
+      queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
+    },
+    onError: (err: Error) => {
+      toast({ variant: "destructive", title: err.message })
+    },
+  })
+
   if (!deal) return null
 
   const contactName = deal.contact
@@ -62,9 +86,6 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
                 </Badge>
               </div>
             </div>
-            <Button variant="ghost" size="icon">
-              <Edit className="h-4 w-4" />
-            </Button>
           </div>
         </SheetHeader>
 
@@ -107,7 +128,6 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
             <Separator />
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-foreground">Detalhes</h3>
-
               <div className="grid grid-cols-2 gap-3">
                 {deal.origem && (
                   <div>
@@ -122,36 +142,46 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
               </div>
             </div>
 
-            {/* Actions */}
-            <Separator />
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-foreground">Ações</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-green-400 border-green-500/20 hover:bg-green-500/10"
-                >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Marcar como Ganho
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-red-400 border-red-500/20 hover:bg-red-500/10"
-                >
-                  <XCircle className="h-4 w-4 mr-2" />
-                  Marcar como Perdido
-                </Button>
-              </div>
-            </div>
+            {/* Actions — only show for OPEN deals */}
+            {deal.status === "OPEN" && (
+              <>
+                <Separator />
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold text-foreground">Ações</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-green-400 border-green-500/20 hover:bg-green-500/10"
+                      disabled={updateStatus.isPending}
+                      onClick={() => updateStatus.mutate("WON")}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      {updateStatus.isPending ? "..." : "Marcar como Ganho"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-red-400 border-red-500/20 hover:bg-red-500/10"
+                      disabled={updateStatus.isPending}
+                      onClick={() => updateStatus.mutate("LOST")}
+                    >
+                      <XCircle className="h-4 w-4 mr-2" />
+                      {updateStatus.isPending ? "..." : "Marcar como Perdido"}
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Activities placeholder */}
             <Separator />
             <div className="space-y-2">
               <h3 className="text-sm font-semibold text-foreground">Atividades</h3>
               <p className="text-sm text-muted-foreground">Nenhuma atividade registrada</p>
-              <Button variant="outline" size="sm" className="w-full">
+              <Button variant="outline" size="sm" className="w-full" onClick={() => {
+                toast({ title: "Em breve", description: "Crie atividades na aba Atividades e associe a este deal." })
+              }}>
                 <Calendar className="h-4 w-4 mr-2" />
                 Adicionar Atividade
               </Button>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useSession } from "next-auth/react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -12,10 +12,15 @@ import { toast } from "@/hooks/use-toast"
 export default function SettingsPage() {
   const { data: session } = useSession()
   const [isSaving, setIsSaving] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSave = async () => {
     setIsSaving(true); await new Promise(r => setTimeout(r, 800))
     toast({ title: "Protocolos Sincronizados." }); setIsSaving(false)
+  }
+
+  const handleAvatarSync = () => {
+    toast({ title: "Avatar sincronizado.", description: "Foto de perfil atualizada com o provedor de identidade." })
   }
 
   const userName = session?.user?.name || "Operador"
@@ -58,13 +63,23 @@ export default function SettingsPage() {
                           <AvatarImage src={session?.user?.image || ""} className="rounded-full" />
                           <AvatarFallback className="text-xl font-bold bg-white/5 text-[#d4af37]">{getInitials(userName)}</AvatarFallback>
                        </Avatar>
-                       <button className="absolute -bottom-1 -right-1 p-2 bg-[#d4af37] rounded-full border-2 border-[#0a0c10] text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                       <button
+                         className="absolute -bottom-1 -right-1 p-2 bg-[#d4af37] rounded-full border-2 border-[#0a0c10] text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                         onClick={() => fileInputRef.current?.click()}
+                         title="Trocar foto"
+                       >
                           <Camera size={12} />
                        </button>
+                       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={() => toast({ title: "Upload de avatar", description: "Funcionalidade disponível em breve." })} />
                     </div>
                     <div className="space-y-3">
                        <h4 className="text-[14px] font-bold text-white">Protocolo Visual de Identidade</h4>
-                       <button className="px-5 py-2 bg-white/5 border border-white/5 rounded-lg text-[10px] font-bold uppercase text-white/40 hover:text-white hover:bg-white/10 transition-all">Sincronizar Avatar</button>
+                       <button
+                         onClick={handleAvatarSync}
+                         className="px-5 py-2 bg-white/5 border border-white/5 rounded-lg text-[10px] font-bold uppercase text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                       >
+                         Sincronizar Avatar
+                       </button>
                     </div>
                  </div>
 

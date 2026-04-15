@@ -1,19 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Search, MapPin, Building2, CalendarDays, TrendingUp, Zap, Globe, Sparkles, LayoutGrid, ArrowRight, Download } from "lucide-react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
+import { Search, Building2, Zap, Globe, Sparkles, LayoutGrid, TrendingUp } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { toast } from "@/hooks/use-toast"
 
-// ─── Reusable Component: KPI Card Enterprise ───────────────────────
-function KPICard({ 
-  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)" 
-}: { 
-  label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string 
+function KPICard({
+  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)"
+}: {
+  label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string
 }) {
   return (
     <div className="kpi-card">
@@ -34,11 +32,14 @@ function KPICard({
   )
 }
 
-const states = ["AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"]
+const states = ["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"]
 
 export default function LeadSearchPage() {
+  const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState("google")
-  const [isSearching, setIsSearching] = useState(false)
+  const [estado, setEstado] = useState("")
+  const [cidade, setCidade] = useState("")
+  const [segmento, setSegmento] = useState("")
 
   const { data: storedGoogle } = useQuery<any>({
     queryKey: ["leads-stored-google"],
@@ -50,13 +51,58 @@ export default function LeadSearchPage() {
     queryFn: async () => { const res = await fetch("/api/leads?type=cnpj&limit=50"); return res.json() },
   })
 
-  // Safe data handling
   const validatedLeads = Array.isArray(storedGoogle?.leads) ? storedGoogle.leads : []
+
+  const searchMutation = useMutation({
+    mutationFn: async () => {
+      if (!cidade.trim() && !estado) throw new Error("Informe ao menos o estado ou a cidade")
+      const res = await fetch("/api/webhooks/n8n", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: activeTab, estado, cidade, segmento }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || "Falha ao iniciar extração")
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      toast({ title: "Extração iniciada!", description: "Os resultados serão carregados em instantes." })
+      queryClient.invalidateQueries({ queryKey: ["leads-stored-google"] })
+      queryClient.invalidateQueries({ queryKey: ["leads-stored-cnpj"] })
+    },
+    onError: (err: Error) => {
+      toast({ variant: "destructive", title: err.message })
+    },
+  })
+
+  const importLead = useMutation({
+    mutationFn: async (leadId: string) => {
+      const res = await fetch("/api/leads/convert", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leadId }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || "Falha ao importar lead")
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      toast({ title: "Lead importado para o CRM!" })
+      queryClient.invalidateQueries({ queryKey: ["leads-stored-google"] })
+    },
+    onError: (err: Error) => {
+      toast({ variant: "destructive", title: err.message })
+    },
+  })
 
   return (
     <div className="page-container animate-aether">
-      
-      {/* 1. HEADER DE PÁGINA */}
+
+      {/* HEADER */}
       <header className="page-header-wrapper">
         <div>
           <div className="breadcrumb-pill">
@@ -69,11 +115,16 @@ export default function LeadSearchPage() {
            <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-green-500/20 bg-green-500/5 text-green-500 text-[10px] font-bold uppercase tracking-widest">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> API ONLINE
            </div>
-           <button className="btn-cta-primary h-11">Iniciar Nova Extração</button>
+           <button
+             className="btn-cta-primary h-11"
+             onClick={() => document.getElementById("extraction-panel")?.scrollIntoView({ behavior: "smooth" })}
+           >
+             Iniciar Nova Extração
+           </button>
         </div>
       </header>
 
-      {/* 2. KPI CARDS */}
+      {/* KPI CARDS */}
       <div className="kpi-grid">
          <KPICard label="Base Google" value={storedGoogle?.total || "00"} subtext="Locais mapeados via Maps" icon={Globe} color="#d4af37" />
          <KPICard label="Base CNPJ" value={storedCnpj?.total || "00"} subtext="Empresas Receita Federal" icon={Building2} color="#a855f7" />
@@ -81,20 +132,20 @@ export default function LeadSearchPage() {
          <KPICard label="Performance" value="98.2%" subtext="Dataset sincronizado" icon={TrendingUp} color="#10b981" />
       </div>
 
-      {/* 3. PAINEL DE SELEÇÃO DE MOTOR */}
+      {/* SELEÇÃO DE MOTOR */}
       <div className="flex flex-col gap-6">
          <h4 className="font-bold text-[11px] uppercase tracking-widest text-white/30 ml-1">Seleção de Motor Neural</h4>
          <div className="flex bg-white/5 p-1 rounded-2xl w-fit border border-white/5">
-            <button 
+            <button
               onClick={() => setActiveTab("cnpj")}
-              className={cn("h-11 px-8 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", 
+              className={cn("h-11 px-8 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
                 activeTab === "cnpj" ? "bg-[#d4af37] text-white shadow-lg" : "text-white/30 hover:text-white")}
             >
                Receita Federal Cloud
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab("google")}
-              className={cn("h-11 px-8 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", 
+              className={cn("h-11 px-8 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
                 activeTab === "google" ? "bg-[#d4af37] text-white shadow-lg" : "text-white/30 hover:text-white")}
             >
                Parâmetros Locais
@@ -102,32 +153,54 @@ export default function LeadSearchPage() {
          </div>
       </div>
 
-      {/* 4. PAINEL DE EXTRAÇÃO */}
-      <div className="kpi-card bg-[#181c24] p-8 border-white/5 space-y-8">
+      {/* PAINEL DE EXTRAÇÃO */}
+      <div id="extraction-panel" className="kpi-card bg-[#181c24] p-8 border-white/5 space-y-8">
          <div className="text-[11px] font-bold uppercase tracking-widest text-white/30">Parâmetros de Extração</div>
          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="space-y-4">
                <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Geolocalização</label>
-               <Select>
-                  <SelectTrigger className="bg-[#0a0c10] border-white/5 h-12 rounded-lg text-white/60"><SelectValue placeholder="Estado" /></SelectTrigger>
-                  <SelectContent className="bg-bg-surface border-white/10">{states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+               <Select value={estado} onValueChange={setEstado}>
+                  <SelectTrigger className="bg-[#0a0c10] border-white/5 h-12 rounded-lg text-white/60">
+                    <SelectValue placeholder="Estado" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-bg-surface border-white/10">
+                    {states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  </SelectContent>
                </Select>
             </div>
             <div className="space-y-4">
                <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Polo Regional</label>
-               <Input placeholder="Ex: São Paulo" className="bg-[#0a0c10] border-white/5 h-12 rounded-lg text-white" />
+               <Input
+                 placeholder="Ex: São Paulo"
+                 value={cidade}
+                 onChange={e => setCidade(e.target.value)}
+                 className="bg-[#0a0c10] border-white/5 h-12 rounded-lg text-white"
+               />
             </div>
             <div className="space-y-4">
                <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Segmento</label>
-               <Input placeholder="Ex: Farmácias" className="bg-[#0a0c10] border-white/5 h-12 rounded-lg text-white" />
+               <Input
+                 placeholder="Ex: Farmácias"
+                 value={segmento}
+                 onChange={e => setSegmento(e.target.value)}
+                 className="bg-[#0a0c10] border-white/5 h-12 rounded-lg text-white"
+               />
             </div>
          </div>
-         <button className="btn-cta-primary w-full h-12 flex items-center justify-center gap-3">
-            <Zap size={18} /> Iniciar Extração Neural
+         <button
+           className="btn-cta-primary w-full h-12 flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
+           onClick={() => searchMutation.mutate()}
+           disabled={searchMutation.isPending}
+         >
+            {searchMutation.isPending ? (
+              <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Extraindo...</>
+            ) : (
+              <><Zap size={18} /> Iniciar Extração Neural</>
+            )}
          </button>
       </div>
 
-      {/* 5. TABELA DE CAPTURAS */}
+      {/* TABELA DE CAPTURAS */}
       <div className="enterprise-table-wrapper">
          <div className="table-header-label">Capturas Recentes no Cluster</div>
          <table className="enterprise-table">
@@ -167,7 +240,18 @@ export default function LeadSearchPage() {
                         </div>
                       </td>
                       <td className="text-right">
-                        <button className="h-9 px-5 bg-white/5 border border-white/5 rounded-lg text-[10px] font-bold uppercase text-white/30 hover:text-white hover:bg-white/10 transition-all">Importar</button>
+                        <button
+                          onClick={() => importLead.mutate(lead.id)}
+                          disabled={importLead.isPending || lead.status === "CONTATADO"}
+                          className={cn(
+                            "h-9 px-5 border rounded-lg text-[10px] font-bold uppercase transition-all",
+                            lead.status === "CONTATADO"
+                              ? "bg-green-500/10 border-green-500/20 text-green-500 cursor-default"
+                              : "bg-white/5 border-white/5 text-white/30 hover:text-white hover:bg-white/10"
+                          )}
+                        >
+                          {lead.status === "CONTATADO" ? "Importado" : "Importar"}
+                        </button>
                       </td>
                     </tr>
                   ))

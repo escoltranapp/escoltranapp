@@ -1,7 +1,9 @@
 "use client"
 
+import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { Users, TrendingUp, DollarSign, Activity, Plus, Zap, ShieldCheck, MousePointer2, Sparkles, LayoutDashboard } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Users, TrendingUp, DollarSign, Activity, Plus, Zap, ShieldCheck, MousePointer2, LayoutDashboard } from "lucide-react"
 import { formatCurrency, cn } from "@/lib/utils"
 
 // ─── Reusable Component: KPI Card Enterprise ───────────────────────
@@ -30,10 +32,13 @@ function KPICard({
 }
 
 export default function DashboardPage() {
-  const { data: stats, isLoading } = useQuery({
-    queryKey: ["dashboard-stats"],
+  const router = useRouter()
+  const [period, setPeriod] = useState("30D")
+
+  const { data: stats } = useQuery({
+    queryKey: ["dashboard-metrics"],
     queryFn: async () => {
-      const res = await fetch("/api/dashboard/stats")
+      const res = await fetch("/api/dashboard/metrics")
       if (!res.ok) throw new Error("Falha")
       return res.json()
     },
@@ -52,17 +57,17 @@ export default function DashboardPage() {
           <h1 className="page-title-h1">Dashboard</h1>
           <p className="page-subtitle">Performance analítica e monitoramento de fluxo em tempo real</p>
         </div>
-        <button className="btn-cta-primary flex items-center gap-2">
+        <button className="btn-cta-primary flex items-center gap-2" onClick={() => router.push("/contacts")}>
           <Plus size={18} /> Novo Registro
         </button>
       </header>
 
       {/* 2. KPI CARDS */}
       <div className="kpi-grid">
-        <KPICard label="Total de Leads" value={stats?.totalLeads || "0"} subtext="+12.5% vs mês anterior" icon={Users} trend="+12%" color="#d4af37" />
-        <KPICard label="Sincronização" value="98%" subtext="Integridade de dados cloud" icon={Zap} color="#d4af37" />
-        <KPICard label="Volume Financeiro" value={stats?.totalValue ? formatCurrency(stats.totalValue) : 'R$ 0,00'} subtext="Crescimento contínuo de caixa" icon={DollarSign} color="#10b981" />
-        <KPICard label="Conversão" value={`${stats?.conversionRate || 0}%`} subtext="Performance de funil global" icon={TrendingUp} color="#f59e0b" />
+        <KPICard label="Total de Contatos" value={stats?.totalContacts || "0"} subtext={`${stats?.contactsGrowth > 0 ? "+" : ""}${(stats?.contactsGrowth || 0).toFixed(1)}% vs mês anterior`} icon={Users} trend={stats?.contactsGrowth > 0 ? `+${stats.contactsGrowth.toFixed(0)}%` : undefined} color="#d4af37" />
+        <KPICard label="Deals Abertos" value={stats?.openDeals || "0"} subtext="Pipeline comercial ativo" icon={Zap} color="#d4af37" />
+        <KPICard label="Volume Financeiro" value={stats?.pipelineValue ? formatCurrency(stats.pipelineValue) : 'R$ 0,00'} subtext="Valor total do pipeline" icon={DollarSign} color="#10b981" />
+        <KPICard label="Conversão" value={`${(stats?.conversionRate || 0).toFixed(1)}%`} subtext="Performance de funil global" icon={TrendingUp} color="#f59e0b" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -76,7 +81,15 @@ export default function DashboardPage() {
              </div>
              <div className="flex bg-white/5 p-1 rounded-lg gap-1 border border-white/5">
                {["7D", "30D", "90D"].map(f => (
-                 <button key={f} className={cn("h-8 px-4 rounded-md text-[10px] uppercase font-bold transition-all", f === "30D" ? "bg-white/10 text-white" : "text-white/30 hover:text-white/50")}>{f}</button>
+                 <button
+                   key={f}
+                   onClick={() => setPeriod(f)}
+                   className={cn("h-8 px-4 rounded-md text-[10px] uppercase font-bold transition-all",
+                     f === period ? "bg-white/10 text-white" : "text-white/30 hover:text-white/50"
+                   )}
+                 >
+                   {f}
+                 </button>
                ))}
              </div>
           </div>
