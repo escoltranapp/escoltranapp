@@ -6,12 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "@/hooks/use-toast"
-import { cn } from "@/lib/utils"
+import { ShieldCheck, Zap, Lock, Sparkles } from "lucide-react"
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -119,148 +117,160 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bg-base relative overflow-hidden font-sans">
-      {/* Cinematic Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[120px] opacity-60" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay" />
-      </div>
+    <div className="auth-bg-composition font-sans">
+      {/* 1. COMPOSIÇÃO DE FUNDO */}
+      <div className="auth-bg-radial" />
+      <div className="auth-bg-noise" />
+      <div className="auth-bg-grid" />
 
-      <div className="relative w-full max-w-[420px] mx-4 animate-entrance">
-        {/* Logo Section */}
-        <div className="text-center mb-10 flex flex-col items-center">
-          <div className="w-16 h-16 rounded-xl bg-accent flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(224,176,80,0.3)] animate-gold-pulse">
-            <span className="text-3xl font-black text-accent-foreground select-none">E</span>
+      <div className="relative flex flex-col items-center animate-entrance">
+        
+        {/* 2. ÁREA DO LOGO */}
+        <div className="text-center mb-6 flex flex-col items-center">
+          <div className="auth-logo-box">
+             <span className="text-3xl font-black text-black select-none">E</span>
           </div>
-          <h1 className="text-4xl font-black text-text-primary tracking-tighter uppercase mb-1">
-            Escoltran
-          </h1>
-          <p className="text-sm font-display italic text-accent tracking-wide">
-            Inteligência em Prospecção CRM
-          </p>
+          <h1 className="auth-wordmark">Escoltran</h1>
+          <p className="auth-tagline">Inteligência em Prospecção CRM</p>
         </div>
 
-        {/* Auth Glass Card */}
-        <div className="glass rounded-2xl p-8 shadow-[0_40px_100px_rgba(0,0,0,0.6)] border-white/5 relative overflow-hidden">
+        {/* 3. CARD DE AUTENTICAÇÃO */}
+        <div className="glass-auth-card">
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid grid-cols-2 w-full mb-8 bg-black/40 p-1 border border-white/5 rounded-lg h-11">
+            <TabsList className="auth-tab-container w-full h-auto p-1.5">
               <TabsTrigger 
                 value="login" 
-                className="rounded-md data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-text-muted font-bold text-xs uppercase tracking-widest transition-all"
+                className="auth-tab-trigger flex-1 h-10 text-[11px] font-bold uppercase tracking-widest text-white/40 data-[state=active]:text-black transition-all"
               >
                 Entrar
               </TabsTrigger>
               <TabsTrigger 
                 value="register" 
-                className="rounded-md data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-text-muted font-bold text-xs uppercase tracking-widest transition-all"
+                className="auth-tab-trigger flex-1 h-10 text-[11px] font-bold uppercase tracking-widest text-white/40 data-[state=active]:text-black transition-all"
               >
                 Criar Conta
               </TabsTrigger>
             </TabsList>
 
-            {/* Login Tab */}
+            {/* Login Flow */}
             <TabsContent value="login" className="animate-slide-up focus-visible:outline-none">
               <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-6">
-                <div className="space-y-1.5">
-                  <Label htmlFor="login-email" className="text-[12px] font-bold uppercase tracking-widest text-text-muted">Email Profissional</Label>
+                <div className="space-y-1">
+                  <label htmlFor="login-email" className="auth-label">Email Profissional</label>
                   <Input
                     id="login-email"
                     type="email"
                     placeholder="ex@escoltran.com"
-                    autoComplete="email"
+                    className="auth-input"
                     {...loginForm.register("email")}
                   />
                   {loginForm.formState.errors.email && (
-                    <p className="text-[10px] text-danger font-mono font-bold mt-1 uppercase tracking-tighter">{loginForm.formState.errors.email.message}</p>
+                    <p className="text-[10px] text-red-500 font-bold mt-1 uppercase tracking-tight">{loginForm.formState.errors.email.message}</p>
                   )}
                 </div>
-                <div className="space-y-1.5">
+                
+                <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="login-password" className="text-[12px] font-bold uppercase tracking-widest text-text-muted">Senha de Acesso</Label>
-                    <button type="button" className="text-[10px] text-accent/60 hover:text-accent font-bold uppercase tracking-tighter transition-colors">Esqueceu a senha?</button>
+                    <label htmlFor="login-password" className="auth-label">Senha de Acesso</label>
+                    <button type="button" className="text-[11px] text-[#C89B3C] hover:underline font-bold tracking-tight">Esqueceu a senha?</button>
                   </div>
                   <Input
                     id="login-password"
                     type="password"
                     placeholder="••••••••"
-                    autoComplete="current-password"
+                    className="auth-input"
                     {...loginForm.register("password")}
                   />
                   {loginForm.formState.errors.password && (
-                    <p className="text-[10px] text-danger font-mono font-bold mt-1 uppercase tracking-tighter">{loginForm.formState.errors.password.message}</p>
+                    <p className="text-[10px] text-red-500 font-bold mt-1 uppercase tracking-tight">{loginForm.formState.errors.password.message}</p>
                   )}
                 </div>
-                <Button type="submit" className="w-full h-11" disabled={isLoading}>
+
+                <button type="submit" className="btn-auth-primary" disabled={isLoading}>
                   {isLoading ? "Validando Acesso..." : "Iniciar Sessão"}
-                </Button>
+                </button>
               </form>
             </TabsContent>
 
-            {/* Register Tab */}
+            {/* Register Flow */}
             <TabsContent value="register" className="animate-slide-up focus-visible:outline-none">
               <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-5">
-                <div className="space-y-1.5">
-                  <Label htmlFor="reg-name" className="text-[12px] font-bold uppercase tracking-widest text-text-muted">Nome Completo</Label>
+                <div className="space-y-1">
+                  <label htmlFor="reg-name" className="auth-label">Nome Completo</label>
                   <Input
                     id="reg-name"
                     placeholder="Como deseja ser chamado?"
+                    className="auth-input"
                     {...registerForm.register("name")}
                   />
                   {registerForm.formState.errors.name && (
-                    <p className="text-[10px] text-danger font-mono font-bold mt-1 uppercase tracking-tighter">{registerForm.formState.errors.name.message}</p>
+                    <p className="text-[10px] text-red-500 font-bold mt-1 uppercase tracking-tight">{registerForm.formState.errors.name.message}</p>
                   )}
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="reg-email" className="text-[12px] font-bold uppercase tracking-widest text-text-muted">Email Corporativo</Label>
+                <div className="space-y-1">
+                  <label htmlFor="reg-email" className="auth-label">Email Corporativo</label>
                   <Input
                     id="reg-email"
                     type="email"
                     placeholder="ex@empresa.com"
+                    className="auth-input"
                     {...registerForm.register("email")}
                   />
                   {registerForm.formState.errors.email && (
-                    <p className="text-[10px] text-danger font-mono font-bold mt-1 uppercase tracking-tighter">{registerForm.formState.errors.email.message}</p>
+                    <p className="text-[10px] text-red-500 font-bold mt-1 uppercase tracking-tight">{registerForm.formState.errors.email.message}</p>
                   )}
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="reg-password" className="text-[12px] font-bold uppercase tracking-widest text-text-muted">Senha</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label htmlFor="reg-password" className="auth-label">Senha</label>
                     <Input
                       id="reg-password"
                       type="password"
                       placeholder="••••••••"
+                      className="auth-input"
                       {...registerForm.register("password")}
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="reg-confirm" className="text-[12px] font-bold uppercase tracking-widest text-text-muted">Confirmação</Label>
+                  <div className="space-y-1">
+                    <label htmlFor="reg-confirm" className="auth-label">Confirmação</label>
                     <Input
                       id="reg-confirm"
                       type="password"
                       placeholder="••••••••"
+                      className="auth-input"
                       {...registerForm.register("confirmPassword")}
                     />
                   </div>
                 </div>
                 {(registerForm.formState.errors.password || registerForm.formState.errors.confirmPassword) && (
-                  <p className="text-[10px] text-danger font-mono font-bold uppercase tracking-tighter">
+                  <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight">
                     {registerForm.formState.errors.password?.message || registerForm.formState.errors.confirmPassword?.message}
                   </p>
                 )}
-                <Button type="submit" className="w-full h-11 mt-2" disabled={isLoading}>
+                <button type="submit" className="btn-auth-primary" disabled={isLoading}>
                   {isLoading ? "Propagando Dados..." : "Finalizar Cadastro"}
-                </Button>
+                </button>
               </form>
             </TabsContent>
           </Tabs>
+
+          {/* Support Line */}
+          <div className="mt-8 text-center">
+            <p className="text-[12px] text-white/30">
+              Problemas no acesso? <a href="#" className="text-[#C89B3C]/65 hover:text-[#C89B3C] hover:underline transition-all">Contate o suporte Escoltran</a>
+            </p>
+          </div>
         </div>
 
-        {/* Support Section */}
-        <div className="text-center mt-8">
-          <p className="text-[11px] text-text-muted font-sans tracking-wide">
-            Problemas no acesso? <span className="text-accent cursor-pointer hover:underline">Contate o suporte Escoltran</span>
-          </p>
+        {/* 4. SECURITY BADGES */}
+        <div className="flex items-center gap-2 mt-8 text-[10px] text-white/25 font-bold uppercase tracking-widest select-none">
+           <div className="flex items-center gap-1.5"><Lock size={12} className="text-[#C89B3C]/40" /> Conexão Segura SSL</div>
+           <span className="opacity-20">·</span>
+           <div className="flex items-center gap-1.5"><Zap size={12} className="text-[#C89B3C]/40" /> 99.9% Uptime</div>
+           <span className="opacity-20">·</span>
+           <div className="flex items-center gap-1.5"><ShieldCheck size={12} className="text-[#C89B3C]/40" /> Dados Criptografados</div>
         </div>
+
       </div>
     </div>
   )

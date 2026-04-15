@@ -8,6 +8,159 @@
   --text-secondary: rgba(255, 255, 255, 0.55);
   --text-muted: rgba(255, 255, 255, 0.35);
   --accent-blue: #2563eb;
+  --accent-gold: #C89B3C;
+  --bg-auth-base: #08090b;
+}
+
+/* ─── AUTH COMPOSITION ────────────────────────────────────────── */
+.auth-bg-composition {
+  background-color: var(--bg-auth-base);
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.auth-bg-radial {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 900px 600px at center,
+    rgba(200, 155, 60, 0.06) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.auth-bg-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.025;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.auth-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+.glass-auth-card {
+  width: 420px;
+  padding: 40px 40px 32px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(200, 155, 60, 0.20);
+  border-radius: 20px;
+  box-shadow: 
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 32px 64px rgba(0, 0, 0, 0.5),
+    0 0 80px rgba(200, 155, 60, 0.04) inset;
+  backdrop-filter: blur(12px);
+  position: relative;
+  z-index: 10;
+}
+
+/* ─── AUTH ELEMENTS ───────────────────────────────────────────── */
+.auth-logo-box {
+  width: 64px;
+  height: 64px;
+  background: var(--accent-gold);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(200, 155, 60, 0.35);
+  margin-bottom: 16px;
+}
+
+.auth-wordmark {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.auth-tagline {
+  font-size: 12px;
+  font-style: italic;
+  color: rgba(200, 155, 60, 0.8);
+  letter-spacing: 0.05em;
+  margin-bottom: 28px;
+}
+
+.auth-tab-container {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 4px;
+  display: flex;
+  margin-bottom: 28px;
+}
+
+.auth-tab-trigger[data-state="active"] {
+  background: var(--accent-gold) !important;
+  border-radius: 7px;
+  color: #000 !important;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(200, 155, 60, 0.30);
+}
+
+.auth-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.auth-input {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+  padding: 13px 16px !important;
+  font-size: 14px !important;
+  color: #fff !important;
+  transition: all 0.2s ease;
+}
+
+.auth-input:focus {
+  border-color: rgba(200, 155, 60, 0.60) !important;
+  box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.10) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.btn-auth-primary {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, #D4A847 0%, #C89B3C 50%, #B8893A 100%);
+  border: none;
+  border-radius: 10px;
+  color: #000;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(200, 155, 60, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-auth-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(200, 155, 60, 0.50);
+  background: linear-gradient(135deg, #DEB85A 0%, #D4A847 100%);
+}
+
   --accent-green: #10b981;
   --accent-red: #ef4444;
   --accent-amber: #f59e0b;
