@@ -25,6 +25,7 @@ import {
   Save,
   Cpu,
   Sparkles,
+  Activity,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
