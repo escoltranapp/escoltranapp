@@ -11,7 +11,7 @@ import {
   Search,
   Phone,
   Activity,
-  Sparkles,
+  Clock,
   Settings,
   X,
   LogOut,
@@ -109,7 +109,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             {isActive("/utm-analytics") && <div className="active-bar"></div>}
           </Link>
           <Link href="/ai-insights" onClick={onClose} className={`nav-item ${isActive("/ai-insights") ? "active" : ""}`}>
-            <Sparkles className="nav-item-icon" />
+            <Clock className="nav-item-icon" />
             <span className="nav-item-label">IA Insights</span>
             {isActive("/ai-insights") && <div className="active-bar"></div>}
           </Link>
