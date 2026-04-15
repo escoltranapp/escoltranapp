@@ -120,7 +120,7 @@ export default function PipelinePage() {
       <div className="overflow-x-auto kanban-scrollbar -mx-1 px-1">
         {isLoading ? (
           <div className="flex gap-4">
-             {[1,2,3,4].map(i => <div key={i} className="min-w-[280px] h-[600px] rounded-[12px] bg-[#161B22] animate-pulse" />)}
+             {[1,2,3,4].map(i => <div key={i} className="min-w-[280px] h-[600px] rounded-[12px] bg-[var(--bg-surface)] animate-pulse" />)}
           </div>
         ) : (
           <KanbanBoard stages={boardStages} />
