@@ -97,7 +97,6 @@ export default function AuthPage() {
              <span className="text-4xl font-black text-black select-none">E</span>
           </div>
           <h1 className="auth-wordmark animate-aether">Escoltran</h1>
-          <p className="auth-tagline">Inteligência em Prospecção CRM</p>
         </div>
 
         {/* AUTH ARCHITECTURE */}
@@ -164,26 +163,8 @@ export default function AuthPage() {
               </form>
             </TabsContent>
           </Tabs>
-
-          <footer className="mt-10 text-center border-t border-white/[0.03] pt-6">
-            <p className="text-[12px] text-white/20 font-medium">
-              Suporte Técnico <a href="#" className="text-[#d4af37]/60 hover:text-[#d4af37] transition-all">Central Escoltran</a>
-            </p>
-          </footer>
         </div>
 
-        {/* TRUST SIGNALS */}
-        <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 mt-12 text-[10px] text-white/20 font-bold uppercase tracking-[0.2em] select-none">
-           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.05]">
-             <Lock size={12} className="text-[#d4af37]/40" /> SSL SECURE
-           </div>
-           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.05]">
-             <Zap size={12} className="text-[#d4af37]/40" /> HIGH SPEED
-           </div>
-           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.05]">
-             <ShieldCheck size={12} className="text-[#d4af37]/40" /> ENCRYPTED
-           </div>
-        </div>
 
       </div>
     </div>
