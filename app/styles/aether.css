@@ -2,145 +2,201 @@
   --aether-bg: #030406;
   --aether-surface: #0a0c12;
   --aether-surface-elevated: #0f121a;
-  --aether-border: rgba(255, 255, 255, 0.04);
-  --aether-border-bright: rgba(255, 255, 255, 0.08);
-  --aether-gold: #c9a227;
-  --aether-gold-glow: rgba(201, 162, 39, 0.25);
+  --aether-border: rgba(255, 255, 255, 0.08); /* 8% de opacidade conforme regra 1 */
+  --aether-border-bright: rgba(255, 255, 255, 0.12); /* 12% conforme regra 1 */
   --aether-blue: #2563eb;
   --aether-blue-glow: rgba(37, 99, 235, 0.4);
-  --aether-text-primary: #ffffff;
-  --aether-text-muted: rgba(255, 255, 255, 0.4);
+  --aether-text-primary: #ffffff; /* Nível 1 e 4 */
+  --aether-text-muted: rgba(255, 255, 255, 0.5); /* Nível 2 e 3 (50-65%) */
   --aether-text-dim: rgba(255, 255, 255, 0.15);
-  --aether-radius-lg: 24px;
-  --aether-radius-xl: 40px;
+  
+  /* Hierarquia Tipográfica Global (Regra 2) */
+  --font-size-h1: 32px;
+  --font-size-label: 11px;
+  --font-size-data: 14px;
 }
 
 /* Base Layout Refresh */
 body {
   background-color: var(--aether-bg);
-  background-image: 
-    radial-gradient(circle at 50% -10%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 0% 100%, rgba(201, 162, 39, 0.02) 0%, transparent 40%);
   color: var(--aether-text-primary);
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Container de Conteúdo Centralizado */
+/* Espaçamento e Respiração (Regra 3) */
 .content-container {
   max-width: 1600px;
   margin: 0 auto;
-  padding: 0 40px;
-  width: 100%;
+  padding: 24px 32px; /* Regra 3: 32px horizontal, 24px vertical */
+  gap: 28px; /* Gap entre seções */
 }
 
-/* Premium Component: CRM Header */
-.crm-header-title {
-  font-size: 32px;
-  font-weight: 950;
-  text-transform: uppercase;
-  letter-spacing: -0.04em;
-  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.6) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.crm-header-subtitle {
-  font-size: 11px;
-  font-weight: 850;
-  color: var(--aether-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  margin-top: 6px;
-}
-
-/* CRM Cards - Depth & Verticality */
+/* 1. CARDS DE MÉTRICAS (KPI Cards) - Regra 1 */
 .crm-metric-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.01) 100%);
+  background: #0f121a; /* ~5-8% mais claro que o bg principal */
   border: 1px solid var(--aether-border);
-  backdrop-filter: blur(12px);
-  border-radius: var(--aether-radius-lg);
-  padding: 36px 32px;
-  transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
-  position: relative;
-  overflow: hidden;
+  border-radius: 12px;
+  padding: 24px; /* Mínimo 24px todos os lados */
+  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
 }
 
-.crm-metric-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(37, 99, 235, 0.3);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+.crm-metric-card .label-upper {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65); /* Opacidade 60-70% */
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.crm-metric-card .value-main {
+  font-size: 32px; /* 28-36px */
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+.crm-metric-card .sub-context {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5); /* Opacidade 50% */
+  margin-top: 4px;
 }
 
 .crm-metric-icon-box {
-  width: 44px;
+  width: 44px; /* 40-48px */
   height: 44px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px; /* border-radius 10-12px */
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 28px;
-  box-shadow: inset 0 2px 4px rgba(255,255,255,0.05);
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.05); /* Sutil opacidade */
 }
 
-/* Kanban System Evolution */
-.kanban-col {
-  min-width: 320px;
-  max-width: 320px;
-}
-
-.kanban-col-header {
-  height: 64px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--aether-border);
-  border-radius: 18px;
-  padding: 0 20px;
-  display: flex;
+/* 4. BADGES E STATUS TAGS - Regra 4 */
+.status-badge {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px; /* Pill style */
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
 }
 
-.kanban-card {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--aether-border);
-  border-radius: 20px;
-  padding: 24px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-bottom: 16px;
+.status-badge .dot {
+  width: 6px;
+  height: 6px; /* Regra 4: dot 6px */
+  border-radius: 50%;
 }
 
-/* Button Refinement */
-.btn-glow-blue {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow: 0 0 30px var(--aether-blue-glow), inset 0 2px 4px rgba(255,255,255,0.3);
-  color: white;
-  font-weight: 900;
+/* Hierarquia Global de Títulos - Regra 2 & 8 */
+.page-header-context {
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  font-size: 11px;
-  height: 48px;
-  padding: 0 32px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
-  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
 }
 
-/* Global Search Integrated */
-.crm-search-input {
-  background: #05060a;
-  border: 1px solid var(--aether-border);
-  height: 64px;
-  border-radius: 20px;
-  padding: 0 28px 0 60px;
-  font-size: 14px;
-  color: white;
-  width: 100%;
+.page-title-h1 {
+  font-size: var(--font-size-h1);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
+}
+
+/* 6. TABELAS / LISTAS - Regra 6 */
+.crm-table-header th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-weight: 500;
+}
+
+.crm-table-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.2s ease;
+}
+
+.crm-table-row:hover {
+  background: rgba(255, 255, 255, 0.03); /* Regra 6: 3% opacity */
+}
+
+.crm-table-row td {
+  padding: 15px 16px; /* vertical 14-16px */
+}
+
+/* Avatares Modernos - Regra 6 */
+.crm-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px; /* border-radius 8px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* 8. BOTÃO CTA PRINCIPAL - Regra 8 */
+.btn-cta-primary {
+  background: var(--aether-blue);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-cta-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* 7. PIPELINE / KANBAN - Regra 7 */
+.kanban-column-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.kanban-column-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.kanban-column-value {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.kanban-opportunity-card {
+  padding: 16px;
+  border-radius: 12px;
+  background: #0f121a;
+  border: 1px solid rgba(255, 255, 255, 0.08); /* 8% opacity */
+  margin-bottom: 12px;
 }

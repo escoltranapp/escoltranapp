@@ -15,7 +15,8 @@ import {
   Settings,
   X,
   LogOut,
-  UserPlus
+  UserPlus,
+  Sparkles
 } from "lucide-react"
 
 import "./sidebar.css"
@@ -29,9 +30,6 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
   const { data: session } = useSession();
   
   const userName = session?.user?.name || "Usuário";
-  const userRole = "Administrador";
-  const usagePercent = 72;
-
   const initials = userName
     .split(" ")
     .slice(0, 2)
@@ -46,27 +44,18 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
       {/* Brand */}
       <div className="brand">
         <div className="brand-icon">E</div>
-        <div>
-          <div className="brand-name">Escoltran</div>
-          <div className="brand-sub">Sales Intelligence</div>
-        </div>
-        {onClose && (
-          <button onClick={onClose} className="mobile-close-btn md:hidden">
-            <X size={16} />
-          </button>
-        )}
+        <div className="brand-name">Escoltran</div>
       </div>
 
       {/* Navegação */}
-      <div className="nav-container">
+      <div className="nav-container grow">
         
         {/* DASHBOARD */}
         <div className="nav-section">
           <div className="nav-label">Dashboard</div>
           <Link href="/dashboard" onClick={onClose} className={`nav-item ${isActive("/dashboard") ? "active" : ""}`}>
             <LayoutGrid className="nav-item-icon" />
-            <span className="nav-item-label">Overview</span>
-            {isActive("/dashboard") && <div className="active-bar"></div>}
+            <span>Overview</span>
           </Link>
         </div>
 
@@ -75,18 +64,15 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
           <div className="nav-label">Comercial</div>
           <Link href="/pipeline" onClick={onClose} className={`nav-item ${isActive("/pipeline") ? "active" : ""}`}>
             <List className="nav-item-icon" />
-            <span className="nav-item-label">Pipeline</span>
-            {isActive("/pipeline") && <div className="active-bar"></div>}
+            <span>Pipeline</span>
           </Link>
           <Link href="/contacts" onClick={onClose} className={`nav-item ${isActive("/contacts") ? "active" : ""}`}>
             <User className="nav-item-icon" />
-            <span className="nav-item-label">Contatos</span>
-            {isActive("/contacts") && <div className="active-bar"></div>}
+            <span>Contatos</span>
           </Link>
           <Link href="/activities" onClick={onClose} className={`nav-item ${isActive("/activities") ? "active" : ""}`}>
             <CalendarDays className="nav-item-icon" />
-            <span className="nav-item-label">Atividades</span>
-            {isActive("/activities") && <div className="active-bar"></div>}
+            <span>Atividades</span>
           </Link>
         </div>
 
@@ -95,74 +81,46 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
           <div className="nav-label">Marketing</div>
           <Link href="/lead-search" onClick={onClose} className={`nav-item ${isActive("/lead-search") ? "active" : ""}`}>
             <Search className="nav-item-icon" />
-            <span className="nav-item-label">Busca de Leads</span>
-            {isActive("/lead-search") && <div className="active-bar"></div>}
+            <span>Busca de Leads</span>
           </Link>
           <Link href="/listas-disparo" onClick={onClose} className={`nav-item ${isActive("/listas-disparo") ? "active" : ""}`}>
             <Phone className="nav-item-icon" />
-            <span className="nav-item-label">Disparo em Massa</span>
-            {isActive("/listas-disparo") && <div className="active-bar"></div>}
+            <span>Disparo em Massa</span>
           </Link>
           <Link href="/utm-analytics" onClick={onClose} className={`nav-item ${isActive("/utm-analytics") ? "active" : ""}`}>
             <Activity className="nav-item-icon" />
-            <span className="nav-item-label">UTM Analytics</span>
-            {isActive("/utm-analytics") && <div className="active-bar"></div>}
+            <span>Analytics</span>
           </Link>
           <Link href="/ai-insights" onClick={onClose} className={`nav-item ${isActive("/ai-insights") ? "active" : ""}`}>
             <Clock className="nav-item-icon" />
-            <span className="nav-item-label">IA Insights</span>
-            {isActive("/ai-insights") && <div className="active-bar"></div>}
+            <span>Insights</span>
           </Link>
         </div>
-
-        <div className="divider"></div>
 
         {/* CONFIG */}
         <div className="nav-section">
-          <div className="nav-label">Config</div>
+          <div className="nav-label">Sistema</div>
           <Link href="/settings" onClick={onClose} className={`nav-item ${isActive("/settings") ? "active" : ""}`}>
             <Settings className="nav-item-icon" />
-            <span className="nav-item-label">Configurações</span>
-            {isActive("/settings") && <div className="active-bar"></div>}
+            <span>Configurações</span>
           </Link>
         </div>
 
       </div>
 
-      {/* BOTTOM SECTION */}
-      <div className="bottom-section">
-        
-        <div className="workspace-card">
-          <div className="workspace-title">Workspace</div>
-          <div className="workspace-desc">Gerencie sua equipe com IA.</div>
-          <button className="invite-btn">
-            <UserPlus size={13} strokeWidth={2} />
-            Convidar
-          </button>
+      {/* BOTTOM SECTION (Regra 6 & 8) */}
+      <div className="logout-section mt-auto">
+        <div className="user-badge mb-4">
+           <div className="user-avatar">{initials}</div>
+           <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-bold text-white truncate">{userName}</p>
+              <p className="text-[10px] text-white/40 uppercase font-black">Plan: Scale</p>
+           </div>
+           <button onClick={() => signOut()} className="p-1 px-2 text-white/20 hover:text-red-500 transition-colors">
+              <LogOut size={16} />
+           </button>
         </div>
-
-        <div className="usage-bar-wrap">
-          <div className="usage-label">
-            <span>Uso da base</span>
-            <span>{usagePercent}%</span>
-          </div>
-          <div className="usage-track">
-            <div className="usage-fill" style={{ width: `${usagePercent}%` }}></div>
-          </div>
-        </div>
-
-        <div className="user-row">
-          <div className="user-avatar">{initials}</div>
-          <div className="user-name-wrapper">
-            <div className="user-name">{userName}</div>
-            <div className="user-role">{userRole}</div>
-          </div>
-          <button onClick={() => signOut()} className="logout-btn" title="Sair do sistema">
-            <LogOut size={14} />
-          </button>
-        </div>
-
       </div>
     </aside>
-  );
+  )
 }
