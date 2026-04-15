@@ -1,56 +1,30 @@
 "use client"
 
-import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { 
-  Users, 
-  TrendingUp, 
-  DollarSign, 
-  Activity, 
-  Plus,
-  Zap,
-  Star,
-  ShieldCheck,
-  MousePointer2,
-  LayoutDashboard,
-  ArrowUpRight,
-  TrendingDown,
-  BarChart3,
-  Sparkles
-} from "lucide-react"
-import { formatDate, cn } from "@/lib/utils"
+import { Users, TrendingUp, DollarSign, Activity, Plus, Zap, ShieldCheck, MousePointer2, Sparkles, LayoutDashboard } from "lucide-react"
+import { formatCurrency, cn } from "@/lib/utils"
 
-// ─── Metric Card Enterprise-Grade (Regra 1) ──────────────────────────
-function CRMMetricCard({
-  title,
-  value,
-  subtitle,
-  icon: Icon,
-  iconColor = "#2563eb",
-  trend = "up"
-}: {
-  title: string
-  value: string | number
-  subtitle: string
-  icon: React.ElementType
-  iconColor?: string
-  trend?: "up" | "down"
+// ─── Reusable Component: KPI Card Enterprise ───────────────────────
+function KPICard({ 
+  label, value, subtext, icon: Icon, trend, color = "var(--accent-blue)" 
+}: { 
+  label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string 
 }) {
   return (
-    <div className="crm-metric-card">
-      <div className="crm-metric-icon-box" style={{ color: iconColor, backgroundColor: `${iconColor}15` }}>
-        <Icon size={20} strokeWidth={2.5} />
+    <div className="kpi-card">
+      <div className="kpi-icon-container" style={{ backgroundColor: `${color}15`, color: color }}>
+        <Icon size={20} />
       </div>
-      <div className="space-y-0.5">
-        <h4 className="label-upper">{title}</h4>
-        <div className="flex items-baseline gap-3">
-           <div className="value-main">{value}</div>
-           <div className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1", trend === 'up' ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500")}>
-              {trend === 'up' ? <TrendingUp size={10} /> : <TrendingDown size={10} />} 12%
-           </div>
-        </div>
-        <p className="sub-context">{subtitle}</p>
+      <div className="kpi-label-row">
+        <span className="kpi-label">{label}</span>
+        {trend && (
+           <span className={cn("kpi-trend", trend.includes('+') ? "text-green-500 bg-green-500/10" : "text-red-500 bg-red-500/10")}>
+              {trend}
+           </span>
+        )}
       </div>
+      <div className="kpi-value">{value}</div>
+      <div className="kpi-subtext">{subtext}</div>
     </div>
   )
 }
@@ -67,95 +41,81 @@ export default function DashboardPage() {
   })
 
   return (
-    <div className="animate-aether space-y-7">
+    <div className="page-container animate-aether">
       
-      {/* Page Header (Regra 8) */}
-      <header className="flex items-center justify-between">
+      {/* 1. HEADER DE PÁGINA */}
+      <header className="page-header-wrapper">
         <div>
-           <div className="page-header-context flex items-center gap-2">
-              <Sparkles size={10} /> OPERATIONAL OVERVIEW
-           </div>
-           <h1 className="page-title-h1">Dashboard</h1>
-           <p className="page-subtitle-desc">Performance analítica e monitoramento de fluxo em tempo real</p>
+          <div className="breadcrumb-pill">
+            <LayoutDashboard size={12} /> OPERATIONAL OVERVIEW
+          </div>
+          <h1 className="page-title-h1">Dashboard</h1>
+          <p className="page-subtitle">Performance analítica e monitoramento de fluxo em tempo real</p>
         </div>
-
         <button className="btn-cta-primary flex items-center gap-2">
           <Plus size={18} /> Novo Registro
         </button>
       </header>
 
-      {/* KPI Cluster (Regra 3 - Gap 16px) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <CRMMetricCard title="Total de Leads" value={stats?.totalLeads ?? "0"} subtitle="+12.5% vs mês anterior" icon={Users} iconColor="#3b82f6" />
-        <CRMMetricCard title="Sincronização" value="98%" subtitle="Integridade de dados cloud" icon={Zap} iconColor="#60a5fa" />
-        <CRMMetricCard title="Volume Financeiro" value={stats?.totalValue ? `R$ ${stats.totalValue}` : 'R$ 0,00'} subtitle="Crescimento contínuo de caixa" icon={DollarSign} iconColor="#10b981" />
-        <CRMMetricCard title="Conversão" value={`${stats?.conversionRate ?? 0}%`} subtitle="Performance de funil" icon={TrendingUp} iconColor="#f59e0b" />
+      {/* 2. KPI CARDS */}
+      <div className="kpi-grid">
+        <KPICard label="Total de Leads" value={stats?.totalLeads || "0"} subtext="+12.5% vs mês anterior" icon={Users} trend="+12%" color="#3b82f6" />
+        <KPICard label="Sincronização" value="98%" subtext="Integridade de dados cloud" icon={Zap} color="#60a5fa" />
+        <KPICard label="Volume Financeiro" value={stats?.totalValue ? formatCurrency(stats.totalValue) : 'R$ 0,00'} subtext="Crescimento contínuo de caixa" icon={DollarSign} color="#10b981" />
+        <KPICard label="Conversão" value={`${stats?.conversionRate || 0}%`} subtext="Performance de funil global" icon={TrendingUp} color="#f59e0b" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Main Chart Card */}
-        <div className="lg:col-span-8 crm-metric-card p-8">
+        {/* Gráfico Principal */}
+        <div className="lg:col-span-8 kpi-card bg-[#111318] p-8">
           <div className="mb-10 flex items-center justify-between">
              <div>
-               <h3 className="text-[13px] font-bold uppercase tracking-widest text-white/90">Análise Comportamental</h3>
-               <p className="text-[11px] text-white/40 uppercase font-medium mt-1">Aquisição por cluster temporal</p>
+               <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/30">Análise Comportamental</h3>
+               <p className="text-[13px] text-white/60 mt-1">Aquisição por cluster temporal</p>
              </div>
-             <div className="flex bg-white/5 p-1 rounded-lg gap-1">
+             <div className="flex bg-white/5 p-1 rounded-lg gap-1 border border-white/5">
                {["7D", "30D", "90D"].map(f => (
                  <button key={f} className={cn("h-8 px-4 rounded-md text-[10px] uppercase font-bold transition-all", f === "30D" ? "bg-white/10 text-white" : "text-white/30 hover:text-white/50")}>{f}</button>
                ))}
              </div>
           </div>
           
-          <div className="flex-1 flex items-end justify-between gap-4 px-2 pb-2 h-[260px]">
+          <div className="h-[280px] flex items-end justify-between gap-3 px-2">
              {[30, 45, 25, 60, 80, 50, 90, 100, 70, 85, 40, 55].map((h, i) => (
-               <div key={i} className="flex-1 group relative">
-                  <div 
-                    className="w-full bg-white/5 rounded-t-lg transition-all group-hover:bg-blue-500/50 cursor-pointer" 
-                    style={{ height: `${h}%` }}
-                  />
-                  <div className="absolute bottom-[-24px] left-1/2 -translate-x-1/2 text-[9px] font-bold text-white/20 uppercase">{["O", "N", "D", "J", "F", "M", "A"][i % 7]}</div>
-               </div>
+                <div key={i} className="flex-1 group relative">
+                   <div className="w-full bg-blue-600/10 rounded-t-lg transition-all group-hover:bg-blue-600/30 cursor-pointer border-x border-t border-blue-600/5" style={{ height: `${h}%` }} />
+                   {h > 80 && <div className="absolute top-[-25px] left-1/2 -translate-x-1/2 text-[9px] font-bold text-blue-400">PEAK</div>}
+                </div>
              ))}
           </div>
         </div>
 
         {/* Pulse Monitor */}
-        <div className="lg:col-span-4 crm-metric-card p-0 overflow-hidden">
-          <div className="p-7 border-b border-white/5 flex items-center justify-between bg-white/5">
+        <div className="lg:col-span-4 kpi-card p-0 overflow-hidden border-white/5">
+          <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
             <div>
-              <h3 className="text-[12px] font-bold uppercase tracking-widest">Pulse Monitor</h3>
-              <p className="text-[10px] text-white/30 uppercase mt-0.5">Eventos em tempo real</p>
+              <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/30">Pulse Monitor</h3>
             </div>
             <Activity size={18} className="text-blue-500 animate-pulse" />
           </div>
 
-          <div className="p-5 space-y-4">
-             {isLoading ? (
-               [...Array(4)].map((_, i) => <div key={i} className="h-14 bg-white/5 rounded-lg animate-pulse" />)
-             ) : (
-               [
-                 { user: "H. Bariani", action: "Proposta Gerada", time: "02m", icon: MousePointer2, color: "#3b82f6" },
-                 { user: "AI Engine", action: "Lead Qualificado", time: "12m", icon: Zap, color: "#a855f7" },
-                 { user: "Operational", action: "Nó Sincronizado", time: "45m", icon: ShieldCheck, color: "#10b981" },
-               ].map((act, i) => {
-                 const Icon = act.icon
-                 return (
-                   <div key={i} className="flex gap-4 p-4 rounded-xl border border-white/5 hover:bg-white/5 transition-all group">
-                      <div className="w-9 h-9 rounded-lg bg-black border border-white/5 flex items-center justify-center text-blue-500 group-hover:scale-105" style={{ color: act.color }}>
-                         <Icon size={16} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                         <p className="text-[12px] font-bold text-white/80 uppercase truncate">{act.action}</p>
-                         <p className="text-[10px] text-white/30 uppercase font-medium mt-0.5">
-                            {act.user} <span className="mx-1 opacity-20">•</span> {act.time}
-                         </p>
-                      </div>
-                   </div>
-                 )
-               })
-             )}
+          <div className="p-6 space-y-4">
+             {[
+               { user: "H. Bariani", action: "Proposta Gerada", icon: MousePointer2, color: "#3b82f6" },
+               { user: "AI Engine", action: "Lead Qualificado", icon: Zap, color: "#a855f7" },
+               { user: "Operational", action: "Nó Sincronizado", icon: ShieldCheck, color: "#10b981" },
+             ].map((act, i) => (
+               <div key={i} className="flex gap-4 p-4 rounded-xl border border-white/[0.03] bg-white/[0.01] hover:bg-white/[0.03] transition-all">
+                  <div className="w-9 h-9 rounded-lg bg-[#0a0c10] border border-white/5 flex items-center justify-center" style={{ color: act.color }}>
+                     <act.icon size={16} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                     <p className="text-[12px] font-bold text-white uppercase truncate">{act.action}</p>
+                     <p className="text-[10px] text-white/30 uppercase font-medium mt-0.5">{act.user}</p>
+                  </div>
+               </div>
+             ))}
           </div>
         </div>
       </div>

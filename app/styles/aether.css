@@ -1,168 +1,99 @@
 :root {
-  --aether-bg: #030406;
-  --aether-surface: #0a0c12;
-  --aether-surface-elevated: #0f121a;
-  --aether-border: rgba(255, 255, 255, 0.08); /* 8% de opacidade conforme regra 1 */
-  --aether-border-bright: rgba(255, 255, 255, 0.12); /* 12% conforme regra 1 */
-  --aether-blue: #2563eb;
-  --aether-blue-glow: rgba(37, 99, 235, 0.4);
-  --aether-text-primary: #ffffff; /* Nível 1 e 4 */
-  --aether-text-muted: rgba(255, 255, 255, 0.5); /* Nível 2 e 3 (50-65%) */
-  --aether-text-dim: rgba(255, 255, 255, 0.15);
+  /* CORES - TOKENS GLOBAIS */
+  --bg-page: #0a0c10;
+  --bg-surface: #111318;
+  --bg-surface-2: #181c24;
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-muted: rgba(255, 255, 255, 0.35);
+  --accent-blue: #2563eb;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-amber: #f59e0b;
+
+  /* TIPOGRAFIA */
+  --font-page-title: 32px;
+  --font-section-label: 11px;
+  --font-body: 13px;
+
+  /* ESPAÇAMENTO */
+  --page-padding: 32px;
+  --card-padding: 24px;
+  --gap-cards: 16px;
+  --gap-sections: 28px;
   
-  /* Hierarquia Tipográfica Global (Regra 2) */
-  --font-size-h1: 32px;
-  --font-size-label: 11px;
-  --font-size-data: 14px;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
 }
 
-/* Base Layout Refresh */
+/* RESET E BASE */
 body {
-  background-color: var(--aether-bg);
-  color: var(--aether-text-primary);
-  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  margin: 0;
 }
 
-/* Espaçamento e Respiração (Regra 3) */
-.content-container {
+/* CONTAINER CENTRALIZADO */
+.page-container {
+  padding: var(--page-padding);
   max-width: 1600px;
   margin: 0 auto;
-  padding: 24px 32px; /* Regra 3: 32px horizontal, 24px vertical */
-  gap: 28px; /* Gap entre seções */
-}
-
-/* 1. CARDS DE MÉTRICAS (KPI Cards) - Regra 1 */
-.crm-metric-card {
-  background: #0f121a; /* ~5-8% mais claro que o bg principal */
-  border: 1px solid var(--aether-border);
-  border-radius: 12px;
-  padding: 24px; /* Mínimo 24px todos os lados */
-  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
+  gap: var(--gap-sections);
 }
 
-.crm-metric-card .label-upper {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.65); /* Opacidade 60-70% */
-  font-weight: 500;
+/* COMPONENTE 1 - HEADER DE PÁGINA */
+.page-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
   margin-bottom: 8px;
 }
 
-.crm-metric-card .value-main {
-  font-size: 32px; /* 28-36px */
-  font-weight: 800;
-  color: #fff;
-  line-height: 1;
-}
-
-.crm-metric-card .sub-context {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.5); /* Opacidade 50% */
-  margin-top: 4px;
-}
-
-.crm-metric-icon-box {
-  width: 44px; /* 40-48px */
-  height: 44px;
-  border-radius: 10px; /* border-radius 10-12px */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.05); /* Sutil opacidade */
-}
-
-/* 4. BADGES E STATUS TAGS - Regra 4 */
-.status-badge {
+.breadcrumb-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
-  border-radius: 9999px; /* Pill style */
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.status-badge .dot {
-  width: 6px;
-  height: 6px; /* Regra 4: dot 6px */
-  border-radius: 50%;
-}
-
-/* Hierarquia Global de Títulos - Regra 2 & 8 */
-.page-header-context {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 99px;
   font-size: 10px;
-  text-transform: uppercase;
+  font-weight: 600;
   letter-spacing: 0.15em;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
 }
 
 .page-title-h1 {
-  font-size: var(--font-size-h1);
+  font-size: var(--font-page-title);
   font-weight: 800;
-  color: #fff;
+  color: var(--text-primary);
+  margin: 0;
   letter-spacing: -0.02em;
 }
 
-.page-subtitle-desc {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 4px;
-}
-
-/* 6. TABELAS / LISTAS - Regra 6 */
-.crm-table-header th {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.5);
-  padding: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-weight: 500;
-}
-
-.crm-table-row {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  transition: background 0.2s ease;
-}
-
-.crm-table-row:hover {
-  background: rgba(255, 255, 255, 0.03); /* Regra 6: 3% opacity */
-}
-
-.crm-table-row td {
-  padding: 15px 16px; /* vertical 14-16px */
-}
-
-/* Avatares Modernos - Regra 6 */
-.crm-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px; /* border-radius 8px */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-}
-
-/* 8. BOTÃO CTA PRINCIPAL - Regra 8 */
-.btn-cta-primary {
-  background: var(--aether-blue);
-  color: #fff;
-  padding: 12px 20px;
-  border-radius: 8px;
+.page-subtitle {
   font-size: 13px;
-  font-weight: 700;
-  transition: all 0.2s ease;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.btn-cta-primary {
+  background-color: var(--accent-blue);
+  color: white;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 13px;
   border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .btn-cta-primary:hover {
@@ -170,33 +101,140 @@ body {
   transform: translateY(-1px);
 }
 
-/* 7. PIPELINE / KANBAN - Regra 7 */
-.kanban-column-header {
+/* COMPONENTE 2 - KPI CARDS */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap-cards);
+}
+
+@media (max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.kpi-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--card-padding);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+}
+
+.kpi-icon-container {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 20px;
 }
 
-.kanban-column-title {
+.kpi-label-row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.kpi-label {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   text-transform: uppercase;
-  color: #fff;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
 }
 
-.kanban-column-value {
+.kpi-trend {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.kpi-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.kpi-subtext {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 8px;
 }
 
-.kanban-opportunity-card {
-  padding: 16px;
-  border-radius: 12px;
-  background: #0f121a;
-  border: 1px solid rgba(255, 255, 255, 0.08); /* 8% opacity */
-  margin-bottom: 12px;
+/* TABELAS ENTERPRISE */
+.enterprise-table-wrapper {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.table-header-label {
+  padding: 16px 24px;
+  font-size: var(--font-section-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.enterprise-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.enterprise-table th {
+  text-align: left;
+  padding: 12px 24px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.enterprise-table td {
+  padding: 16px 24px;
+  font-size: 13px;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.enterprise-table tr:hover {
+  background: var(--bg-surface-2);
+}
+
+/* EMPTY STATES */
+.empty-state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 40px;
+  text-align: center;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  opacity: 0.25;
+  margin-bottom: 16px;
+}
+
+.empty-state-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.empty-state-sub {
+  font-size: 12px;
+  color: var(--text-muted);
 }
