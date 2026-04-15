@@ -284,12 +284,5 @@ export default function PipelinePage() {
         onOpenChange={setIsDetailOpen}
       />
     </div>
-
-      <DealDetailSheet 
-        deal={selectedDeal}
-        open={isDetailOpen}
-        onOpenChange={setIsDetailOpen}
-      />
-    </div>
   )
 }
