@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { DollarSign, User, Calendar, Tag, Minus } from "lucide-react"
+import { Calendar, Tag } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface Deal {
@@ -44,12 +44,12 @@ export function DealCard({ deal, onClick }: DealCardProps) {
   }
 
   const priorityStyles = {
-    ALTA: { color: "#ef4444", bg: "rgba(239, 68, 68, 0.08)", label: "CRÍTICO" },
-    MEDIA: { color: "#f59e0b", bg: "rgba(245, 158, 11, 0.08)", label: "PENDENTE" },
-    BAIXA: { color: "#3b82f6", bg: "rgba(59, 130, 246, 0.08)", label: "NOVO DEAL" },
+    ALTA: { color: "#ef4444", bg: "rgba(239, 68, 68, 0.1)", label: "Crítico" },
+    MEDIA: { color: "#f59e0b", bg: "rgba(245, 158, 11, 0.1)", label: "Média" },
+    BAIXA: { color: "#3b82f6", bg: "rgba(59, 130, 246, 0.1)", label: "Baixa" },
   }
   
-  const priority = priorityStyles[deal.prioridade]
+  const p = priorityStyles[deal.prioridade]
 
   return (
     <div 
@@ -59,73 +59,61 @@ export function DealCard({ deal, onClick }: DealCardProps) {
       {...listeners}
       onClick={onClick}
       className={cn(
-        "bg-[#161b2a] border border-white/[0.05] rounded-xl p-5 cursor-grab active:cursor-grabbing transition-all duration-300 hover:bg-[#1c223c] hover:border-white/10 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] group overflow-hidden relative",
-        isDragging && "z-50 ring-2 ring-indigo-500/50 shadow-2xl"
+        "bg-[#111522] border-[1.5px] border-white/[0.04] rounded-[18px] p-6 cursor-grab active:cursor-grabbing transition-all duration-300 hover:bg-[#161b2a] hover:border-blue-500/20 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)] group",
+        isDragging && "z-50 ring-2 ring-blue-500/50 shadow-2xl"
       )}
     >
-      {/* GLOW DECORATOR */}
-      <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 blur-[40px] pointer-events-none group-hover:bg-indigo-500/10 transition-all"></div>
+      {/* HEADER: Title & Status Badge */}
+      <div className="flex items-start justify-between mb-4">
+        <h3 className="text-[17px] font-bold text-blue-500 tracking-tight leading-tight">
+          {deal.titulo}
+        </h3>
+        <span className="text-[10px] font-bold px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-400/80 border border-blue-500/10 uppercase tracking-widest">
+           Novo
+        </span>
+      </div>
 
-      {/* TOP: Priority Badge */}
-      <div className="flex items-center justify-between mb-5">
+      {/* PRIORITY PILL */}
+      <div className="flex mb-5">
         <div 
-           className="flex items-center gap-2 px-2.5 py-1 rounded-full border border-white/[0.03] backdrop-blur-md" 
-           style={{ backgroundColor: priority.bg }}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.05]" 
+          style={{ backgroundColor: p.bg, borderColor: `${p.color}20` }}
         >
-          <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: priority.color }}></div>
-          <span 
-            className="text-[9px] font-black uppercase tracking-[0.2em]" 
-            style={{ color: priority.color }}
-          >
-            {priority.label}
-          </span>
-        </div>
-        <div className="p-1.5 rounded-lg bg-white/[0.02] border border-white/[0.03] group-hover:border-white/10 transition-all">
-           <Tag size={10} className="text-white/20 group-hover:text-white/40" />
+          <div className="w-1.5 h-1.5 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.2)]" style={{ backgroundColor: p.color }}></div>
+          <span className="text-[11px] font-bold" style={{ color: p.color }}>{p.label}</span>
         </div>
       </div>
 
-      {/* TITLE - Refined typography */}
-      <h3 className="text-[15px] font-bold text-white/90 mb-5 leading-[1.4] tracking-tight group-hover:text-white transition-colors min-h-[42px] line-clamp-2">
-        {deal.titulo}
-      </h3>
-
-      {/* METADATA GRID - More technical/clean look */}
-      <div className="space-y-3 mb-6">
-        <div className="flex items-center gap-2.5 text-white/30 group-hover:text-white/50 transition-colors">
-          <div className="w-5 h-5 rounded-md bg-white/[0.02] flex items-center justify-center">
-            <User size={10} />
-          </div>
-          <span className="text-[11px] font-semibold tracking-wide truncate">
-            {deal.contact ? `${deal.contact.nome} ${deal.contact.sobrenome || ''}` : 'Lead s/ Atribuição'}
-          </span>
-        </div>
-        <div className="flex items-center gap-2.5 text-white/30 group-hover:text-white/50 transition-colors">
-          <div className="w-5 h-5 rounded-md bg-white/[0.02] flex items-center justify-center">
-            <Calendar size={10} />
-          </div>
-          <span className="text-[11px] font-medium font-mono text-white/25 group-hover:text-white/40">
-            {deal.dataPrevista ? new Date(deal.dataPrevista).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).toUpperCase() : 'PREVISÃO: TBD'}
-          </span>
-        </div>
+      {/* VALUE: Bold Blue Section */}
+      <div className="flex items-center gap-2 mb-6">
+        <span className="text-[14px] font-bold text-blue-500/40">$</span>
+        <span className="text-[18px] font-black text-blue-500 tracking-tightest">
+          R$ {(deal.valorEstimado || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+        </span>
       </div>
 
-      {/* FOOTER: Standardized value section */}
-      <div className="flex items-center justify-between pt-5 border-t border-white/[0.04] relative">
-        <div className="flex -space-x-1">
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-white/5 flex items-center justify-center text-[10px] font-black text-white/40 shadow-inner group-hover:border-indigo-500/30 transition-all">
-             {deal.contact ? (deal.contact.nome[0] + (deal.contact.sobrenome?.[0] || '')).toUpperCase() : 'SR'}
-          </div>
-        </div>
-        
-        <div className="flex flex-col items-end">
-           <span className="text-[9px] font-black text-white/10 uppercase tracking-[0.2em] mb-1 group-hover:text-indigo-500/40 transition-colors">Estimation</span>
-           <div className="flex items-baseline gap-1">
-             <span className="text-[10px] font-bold text-white/20">R$</span>
-             <span className="text-[16px] font-black text-white font-mono tracking-tighter group-hover:text-indigo-400 transition-colors">
-                {(deal.valorEstimado || 0).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+      {/* DIVIDER */}
+      <div className="h-[1px] bg-white/[0.05] mb-5"></div>
+
+      {/* FOOTER: Avatar, Name & Date */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full border-2 border-emerald-500/20 bg-emerald-500/5 flex items-center justify-center">
+             <span className="text-[10px] font-black text-emerald-500/60 uppercase">
+                {deal.contact ? deal.contact.nome[0] : 'S'}
+                {deal.contact?.sobrenome ? deal.contact.sobrenome[0] : 'E'}
              </span>
-           </div>
+          </div>
+          <span className="text-[13px] font-medium text-white/30 truncate max-w-[80px]">
+            {deal.contact ? deal.contact.nome : 'Sem'}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 text-white/10 group-hover:text-white/20 transition-colors">
+          <Calendar size={14} className="opacity-50" />
+          <span className="text-[12px] font-medium">
+            {deal.dataPrevista ? new Date(deal.dataPrevista).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) : '21 de abr'}
+          </span>
         </div>
       </div>
     </div>
