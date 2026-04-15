@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useToast } from "@/hooks/use-toast"
 import { 
   DollarSign, 
   LayoutGrid, 
@@ -12,6 +13,14 @@ import {
 } from "lucide-react"
 import { formatCurrency, cn } from "@/lib/utils"
 import { KanbanBoard, type Stage } from "@/components/pipeline/KanbanBoard"
+import { DealDetailSheet } from "@/components/pipeline/DealDetailSheet"
+import { type Deal } from "@/components/pipeline/DealCard"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 // ─── STAGE CONFIG ──────────────────────────────────────────────
 const STAGES_CONFIG = [
@@ -49,31 +58,113 @@ function KPICard({ label, value, icon: Icon, type = "default" }: any) {
 }
 
 export default function PipelinePage() {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
   const [activeBoard, setActiveBoard] = useState("Pipeline Principal")
+  const [pipelineId, setPipelineId] = useState<string | null>(null)
   
-  const { data: dealsData, isLoading } = useQuery<any[]>({
-    queryKey: ["deals"],
+  // Modals state
+  const [isAddStageOpen, setIsAddStageOpen] = useState(false)
+  const [isAddDealOpen, setIsAddDealOpen] = useState(false)
+  const [selectedStageId, setSelectedStageId] = useState<string | null>(null)
+  
+  // Detail Sheet state
+  const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+
+  const { data: boardData, isLoading } = useQuery({
+    queryKey: ["pipeline-stages", activeBoard],
     queryFn: async () => {
-      const res = await fetch("/api/deals")
+      const res = await fetch("/api/pipeline/stages")
       if (!res.ok) throw new Error("Falha")
       return res.json()
     },
   })
 
-  const deals = Array.isArray(dealsData) ? dealsData : []
-  
-  const boardStages: Stage[] = STAGES_CONFIG.map(config => ({
-    ...config,
-    deals: deals.filter(d => (d.stage === config.id) || (config.id === "PROSPECT" && !d.stage)).map(d => ({
+  const stages = boardData?.stages || []
+  const currentPipelineId = boardData?.pipelineId
+
+  // Mutations
+  const moveDealMutation = useMutation({
+    mutationFn: async ({ dealId, stageId }: { dealId: string, stageId: string }) => {
+      const res = await fetch(`/api/deals/${dealId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stageId }),
+      })
+      if (!res.ok) throw new Error("Falha ao mover")
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
+    }
+  })
+
+  const addStageMutation = useMutation({
+    mutationFn: async (name: string) => {
+      const res = await fetch("/api/pipeline/stages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, pipelineId: currentPipelineId }),
+      })
+      if (!res.ok) throw new Error("Falha ao criar coluna")
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
+      toast({ title: "Coluna criada!", description: "A nova etapa foi adicionada ao board." })
+    }
+  })
+
+  const addDealMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await fetch("/api/deals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, pipelineId: currentPipelineId }),
+      })
+      if (!res.ok) throw new Error("Falha ao criar card")
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
+      toast({ title: "Card adicionado!", description: "O novo deal já está no pipeline." })
+    }
+  })
+
+  const boardStages: Stage[] = stages.map((s: any) => ({
+    id: s.id,
+    name: s.name,
+    color: s.color || "#3B82F6",
+    deals: (s.deals || []).map((d: any) => ({
       ...d,
-      valorEstimado: Number(d.valor) || 0,
-      prioridade: (d.priority?.toUpperCase() || "MEDIA") as any,
+      valorEstimado: Number(d.valorEstimado) || 0,
+      prioridade: (d.prioridade?.toUpperCase() || "MEDIA") as any,
       status: (d.status?.toUpperCase() || "OPEN") as any,
     }))
   }))
 
-  const totalValue = deals.reduce((acc, d) => acc + (Number(d.valor) || 0), 0)
-  const expiredCount = deals.filter(d => (d.priority === "Alta" && d.status === "OPEN")).length
+  const allDeals = stages.flatMap((s: any) => s.deals || [])
+  const totalValue = allDeals.reduce((acc: number, d: any) => acc + (Number(d.valorEstimado) || 0), 0)
+  const expiredCount = allDeals.filter((d: any) => (d.prioridade === "ALTA" && d.status === "OPEN")).length
+
+  const handleAddStage = () => {
+    const name = window.prompt("Nome da nova coluna:")
+    if (name) addStageMutation.mutate(name)
+  }
+
+  const handleAddDeal = (stageId: string) => {
+    setSelectedStageId(stageId)
+    const titulo = window.prompt("Título do Card:")
+    const valor = window.prompt("Valor Estimado:")
+    if (titulo) {
+      addDealMutation.mutate({ 
+        titulo, 
+        valorEstimado: valor ? parseFloat(valor) : 0,
+        stageId 
+      })
+    }
+  }
 
   return (
     <div className="pipeline-layout page-container">
@@ -90,22 +181,40 @@ export default function PipelinePage() {
            </div>
         </div>
 
-        <div className="flex items-center gap-3 pt-2">
-           {/* Pipeline Switcher */}
-           <button className="flex items-center gap-3 px-4 py-2.5 bg-[var(--bg-surface)] border border-white/[0.08] rounded-[10px] text-[12px] font-semibold text-[#8B949E] hover:text-white transition-all">
-              <div className="w-2 h-2 rounded-full bg-blue-500" />
-              {activeBoard}
-              <ChevronDown size={14} className="opacity-40" />
-           </button>
+         <div className="flex items-center gap-3 pt-2">
+            {/* Pipeline Switcher */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-3 px-4 py-2.5 bg-[var(--bg-surface)] border border-white/[0.08] rounded-[10px] text-[12px] font-semibold text-[#8B949E] hover:text-white transition-all outline-none">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  {activeBoard}
+                  <ChevronDown size={14} className="opacity-40" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-[#0a0c10] border-white/10 text-white min-w-[200px]">
+                <DropdownMenuItem onClick={() => setActiveBoard("Pipeline Principal")} className="hover:bg-white/5 cursor-pointer">
+                  Pipeline Principal
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => toast({ title: "Módulo em Breve", description: "Boards adicionais serão liberados em breve." })} className="hover:bg-white/5 cursor-pointer opacity-50">
+                  Pipeline de Pós-Venda
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-           {/* ACTIONS */}
-           <button className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[12px] uppercase tracking-wide rounded-[10px] transition-all active:scale-95 shadow-[0_4px_12px_rgba(37,99,235,0.2)]">
-              <Plus size={16} strokeWidth={3} /> Nova Coluna
-           </button>
+            {/* ACTIONS */}
+            <button 
+              onClick={handleAddStage}
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[12px] uppercase tracking-wide rounded-[10px] transition-all active:scale-95 shadow-[0_4px_12px_rgba(37,99,235,0.2)]"
+            >
+               <Plus size={16} strokeWidth={3} /> Nova Coluna
+            </button>
 
-           <button className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-white/[0.15] hover:border-white/[0.3] text-[#8B949E] hover:text-white font-bold text-[12px] uppercase tracking-wide rounded-[10px] transition-all active:scale-95">
-              <Plus size={16} /> Novo Board
-           </button>
+            <button 
+              onClick={() => toast({ title: "Módulo em Breve", description: "A criação de múltiplos boards será liberada na próxima versão." })}
+              className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-white/[0.15] hover:border-white/[0.3] text-[#8B949E] hover:text-white font-bold text-[12px] uppercase tracking-wide rounded-[10px] transition-all active:scale-95"
+            >
+               <Plus size={16} /> Novo Board
+            </button>
         </div>
       </header>
 
@@ -123,9 +232,25 @@ export default function PipelinePage() {
              {[1,2,3,4].map(i => <div key={i} className="min-w-[280px] h-[600px] rounded-[12px] bg-[var(--bg-surface)] animate-pulse" />)}
           </div>
         ) : (
-          <KanbanBoard stages={boardStages} />
+          <KanbanBoard 
+            key={stages.map((s: any) => s.id + s.deals?.length).join('-')}
+            stages={boardStages} 
+            onDealMove={(dealId, _, stageId) => moveDealMutation.mutate({ dealId, stageId })}
+            onAddDeal={handleAddDeal}
+            onAddStage={handleAddStage}
+            onDealClick={(deal) => {
+               setSelectedDeal(deal)
+               setIsDetailOpen(true)
+            }}
+          />
         )}
       </div>
+
+      <DealDetailSheet 
+        deal={selectedDeal}
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+      />
     </div>
   )
 }

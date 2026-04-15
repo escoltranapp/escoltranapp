@@ -32,6 +32,7 @@ interface KanbanBoardProps {
   onDealMove?: (dealId: string, fromStageId: string, toStageId: string) => void
   onAddDeal?: (stageId: string) => void
   onAddStage?: () => void
+  onDealClick?: (deal: Deal) => void
 }
 
 function KanbanColumn({ stage, children, onAddDeal }: { stage: Stage, children: React.ReactNode, onAddDeal?: (id: string) => void }) {
@@ -81,7 +82,7 @@ function KanbanColumn({ stage, children, onAddDeal }: { stage: Stage, children: 
   )
 }
 
-export function KanbanBoard({ stages: initialStages, onDealMove, onAddDeal, onAddStage }: KanbanBoardProps) {
+export function KanbanBoard({ stages: initialStages, onDealMove, onAddDeal, onAddStage, onDealClick }: KanbanBoardProps) {
   const [stages, setStages] = useState(initialStages)
   const [activeId, setActiveId] = useState<string | null>(null)
 
@@ -123,7 +124,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onAddDeal, onAd
           {stages.map((stage) => (
             <KanbanColumn key={stage.id} stage={stage} onAddDeal={onAddDeal}>
               {stage.deals.map((deal) => (
-                <DealCard key={deal.id} deal={deal} />
+                <DealCard key={deal.id} deal={deal} onClick={() => onDealClick?.(deal)} />
               ))}
             </KanbanColumn>
           ))}
