@@ -273,7 +273,7 @@ export default function PipelinePage() {
 
   /* ─── Render ──────────────────────────────────── */
   return (
-    <div className="flex flex-col h-full -m-4 md:-m-6 bg-[#080a12]">
+    <div className="flex flex-col -my-12 overflow-hidden bg-[#080a12]" style={{ height: 'calc(100vh - 64px)' }}>
 
       {/* ═══════════ HEADER ═══════════════════════ */}
       <div
