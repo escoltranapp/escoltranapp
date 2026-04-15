@@ -3,8 +3,6 @@
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
 
 export interface Deal {
   id: string
@@ -26,37 +24,33 @@ export interface Deal {
 interface DealCardProps {
   deal: Deal
   onClick?: () => void
+  stageColor?: string
 }
 
-const badgeStyle: Record<string, string> = {
-  ALTA:  "bg-[#1f1010] text-[#ef4444] border border-[#3e1a1a]",
-  MEDIA: "bg-[#1c1a10] text-[#d97706] border border-[#3a2e10]",
-  BAIXA: "bg-[#1a1a2e] text-[#818cf8] border border-[#2d2d4e]",
+const priority = {
+  ALTA:  { label: "Alta",  dot: "#f87171", bg: "rgba(248,113,113,0.12)", text: "#f87171" },
+  MEDIA: { label: "Média", dot: "#fbbf24", bg: "rgba(251,191,36,0.12)",  text: "#fbbf24" },
+  BAIXA: { label: "Baixa", dot: "#818cf8", bg: "rgba(129,140,248,0.12)", text: "#818cf8" },
 }
 
-const badgeLabel: Record<string, string> = {
-  ALTA: "Alta", MEDIA: "Média", BAIXA: "Baixa",
-}
-
-export function DealCard({ deal, onClick }: DealCardProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: deal.id })
+export function DealCard({ deal, onClick, stageColor = "#6366f1" }: DealCardProps) {
+  const {
+    attributes, listeners, setNodeRef, transform, transition, isDragging,
+  } = useSortable({ id: deal.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.4 : 1,
-    zIndex: isDragging ? 50 : 1,
+    opacity: isDragging ? 0 : 1,
   }
 
+  const p = priority[deal.prioridade] ?? priority.MEDIA
   const contactName = deal.contact
     ? `${deal.contact.nome}${deal.contact.sobrenome ? " " + deal.contact.sobrenome : ""}`
-    : "Sem responsável"
-
-  const valor = (deal.valorEstimado || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
-
-  const dateStr = deal.dataPrevista
-    ? format(new Date(deal.dataPrevista), "dd/MM", { locale: ptBR })
-    : "S/D"
+    : null
+  const valor = deal.valorEstimado
+    ? deal.valorEstimado.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+    : null
 
   return (
     <div
@@ -66,48 +60,52 @@ export function DealCard({ deal, onClick }: DealCardProps) {
       {...listeners}
       onClick={onClick}
       className={cn(
-        "bg-[#18181f] border border-[#1e1e24] rounded-[10px] p-[14px] cursor-pointer transition-all select-none",
-        "hover:bg-[#1e1e28] hover:border-[#2e2e3e]",
-        isDragging && "opacity-50 ring-2 ring-[#4f46e5]/40"
+        "group relative bg-[#12141f] border border-white/[0.07] rounded-xl p-4 cursor-pointer select-none",
+        "hover:border-white/[0.14] hover:bg-[#161928] transition-all duration-150",
+        "shadow-sm hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)]",
+        isDragging && "opacity-0"
       )}
     >
-      {/* Top: name + badge */}
-      <div className="flex items-start justify-between mb-[10px] gap-1.5">
-        <span className="text-[13px] font-medium text-[#e8e8f0] leading-snug line-clamp-2 flex-1">
-          {deal.titulo}
-        </span>
-        <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 mt-0.5 leading-tight", badgeStyle[deal.prioridade])}>
-          {badgeLabel[deal.prioridade]}
-        </span>
-      </div>
+      {/* Colored left accent */}
+      <div
+        className="absolute left-0 top-3 bottom-3 w-[3px] rounded-r-full"
+        style={{ backgroundColor: stageColor, opacity: 0.7 }}
+      />
 
-      {/* Meta rows */}
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-center gap-1.5">
-          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" className="shrink-0">
-            <circle cx="8" cy="6" r="2.5" stroke="#555" strokeWidth="1.2"/>
-            <path d="M3 13c0-2.8 2.2-4 5-4s5 1.2 5 4" stroke="#555" strokeWidth="1.2" strokeLinecap="round"/>
-          </svg>
-          <span className="text-[11px] text-[#555] truncate">{contactName}</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" className="shrink-0">
-            <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="#555" strokeWidth="1.2"/>
-            <path d="M5 7h6M5 10h4" stroke="#555" strokeWidth="1.2" strokeLinecap="round"/>
-          </svg>
-          <span className="text-[11px] text-[#888]">{valor}</span>
-        </div>
-      </div>
+      {/* Title */}
+      <p className="text-[13.5px] font-medium text-white/90 leading-snug mb-3 pr-1 line-clamp-2">
+        {deal.titulo}
+      </p>
 
-      {/* Divider */}
-      <div className="h-px bg-[#1e1e24] my-[10px]" />
+      {/* Meta */}
+      <div className="flex items-center gap-3 mb-3">
+        {contactName && (
+          <div className="flex items-center gap-1.5 min-w-0 flex-1">
+            <div className="w-[18px] h-[18px] rounded-full bg-white/[0.06] flex items-center justify-center text-[9px] font-bold text-white/30 shrink-0 border border-white/[0.06]">
+              {contactName.charAt(0).toUpperCase()}
+            </div>
+            <span className="text-[11px] text-white/30 truncate">{contactName}</span>
+          </div>
+        )}
+        {valor && (
+          <span className="text-[11px] font-semibold text-emerald-400/80 shrink-0 ml-auto">
+            {valor}
+          </span>
+        )}
+      </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between">
-        <div className="w-[22px] h-[22px] rounded-full bg-[#2a2a3e] border border-[#333345] flex items-center justify-center text-[9px] font-semibold text-[#7c7caa]">
-          {contactName === "Sem responsável" ? "SR" : contactName.slice(0, 2).toUpperCase()}
+      <div className="flex items-center justify-between pt-2.5 border-t border-white/[0.05]">
+        <div
+          className="flex items-center gap-1.5 px-2 py-[3px] rounded-full text-[10px] font-semibold"
+          style={{ backgroundColor: p.bg, color: p.text }}
+        >
+          <div className="w-[5px] h-[5px] rounded-full" style={{ backgroundColor: p.dot }} />
+          {p.label}
         </div>
-        <span className="text-[10px] text-[#444]">{dateStr}</span>
+        <span className="text-[10px] text-white/[0.18]">
+          {new Date(deal.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+        </span>
       </div>
     </div>
   )
