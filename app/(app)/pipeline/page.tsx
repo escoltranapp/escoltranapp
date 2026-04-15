@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { KanbanBoard, type Stage } from "@/components/pipeline/KanbanBoard"
 import { Button } from "@/components/ui/button"
@@ -8,34 +8,27 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
-import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus, RefreshCw, Kanban, DollarSign, AlertTriangle, Search, User, Calendar as CalendarIcon, Check, ArrowUpRight, ArrowDownRight, Activity } from "lucide-react"
+import { Plus, Kanban, DollarSign, AlertTriangle, Search, User, Calendar as CalendarIcon, Check } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import { Badge } from "@/components/ui/badge"
-import { formatCurrency } from "@/lib/utils"
+import { formatCurrency, cn } from "@/lib/utils"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { cn } from "@/lib/utils"
 
+// ─── Metric Card Component ──────────────────────────────────────────
 function MetricCard({
   title,
   value,
-  growth,
   icon: Icon,
   format = "number",
-  delay = "0ms",
-  color = "accent"
+  delay = "0s",
 }: {
   title: string
   value: number
-  growth: number
   icon: React.ElementType
   format?: "number" | "currency" | "percent"
   delay?: string
-  color?: string
 }) {
-  const isPositive = growth >= 0
   const formatted =
     format === "currency"
       ? formatCurrency(value)
@@ -43,45 +36,20 @@ function MetricCard({
       ? `${value.toFixed(1)}%`
       : value.toLocaleString("pt-BR")
 
-  const colorClasses: Record<string, string> = {
-    accent: "text-accent bg-accent/10 border-accent/20",
-    success: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
-    warning: "text-amber-400 bg-amber-400/10 border-amber-400/20",
-    info: "text-blue-400 bg-blue-400/10 border-blue-400/20",
-  }
-
   return (
-    <Card 
-      className="bg-[#111114] border-white/5 rounded-[22px] p-6 group animate-entrance relative overflow-hidden"
-      style={{ animationDelay: delay }}
-    >
-      <div className="flex items-start justify-between relative z-10">
-        <div className="flex gap-4 items-center">
-          <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center border", colorClasses[color] || colorClasses.accent)}>
-            <Icon className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-0.5">{title}</p>
-            <h3 className="text-2xl font-black text-white tracking-tight">{formatted}</h3>
-          </div>
+    <div className="aether-card metric-card animate-aether" style={{ animationDelay: delay }}>
+      <div className="metric-top">
+        <div className="metric-label-group">
+          <span className="metric-label">{title}</span>
+          <span className="metric-value">{formatted}</span>
         </div>
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-5 pointer-events-none group-hover:opacity-20 transition-opacity">
-          <Icon className="h-16 w-16 text-white rotate-12" />
+        <div className="metric-icon-wrap">
+          <Icon size={20} strokeWidth={2.5} />
         </div>
       </div>
-      <div className="mt-4 flex items-center gap-2 relative z-10">
-        <span className={cn("text-[10px] font-bold text-white/20 uppercase tracking-widest italic")}>Status Operacional</span>
+      <div className="metric-footer">
+        <span className="text-white/20 italic tracking-widest text-[9px] uppercase">Monitorando Fluxo</span>
       </div>
-    </Card>
-  )
-}
-
-function SkeletonBoard() {
-  return (
-    <div className="flex gap-4 overflow-x-auto pb-4">
-      {[...Array(4)].map((_, i) => (
-        <div key={i} className="shrink-0 w-72 h-96 rounded-xl bg-card border border-border animate-pulse" />
-      ))}
     </div>
   )
 }
@@ -89,7 +57,6 @@ function SkeletonBoard() {
 export default function PipelinePage() {
   const queryClient = useQueryClient()
   
-  // States Modal Deal
   const [showNewDeal, setShowNewDeal] = useState(false)
   const [dealForm, setDealForm] = useState({
     titulo: "",
@@ -102,25 +69,21 @@ export default function PipelinePage() {
     descricao: "",
   })
 
-  // States Modal Stage
   const [showNewStage, setShowNewStage] = useState(false)
   const [stageForm, setStageForm] = useState({
     name: "",
-    color: "#F97316",
+    color: "#c9a227",
   })
 
-  // States Contact Search
   const [openContactSearch, setOpenContactSearch] = useState(false)
   const [contactSearch, setContactSearch] = useState("")
 
   const predefineColors = [
-    { name: "Laranja", value: "#F97316" },
-    { name: "Azul", value: "#3B82F6" },
+    { name: "Gold", value: "#c9a227" },
+    { name: "Deep Navy", value: "#1a2a44" },
     { name: "Verde", value: "#22C55E" },
     { name: "Vermelho", value: "#EF4444" },
     { name: "Roxo", value: "#8B5CF6" },
-    { name: "Amarelo", value: "#F59E0B" },
-    { name: "Cinza", value: "#6B7280" },
   ]
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -193,7 +156,7 @@ export default function PipelinePage() {
     onSuccess: () => {
       toast({ title: "Coluna criada com sucesso!" })
       setShowNewStage(false)
-      setStageForm({ name: "", color: "#F97316" })
+      setStageForm({ name: "", color: "#c9a227" })
       queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
     },
     onError: (err: Error) => {
@@ -246,91 +209,60 @@ export default function PipelinePage() {
   const selectedContact = contactsData?.contacts?.find((c: any) => c.id === dealForm.contactId)
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-12 pb-12 px-2 sm:px-6 lg:px-10 flex flex-col h-full overflow-hidden">
+    <div className="animate-aether space-y-10 pb-10">
+      
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 animate-entrance">
+      <header className="page-header flex-row items-end justify-between">
         <div className="space-y-4">
-          <Badge variant="outline" className="bg-accent/5 border-accent/20 text-accent text-[10px] font-bold py-1 px-3 rounded-full flex items-center w-fit gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-            PIPELINE COMERCIAL ATIVO
-          </Badge>
+          <div className="header-badge">
+            <span className="dot" />
+            Pipeline Comercial Ativo
+          </div>
           <div>
-            <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight flex items-baseline gap-3">
-              Pipeline <span className="text-accent/60 text-base font-medium tracking-normal">({totalDeals} cards)</span>
+            <h1 className="page-title">
+              Pipeline <span>Visão Kanban</span>
             </h1>
-            <p className="text-sm font-medium text-white/40 mt-3 flex items-center gap-2">
-              GESTÃO DE OPORTUNIDADES <span className="h-1 w-1 rounded-full bg-white/20" /> VISÃO KANBAN <span className="h-1 w-1 rounded-full bg-white/20" /> STATUS: <span className="text-accent/60">OPERACIONAL</span>
-            </p>
+            <div className="page-subtitle">
+              Gestão de Oportunidades <span className="sep" /> 
+              Filtro: <span className="status">{data?.pipelineName || "Todos"}</span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Select defaultValue="main">
-            <SelectTrigger className="w-48 h-12 bg-white/[0.03] border-white/5 rounded-2xl text-xs font-bold text-white/70">
-              <SelectValue placeholder="Pipeline" />
+        <div className="flex gap-4">
+           <Select defaultValue="main">
+            <SelectTrigger className="aether-btn-secondary w-40 h-10 border-white/5 lowercase text-white/50">
+              <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-surface-overlay border-border-strong">
-              <SelectItem value="main">{data?.pipelineName || "Pipeline Principal"}</SelectItem>
+              <SelectItem value="main">Pipeline Principal</SelectItem>
             </SelectContent>
           </Select>
-
-          <Button 
-            className="bg-accent hover:bg-accent/90 text-black h-12 px-6 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-accent/10 group transition-all"
-            onClick={() => {
-              setDealForm(p => ({ ...p, stageId: "" }))
-              setShowNewDeal(true)
-            }}
-          >
-            <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform" />
+          <button className="aether-btn-primary" onClick={() => setShowNewDeal(true)}>
+            <Plus size={18} strokeWidth={3} />
             Novo Deal
-          </Button>
+          </button>
         </div>
-      </div>
+      </header>
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <MetricCard
-          title="Total de Cards"
-          value={totalDeals}
-          growth={0}
-          icon={Kanban}
-          color="accent"
-          delay="100ms"
-        />
-        <MetricCard
-          title="Valor Total"
-          value={totalValue}
-          growth={0}
-          icon={DollarSign}
-          color="success"
-          format="currency"
-          delay="200ms"
-        />
-        <MetricCard
-          title="Overdue (+30d)"
-          value={overdueDeals}
-          growth={0}
-          icon={AlertTriangle}
-          color={overdueDeals > 0 ? "warning" : "info"}
-          delay="300ms"
-        />
+        <MetricCard title="Total de Cards" value={totalDeals} icon={Kanban} delay="0.1s" />
+        <MetricCard title="Valor Total" value={totalValue} icon={DollarSign} format="currency" delay="0.2s" />
+        <MetricCard title="Overdue (+30d)" value={overdueDeals} icon={AlertTriangle} delay="0.3s" />
       </div>
 
-      {/* Kanban */}
-      <div className="flex-1 min-h-0">
+      {/* Kanban Board Area */}
+      <div className="flex-1 min-h-[600px] overflow-hidden">
         {isLoading ? (
-          <SkeletonBoard />
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <AlertTriangle className="h-8 w-8 text-red-400" />
-            <p>Erro ao carregar pipeline. Verifique a conexão com o banco.</p>
-            <Button variant="outline" onClick={() => refetch()}>Tentar novamente</Button>
+          <div className="flex gap-4 h-full">
+            {[...Array(4)].map((_, i) => <div key={i} className="w-72 h-full bg-white/5 rounded-2xl animate-pulse" />)}
           </div>
-        ) : stages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground border-2 border-dashed border-border rounded-xl">
-            <Kanban className="h-8 w-8 opacity-30" />
-            <p className="font-medium">Nenhum estágio encontrado</p>
-            <Button variant="outline" size="sm" onClick={() => setShowNewStage(true)}>Criar primeira coluna</Button>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
+            <AlertTriangle className="text-red-500 mb-4" size={40} />
+            <p className="text-sm font-mono uppercase tracking-widest text-white/40">Erro na sincronização do Pipeline</p>
+            <Button variant="ghost" className="mt-4" onClick={() => refetch()}>Tentar reconectar</Button>
           </div>
         ) : (
           <KanbanBoard
@@ -346,263 +278,77 @@ export default function PipelinePage() {
 
       {/* Modal Novo Deal */}
       <Dialog open={showNewDeal} onOpenChange={setShowNewDeal}>
-        <DialogContent className="sm:max-w-[550px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full escoltran-gradient-bg flex items-center justify-center">
-                <Plus className="h-4 w-4 text-white" />
-              </div>
-              Novo Deal
-            </DialogTitle>
-            <DialogDescription>
-              Adicione uma nova oportunidade ao pipeline gerenciado.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-4 py-4">
-            <div className="col-span-2 space-y-1.5">
-              <Label htmlFor="titulo">Título do Deal *</Label>
-              <Input
-                id="titulo"
-                placeholder="Ex: Proposta para Empresa X"
-                autoFocus
-                value={dealForm.titulo}
-                onChange={(e) => setDealForm((p) => ({ ...p, titulo: e.target.value }))}
-                className={!dealForm.titulo.trim() && createDeal.isError ? "border-red-500" : ""}
-              />
-            </div>
-            
-            <div className="space-y-1.5">
-              <Label htmlFor="valor">Valor (R$)</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-2.5 text-muted-foreground text-sm font-medium">R$</span>
-                <Input
-                  id="valor"
-                  type="text"
-                  placeholder="0,00"
-                  className="pl-9"
-                  value={dealForm.valorEstimado}
-                  onChange={(e) => {
-                    let val = e.target.value.replace(/\D/g, "")
-                    if (val) {
-                      val = (parseInt(val) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-                    }
-                    setDealForm((p) => ({ ...p, valorEstimado: val }))
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Prioridade</Label>
-              <div className="flex gap-2">
-                {["ALTA", "MEDIA", "BAIXA"].map((p) => (
-                  <Button
-                    key={p}
-                    type="button"
-                    variant={dealForm.prioridade === p ? "default" : "outline"}
-                    size="sm"
-                    className="flex-1 h-9 bg-opacity-10 text-[10px] uppercase font-bold"
-                    onClick={() => setDealForm(prev => ({ ...prev, prioridade: p as any }))}
-                  >
-                    {p === "ALTA" && <span className="w-2 h-2 rounded-full bg-red-500 mr-1.5" />}
-                    {p === "MEDIA" && <span className="w-2 h-2 rounded-full bg-amber-500 mr-1.5" />}
-                    {p === "BAIXA" && <span className="w-2 h-2 rounded-full bg-green-500 mr-1.5" />}
-                    {p.replace("MEDIA", "MÉDIA")}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Estágio *</Label>
-              <Select
-                value={dealForm.stageId}
-                onValueChange={(v) => setDealForm((p) => ({ ...p, stageId: v }))}
-              >
-                <SelectTrigger className="h-9">
-                  <SelectValue placeholder="Selecione o estágio" />
-                </SelectTrigger>
-                <SelectContent>
-                  {stages.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
-                        {s.name}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Data Prevista</Label>
-              <div className="relative">
-                <Input
-                  type="date"
-                  className="pl-9 h-9"
-                  value={dealForm.dataPrevista}
-                  onChange={(e) => setDealForm(p => ({ ...p, dataPrevista: e.target.value }))}
-                />
-                <CalendarIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              </div>
-            </div>
-
-            <div className="col-span-2 space-y-1.5">
-              <Label>Contato Vinculado</Label>
-              <Popover open={openContactSearch} onOpenChange={setOpenContactSearch}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-full justify-between h-9 text-muted-foreground font-normal"
-                  >
-                    {selectedContact ? (
-                      <div className="flex items-center gap-2 text-foreground">
-                        <User className="h-4 w-4" />
-                        {selectedContact.nome} {selectedContact.sobrenome}
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Search className="h-4 w-4" />
-                        Buscar contato...
-                      </div>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[500px] p-0" align="start">
-                  <Command>
-                    <CommandInput 
-                      placeholder="Busque por nome, email ou empresa..." 
-                      onValueChange={setContactSearch}
-                    />
-                    <CommandList>
-                      <CommandEmpty>Nenhum contato encontrado.</CommandEmpty>
-                      <CommandGroup>
-                        {contactsData?.contacts?.map((contact: any) => (
-                          <CommandItem
-                            key={contact.id}
-                            value={contact.id}
-                            onSelect={() => {
-                              setDealForm(p => ({ ...p, contactId: contact.id }))
-                              setOpenContactSearch(false)
-                            }}
-                            className="flex items-center justify-between"
-                          >
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
-                                {contact.nome[0].toUpperCase()}
-                              </div>
-                              <div className="flex flex-col">
-                                <span className="font-medium">{contact.nome} {contact.sobrenome}</span>
-                                <span className="text-[10px] text-muted-foreground">{contact.email || contact.empresa || "Sem info"}</span>
-                              </div>
-                            </div>
-                            {dealForm.contactId === contact.id && (
-                              <Check className="h-4 w-4 text-primary" />
-                            )}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="col-span-2 space-y-1.5">
-              <Label htmlFor="descricao">Descrição</Label>
-              <Textarea
-                id="descricao"
-                placeholder="Observações adicionais sobre este negócio..."
-                className="resize-none h-20"
-                value={dealForm.descricao}
-                onChange={(e) => setDealForm((p) => ({ ...p, descricao: e.target.value }))}
-              />
-            </div>
+        <DialogContent className="sm:max-w-[550px] bg-surface-overlay border-border-strong p-0 overflow-hidden">
+          <div className="p-6 border-b border-white/5 bg-white/[0.02]">
+            <DialogTitle className="text-lg font-black uppercase tracking-tight">Inserir Nova Oportunidade</DialogTitle>
+            <DialogDescription className="text-xs font-medium text-white/30 uppercase mt-1 tracking-widest">Protocolo de Registro de Venda</DialogDescription>
           </div>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="ghost" onClick={() => setShowNewDeal(false)}>
-              Cancelar
-            </Button>
-            <Button
-              className="escoltran-gradient-bg text-white px-8"
-              onClick={() => createDeal.mutate()}
-              disabled={createDeal.isPending || !dealForm.titulo.trim() || !dealForm.stageId}
-            >
-              {createDeal.isPending ? "Criando..." : "+ Criar Deal"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal Nova Coluna */}
-      <Dialog open={showNewStage} onOpenChange={setShowNewStage}>
-        <DialogContent className="sm:max-w-[420px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <Kanban className="h-4 w-4 text-primary" />
+          <div className="p-8 space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div className="col-span-2">
+                <label className="aether-label">Título da Oportunidade</label>
+                <Input className="aether-input" placeholder="Ex: Contrato de Manutenção..." value={dealForm.titulo} onChange={(e) => setDealForm(p => ({ ...p, titulo: e.target.value }))} />
               </div>
-              Nova Coluna
-            </DialogTitle>
-            <DialogDescription>
-              Adicione um novo estágio para o seu fluxo de vendas.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="stage-name">Nome da Coluna *</Label>
-              <Input
-                id="stage-name"
-                placeholder="Ex: Follow Up, Reunião Agendada..."
-                autoFocus
-                value={stageForm.name}
-                onChange={(e) => setStageForm(p => ({ ...p, name: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Cor de Destaque</Label>
-              <div className="flex flex-wrap gap-2">
-                {predefineColors.map((color) => (
-                  <button
-                    key={color.value}
-                    type="button"
-                    className={cn(
-                      "w-8 h-8 rounded-full border-2 transition-all",
-                      stageForm.color === color.value ? "border-white scale-110 shadow-lg" : "border-transparent opacity-60 hover:opacity-100"
-                    )}
-                    style={{ backgroundColor: color.value }}
-                    onClick={() => setStageForm(p => ({ ...p, color: color.value }))}
-                    title={color.name}
-                  />
-                ))}
-                <div className="relative w-8 h-8 rounded-full border-2 border-transparent overflow-hidden group">
-                  <Input 
-                    type="color" 
-                    className="absolute -inset-2 w-12 h-12 cursor-pointer p-0 border-none bg-transparent"
-                    value={stageForm.color}
-                    onChange={(e) => setStageForm(p => ({ ...p, color: e.target.value }))}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-white opacity-0 group-hover:opacity-100 mix-blend-difference">
-                    <Plus className="h-4 w-4" />
-                  </div>
+              <div>
+                <label className="aether-label">Valor Estimado</label>
+                <div className="relative">
+                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold font-bold text-xs">R$</div>
+                   <Input 
+                    className="aether-input pl-10" 
+                    placeholder="0,00" 
+                    value={dealForm.valorEstimado} 
+                    onChange={(e) => {
+                      let val = e.target.value.replace(/\D/g, "")
+                      if (val) val = (parseInt(val) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+                      setDealForm(p => ({ ...p, valorEstimado: val }))
+                    }} 
+                   />
                 </div>
               </div>
+              <div>
+                <label className="aether-label">Estágio Inicial</label>
+                <Select value={dealForm.stageId} onValueChange={(v) => setDealForm(p => ({ ...p, stageId: v }))}>
+                  <SelectTrigger className="aether-input"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                  <SelectContent className="bg-surface-overlay border-border-strong">
+                    {stages.map(s => <SelectItem key={s.id} value={s.id} className="text-xs font-bold uppercase">{s.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="col-span-2">
+                <label className="aether-label">Contato Vinculado</label>
+                <Popover open={openContactSearch} onOpenChange={setOpenContactSearch}>
+                  <PopoverTrigger asChild>
+                    <button className="aether-input w-full text-left flex items-center justify-between text-white/50">
+                      {selectedContact ? `${selectedContact.nome} ${selectedContact.sobrenome || ""}` : "Buscar na base..."}
+                      <Search size={14} />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[480px] p-0 bg-surface-overlay border-border-strong">
+                    <Command>
+                      <CommandInput placeholder="Filtrar base..." onValueChange={setContactSearch} />
+                      <CommandList>
+                        <CommandEmpty>Nenhum resultado.</CommandEmpty>
+                        <CommandGroup>
+                          {contactsData?.contacts?.map((contact: any) => (
+                            <CommandItem key={contact.id} onSelect={() => { setDealForm(p => ({ ...p, contactId: contact.id })); setOpenContactSearch(false) }}>
+                              <div className="flex flex-col">
+                                <span className="font-bold text-xs">{contact.nome} {contact.sobrenome}</span>
+                                <span className="text-[10px] text-white/30">{contact.email || contact.empresa}</span>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
           </div>
-          <DialogFooter>
-             <Button variant="ghost" onClick={() => setShowNewStage(false)}>
-              Cancelar
-            </Button>
-            <Button
-              className="escoltran-gradient-bg text-white"
-              onClick={() => createStage.mutate()}
-              disabled={createStage.isPending || !stageForm.name.trim()}
-            >
-              {createStage.isPending ? "Criando..." : "+ Criar Coluna"}
-            </Button>
-          </DialogFooter>
+          <div className="p-6 border-t border-white/5 bg-white/[0.01] flex justify-end gap-4">
+             <button className="aether-btn-secondary" onClick={() => setShowNewDeal(false)}>Abortar</button>
+             <button className="aether-btn-primary" onClick={() => createDeal.mutate()}>Propagar Deal</button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
