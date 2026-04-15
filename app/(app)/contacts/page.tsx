@@ -71,7 +71,8 @@ export default function ContactsPage() {
     staleTime: 30_000,
   })
 
-  const filtered = contacts.filter(c => {
+  const validatedContacts = Array.isArray(contacts) ? contacts : []
+  const filtered = validatedContacts.filter(c => {
     const q = search.toLowerCase()
     const matchesSearch = c.nome.toLowerCase().includes(q) || (c.email || "").toLowerCase().includes(q)
     const matchesFilter = filter === "TODOS" || c.status === filter
@@ -94,7 +95,7 @@ export default function ContactsPage() {
             </h1>
             <div className="page-subtitle">
               Sincronização em Nuvem <span className="sep" /> 
-              Total de Entidades: <span className="status font-black">{contacts.length}</span>
+              Total de Entidades: <span className="status font-black">{validatedContacts.length}</span>
             </div>
           </div>
         </div>
@@ -112,10 +113,10 @@ export default function ContactsPage() {
 
       {/* Contact Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <ContactMetric title="Base Total" value={contacts.length} icon={Users} />
-        <ContactMetric title="Leads Ativos" value={contacts.filter(c => c.status === 'LEAD').length} icon={TrendingUp} />
-        <ContactMetric title="Clientes" value={contacts.filter(c => c.status === 'CLIENTE').length} icon={Briefcase} />
-        <ContactMetric title="Inativos" value={contacts.filter(c => c.status === 'INATIVO').length} icon={ShieldAlert} color="#6b7280" />
+        <ContactMetric title="Base Total" value={validatedContacts.length} icon={Users} />
+        <ContactMetric title="Leads Ativos" value={validatedContacts.filter(c => c.status === 'LEAD').length} icon={TrendingUp} />
+        <ContactMetric title="Clientes" value={validatedContacts.filter(c => c.status === 'CLIENTE').length} icon={Briefcase} />
+        <ContactMetric title="Inativos" value={validatedContacts.filter(c => c.status === 'INATIVO').length} icon={ShieldAlert} color="#6b7280" />
       </div>
 
       {/* Table Section */}
@@ -202,7 +203,7 @@ export default function ContactsPage() {
         </table>
 
         <div className="p-6 border-t border-white/5 bg-white/[0.01] flex items-center justify-between text-[10px] font-black text-white/10 uppercase tracking-widest">
-           <span>Paginação: {filtered.length} de {contacts.length}</span>
+           <span>Paginação: {filtered.length} de {validatedContacts.length}</span>
            <div className="flex gap-2">
               <button className="h-8 px-4 rounded-lg bg-white/5 border border-white/5 hover:text-white transition-colors">Anterior</button>
               <button className="h-8 px-4 rounded-lg bg-white/5 border border-white/5 hover:text-white transition-colors">Próximo</button>

@@ -144,7 +144,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-6 flex-1 overflow-y-auto pr-2">
-             {isLoading ? (
+                 {isLoading ? (
                [...Array(5)].map((_, i) => <div key={i} className="h-16 bg-white/5 rounded-xl animate-pulse" />)
              ) : (
                [
@@ -152,17 +152,20 @@ export default function DashboardPage() {
                  { user: "System", action: "Lead 'João Silva' qualificado via IA", time: "15m atrás", icon: Brain },
                  { user: "Global", action: "Backup do cluster concluído", time: "1h atrás", icon: ShieldCheck },
                  { user: "Henrique", action: "Novo dashboard Aether ativo", time: "3h atrás", icon: Star },
-               ].map((act, i) => (
-                 <div key={i} className="flex gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 transition-all hover:bg-white/[0.05] group">
-                    <div className="w-10 h-10 rounded-xl bg-black/40 border border-white/5 flex items-center justify-center text-gold group-hover:scale-110 transition-transform">
-                       <act.icon size={16} />
-                    </div>
-                    <div>
-                       <p className="text-[12px] font-black text-white/80">{act.action}</p>
-                       <p className="text-[10px] text-white/20 uppercase font-black mt-0.5 tracking-widest">{act.user} <span className="mx-1">•</span> {act.time}</p>
-                    </div>
-                 </div>
-               ))
+               ].map((act, i) => {
+                 const Icon = act.icon
+                 return (
+                   <div key={i} className="flex gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 transition-all hover:bg-white/[0.05] group">
+                      <div className="w-10 h-10 rounded-xl bg-black/40 border border-white/5 flex items-center justify-center text-gold group-hover:scale-110 transition-transform">
+                         <Icon size={16} />
+                      </div>
+                      <div>
+                         <p className="text-[12px] font-black text-white/80">{act.action}</p>
+                         <p className="text-[10px] text-white/20 uppercase font-black mt-0.5 tracking-widest">{act.user} <span className="mx-1">•</span> {act.time}</p>
+                      </div>
+                   </div>
+                 )
+               })
              )}
           </div>
 

@@ -76,7 +76,8 @@ export default function ActivitiesPage() {
     onSuccess: () => { toast({ title: "Status Atualizado" }); queryClient.invalidateQueries({ queryKey: ["activities"] }) },
   })
 
-  const filtered = activities.filter(a => a.titulo.toLowerCase().includes(search.toLowerCase()))
+  const validatedActivities = Array.isArray(activities) ? activities : []
+  const filtered = validatedActivities.filter(a => a.titulo.toLowerCase().includes(search.toLowerCase()))
 
   return (
     <div className="animate-aether space-y-12 pb-12">
@@ -94,7 +95,7 @@ export default function ActivitiesPage() {
             </h1>
             <div className="page-subtitle">
               Sincronização Neural <span className="sep" /> 
-              Pendentes: <span className="status font-black">{activities.filter(a => a.status === "OPEN").length}</span>
+              Pendentes: <span className="status font-black">{validatedActivities.filter(a => a.status === "OPEN").length}</span>
             </div>
           </div>
         </div>
@@ -108,7 +109,7 @@ export default function ActivitiesPage() {
       {/* KPI Cluster */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
         {Object.entries(typeConfig).map(([type, config], i) => (
-          <MetricActivityCard key={type} title={config.label} value={activities.filter(a => a.tipo === type).length} icon={config.icon} delay={`${0.1 + i * 0.05}s`} color={config.color} />
+          <MetricActivityCard key={type} title={config.label} value={validatedActivities.filter(a => a.tipo === type).length} icon={config.icon} delay={`${0.1 + i * 0.05}s`} color={config.color} />
         ))}
       </div>
 

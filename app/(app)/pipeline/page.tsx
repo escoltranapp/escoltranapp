@@ -82,7 +82,8 @@ export default function PipelinePage() {
     staleTime: 15_000,
   })
 
-  const totalValue = deals.reduce((acc, d) => acc + (Number(d.valor) || 0), 0)
+   const validatedDeals = Array.isArray(deals) ? deals : []
+  const totalValue = validatedDeals.reduce((acc, d) => acc + (Number(d.valor) || 0), 0)
 
   return (
     <div className="animate-aether space-y-12 pb-12">
@@ -127,7 +128,7 @@ export default function PipelinePage() {
       {/* Kanban Board */}
       <div className="flex gap-6 overflow-x-auto pb-8 min-h-[600px] -mx-4 px-4 scrollbar-hide">
         {STAGES.map((stage) => {
-          const stageDeals = deals.filter(d => d.stage === stage.id)
+          const stageDeals = validatedDeals.filter(d => d.stage === stage.id)
           const stageTotal = stageDeals.reduce((acc, d) => acc + (Number(d.valor) || 0), 0)
 
           return (
