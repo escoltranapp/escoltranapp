@@ -58,7 +58,7 @@
 .auth-bg-noise {
   position: absolute;
   inset: 0;
-  opacity: 0.01; /* Reduzido ao mínimo para textura imperceptível */
+  opacity: 0.01;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
@@ -115,6 +115,7 @@
   color: rgba(212, 175, 55, 0.8);
   letter-spacing: 0.25em;
   text-transform: uppercase;
+  font-family: 'Outfit', sans-serif;
   margin-bottom: 36px;
 }
 
@@ -137,6 +138,7 @@
   color: rgba(255,255,255,0.3);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
 }
 
 .auth-tab-trigger[data-state="active"] {
@@ -147,12 +149,13 @@
 
 .auth-label {
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.25);
   margin-bottom: 10px;
   display: block;
+  font-family: 'Outfit', sans-serif;
 }
 
 .auth-input {
@@ -163,6 +166,7 @@
   font-size: 14px !important;
   color: #fff !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Outfit', sans-serif;
 }
 
 .auth-input:focus {
@@ -188,6 +192,7 @@
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  font-family: 'Outfit', sans-serif;
 }
 
 .btn-auth-primary::before {
@@ -215,7 +220,7 @@
 body {
   background-color: var(--bg-page);
   color: var(--text-primary);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   margin: 0;
 }
@@ -246,11 +251,12 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 99px;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: 12px;
+  font-family: 'Outfit', sans-serif;
 }
 
 .page-title-h1 {
@@ -259,12 +265,14 @@ body {
   color: var(--text-primary);
   margin: 0;
   letter-spacing: -0.02em;
+  font-family: 'Outfit', sans-serif;
 }
 
 .page-subtitle {
   font-size: 13px;
   color: var(--text-secondary);
   margin-top: 6px;
+  font-family: 'Outfit', sans-serif;
 }
 
 .btn-cta-primary {
@@ -277,6 +285,7 @@ body {
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: 'Outfit', sans-serif;
 }
 
 .btn-cta-primary:hover {
@@ -326,10 +335,11 @@ body {
 
 .kpi-label {
   font-size: var(--font-section-label);
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-weight: 700;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text-muted);
+  font-family: 'Outfit', sans-serif;
 }
 
 .kpi-trend {
@@ -337,6 +347,7 @@ body {
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 4px;
+  font-family: 'Outfit', sans-serif;
 }
 
 .kpi-value {
@@ -344,11 +355,13 @@ body {
   font-weight: 800;
   color: var(--text-primary);
   letter-spacing: -0.01em;
+  font-family: 'Outfit', sans-serif;
 }
 
 .kpi-subtext {
   font-size: 11px;
   color: var(--text-muted);
+  font-family: 'Outfit', sans-serif;
 }
 
 /* COMPONENTE 3 - TABELA ENTERPRISE */
@@ -363,10 +376,11 @@ body {
   padding: 20px 24px;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text-muted);
   background: rgba(255,255,255,0.02);
+  font-family: 'Outfit', sans-serif;
 }
 
 .enterprise-table {
@@ -381,8 +395,9 @@ body {
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   color: var(--text-muted);
+  font-family: 'Outfit', sans-serif;
 }
 
 .enterprise-table td {
@@ -390,6 +405,7 @@ body {
   border-bottom: 1px solid rgba(255,255,255,0.03);
   font-size: 13px;
   color: var(--text-secondary);
+  font-family: 'Outfit', sans-serif;
 }
 
 .enterprise-table-row:hover {
@@ -415,15 +431,17 @@ body {
 
 .empty-state-title {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 8px;
+  font-family: 'Outfit', sans-serif;
 }
 
 .empty-state-sub {
   font-size: 13px;
   color: var(--text-muted);
   max-width: 320px;
+  font-family: 'Outfit', sans-serif;
 }
 
 /* STATUS BADGES */
@@ -434,9 +452,10 @@ body {
   padding: 4px 12px;
   border-radius: 6px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
+  font-family: 'Outfit', sans-serif;
 }
 
 .status-badge .dot {
