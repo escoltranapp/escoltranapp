@@ -158,100 +158,110 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="pipeline-layout flex flex-col min-h-screen bg-[#090b11]">
+    <div className="pipeline-layout flex flex-col min-h-screen bg-[#090b11] text-white">
       {/* ════════════════════════════════════════
-          TOPBAR DA PÁGINA
+          TOPBAR DA PÁGINA (IMAGE 1 PARITY)
           ════════════════════════════════════════ */}
-      <header className="flex items-center justify-between px-[24px] py-[20px] bg-[#090b11] border-b border-white/[0.03]">
-        <div className="flex flex-col">
-           <h1 className="text-[22px] font-semibold text-white tracking-[-0.3px] leading-none">Pipeline</h1>
-           <p className="text-[12px] text-white/40 mt-1.5 font-medium">Gestão de oportunidades · Visão Kanban</p>
-        </div>
+      <header className="px-[32px] pt-[32px] pb-[24px]">
+        <div className="flex items-start justify-between">
+           <div>
+              <h1 className="text-[28px] font-bold tracking-tight leading-none mb-2">Pipeline</h1>
+              <p className="text-[13px] text-white/40 font-medium">Gestão de oportunidades · Visão Kanban</p>
+           </div>
 
-        <div className="flex items-center gap-[10px]">
-            {/* PILL: PIPELINE PRINCIPAL */}
-            <button className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/10 rounded-full text-[12px] font-medium text-white/80 hover:bg-white/[0.03] transition-all">
-              <Clock size={14} className="opacity-50" />
-              {activeBoard}
-              <ChevronDown size={14} className="opacity-30 ml-1" />
-            </button>
+           <div className="flex items-center gap-[12px]">
+               {/* PILL: PIPELINE PRINCIPAL */}
+               <button className="flex items-center gap-2 px-[18px] py-[10px] bg-white/[0.03] border border-white/10 rounded-xl text-[13px] font-semibold text-white/90 hover:bg-white/[0.06] transition-all">
+                 <Clock size={16} className="text-white/40" />
+                 {activeBoard}
+                 <ChevronDown size={14} className="text-white/20 ml-2" />
+               </button>
 
-            {/* PILL: NOVA COLUNA */}
-            <button 
-              onClick={handleAddStage}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/10 rounded-full text-[12px] font-medium text-white/80 hover:bg-white/[0.03] transition-all"
-            >
-               <Plus size={16} className="opacity-70" />
-               Nova Coluna
-            </button>
+               {/* PILL: NOVA COLUNA */}
+               <button 
+                 onClick={handleAddStage}
+                 className="flex items-center gap-2 px-[18px] py-[10px] bg-white/[0.03] border border-white/10 rounded-xl text-[13px] font-semibold text-white/90 hover:bg-white/[0.06] transition-all"
+               >
+                  <Plus size={18} className="text-white/40" />
+                  Nova Coluna
+               </button>
 
-            {/* PILL: NOVO DEAL (ACCENT) */}
-            <button 
-              className="flex items-center gap-2 px-5 py-2 bg-[#4f46e5] hover:bg-[#4338ca] text-white font-semibold text-[12px] rounded-full transition-all shadow-lg shadow-[#4f46e5]/20 active:scale-95"
-            >
-               <Plus size={16} strokeWidth={3} /> Novo Deal
-            </button>
+               {/* PILL: NOVO DEAL (IMAGE 1 ACCENT) */}
+               <button 
+                 className="flex items-center gap-2 px-[22px] py-[10px] bg-[#4f46e5] hover:bg-[#4338ca] text-white font-bold text-[13px] rounded-xl transition-all shadow-[0_8px_20px_rgba(79,70,229,0.3)] active:scale-95"
+               >
+                  <Plus size={18} strokeWidth={3} /> Novo Deal
+               </button>
+           </div>
         </div>
       </header>
 
       {/* ════════════════════════════════════════
-          BARRA DE MÉTRICAS (3 cards)
+          BARRA DE MÉTRICAS (IMAGE 1 SCALE)
           ════════════════════════════════════════ */}
-      <div className="px-[24px] pt-[24px] pb-[16px]">
-        <div className="grid grid-cols-3 gap-[12px]">
+      <div className="px-[32px] mb-[28px]">
+        <div className="grid grid-cols-3 gap-[16px]">
            {/* Card 1 — Oportunidades */}
-           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[10px] p-[16px] flex items-center gap-4 shadow-sm">
-             <div className="w-[42px] h-[42px] rounded-[10px] bg-[#1a1a2e] flex items-center justify-center shrink-0">
-                <LayoutGrid size={18} className="text-[#818cf8]" />
+           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[14px] p-[24px] flex items-center gap-5 shadow-2xl transition-all hover:border-white/10">
+             <div className="w-[52px] h-[52px] rounded-[14px] bg-[#1a1a2e] flex items-center justify-center shrink-0 border border-white/5">
+                <LayoutGrid size={22} className="text-[#818cf8]" />
              </div>
              <div>
-               <p className="text-[11px] font-bold text-white/40 uppercase tracking-tight">OPORTUNIDADES</p>
-               <p className="text-[22px] font-bold text-white leading-tight">{deals.length}</p>
-               <p className="text-[11px] text-white/30 font-medium lowercase">cards ativos</p>
+               <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.05em] mb-1">OPORTUNIDADES</p>
+               <div className="flex items-baseline gap-2">
+                 <span className="text-[32px] font-bold text-white leading-none">{deals.length}</span>
+                 <span className="text-[12px] text-white/20 font-medium">cards ativos</span>
+               </div>
              </div>
            </div>
 
            {/* Card 2 — Valor Total */}
-           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[10px] p-[16px] flex items-center gap-4 shadow-sm">
-             <div className="w-[42px] h-[42px] rounded-[10px] bg-[#0f1e14] flex items-center justify-center shrink-0">
-                <TrendingUp size={18} className="text-[#4ade80]" />
+           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[14px] p-[24px] flex items-center gap-5 shadow-2xl transition-all hover:border-white/10">
+             <div className="w-[52px] h-[52px] rounded-[14px] bg-[#0f1e14] flex items-center justify-center shrink-0 border border-white/5">
+                <TrendingUp size={22} className="text-[#4ade80]" />
              </div>
              <div>
-               <p className="text-[11px] font-bold text-white/40 uppercase tracking-tight">VALOR TOTAL</p>
-               <p className="text-[22px] font-bold text-[#4ade80] leading-tight">{formatCurrency(totalValue)}</p>
-               <p className="text-[11px] text-white/30 font-medium lowercase">em aberto</p>
+               <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.05em] mb-1">VALOR TOTAL</p>
+               <div className="flex items-baseline gap-2">
+                 <span className="text-[32px] font-bold text-[#4ade80] leading-none">R$ {totalValue.toLocaleString('pt-BR')}</span>
+                 <span className="text-[12px] text-white/20 font-medium">em aberto</span>
+               </div>
              </div>
            </div>
 
            {/* Card 3 — Alertas */}
-           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[10px] p-[16px] flex items-center gap-4 shadow-sm">
-             <div className="w-[42px] h-[42px] rounded-[10px] bg-[#1f1010] flex items-center justify-center shrink-0">
-                <AlertTriangle size={18} className="text-[#f87171]" />
+           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[14px] p-[24px] flex items-center gap-5 shadow-2xl transition-all hover:border-white/10">
+             <div className="w-[52px] h-[52px] rounded-[14px] bg-[#1f1010] flex items-center justify-center shrink-0 border border-white/5">
+                <AlertTriangle size={22} className="text-[#f87171]" />
              </div>
              <div>
-               <p className="text-[11px] font-bold text-white/40 uppercase tracking-tight">ALERTAS</p>
-               <p className="text-[22px] font-bold text-[#f87171] leading-tight">{expiredCount}</p>
-               <p className="text-[11px] text-white/30 font-medium lowercase">cards +30 dias</p>
+               <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.05em] mb-1">ALERTAS</p>
+               <div className="flex items-baseline gap-2">
+                 <span className="text-[32px] font-bold text-[#f87171] leading-none">{expiredCount}</span>
+                 <span className="text-[12px] text-white/20 font-medium">cards +30 dias</span>
+               </div>
              </div>
            </div>
         </div>
-      </div>
 
-      {/* PROGRESS BAR BELOW METRICS */}
-      <div className="mx-[24px] mb-[16px]">
-        <div className="h-[2px] w-full bg-[#1e1e24] rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-[#4f46e5] to-[#818cf8] transition-all duration-1000"
-            style={{ width: '65%' }} // Exemplo de representação
-          />
+        {/* PROGRESS BAR (IMAGE 1 - 4PX & VIBRANT) */}
+        <div className="mt-[24px] px-2">
+          <div className="h-[4px] w-full bg-[#1e1e24] rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-[#4f46e5] to-[#818cf8] shadow-[0_0_15px_rgba(79,70,229,0.5)] transition-all duration-1000"
+              style={{ width: '45%' }}
+            />
+          </div>
         </div>
       </div>
 
-      {/* KANBAN BOARD */}
-      <div className="overflow-x-auto kanban-scrollbar -mx-1 px-1">
+      {/* ════════════════════════════════════════
+          KANBAN BOARD (IMAGE 1 CONTAINER)
+          ════════════════════════════════════════ */}
+      <div className="flex-1 overflow-x-auto kanban-scrollbar pl-[32px] pb-[32px]">
         {isLoading ? (
-          <div className="flex gap-[12px]">
-             {[1,2,3,4].map(i => <div key={i} className="min-w-[280px] h-[600px] rounded-[12px] bg-[#111520] animate-pulse" />)}
+          <div className="flex gap-[16px]">
+             {[1,2,3,4,5].map(i => <div key={i} className="w-[280px] h-[600px] rounded-[16px] bg-[#18181f]/40 animate-pulse border border-white/5" />)}
           </div>
         ) : (
           <KanbanBoard 
@@ -267,6 +277,13 @@ export default function PipelinePage() {
           />
         )}
       </div>
+
+      <DealDetailSheet 
+        deal={selectedDeal}
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+      />
+    </div>
 
       <DealDetailSheet 
         deal={selectedDeal}

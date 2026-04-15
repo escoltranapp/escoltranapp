@@ -52,7 +52,6 @@ export function DealCard({ deal, onClick }: DealCardProps) {
     NOVO:  { label: "Novo",  bg: "#1a1a2e", text: "#818cf8", border: "#2d2d4e" },
   }
   
-  // Use deal.prioridade or mapping based on status
   const priorityKey = deal.prioridade === 'ALTA' ? 'ALTA' : (deal.prioridade === 'MEDIA' ? 'MEDIA' : 'NOVO')
   const priorityMeta = priorityMap[priorityKey as keyof typeof priorityMap]
 
@@ -64,55 +63,55 @@ export function DealCard({ deal, onClick }: DealCardProps) {
       {...listeners}
       onClick={onClick}
       className={cn(
-        "bg-[#18181f] border border-[#1e1e24] rounded-[10px] p-[14px] group hover:bg-[#1e1e28] hover:border-[#2e2e3e] transition-all cursor-grab active:cursor-grabbing shadow-sm",
+        "bg-[#18181f] border border-[#1e1e24] rounded-[12px] p-[16px] group hover:bg-[#1e1e28] hover:border-white/10 transition-all cursor-grab active:cursor-grabbing shadow-lg",
         isDragging && "opacity-50 z-50 ring-2 ring-[#4f46e5]/50 scale-[1.02]"
       )}
     >
-      {/* TOPO: NOME + BADGE */}
-      <div className="flex items-start justify-between gap-3 mb-[10px]">
-        <h4 className="text-[13px] font-medium text-[#e8e8f0] leading-tight truncate flex-1 tracking-tight">
+      {/* TOPO: NOME + BADGE (IMAGE 1 POSITION) */}
+      <div className="flex items-start justify-between gap-3 mb-[14px]">
+        <h4 className="text-[14px] font-bold text-white leading-tight tracking-tight flex-1">
           {deal.titulo}
         </h4>
         <div 
-           className="inline-flex items-center px-1.5 py-0.5 rounded-[4px] text-[10px] font-semibold border shrink-0"
+           className="inline-flex items-center px-[8px] py-[3px] rounded-[6px] text-[10px] font-bold border shrink-0 uppercase tracking-wider"
            style={{ backgroundColor: priorityMeta.bg, color: priorityMeta.text, borderColor: priorityMeta.border }}
         >
            {priorityMeta.label}
         </div>
       </div>
 
-      {/* META INFO */}
-      <div className="flex flex-col gap-1.5 mt-2">
-        <div className="flex items-center gap-1.5">
-           <User size={12} className="text-white/20" />
-           <span className="text-[11px] text-white/40 truncate">{contactName}</span>
+      {/* META INFO (IMAGE 1 STYLE) */}
+      <div className="flex flex-col gap-2 mt-1">
+        <div className="flex items-center gap-2">
+           <User size={13} className="text-white/20" />
+           <span className="text-[11px] font-medium text-white/40 truncate tracking-tight">{contactName}</span>
         </div>
-        <div className="flex items-center gap-1.5">
-           <DollarSign size={12} className="text-white/20" />
-           <span className="text-[11px] text-white/40 font-medium tracking-tight">
-             {formatCurrency(deal.valorEstimado || 0)}
+        <div className="flex items-center gap-2">
+           <DollarSign size={13} className="text-white/20" />
+           <span className="text-[12px] font-bold text-white/70 tracking-tight">
+             R$ {(deal.valorEstimado || 0).toLocaleString('pt-BR')}
            </span>
         </div>
       </div>
 
       {/* DIVIDER */}
-      <div className="h-[1px] bg-[#1e1e24] my-[12px] -mx-1" />
+      <div className="h-[1px] bg-white/[0.04] mt-[16px] mb-[12px] -mx-1" />
 
-      {/* FOOTER: AVATAR + DATA */}
+      {/* FOOTER: AVATAR + STATUS INDICATOR */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div 
-            className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[10px] font-bold text-[#7c7caa] shrink-0 bg-[#2a2a3e] border border-white/5"
-            style={{ backgroundColor: `hsl(${contactName.length * 40}, 30%, 20%)` }}
+            className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[10px] font-black shrink-0 border border-white/10"
+            style={{ backgroundColor: `hsl(${contactName.length * 40}, 30%, 25%)`, color: '#fff' }}
           >
             {getInitials(contactName)}
           </div>
-          <span className="text-[10px] font-semibold text-white/10 uppercase tracking-widest">OWNER</span>
+          <span className="text-[10px] font-bold text-white/10 uppercase tracking-[0.2em]">{deal.stageId ? 'Ativo' : 'Owner'}</span>
         </div>
         
-        <div className="flex items-center gap-1 text-white/10">
-          <Calendar size={11} />
-          <span className="text-[10px] font-medium">
+        <div className="flex items-center gap-1.5 text-white/10">
+          <Calendar size={12} />
+          <span className="text-[10px] font-bold">
             {deal.dataPrevista ? format(new Date(deal.dataPrevista), "dd/MM", { locale: ptBR }) : "--/--"}
           </span>
         </div>

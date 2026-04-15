@@ -41,59 +41,54 @@ function KanbanColumn({ stage, children, onAddDeal }: { stage: Stage, children: 
 
   // STRICT COLOR MAPPING FROM REQUEST
   const configMap: Record<string, { dot: string, border: string }> = {
-    PROSPECT:      { dot: "#818cf8", border: "#2a2a42" }, // Indigo
-    QUALIFICATION: { dot: "#f59e0b", border: "#2e2410" }, // Âmbar
-    PROPOSAL:      { dot: "#a78bfa", border: "#2d2440" }, // Roxo
-    NEGOTIATION:   { dot: "#22d3ee", border: "#102830" }, // Ciano
-    FECHAMENTO:    { dot: "#4ade80", border: "#102810" }  // Verde
+    PROSPECT:      { dot: "#818cf8", border: "#2a2a42" },
+    QUALIFICATION: { dot: "#f59e0b", border: "#2e2410" },
+    PROPOSAL:      { dot: "#a78bfa", border: "#2d2440" },
+    NEGOTIATION:   { dot: "#22d3ee", border: "#102830" },
+    FECHAMENTO:    { dot: "#4ade80", border: "#102810" }
   }
 
   const stageConfig = configMap[stage.id] || { dot: "#818cf8", border: "#2a2a42" }
 
   return (
-    <div className="w-[240px] flex flex-col h-full shrink-0">
-      {/* ════════════════════════════════════════
-          HEADER DA COLUNA (BORDERED)
-          ════════════════════════════════════════ */}
+    <div className="w-[280px] flex flex-col h-full shrink-0 group">
+      {/* HEADER DA COLUNA (IMAGE 1 TARGET) */}
       <div 
-        className="flex items-center justify-between p-[10px] px-[12px] border rounded-[10px] mb-2"
+        className="flex items-center justify-between p-[12px] px-[14px] border rounded-[12px] mb-3 bg-[#111118]/40 shadow-sm"
         style={{ borderColor: stageConfig.border }}
       >
-        <div className="flex items-center gap-[8px]">
-          <div className="w-[8px] h-[8px] rounded-full" style={{ backgroundColor: stageConfig.dot }} />
-          <span 
-            className="text-[12px] font-semibold uppercase tracking-tight"
-            style={{ color: stageConfig.dot }}
-          >
+        <div className="flex items-center gap-[10px]">
+          <div className="w-[8px] h-[8px] rounded-full shadow-[0_0_8px_rgba(255,255,255,0.2)]" style={{ backgroundColor: stageConfig.dot }} />
+          <span className="text-[12px] font-bold uppercase tracking-[0.05em] text-white/90">
             {stage.name}
           </span>
         </div>
         
-        <div className="px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center">
-           <span className="text-[11px] font-semibold text-white/50">{stage.deals.length}</span>
+        <div className="min-w-[20px] h-[18px] rounded-full bg-white/[0.05] flex items-center justify-center px-1.5 border border-white/5">
+           <span className="text-[10px] font-bold text-white/40">{stage.deals.length}</span>
         </div>
       </div>
 
-      {/* SUB-INFO BELOW HEADER */}
-      <div className="px-[12px] pb-[8px]">
-        <span className="text-[11px] font-medium text-white/25">
-          {formatCurrency(totalValue)} · {stage.deals.length} deals
+      {/* SUB-INFO (IMAGE 1 POSITION) */}
+      <div className="px-[4px] mb-[12px] flex items-center justify-between">
+        <span className="text-[11px] font-semibold text-white/20 uppercase tracking-wider">
+           R$ {totalValue.toLocaleString('pt-BR')} · {stage.deals.length} deals
         </span>
       </div>
 
-      {/* DROPPABLE AREA — NO BG FOR COLUMN BODY */}
+      {/* DROPPABLE AREA */}
       <div 
         ref={setNodeRef}
-        className="flex-1 flex flex-col gap-[10px] overflow-y-auto scrollbar-hide py-1"
+        className="flex-1 flex flex-col gap-[12px] overflow-y-auto scrollbar-hide"
       >
-        <div className="flex flex-col gap-[10px] mb-2">
+        <div className="flex flex-col gap-[12px] mb-2">
            {children}
         </div>
         
-        {/* BOTÃO ADICIONAR CARD — DASHED */}
+        {/* ADD CARD BUTTON (IMAGE 1 STYLE) */}
         <button 
           onClick={() => onAddDeal?.(stage.id)}
-          className="w-full p-[9px] border border-dashed border-[#1e1e28] hover:border-[#3a3a4e] hover:bg-white/[0.02] rounded-[8px] flex items-center justify-center gap-[6px] text-[12px] font-normal text-[#444] hover:text-[#777] transition-all mt-1"
+          className="w-full p-[12px] border border-dashed border-white/5 hover:border-white/20 hover:bg-white/[0.02] rounded-[12px] flex items-center justify-center gap-2 text-[12px] font-medium text-white/10 hover:text-white/40 transition-all mt-1"
         >
            <Plus size={14} /> Adicionar card
         </button>
