@@ -380,7 +380,7 @@ export default function ListasDisparoPage() {
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="ghost" onClick={() => setDeleteId(null)}>Desistir</Button>
             <Button
-              variant="destructive"
+              variant="danger"
               className="bg-danger text-white hover:bg-danger/80"
               onClick={() => deleteId && deleteLista.mutate(deleteId)}
               disabled={deleteLista.isPending}
