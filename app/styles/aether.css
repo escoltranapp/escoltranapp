@@ -1,23 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Geist+Mono:wght@100..900&display=swap');
 
 :root {
-  /* GLOBAL TOKENS — DEEP DARK BLUE THEME */
-  --bg-page: #0b0d14;
-  --bg-surface: #111520;
+  /* GLOBAL TOKENS — REFINED NAVY THEME */
+  --bg-page: #090b11;
+  --bg-surface: #111522;
   --bg-card: #161b2a;
-  --bg-card-hover: #1c2236;
-  --border-sutil: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.16);
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.50);
-  --text-muted: rgba(255, 255, 255, 0.35);
+  --bg-card-hover: #1c223c;
+  --border-sutil: rgba(255, 255, 255, 0.05);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  --text-primary: #e6edf3;
+  --text-secondary: rgba(255, 255, 255, 0.60);
+  --text-muted: rgba(255, 255, 255, 0.40);
   
-  --pipeline-blue: #4299e1;
-  --pipeline-purple: #9f7aea;
-  --pipeline-amber: #f6ad55;
-  --pipeline-green: #48c78e;
-  --pipeline-red: #f87171;
-  --pipeline-green-light: #68d391;
+  --pipeline-blue: #3b82f6;
+  --pipeline-purple: #8b5cf6;
+  --pipeline-amber: #f59e0b;
+  --pipeline-green: #10b981;
+  --pipeline-red: #ef4444;
+  --pipeline-green-light: #34d399;
   --accent-amber: #f59e0b;
 
   /* TIPOGRAFIA */

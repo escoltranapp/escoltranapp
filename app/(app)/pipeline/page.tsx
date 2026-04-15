@@ -22,13 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-// ─── STAGE CONFIG ──────────────────────────────────────────────
-const STAGES_CONFIG = [
-  { id: "PROSPECT", name: "NOVO LEAD", color: "#3B82F6" },
-  { id: "QUALIFICATION", name: "QUALIFICAÇÃO", color: "#8B5CF6" },
-  { id: "MEETING", name: "REUNIÃO MARCADA", color: "#F59E0B" },
-  { id: "PROPOSAL", name: "PROPOSTA", color: "#10B981" },
-  { id: "NEGOTIATION", nafunction KPICard({ label, value, icon: Icon, type = "default" }: any) {
+function KPICard({ label, value, icon: Icon, type = "default" }: any) {
   const configs: any = {
     blue: { bg: "rgba(66,153,225,0.12)", icon: "#4299e1", text: "#ffffff" },
     green: { bg: "rgba(72,199,142,0.12)", icon: "#48c78e", text: "#48c78e" },
@@ -162,25 +156,33 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="pipeline-layout p-[28px] pt-[28px] space-y-[28px]">
-      {/* PAGE HEADER */}
-      <header className="flex items-start justify-between">
-        <div>
-           <h1 className="text-[32px] font-bold text-white leading-none">Pipeline</h1>
-           <p className="text-[11px] font-normal text-white/35 uppercase tracking-[0.1em] mt-1">Gestão de Oportunidades • Visão Kanban</p>
+    <div className="pipeline-layout p-[32px] pt-[24px] space-y-[32px]">
+      {/* PAGE HEADER — REFINED ELEGANCE */}
+      <header className="flex items-end justify-between">
+        <div className="space-y-4">
+           {/* SUBTLE BRAND BADGE */}
+           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/[0.05] rounded-full">
+              <div className="w-1.5 h-1.5 rounded-full bg-[var(--pipeline-blue)] animate-pulse" />
+              <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.15em]">Espaço de Trabalho • Escoltran</span>
+           </div>
+           
+           <div>
+              <h1 className="text-[42px] font-bold text-[var(--text-primary)] leading-tight tracking-tight">Pipeline</h1>
+              <p className="text-[12px] font-medium text-[var(--text-muted)] uppercase tracking-[0.2em] mt-1 opacity-80">Gestão de Oportunidades • Visão Kanban</p>
+           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-[14px] py-[8px] bg-white/5 border border-white/10 rounded-[8px] text-[13px] font-medium text-white hover:bg-white/[0.08] transition-all outline-none">
-                  <div className="w-2 h-2 rounded-full bg-[#4299e1]" />
+                <button className="flex items-center gap-2.5 px-[16px] py-[10px] bg-white/[0.03] border border-white/[0.08] rounded-[12px] text-[13px] font-semibold text-[var(--text-primary)] hover:bg-white/[0.06] transition-all outline-none">
+                  <div className="w-2 h-2 rounded-full bg-[var(--pipeline-blue)]" />
                   {activeBoard}
                   <ChevronDown size={14} className="opacity-40 ml-1" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-[#111520] border-white/10 text-white min-w-[200px]">
-                <DropdownMenuItem onClick={() => setActiveBoard("Pipeline Principal")} className="hover:bg-white/5 cursor-pointer">
+              <DropdownMenuContent align="end" className="bg-[#111520] border-white/10 text-white min-w-[200px] rounded-[12px]">
+                <DropdownMenuItem onClick={() => setActiveBoard("Pipeline Principal")} className="hover:bg-white/5 cursor-pointer py-2.5 px-4">
                   Pipeline Principal
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -188,25 +190,25 @@ export default function PipelinePage() {
 
             <button 
               onClick={handleAddStage}
-              className="flex items-center gap-2 px-[18px] py-[8px] bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold text-[13px] rounded-[8px] transition-all active:scale-95"
+              className="flex items-center gap-2 px-[20px] py-[10px] bg-[var(--pipeline-blue)] hover:brightness-110 text-white font-bold text-[13px] rounded-[12px] transition-all active:scale-95 shadow-[0_8px_30px_rgba(59,130,246,0.3)]"
             >
-               <Plus size={16} /> Nova Coluna
+               <Plus size={16} strokeWidth={3} /> Nova Coluna
             </button>
 
             <button 
-              onClick={() => toast({ title: "Módulo em Breve", description: "Boards adicionais serão liberados em breve." })}
-              className="flex items-center gap-2 px-[14px] py-[8px] bg-transparent border border-white/15 hover:bg-white/5 text-white/70 font-medium text-[13px] rounded-[8px] transition-all active:scale-95"
+              onClick={() => toast({ title: "Módulo em Breve", description: "Capacidade de múltiplos boards em desenvolvimento." })}
+              className="flex items-center gap-1 px-[16px] py-[10px] bg-transparent border border-white/[0.1] hover:bg-white/[0.03] text-[var(--text-secondary)] font-semibold text-[13px] rounded-[12px] transition-all"
             >
                <Plus size={16} /> Novo Board
             </button>
         </div>
       </header>
 
-      {/* METRICS BAR */}
-      <div className="flex gap-[16px]">
-         <KPICard label="Total de Cards" value={deals.length} icon={LayoutGrid} type="blue" />
-         <KPICard label="Valor Total" value={formatCurrency(totalValue)} icon={DollarSign} type="green" />
-         <KPICard label="Cards Vencidos" value={expiredCount} icon={AlertTriangle} type="red" />
+      {/* METRICS BAR — REFINED DEPTH */}
+      <div className="flex gap-[18px]">
+         <KPICard label="Oportunidades Ativas" value={deals.length} icon={LayoutGrid} type="blue" />
+         <KPICard label="Pipeline de Valor" value={formatCurrency(totalValue)} icon={DollarSign} type="green" />
+         <KPICard label="Alertas Críticos" value={expiredCount} icon={AlertTriangle} type="red" />
       </div>
 
       {/* KANBAN BOARD */}

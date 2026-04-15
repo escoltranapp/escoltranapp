@@ -50,44 +50,44 @@ function KanbanColumn({ stage, children, onAddDeal }: { stage: Stage, children: 
   const dotColor = statusColors[stage.id] || stage.color || "#4299e1"
 
   return (
-    <div className="min-w-[280px] w-[280px] flex flex-col h-full shrink-0">
-      {/* COLUMN CONTAINER */}
-      <div className="bg-[#111520] border border-white/[0.09] rounded-[12px] p-[14px] px-[12px] flex flex-col h-full shadow-lg">
-        {/* REFINED HEADER WITH BORDER BOTTOM */}
-        <div className="flex items-center justify-between pb-[10px] border-bottom border-white/5 mb-1 px-1">
-           <div className="flex items-center gap-2">
-              <div className="w-[9px] h-[9px] rounded-full" style={{ backgroundColor: dotColor }} />
-              <span className="text-[13px] font-bold text-white uppercase tracking-[0.07em]">{stage.name}</span>
+    <div className="min-w-[300px] w-[300px] flex flex-col h-full shrink-0">
+      {/* COLUMN CONTAINER — REFINED HARMONY */}
+      <div className="bg-[var(--bg-surface)]/80 backdrop-blur-md border border-white/[0.05] rounded-[16px] p-[16px] flex flex-col h-full shadow-2xl transition-all">
+        {/* REFINED HEADER */}
+        <div className="flex items-center justify-between pb-[14px] border-b border-white/[0.05] mb-2 px-1">
+           <div className="flex items-center gap-3">
+              <div className="w-[10px] h-[10px] rounded-full shadow-[0_0_12px_rgba(255,255,255,0.1)] shrink-0" style={{ backgroundColor: dotColor }} />
+              <span className="text-[15px] font-semibold text-[var(--text-primary)] leading-none truncate max-w-[140px]">{stage.name}</span>
            </div>
            
-           <div className="min-w-[22px] h-[20px] rounded-[6px] bg-white/[0.08] flex items-center justify-center px-1.5">
-              <span className="text-[11px] font-bold text-white/70">{stage.deals.length}</span>
+           <div className="h-[22px] px-2 rounded-[6px] bg-white/[0.05] flex items-center justify-center border border-white/[0.05]">
+              <span className="text-[11px] font-bold text-[var(--text-muted)]">{stage.deals.length}</span>
            </div>
         </div>
 
-        {/* VALUE LINE BELOW HEADER */}
-        <div className="flex items-center gap-1.5 px-1 py-[6px] pb-[8px]">
-           <span className="text-[12px] opacity-40">↗</span>
-           <span className="text-[12px] font-medium" style={{ color: `${dotColor}cc` }}>
+        {/* VALUE LINE — REFINED */}
+        <div className="flex items-center justify-between px-1 py-[8px] pb-[12px]">
+           <span className="text-[12px] font-medium text-[var(--text-muted)]">Valor total</span>
+           <span className="text-[13px] font-bold tracking-tight" style={{ color: dotColor }}>
              {formatCurrency(totalValue)}
            </span>
         </div>
 
-        {/* DROPPABLE AREA */}
+        {/* DROPPABLE AREA — MORE SPACE BETWEEN CARDS */}
         <div 
           ref={setNodeRef}
-          className="flex-1 flex flex-col gap-2 overflow-y-auto scrollbar-hide"
+          className="flex-1 flex flex-col gap-3 overflow-y-auto scrollbar-hide py-1"
         >
-          <div className="flex flex-col gap-2 mb-2">
+          <div className="flex flex-col gap-3 mb-2">
              {children}
           </div>
           
           {/* REFINED ADD DEAL BUTTON */}
           <button 
             onClick={() => onAddDeal?.(stage.id)}
-            className="w-full p-[11px] border border-dashed border-white/[0.12] hover:border-white/[0.28] hover:bg-white/[0.03] rounded-[10px] flex items-center justify-center gap-1.5 text-[12px] font-normal text-white/30 hover:text-white/65 transition-all mt-1"
+            className="w-full p-[12px] border border-dashed border-white/[0.1] hover:border-[var(--pipeline-blue)]/40 hover:bg-[var(--pipeline-blue)]/5 rounded-[12px] flex items-center justify-center gap-2 text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--pipeline-blue)] transition-all mt-2"
           >
-             <Plus size={14} /> Adicionar Card
+             <Plus size={14} /> Adicionar novo card
           </button>
         </div>
       </div>
