@@ -50,6 +50,7 @@ export default function LeadSearchPage() {
     queryFn: async () => { const res = await fetch("/api/leads?type=cnpj&limit=50"); return res.json() },
   })
 
+  // Safe data handling
   const validatedLeads = Array.isArray(storedGoogle?.leads) ? storedGoogle.leads : []
 
   return (

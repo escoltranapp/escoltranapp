@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { Users, Search, Filter, Plus, Mail, Phone, MapPin, Building2, Sparkles, LayoutGrid } from "lucide-react"
+import { Users, Search, Filter, Plus, Mail, Phone, MapPin, Building2, Sparkles, LayoutGrid, ShieldCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // ─── Reusable Component: KPI Card Enterprise ───────────────────────
@@ -34,7 +34,7 @@ interface Contact {
 }
 
 export default function ContactsPage() {
-  const { data: contacts = [], isLoading } = useQuery<Contact[]>({
+  const { data: contactsData, isLoading } = useQuery<Contact[]>({
     queryKey: ["contacts"],
     queryFn: async () => {
       const res = await fetch("/api/contacts")
@@ -43,6 +43,9 @@ export default function ContactsPage() {
     },
     staleTime: 15_000,
   })
+
+  // Safe data handling
+  const contacts = Array.isArray(contactsData) ? contactsData : []
 
   return (
     <div className="page-container animate-aether">
@@ -119,11 +122,5 @@ export default function ContactsPage() {
          </table>
       </div>
     </div>
-  )
-}
-
-function ShieldCheck(props: any) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shield-check"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
   )
 }

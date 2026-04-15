@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { CalendarDays, Clock, CheckCircle2, AlertCircle, Plus, Filter, Search, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -34,7 +35,14 @@ interface ActivityItem {
 }
 
 export default function ActivitiesPage() {
-  const { data: activities = [], isLoading } = useQuery<ActivityItem[]>({
+  const [isClient, setIsClient] = useState(false)
+
+  // Fix hydration mismatch for dates
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  const { data: activitiesData, isLoading } = useQuery<ActivityItem[]>({
     queryKey: ["activities"],
     queryFn: async () => {
       const res = await fetch("/api/activities")
@@ -43,6 +51,8 @@ export default function ActivitiesPage() {
     },
     staleTime: 20_000,
   })
+
+  const activities = Array.isArray(activitiesData) ? activitiesData : []
 
   return (
     <div className="page-container animate-aether">
@@ -84,7 +94,7 @@ export default function ActivitiesPage() {
             <tbody>
                {isLoading ? (
                   [...Array(6)].map((_, i) => <tr key={i} className="h-16 animate-pulse bg-white/5"><td colSpan={4} /></tr>)
-               ) : (activities || []).map((act) => (
+               ) : activities.map((act) => (
                   <tr key={act.id} className="enterprise-table-row">
                      <td>
                         <div className="font-bold text-white/90">{act.titulo}</div>
@@ -96,7 +106,9 @@ export default function ActivitiesPage() {
                         </div>
                      </td>
                      <td>
-                        <div className="text-[12px] font-bold text-white/60">{new Date(act.data).toLocaleDateString()}</div>
+                        <div className="text-[12px] font-bold text-white/60">
+                           {isClient ? new Date(act.data).toLocaleDateString() : "..."}
+                        </div>
                         <div className="text-[10px] text-white/20 uppercase font-bold mt-1">Sincronizado</div>
                      </td>
                      <td className="text-right">

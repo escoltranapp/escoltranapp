@@ -38,7 +38,7 @@ const STAGES = [
 ]
 
 export default function PipelinePage() {
-  const { data: deals = [], isLoading } = useQuery<any[]>({
+  const { data: dealsData, isLoading } = useQuery<any[]>({
     queryKey: ["deals"],
     queryFn: async () => {
       const res = await fetch("/api/deals")
@@ -48,7 +48,9 @@ export default function PipelinePage() {
     staleTime: 15_000,
   })
 
-  const totalValue = (deals || []).reduce((acc, d) => acc + (Number(d.valor) || 0), 0)
+  // Safe data handling
+  const deals = Array.isArray(dealsData) ? dealsData : []
+  const totalValue = deals.reduce((acc, d) => acc + (Number(d.valor) || 0), 0)
 
   return (
     <div className="page-container animate-aether">
