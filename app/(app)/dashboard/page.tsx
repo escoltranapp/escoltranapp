@@ -6,7 +6,7 @@ import { formatCurrency, cn } from "@/lib/utils"
 
 // ─── Reusable Component: KPI Card Enterprise ───────────────────────
 function KPICard({ 
-  label, value, subtext, icon: Icon, trend, color = "var(--accent-blue)" 
+  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)" 
 }: { 
   label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string 
 }) {
@@ -59,8 +59,8 @@ export default function DashboardPage() {
 
       {/* 2. KPI CARDS */}
       <div className="kpi-grid">
-        <KPICard label="Total de Leads" value={stats?.totalLeads || "0"} subtext="+12.5% vs mês anterior" icon={Users} trend="+12%" color="#3b82f6" />
-        <KPICard label="Sincronização" value="98%" subtext="Integridade de dados cloud" icon={Zap} color="#60a5fa" />
+        <KPICard label="Total de Leads" value={stats?.totalLeads || "0"} subtext="+12.5% vs mês anterior" icon={Users} trend="+12%" color="#d4af37" />
+        <KPICard label="Sincronização" value="98%" subtext="Integridade de dados cloud" icon={Zap} color="#d4af37" />
         <KPICard label="Volume Financeiro" value={stats?.totalValue ? formatCurrency(stats.totalValue) : 'R$ 0,00'} subtext="Crescimento contínuo de caixa" icon={DollarSign} color="#10b981" />
         <KPICard label="Conversão" value={`${stats?.conversionRate || 0}%`} subtext="Performance de funil global" icon={TrendingUp} color="#f59e0b" />
       </div>
@@ -84,8 +84,8 @@ export default function DashboardPage() {
           <div className="h-[280px] flex items-end justify-between gap-3 px-2">
              {[30, 45, 25, 60, 80, 50, 90, 100, 70, 85, 40, 55].map((h, i) => (
                 <div key={i} className="flex-1 group relative">
-                   <div className="w-full bg-blue-600/10 rounded-t-lg transition-all group-hover:bg-blue-600/30 cursor-pointer border-x border-t border-blue-600/5" style={{ height: `${h}%` }} />
-                   {h > 80 && <div className="absolute top-[-25px] left-1/2 -translate-x-1/2 text-[9px] font-bold text-blue-400">PEAK</div>}
+                   <div className="w-full bg-[#d4af37]/10 rounded-t-lg transition-all group-hover:bg-[#d4af37]/30 cursor-pointer border-x border-t border-blue-600/5" style={{ height: `${h}%` }} />
+                   {h > 80 && <div className="absolute top-[-25px] left-1/2 -translate-x-1/2 text-[9px] font-bold text-[#d4af37]">PEAK</div>}
                 </div>
              ))}
           </div>
@@ -97,12 +97,12 @@ export default function DashboardPage() {
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/30">Pulse Monitor</h3>
             </div>
-            <Activity size={18} className="text-blue-500 animate-pulse" />
+            <Activity size={18} className="text-[#d4af37] animate-pulse" />
           </div>
 
           <div className="p-6 space-y-4">
              {[
-               { user: "H. Bariani", action: "Proposta Gerada", icon: MousePointer2, color: "#3b82f6" },
+               { user: "H. Bariani", action: "Proposta Gerada", icon: MousePointer2, color: "#d4af37" },
                { user: "AI Engine", action: "Lead Qualificado", icon: Zap, color: "#a855f7" },
                { user: "Operational", action: "Nó Sincronizado", icon: ShieldCheck, color: "#10b981" },
              ].map((act, i) => (

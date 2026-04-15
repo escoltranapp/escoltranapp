@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 
 // ─── Reusable Component: KPI Card Enterprise ───────────────────────
 function KPICard({ 
-  label, value, subtext, icon: Icon, trend, color = "var(--accent-blue)" 
+  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)" 
 }: { 
   label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string 
 }) {
@@ -75,7 +75,7 @@ export default function LeadSearchPage() {
 
       {/* 2. KPI CARDS */}
       <div className="kpi-grid">
-         <KPICard label="Base Google" value={storedGoogle?.total || "00"} subtext="Locais mapeados via Maps" icon={Globe} color="#3b82f6" />
+         <KPICard label="Base Google" value={storedGoogle?.total || "00"} subtext="Locais mapeados via Maps" icon={Globe} color="#d4af37" />
          <KPICard label="Base CNPJ" value={storedCnpj?.total || "00"} subtext="Empresas Receita Federal" icon={Building2} color="#a855f7" />
          <KPICard label="Capturas Hoje" value={(storedGoogle?.today || 0) + (storedCnpj?.today || 0)} subtext="Novos leads processados" icon={Zap} trend="+12%" color="#f59e0b" />
          <KPICard label="Performance" value="98.2%" subtext="Dataset sincronizado" icon={TrendingUp} color="#10b981" />
@@ -88,14 +88,14 @@ export default function LeadSearchPage() {
             <button 
               onClick={() => setActiveTab("cnpj")}
               className={cn("h-11 px-8 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", 
-                activeTab === "cnpj" ? "bg-blue-600 text-white shadow-lg" : "text-white/30 hover:text-white")}
+                activeTab === "cnpj" ? "bg-[#d4af37] text-white shadow-lg" : "text-white/30 hover:text-white")}
             >
                Receita Federal Cloud
             </button>
             <button 
               onClick={() => setActiveTab("google")}
               className={cn("h-11 px-8 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", 
-                activeTab === "google" ? "bg-blue-600 text-white shadow-lg" : "text-white/30 hover:text-white")}
+                activeTab === "google" ? "bg-[#d4af37] text-white shadow-lg" : "text-white/30 hover:text-white")}
             >
                Parâmetros Locais
             </button>

@@ -10,7 +10,7 @@ import { toast } from "@/hooks/use-toast"
 
 // ─── Reusable Component: KPI Card Enterprise ───────────────────────
 function KPICard({ 
-  label, value, subtext, icon: Icon, trend, color = "var(--accent-blue)" 
+  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)" 
 }: { 
   label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string 
 }) {
@@ -74,7 +74,7 @@ export default function ListasDisparoPage() {
 
       {/* 2. KPI CARDS (Hierarquia Corrigida) */}
       <div className="kpi-grid">
-         <KPICard label="Campanhas" value={listas.length} subtext="Dataset de disparos ativos" icon={Send} color="#3b82f6" />
+         <KPICard label="Campanhas" value={listas.length} subtext="Dataset de disparos ativos" icon={Send} color="#d4af37" />
          <KPICard label="Disparando" value={emProgresso} subtext="Execuções em tempo real" icon={Activity} color="#10b981" />
          <KPICard label="Total Leads" value={totalLeads} subtext="Contatos atingidos no cluster" icon={Users} color="#f59e0b" />
          <KPICard label="Taxa Flow" value={`${taxaSucesso}%`} subtext="Eficiência de entrega global" icon={TrendingUp} color="#a855f7" />
@@ -118,8 +118,8 @@ export default function ListasDisparoPage() {
                         </td>
                         <td>
                           <div className={cn("status-badge", 
-                             lista.status === 'CONCLUIDA' ? "bg-green-500/10 text-green-500 border border-green-500/20" : "bg-blue-500/10 text-blue-400 border border-blue-500/20")}>
-                             <span className={cn("dot", lista.status === 'CONCLUIDA' ? "bg-green-500" : "bg-blue-500")} /> {lista.status}
+                             lista.status === 'CONCLUIDA' ? "bg-green-500/10 text-green-500 border border-green-500/20" : "bg-[#d4af37]/10 text-[#d4af37] border border-blue-500/20")}>
+                             <span className={cn("dot", lista.status === 'CONCLUIDA' ? "bg-green-500" : "bg-[#d4af37]")} /> {lista.status}
                           </div>
                         </td>
                         <td className="w-48">
@@ -129,7 +129,7 @@ export default function ListasDisparoPage() {
                                  <span>{lista.enviados} / {lista.totalLeads}</span>
                               </div>
                               <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                 <div className="h-full bg-blue-600 transition-all" style={{ width: `${progress}%` }} />
+                                 <div className="h-full bg-[#d4af37] transition-all" style={{ width: `${progress}%` }} />
                               </div>
                            </div>
                         </td>

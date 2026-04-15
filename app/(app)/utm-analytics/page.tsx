@@ -7,7 +7,7 @@ import { formatCurrency, cn } from "@/lib/utils"
 
 // ─── Reusable Component: KPI Card Enterprise ───────────────────────
 function KPICard({ 
-  label, value, subtext, icon: Icon, trend, color = "var(--accent-blue)" 
+  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)" 
 }: { 
   label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string 
 }) {
@@ -57,7 +57,7 @@ export default function UtmAnalyticsPage() {
 
       {/* 2. KPI CARDS */}
       <div className="kpi-grid">
-         <KPICard label="Volumetria Leads" value={data?.totalLeads || 0} subtext="Dataset total capturado" icon={Users} color="#3b82f6" />
+         <KPICard label="Volumetria Leads" value={data?.totalLeads || 0} subtext="Dataset total capturado" icon={Users} color="#d4af37" />
          <KPICard label="Mês Vigente" value={data?.newThisMonth || 0} subtext="Performance período atual" icon={TrendingUp} color="#10b981" />
          <KPICard label="Conversão Global" value={`${data?.conversionRate || 0}%`} subtext="Média de qualificação BANT" icon={Target} color="#f59e0b" />
          <KPICard label="Dataset Revenue" value={formatCurrency(data?.totalRevenue || 0)} subtext="Previsão de receita em cluster" icon={DollarSign} color="#a855f7" />
@@ -121,7 +121,7 @@ export default function UtmAnalyticsPage() {
                           <div className="flex-1 h-3 bg-white/5 rounded-full overflow-hidden">
                              <div className="h-full transition-all duration-1000" style={{ width: `${pct}%`, background: stage.color, opacity: 0.6 }} />
                           </div>
-                          <span className="px-3 py-1 bg-white/5 border border-white/5 rounded-md text-[10px] font-bold text-blue-400">
+                          <span className="px-3 py-1 bg-white/5 border border-white/5 rounded-md text-[10px] font-bold text-[#d4af37]">
                              {pct.toFixed(0)}%
                           </span>
                        </div>

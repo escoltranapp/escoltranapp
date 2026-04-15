@@ -73,7 +73,7 @@ export function TopBar({ onMenuClick }: TopBarProps) {
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="text-white/20 hover:text-white relative hover:bg-white/5 transition-all">
             <Bell className="h-4 w-4" />
-            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_#3b82f6]" />
+            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_#d4af37]" />
           </Button>
 
           {/* Theme Toggle */}

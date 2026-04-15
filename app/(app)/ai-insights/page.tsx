@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 
 // ─── Reusable Component: KPI Card Enterprise ───────────────────────
 function KPICard({ 
-  label, value, subtext, icon: Icon, trend, color = "var(--accent-blue)" 
+  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)" 
 }: { 
   label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string 
 }) {
@@ -66,15 +66,15 @@ export default function AiInsightsPage() {
          <KPICard label="Qualificações" value={aiData?.totalQualifications || "00"} subtext="Leads processados hoje" icon={Brain} color="#a855f7" />
          <KPICard label="Efficiency Rate" value={`${aiData?.avgScore || 0}%`} subtext="Precisão algorítmica" icon={TrendingUp} color="#10b981" />
          <KPICard label="Vetor Hot Leads" value={aiData?.highScoreLeads || "00"} subtext="Alta propensão de compra" icon={Zap} color="#f59e0b" />
-         <KPICard label="Ações Autônomas" value={aiData?.actionsTriggered || "00"} subtext="Triggers de automação" icon={CheckCircle} color="#3b82f6" />
+         <KPICard label="Ações Autônomas" value={aiData?.actionsTriggered || "00"} subtext="Triggers de automação" icon={CheckCircle} color="#d4af37" />
       </div>
 
       {/* 3. TABS DE NAVEGAÇÃO */}
       <Tabs defaultValue="scores" className="space-y-8">
         <TabsList className="bg-white/5 border border-white/5 h-12 p-1 gap-1 rounded-xl w-fit">
-          <TabsTrigger value="scores" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">Lead Metrics</TabsTrigger>
-          <TabsTrigger value="config" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">Brain Parameters</TabsTrigger>
-          <TabsTrigger value="scripts" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">Scripts Cluster</TabsTrigger>
+          <TabsTrigger value="scores" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-[#d4af37] data-[state=active]:text-white transition-all">Lead Metrics</TabsTrigger>
+          <TabsTrigger value="config" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-[#d4af37] data-[state=active]:text-white transition-all">Brain Parameters</TabsTrigger>
+          <TabsTrigger value="scripts" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-[#d4af37] data-[state=active]:text-white transition-all">Scripts Cluster</TabsTrigger>
         </TabsList>
 
         {/* 4. ÁREA DE OUTPUT */}

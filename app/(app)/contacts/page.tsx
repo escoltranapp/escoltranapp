@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 
 // ─── Reusable Component: KPI Card Enterprise ───────────────────────
 function KPICard({ 
-  label, value, subtext, icon: Icon, trend, color = "var(--accent-blue)" 
+  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)" 
 }: { 
   label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string 
 }) {
@@ -66,7 +66,7 @@ export default function ContactsPage() {
 
       {/* 2. KPI CARDS */}
       <div className="kpi-grid">
-         <KPICard label="Total de Registros" value={contacts.length} subtext="Dataset mapeado no cluster" icon={Users} color="#3b82f6" />
+         <KPICard label="Total de Registros" value={contacts.length} subtext="Dataset mapeado no cluster" icon={Users} color="#d4af37" />
          <KPICard label="Empresas" value="42" subtext="Inbound e Outbound" icon={Building2} color="#a855f7" />
          <KPICard label="Contatos Mês" value="12" subtext="Aquisição tempo real" icon={Sparkles} trend="+8%" color="#f59e0b" />
          <KPICard label="Health Rate" value="94.1%" subtext="Integridade de dados" icon={ShieldCheck} color="#10b981" />

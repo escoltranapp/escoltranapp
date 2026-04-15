@@ -10,7 +10,7 @@
   --text-secondary: rgba(255, 255, 255, 0.55);
   --text-muted: rgba(255, 255, 255, 0.35);
   
-  --accent-blue: #2563eb;
+  --accent-primary: #d4af37;
   --accent-gold: #d4af37;
   --bg-auth-base: #050608;
 
@@ -276,22 +276,25 @@ body {
 }
 
 .btn-cta-primary {
-  background-color: var(--accent-blue);
-  color: white;
-  padding: 10px 20px;
+  background: var(--accent-primary);
+  color: #000;
+  padding: 10px 22px;
   border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: 800;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Outfit', sans-serif;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
 }
 
 .btn-cta-primary:hover {
   transform: translateY(-2px);
   filter: brightness(1.1);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
 }
 
 /* COMPONENTE 2 - GRID DE MÉTRICAS (KPIs) */

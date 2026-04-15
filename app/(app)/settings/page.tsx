@@ -37,11 +37,11 @@ export default function SettingsPage() {
       {/* 2. TABS DE NAVEGAÇÃO */}
       <Tabs defaultValue="profile" className="space-y-8">
         <TabsList className="bg-white/5 border border-white/5 h-12 p-1 gap-1 rounded-xl w-fit">
-          <TabsTrigger value="profile" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">Perfil</TabsTrigger>
-          <TabsTrigger value="pipeline" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">Pipeline</TabsTrigger>
-          <TabsTrigger value="integrations" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">Clusters</TabsTrigger>
-          <TabsTrigger value="search" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">Search</TabsTrigger>
-          <TabsTrigger value="templates" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all">Templates</TabsTrigger>
+          <TabsTrigger value="profile" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-[#d4af37] data-[state=active]:text-white transition-all">Perfil</TabsTrigger>
+          <TabsTrigger value="pipeline" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-[#d4af37] data-[state=active]:text-white transition-all">Pipeline</TabsTrigger>
+          <TabsTrigger value="integrations" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-[#d4af37] data-[state=active]:text-white transition-all">Clusters</TabsTrigger>
+          <TabsTrigger value="search" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-[#d4af37] data-[state=active]:text-white transition-all">Search</TabsTrigger>
+          <TabsTrigger value="templates" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-[#d4af37] data-[state=active]:text-white transition-all">Templates</TabsTrigger>
         </TabsList>
 
         {/* 3. SEÇÃO IDENTIDADE DE ACESSO */}
@@ -56,9 +56,9 @@ export default function SettingsPage() {
                     <div className="relative group">
                        <Avatar className="h-[72px] w-[72px] border-2 border-white/5 p-1 bg-[#181c24]">
                           <AvatarImage src={session?.user?.image || ""} className="rounded-full" />
-                          <AvatarFallback className="text-xl font-bold bg-white/5 text-blue-400">{getInitials(userName)}</AvatarFallback>
+                          <AvatarFallback className="text-xl font-bold bg-white/5 text-[#d4af37]">{getInitials(userName)}</AvatarFallback>
                        </Avatar>
-                       <button className="absolute -bottom-1 -right-1 p-2 bg-blue-600 rounded-full border-2 border-[#0a0c10] text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                       <button className="absolute -bottom-1 -right-1 p-2 bg-[#d4af37] rounded-full border-2 border-[#0a0c10] text-white opacity-0 group-hover:opacity-100 transition-opacity">
                           <Camera size={12} />
                        </button>
                     </div>

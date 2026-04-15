@@ -6,7 +6,7 @@ import { formatCurrency, cn } from "@/lib/utils"
 
 // ─── Reusable Component: KPI Card Enterprise ───────────────────────
 function KPICard({ 
-  label, value, subtext, icon: Icon, trend, color = "var(--accent-blue)" 
+  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)" 
 }: { 
   label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string 
 }) {
@@ -30,7 +30,7 @@ function KPICard({
 }
 
 const STAGES = [
-  { id: "PROSPECT", label: "NOVO LEAD", color: "#3b82f6" },
+  { id: "PROSPECT", label: "NOVO LEAD", color: "#d4af37" },
   { id: "QUALIFICATION", label: "QUALIFICAÇÃO", color: "#a855f7" },
   { id: "MEETING", label: "REUNIÃO MARCADA", color: "#f59e0b" },
   { id: "PROPOSAL", label: "PROPOSTA", color: "#10b981" },
@@ -71,7 +71,7 @@ export default function PipelinePage() {
 
       {/* 2. KPI CARDS */}
       <div className="kpi-grid">
-         <KPICard label="Total Inventory" value={(deals || []).length} subtext="Oportunidades no funil" icon={LayoutGrid} color="#3b82f6" />
+         <KPICard label="Total Inventory" value={(deals || []).length} subtext="Oportunidades no funil" icon={LayoutGrid} color="#d4af37" />
          <KPICard label="Pipeline Value" value={formatCurrency(totalValue)} subtext="Receita em prospecção" icon={DollarSign} trend="+15%" color="#10b981" />
          <KPICard label="Fadiga Operacional" value="01" subtext="Cards sem interação" icon={AlertCircle} color="#ef4444" />
          <KPICard label="Dataset Health" value="100%" subtext="Fluxo sincronizado" icon={TrendingUp} color="#a855f7" />
@@ -104,8 +104,8 @@ export default function PipelinePage() {
                 ) : (
                   stageDeals.map((deal) => (
                     <div key={deal.id} className="kpi-card p-5 group hover:border-blue-600/30 transition-all cursor-pointer">
-                       <h4 className="text-[13px] font-bold text-white mb-2 leading-tight group-hover:text-blue-400">{deal.titulo}</h4>
-                       <div className="text-[15px] font-bold text-blue-500 mb-4">{formatCurrency(deal.valor)}</div>
+                       <h4 className="text-[13px] font-bold text-white mb-2 leading-tight group-hover:text-[#d4af37]">{deal.titulo}</h4>
+                       <div className="text-[15px] font-bold text-[#d4af37] mb-4">{formatCurrency(deal.valor)}</div>
                        
                        <div className="flex items-center justify-between pt-4 border-t border-white/[0.04] mt-2">
                           <div className="flex items-center gap-2">
