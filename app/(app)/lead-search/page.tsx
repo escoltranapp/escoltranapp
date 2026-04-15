@@ -35,67 +35,64 @@ import {
   ChevronDown,
 } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import { cn } from "@/lib/utils"
+import { formatCurrency } from "@/lib/utils"
+import { ArrowUpRight, ArrowDownRight, Activity as ActivityIcon } from "lucide-react"
 
-interface GoogleLead {
-  nome: string
-  telefone?: string
-  endereco?: string
-  cidade?: string
-  uf?: string
-  nicho?: string
-  site?: string
-}
+function MetricCard({
+  title,
+  value,
+  growth,
+  icon: Icon,
+  format = "number",
+  delay = "0ms",
+  color = "accent"
+}: {
+  title: string
+  value: any
+  growth: number
+  icon: React.ElementType
+  format?: "number" | "currency" | "percent"
+  delay?: string
+  color?: string
+}) {
+  const isPositive = growth >= 0
+  const formatted =
+    format === "currency"
+      ? formatCurrency(value)
+      : format === "percent"
+      ? `${value.toFixed(1)}%`
+      : value.toLocaleString("pt-BR")
 
-interface CnpjLead {
-  cnpj: string
-  nome: string
-  telefone?: string
-  cnae?: string
-  cidade?: string
-  uf?: string
-  situacao?: string
-  email?: string
-}
+  const colorClasses: Record<string, string> = {
+    accent: "text-accent bg-accent/10 border-accent/20",
+    success: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    warning: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+    info: "text-blue-400 bg-blue-400/10 border-blue-400/20",
+  }
 
-interface StoredLead {
-  id: string
-  nome: string
-  telefone?: string | null
-  cidade?: string | null
-  uf?: string | null
-  nicho?: string | null
-  site?: string | null
-  status: string
-  createdAt: string
-}
-
-interface StoredCnpjLead {
-  id: string
-  cnpj: string
-  nome: string
-  telefone?: string | null
-  cnae?: string | null
-  cidade?: string | null
-  uf?: string | null
-  situacao?: string | null
-  email?: string | null
-  createdAt: string
-}
-
-const states = [
-  "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA",
-  "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN",
-  "RO", "RR", "RS", "SC", "SE", "SP", "TO"
-]
-
-function SkeletonRow({ cols = 5 }: { cols?: number }) {
   return (
-    <TableRow>
-      {[...Array(cols)].map((_, i) => (
-        <TableCell key={i}><div className="h-4 rounded bg-white/5 animate-pulse" /></TableCell>
-      ))}
-    </TableRow>
+    <Card 
+      className="bg-[#111114] border-white/5 rounded-[22px] p-6 group animate-entrance relative overflow-hidden"
+      style={{ animationDelay: delay }}
+    >
+      <div className="flex items-start justify-between relative z-10">
+        <div className="flex gap-4 items-center">
+          <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center border", colorClasses[color] || colorClasses.accent)}>
+            <Icon className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-0.5">{title}</p>
+            <h3 className="text-2xl font-black text-white tracking-tight">{formatted}</h3>
+          </div>
+        </div>
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-5 pointer-events-none group-hover:opacity-20 transition-opacity">
+          <Icon className="h-16 w-16 text-white rotate-12" />
+        </div>
+      </div>
+      <div className="mt-4 flex items-center gap-2 relative z-10">
+        <span className={cn("text-[10px] font-bold text-white/20 uppercase tracking-widest italic")}>Motor de Busca Ativo</span>
+      </div>
+    </Card>
   )
 }
 
@@ -258,38 +255,64 @@ export default function LeadSearchPage() {
   }
 
   return (
-    <div className="space-y-8 pb-8 animate-entrance">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-text-primary uppercase tracking-tighter leading-none">Busca de Leads</h1>
-          <p className="text-sm font-display italic text-accent opacity-80 mt-1">Inteligência de mercado e prospecção ativa</p>
+    <div className="max-w-[1600px] mx-auto space-y-12 pb-12 px-2 sm:px-6 lg:px-10 flex flex-col h-full overflow-hidden font-sans">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 animate-entrance">
+        <div className="space-y-4">
+          <Badge variant="outline" className="bg-accent/5 border-accent/20 text-accent text-[10px] font-bold py-1 px-3 rounded-full flex items-center w-fit gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+            EXTRATORES DE DADOS ATIVOS
+          </Badge>
+          <div>
+            <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight flex items-baseline gap-3">
+              Busca <span className="text-accent underline decoration-accent/20 underline-offset-8 transition-all hover:decoration-accent/50 cursor-default">Leads</span> ⚡
+            </h1>
+            <p className="text-sm font-medium text-white/40 mt-3 flex items-center gap-2">
+              PROSPECÇÃO COM INTELIGÊNCIA <span className="h-1 w-1 rounded-full bg-white/20" /> BIG DATA <span className="h-1 w-1 rounded-full bg-white/20" /> STATUS: <span className="text-accent/60">PRONTO</span>
+            </p>
+          </div>
         </div>
-        <Users className="h-8 w-8 text-white opacity-10" />
+
+        <Button className="bg-accent hover:bg-accent/90 text-black h-12 px-6 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-accent/10 group transition-all" onClick={() => setActiveTab(activeTab === "google" ? "cnpj" : "google")}>
+          <Users className="h-4 w-4 mr-2" />
+          Alternar Motor
+        </Button>
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[
-          { label: "Base Google", value: storedGoogle?.total ?? "—", icon: MapPin, color: "text-accent" },
-          { label: "Base CNPJ", value: storedCnpj?.total ?? "—", icon: Building2, color: "text-info" },
-          { label: "Capturas Hoje", value: (storedGoogle?.today ?? 0) + (storedCnpj?.today ?? 0), icon: CalendarDays, color: "text-success" },
-          { label: "Performance", value: (storedGoogle?.week ?? 0) + (storedCnpj?.week ?? 0), icon: TrendingUp, color: "text-warning" },
-        ].map((s, i) => {
-          const Icon = s.icon
-          return (
-            <Card key={s.label} className="bg-surface border-border-subtle group hover:border-border-default transition-all animate-entrance" style={{ animationDelay: `${i * 100}ms` }}>
-              <CardContent className="flex items-center gap-4 p-4">
-                <div className="w-10 h-10 rounded-lg bg-surface-elevated flex items-center justify-center border border-border-subtle group-hover:bg-white/[0.02] transition-colors">
-                  <Icon className={cn("h-5 w-5", s.color)} />
-                </div>
-                <div>
-                  <p className="text-xl font-black font-sans leading-none">{s.value}</p>
-                  <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-muted mt-1 opacity-60">{s.label}</p>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <MetricCard
+          title="Base Google"
+          value={storedGoogle?.total ?? 0}
+          growth={0}
+          icon={MapPin}
+          color="accent"
+          delay="100ms"
+        />
+        <MetricCard
+          title="Base CNPJ"
+          value={storedCnpj?.total ?? 0}
+          growth={0}
+          icon={Building2}
+          color="info"
+          delay="200ms"
+        />
+        <MetricCard
+          title="Capturas Hoje"
+          value={(storedGoogle?.today ?? 0) + (storedCnpj?.today ?? 0)}
+          growth={0}
+          icon={CalendarDays}
+          color="success"
+          delay="300ms"
+        />
+        <MetricCard
+          title="Performance"
+          value={(storedGoogle?.week ?? 0) + (storedCnpj?.week ?? 0)}
+          growth={0}
+          icon={TrendingUp}
+          color="warning"
+          delay="400ms"
+        />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

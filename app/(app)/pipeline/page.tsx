@@ -10,12 +10,70 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus, RefreshCw, Kanban, DollarSign, AlertTriangle, Search, User, Calendar as CalendarIcon, Check } from "lucide-react"
+import { Plus, RefreshCw, Kanban, DollarSign, AlertTriangle, Search, User, Calendar as CalendarIcon, Check, ArrowUpRight, ArrowDownRight, Activity } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { formatCurrency } from "@/lib/utils"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { cn } from "@/lib/utils"
+
+function MetricCard({
+  title,
+  value,
+  growth,
+  icon: Icon,
+  format = "number",
+  delay = "0ms",
+  color = "accent"
+}: {
+  title: string
+  value: number
+  growth: number
+  icon: React.ElementType
+  format?: "number" | "currency" | "percent"
+  delay?: string
+  color?: string
+}) {
+  const isPositive = growth >= 0
+  const formatted =
+    format === "currency"
+      ? formatCurrency(value)
+      : format === "percent"
+      ? `${value.toFixed(1)}%`
+      : value.toLocaleString("pt-BR")
+
+  const colorClasses: Record<string, string> = {
+    accent: "text-accent bg-accent/10 border-accent/20",
+    success: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    warning: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+    info: "text-blue-400 bg-blue-400/10 border-blue-400/20",
+  }
+
+  return (
+    <Card 
+      className="bg-[#111114] border-white/5 rounded-[22px] p-6 group animate-entrance relative overflow-hidden"
+      style={{ animationDelay: delay }}
+    >
+      <div className="flex items-start justify-between relative z-10">
+        <div className="flex gap-4 items-center">
+          <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center border", colorClasses[color] || colorClasses.accent)}>
+            <Icon className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-0.5">{title}</p>
+            <h3 className="text-2xl font-black text-white tracking-tight">{formatted}</h3>
+          </div>
+        </div>
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-5 pointer-events-none group-hover:opacity-20 transition-opacity">
+          <Icon className="h-16 w-16 text-white rotate-12" />
+        </div>
+      </div>
+      <div className="mt-4 flex items-center gap-2 relative z-10">
+        <span className={cn("text-[10px] font-bold text-white/20 uppercase tracking-widest italic")}>Status Operacional</span>
+      </div>
+    </Card>
+  )
+}
 
 function SkeletonBoard() {
   return (
@@ -187,87 +245,74 @@ export default function PipelinePage() {
   const selectedContact = contactsData?.contacts?.find((c: any) => c.id === dealForm.contactId)
 
   return (
-    <div className="space-y-4 h-full flex flex-col">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
-        <div>
-          <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-              Pipeline Comercial
-            </span>
+    <div className="max-w-[1600px] mx-auto space-y-12 pb-12 px-2 sm:px-6 lg:px-10 flex flex-col h-full overflow-hidden">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 animate-entrance">
+        <div className="space-y-4">
+          <Badge variant="outline" className="bg-accent/5 border-accent/20 text-accent text-[10px] font-bold py-1 px-3 rounded-full flex items-center w-fit gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+            PIPELINE COMERCIAL ATIVO
+          </Badge>
+          <div>
+            <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight flex items-baseline gap-3">
+              Pipeline <span className="text-accent/60 text-base font-medium tracking-normal">({totalDeals} cards)</span>
+            </h1>
+            <p className="text-sm font-medium text-white/40 mt-3 flex items-center gap-2">
+              GESTÃO DE OPORTUNIDADES <span className="h-1 w-1 rounded-full bg-white/20" /> VISÃO KANBAN <span className="h-1 w-1 rounded-full bg-white/20" /> STATUS: <span className="text-accent/60">OPERACIONAL</span>
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Pipeline</h1>
-          <p className="text-muted-foreground text-sm">
-            Gestão de Oportunidades • Visão Kanban
-          </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Select defaultValue="main">
-            <SelectTrigger className="w-44 h-9">
+            <SelectTrigger className="w-48 h-12 bg-white/[0.03] border-white/5 rounded-2xl text-xs font-bold text-white/70">
               <SelectValue placeholder="Pipeline" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-surface-overlay border-border-strong">
               <SelectItem value="main">{data?.pipelineName || "Pipeline Principal"}</SelectItem>
             </SelectContent>
           </Select>
 
-          <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => refetch()} title="Atualizar">
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-
-          <Button variant="outline" className="h-9" onClick={() => setShowNewStage(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Nova Coluna
-          </Button>
-
-          <Button className="escoltran-gradient-bg text-white h-9" onClick={() => {
-            setDealForm(p => ({ ...p, stageId: "" }))
-            setShowNewDeal(true)
-          }}>
-            <Plus className="h-4 w-4 mr-2" />
+          <Button 
+            className="bg-accent hover:bg-accent/90 text-black h-12 px-6 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-accent/10 group transition-all"
+            onClick={() => {
+              setDealForm(p => ({ ...p, stageId: "" }))
+              setShowNewDeal(true)
+            }}
+          >
+            <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform" />
             Novo Deal
           </Button>
         </div>
       </div>
 
-      {/* Metrics */}
-      <div className="grid grid-cols-3 gap-4 shrink-0">
-        <Card className="bg-card border-border shadow-sm">
-          <CardContent className="flex items-center gap-3 p-4">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-               <Kanban className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-xl font-bold leading-tight">{isLoading ? "—" : totalDeals}</p>
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Total de Cards</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border shadow-sm">
-          <CardContent className="flex items-center gap-3 p-4">
-            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
-              <DollarSign className="h-5 w-5 text-green-400" />
-            </div>
-            <div>
-              <p className="text-xl font-bold leading-tight">{isLoading ? "—" : formatCurrency(totalValue)}</p>
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Valor Total</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border shadow-sm">
-          <CardContent className="flex items-center gap-3 p-4">
-            <div className={`w-10 h-10 rounded-full ${overdueDeals > 0 ? "bg-red-500/10" : "bg-muted/10"} flex items-center justify-center`}>
-              <AlertTriangle className={`h-5 w-5 ${overdueDeals > 0 ? "text-red-400" : "text-muted-foreground"}`} />
-            </div>
-            <div>
-              <p className={`text-xl font-bold leading-tight ${overdueDeals > 0 ? "text-red-400" : ""}`}>
-                {isLoading ? "—" : overdueDeals}
-              </p>
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Cards +30 dias</p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Metrics Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <MetricCard
+          title="Total de Cards"
+          value={totalDeals}
+          growth={0}
+          icon={Kanban}
+          color="accent"
+          delay="100ms"
+        />
+        <MetricCard
+          title="Valor Total"
+          value={totalValue}
+          growth={0}
+          icon={DollarSign}
+          color="success"
+          format="currency"
+          delay="200ms"
+        />
+        <MetricCard
+          title="Overdue (+30d)"
+          value={overdueDeals}
+          growth={0}
+          icon={AlertTriangle}
+          color={overdueDeals > 0 ? "warning" : "info"}
+          delay="300ms"
+        />
       </div>
 
       {/* Kanban */}

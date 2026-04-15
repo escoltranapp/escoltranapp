@@ -12,13 +12,62 @@ import {
 import { TrendingUp, MousePointer, DollarSign, Target, Users, Activity, BarChart3, PieChartIcon } from "lucide-react"
 import { formatCurrency, cn } from "@/lib/utils"
 
-function SkeletonCard() {
+import { ArrowUpRight, ArrowDownRight, Activity as ActivityIndicator } from "lucide-react"
+
+function MetricCard({
+  title,
+  value,
+  growth,
+  icon: Icon,
+  format = "number",
+  delay = "0ms",
+  color = "accent"
+}: {
+  title: string
+  value: any
+  growth: number
+  icon: React.ElementType
+  format?: "number" | "currency" | "percent"
+  delay?: string
+  color?: string
+}) {
+  const isPositive = growth >= 0
+  const formatted =
+    format === "currency"
+      ? formatCurrency(value)
+      : format === "percent"
+      ? `${value}`
+      : value.toLocaleString("pt-BR")
+
+  const colorClasses: Record<string, string> = {
+    accent: "text-accent bg-accent/10 border-accent/20",
+    success: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    warning: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+    info: "text-blue-400 bg-blue-400/10 border-blue-400/20",
+  }
+
   return (
-    <Card className="bg-surface border-border-subtle">
-      <CardContent className="p-4 space-y-3">
-        <div className="h-3 w-20 rounded bg-white/5 animate-pulse" />
-        <div className="h-7 w-24 rounded bg-white/5 animate-pulse" />
-      </CardContent>
+    <Card 
+      className="bg-[#111114] border-white/5 rounded-[22px] p-6 group animate-entrance relative overflow-hidden"
+      style={{ animationDelay: delay }}
+    >
+      <div className="flex items-start justify-between relative z-10">
+        <div className="flex gap-4 items-center">
+          <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center border", colorClasses[color] || colorClasses.accent)}>
+            <Icon className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 mb-0.5">{title}</p>
+            <h3 className="text-2xl font-black text-white tracking-tight">{formatted}</h3>
+          </div>
+        </div>
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-5 pointer-events-none group-hover:opacity-20 transition-opacity">
+          <Icon className="h-16 w-16 text-white rotate-12" />
+        </div>
+      </div>
+      <div className="mt-4 flex items-center gap-2 relative z-10">
+        <span className={cn("text-[10px] font-bold text-white/20 uppercase tracking-widest italic")}>Dataset Sincronizado</span>
+      </div>
     </Card>
   )
 }
@@ -35,58 +84,73 @@ export default function UtmAnalyticsPage() {
   })
 
   return (
-    <div className="space-y-6 pb-8 animate-entrance">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-text-primary uppercase tracking-tighter leading-none">UTM Analytics</h1>
-          <p className="text-sm font-display italic text-accent opacity-80 mt-1">Inteligência de rastreamento e conversão</p>
+    <div className="max-w-[1600px] mx-auto space-y-12 pb-12 px-2 sm:px-6 lg:px-10 flex flex-col h-full overflow-hidden font-sans">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 animate-entrance">
+        <div className="space-y-4">
+          <Badge variant="outline" className="bg-accent/5 border-accent/20 text-accent text-[10px] font-bold py-1 px-3 rounded-full flex items-center w-fit gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+            INTELIGÊNCIA DE RASTREAMENTO
+          </Badge>
+          <div>
+            <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight flex items-baseline gap-3">
+              UTM <span className="text-accent underline decoration-accent/20 underline-offset-8 transition-all hover:decoration-accent/50 cursor-default">Analytics</span> 🛰️
+            </h1>
+            <p className="text-sm font-medium text-white/40 mt-3 flex items-center gap-2">
+              MONITORAMENTO DE CANAIS <span className="h-1 w-1 rounded-full bg-white/20" /> ATRIBUIÇÃO <span className="h-1 w-1 rounded-full bg-white/20" /> STATUS: <span className="text-accent/60">ANALISANDO</span>
+            </p>
+          </div>
         </div>
+
+        <PieChartIcon className="h-12 w-12 text-white/5" />
       </div>
 
-      {/* KPI Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {/* Metric Cards Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {isLoading ? (
-          [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
+          <>
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </>
         ) : (
-          [
-            {
-              label: "Volumetria Leads",
-              value: (data?.totalLeads || 0).toLocaleString("pt-BR"),
-              icon: Users,
-              color: "text-white",
-            },
-            {
-              label: "Mês Vigente",
-              value: (data?.newThisMonth || 0).toLocaleString("pt-BR"),
-              icon: TrendingUp,
-              color: "text-success",
-            },
-            {
-              label: "Conversão Global",
-              value: `${data?.conversionRate || "0"}%`,
-              icon: Target,
-              color: "text-info",
-            },
-            {
-              label: "Dataset Receivable",
-              value: formatCurrency(data?.totalRevenue || 0),
-              icon: DollarSign,
-              color: "text-accent",
-            },
-          ].map((stat, i) => {
-            const Icon = stat.icon
-            return (
-              <Card key={stat.label} className="bg-surface border-border-subtle group hover:border-border-default transition-all animate-entrance" style={{ animationDelay: `${i * 100}ms` }}>
-                <CardContent className="p-4 flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-[10px] font-mono font-bold uppercase tracking-[0.15em] text-text-muted opacity-60">{stat.label}</p>
-                    <Icon className={cn("h-4 w-4", stat.color)} />
-                  </div>
-                  <p className="text-2xl font-black font-sans leading-none">{stat.value}</p>
-                </CardContent>
-              </Card>
-            )
-          })
+          <>
+            <MetricCard
+              title="Volumetria Leads"
+              value={data?.totalLeads ?? 0}
+              growth={0}
+              icon={Users}
+              color="info"
+              delay="100ms"
+            />
+            <MetricCard
+              title="Mês Vigente"
+              value={data?.newThisMonth ?? 0}
+              growth={0}
+              icon={TrendingUp}
+              color="success"
+              delay="200ms"
+            />
+            <MetricCard
+              title="Conversão Global"
+              value={data?.conversionRate ?? 0}
+              growth={0}
+              icon={Target}
+              color="warning"
+              format="percent"
+              delay="300ms"
+            />
+            <MetricCard
+              title="Dataset Revenue"
+              value={data?.totalRevenue ?? 0}
+              growth={0}
+              icon={DollarSign}
+              color="accent"
+              format="currency"
+              delay="400ms"
+            />
+          </>
         )}
       </div>
 
