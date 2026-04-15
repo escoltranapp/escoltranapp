@@ -51,8 +51,8 @@ function KanbanColumn({ stage, children, onAddDeal }: { stage: Stage, children: 
 
   return (
     <div className="min-w-[280px] w-[280px] flex flex-col h-full shrink-0">
-      {/* COLUMN CONTAINER — STRICT TARGET SPEC */}
-      <div className="bg-[#111520] border-[0.5px] border-white/[0.09] rounded-[12px] p-[14px] px-[12px] flex flex-col min-h-[700px] h-full shadow-lg">
+      {/* COLUMN CONTAINER — IMAGE 1 MATCH (#0F1117) */}
+      <div className="bg-[#0f1117] border-[0.5px] border-white/[0.08] rounded-[12px] p-[14px] px-[12px] flex flex-col min-h-[700px] h-full shadow-lg">
         {/* HEADER DA COLUNA */}
         <div className="flex items-center justify-between pb-[10px] border-b-[0.5px] border-white/[0.07] mb-1">
            <div className="flex items-center gap-[8px]">
@@ -143,16 +143,16 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onAddDeal, onAd
           ))}
         </SortableContext>
 
-        {/* REFINED NEW COLUMN PLACEHOLDER */}
+        {/* REFINED NEW COLUMN PLACEHOLDER — IMAGE 1 MATCH */}
         <div className="min-w-[280px] w-[280px]">
            <button 
              onClick={onAddStage}
-             className="w-full h-[600px] border border-dashed border-white/[0.12] hover:border-[#3B82F6] hover:bg-[#3B82F6]/[0.02] rounded-[12px] flex flex-col items-center justify-center gap-4 transition-all group"
+             className="w-full h-full min-h-[700px] border border-dashed border-white/[0.12] hover:border-[#3B82F6]/40 hover:bg-[#3B82F6]/[0.02] rounded-[12px] flex flex-col items-center justify-center gap-[18px] transition-all group"
            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all bg-white/[0.02] group-hover:bg-[#3B82F6]/[0.05]">
-                <Plus size={24} className="text-[#8B949E] group-hover:text-[#3B82F6]" />
+              <div className="w-[48px] h-[48px] rounded-full flex items-center justify-center transition-all bg-[#0f1117] border border-white/[0.08] group-hover:bg-[#3B82F6]/[0.08] group-hover:border-[#3B82F6]/20">
+                <Plus size={24} className="text-[#3b82f6]/70 group-hover:text-[#3B82F6] transition-colors" strokeWidth={3} />
               </div>
-              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8B949E] group-hover:text-[#3B82F6]">Nova Coluna</span>
+              <span className="text-[12px] font-black uppercase tracking-[0.15em] text-[#3B82F6]/60 group-hover:text-[#3B82F6] transition-all">Nova Coluna</span>
            </button>
         </div>
       </div>
