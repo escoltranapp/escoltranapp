@@ -11,13 +11,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Desktop Sidebar */}
-      <div className="hidden md:flex w-64 shrink-0 flex-col">
+      <div className="hidden md:flex w-[220px] shrink-0 flex-col">
         <AppSidebar />
       </div>
 
       {/* Mobile Sidebar */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent side="left" className="p-0 w-64">
+        <SheetContent side="left" className="p-0 w-[220px] border-r-0 bg-transparent">
           <AppSidebar onClose={() => setMobileOpen(false)} />
         </SheetContent>
       </Sheet>

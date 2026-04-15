@@ -18,7 +18,6 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useSession, signOut } from "next-auth/react"
-import { Button } from "@/components/ui/button"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -122,17 +121,15 @@ function UsageBar({ percent = 72 }: { percent?: number }) {
 // ─── Main sidebar ─────────────────────────────────────────────────────────────
 
 interface AppSidebarProps {
-  onClose?: () => void
+  onClose?: () => void;
 }
 
 export function AppSidebar({ onClose }: AppSidebarProps) {
-  const { data: session } = useSession()
-  const pathname = usePathname()
+  const { data: session } = useSession();
+  const userName = session?.user?.name || "Usuário";
+  const userRole = "Administrador";
+  const usagePercent = 72;
   
-  const userName = session?.user?.name || "Usuário"
-  const userRole = "Administrador"
-  const usagePercent = 72
-
   const initials = userName
     .split(" ")
     .slice(0, 2)
@@ -141,28 +138,27 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
     .toUpperCase();
 
   return (
-    <aside className="flex h-full w-full flex-col overflow-hidden border-r border-white/[0.07] bg-[#0d0d0d]">
-
+    <aside className="flex h-screen w-[220px] shrink-0 flex-col overflow-hidden border-r border-[rgba(255,255,255,0.07)] bg-[#0d0d0d] font-sans">
       {/* ── Brand ── */}
-      <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-5">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#c9a227] text-sm font-medium text-[#0d0d0d]">
-            E
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[13px] font-medium leading-none tracking-[0.02em] text-white">
-              Escoltran
-            </span>
-            <span className="mt-1 text-[10px] uppercase tracking-[0.08em] text-white/35">
-              Sales Intelligence
-            </span>
-          </div>
+      <div className="flex items-center gap-2.5 border-b border-[rgba(255,255,255,0.06)] px-4 py-5 relative">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#c9a227] text-sm font-medium text-[#0d0d0d]">
+          E
         </div>
-        
+        <div className="flex flex-col">
+          <span className="text-[13px] font-medium leading-none tracking-[0.02em] text-white">
+            Escoltran
+          </span>
+          <span className="mt-1 text-[10px] uppercase tracking-[0.08em] text-white/35">
+            Sales Intelligence
+          </span>
+        </div>
         {onClose && (
-          <Button variant="ghost" size="icon" onClick={onClose} className="md:hidden text-white/20 hover:text-white/50">
+          <button 
+            onClick={onClose} 
+            className="md:hidden absolute right-4 text-white/40 hover:text-white transition-colors"
+          >
             <X className="h-4 w-4" />
-          </Button>
+          </button>
         )}
       </div>
 
@@ -208,7 +204,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
         <UsageBar percent={usagePercent} />
 
         {/* User row */}
-        <div className="flex items-center gap-2.5 px-1 py-2 relative group">
+        <div className="group flex items-center gap-2.5 px-1 py-2 relative rounded-md transition-colors hover:bg-white/[0.05] cursor-default">
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#c9a227] text-[11px] font-medium text-[#0d0d0d]">
             {initials}
           </div>
@@ -219,12 +215,17 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             <p className="mt-0.5 text-[10px] text-white/30">{userRole}</p>
           </div>
           
+          <Settings
+            className="h-[14px] w-[14px] shrink-0 text-white/20 transition-all group-hover:opacity-0 absolute right-2"
+            strokeWidth={1.5}
+          />
+          
           <button 
-            onClick={() => signOut()}
-            className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-white/10 rounded-md"
-            title="Sair"
+            onClick={(e) => { e.stopPropagation(); signOut(); }}
+            className="opacity-0 group-hover:opacity-100 transition-all absolute right-2 text-white/20 hover:text-red-400"
+            title="Sair do sistema"
           >
-            <LogOut className="h-[14px] w-[14px] text-white/20 hover:text-red-400" strokeWidth={1.5} />
+            <LogOut className="h-[14px] w-[14px] shrink-0" strokeWidth={1.5} />
           </button>
         </div>
       </div>
