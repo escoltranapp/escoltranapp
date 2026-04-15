@@ -66,9 +66,7 @@ export function TopBar({ onMenuClick }: TopBarProps) {
             <Menu className="h-5 w-5" />
           </Button>
           
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/10 select-none">
-             <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]" /> Node: Prod-Edge
-          </div>
+          
         </div>
 
         <div className="flex items-center gap-2">
