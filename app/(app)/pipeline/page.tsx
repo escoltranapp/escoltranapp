@@ -90,7 +90,7 @@ export default function PipelinePage() {
   const totalValue = validatedDeals.reduce((acc, d) => acc + (Number(d.valor) || 0), 0)
 
   return (
-    <div className="animate-aether space-y-12 pb-12 max-w-[1800px] mx-auto px-4 lg:px-0">
+    <div className="animate-aether space-y-12">
       
       {/* Prime Header */}
       <header className="flex flex-col md:flex-row items-center justify-between gap-8 pt-4">

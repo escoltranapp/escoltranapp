@@ -22,11 +22,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SheetContent>
       </Sheet>
 
-      {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden">
         <TopBar onMenuClick={() => setMobileOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          {children}
+        <main className="flex-1 overflow-y-auto w-full">
+           <div className="content-container py-12">
+              {children}
+           </div>
         </main>
       </div>
     </div>
