@@ -3,161 +3,231 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  LayoutDashboard,
-  Kanban,
-  Users,
+  LayoutGrid,
+  List,
+  User,
+  CalendarDays,
   Search,
-  Send,
+  Phone,
   Activity,
-  BarChart2,
-  Bot,
   Settings,
-  X,
-  Plus,
-  ChevronRight,
+  Sparkles,
+  UserPlus,
   LogOut,
+  X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { useSession, signOut } from "next-auth/react"
+import { Button } from "@/components/ui/button"
 
-const menuGroups = [
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ElementType;
+}
+
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
+
+// ─── Navigation structure ─────────────────────────────────────────────────────
+
+const sections: NavSection[] = [
   {
     title: "Dashboard",
     items: [
-      { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-    ]
+      { label: "Overview", href: "/dashboard", icon: LayoutGrid },
+    ],
   },
   {
     title: "Comercial",
     items: [
-      { href: "/pipeline", label: "Pipeline", icon: Kanban },
-      { href: "/contacts", label: "Contatos", icon: Users },
-      { href: "/activities", label: "Atividades", icon: Activity },
-    ]
+      { label: "Pipeline",    href: "/pipeline",    icon: List },
+      { label: "Contatos",    href: "/contacts",    icon: User },
+      { label: "Atividades",  href: "/activities",  icon: CalendarDays },
+    ],
   },
   {
     title: "Marketing",
     items: [
-      { href: "/lead-search", label: "Busca de Leads", icon: Search },
-      { href: "/listas-disparo", label: "Disparo em Massa", icon: Send },
-      { href: "/utm-analytics", label: "UTM Analytics", icon: BarChart2 },
-      { href: "/ai-insights", label: "IA Insights", icon: Bot },
-    ]
+      { label: "Busca de Leads",  href: "/lead-search",   icon: Search },
+      { label: "Disparo em Massa", href: "/listas-disparo", icon: Phone },
+      { label: "UTM Analytics",   href: "/utm-analytics", icon: Activity },
+      { label: "IA Insights",     href: "/ai-insights",   icon: Sparkles },
+    ],
   },
   {
     title: "Config",
     items: [
-      { href: "/settings", label: "Configurações", icon: Settings },
-    ]
-  }
-]
+      { label: "Configurações", href: "/settings", icon: Settings },
+    ],
+  },
+];
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function NavLink({ item, onClick }: { item: NavItem; onClick?: () => void }) {
+  const pathname = usePathname();
+  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+  const Icon = item.icon;
+
+  return (
+    <Link
+      href={item.href}
+      onClick={onClick}
+      className={cn(
+        "group flex items-center gap-2.5 rounded-lg px-2 py-[7px] text-[12.5px] transition-colors duration-150 mb-[1px]",
+        isActive
+          ? "bg-[rgba(201,162,39,0.12)] text-white font-medium"
+          : "text-white/55 hover:bg-white/[0.05] hover:text-white/80"
+      )}
+    >
+      <Icon
+        className={cn(
+          "h-[15px] w-[15px] shrink-0 transition-opacity",
+          isActive ? "text-[#c9a227] opacity-100" : "opacity-45 group-hover:opacity-60"
+        )}
+        strokeWidth={1.5}
+      />
+      <span className="leading-none">{item.label}</span>
+      {isActive && (
+        <span className="ml-auto h-4 w-0.5 shrink-0 rounded-full bg-[#c9a227]" />
+      )}
+    </Link>
+  );
+}
+
+// ─── Usage bar ────────────────────────────────────────────────────────────────
+
+function UsageBar({ percent = 72 }: { percent?: number }) {
+  return (
+    <div className="px-1 pb-1.5 pt-0.5">
+      <div className="mb-1.5 flex justify-between text-[10px] text-white/30">
+        <span>Uso da base</span>
+        <span>{percent}%</span>
+      </div>
+      <div className="h-0.5 rounded-full bg-white/[0.08]">
+        <div
+          className="h-0.5 rounded-full bg-[#c9a227]"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── Main sidebar ─────────────────────────────────────────────────────────────
 
 interface AppSidebarProps {
   onClose?: () => void
 }
 
 export function AppSidebar({ onClose }: AppSidebarProps) {
-  const pathname = usePathname()
   const { data: session } = useSession()
+  const pathname = usePathname()
+  
+  const userName = session?.user?.name || "Usuário"
+  const userRole = "Administrador"
+  const usagePercent = 72
+
+  const initials = userName
+    .split(" ")
+    .slice(0, 2)
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 
   return (
-    <div className="flex flex-col h-full bg-[#09090B] border-r border-white/5 text-white/50 font-sans">
-      {/* Header / Logo */}
-      <div className="p-8 pb-10 flex items-center justify-between">
-        <Link href="/dashboard" className="flex items-center gap-3 group">
-          <div className="h-10 w-10 bg-accent rounded-xl flex items-center justify-center text-black font-black text-xl shadow-lg shadow-accent/20 transition-transform group-hover:scale-105">
+    <aside className="flex h-full w-full flex-col overflow-hidden border-r border-white/[0.07] bg-[#0d0d0d]">
+
+      {/* ── Brand ── */}
+      <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#c9a227] text-sm font-medium text-[#0d0d0d]">
             E
           </div>
-          <div>
-            <span className="text-white font-black text-lg tracking-tight block leading-none">Escoltran</span>
-            <span className="text-[10px] font-bold text-accent uppercase tracking-widest mt-1 block">SaaS Intelligence</span>
+          <div className="flex flex-col">
+            <span className="text-[13px] font-medium leading-none tracking-[0.02em] text-white">
+              Escoltran
+            </span>
+            <span className="mt-1 text-[10px] uppercase tracking-[0.08em] text-white/35">
+              Sales Intelligence
+            </span>
           </div>
-        </Link>
+        </div>
+        
         {onClose && (
-          <Button variant="ghost" size="icon" onClick={onClose} className="lg:hidden text-white/20">
-            <X className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={onClose} className="md:hidden text-white/20 hover:text-white/50">
+            <X className="h-4 w-4" />
           </Button>
         )}
       </div>
 
-      {/* Navigation Groups */}
-      <div className="flex-1 px-4 space-y-10 overflow-y-auto scrollbar-hide">
-        {menuGroups.map((group) => (
-          <div key={group.title} className="space-y-4">
-            <h3 className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
-              {group.title}
-            </h3>
-            <nav className="space-y-1">
-              {group.items.map((item) => {
-                const active = pathname === item.href
-                const Icon = item.icon
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={onClose}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group",
-                      active 
-                        ? "bg-accent text-black font-black shadow-lg shadow-accent/10" 
-                        : "hover:bg-white/[0.03] hover:text-white"
-                    )}
-                  >
-                    <Icon className={cn("h-4 w-4 shrink-0", active ? "text-black" : "text-white/20 group-hover:text-accent transition-colors")} />
-                    <span className="text-[13px] tracking-tight">{item.label}</span>
-                    {active && <ChevronRight className="ml-auto h-3 w-3 opacity-50" />}
-                  </Link>
-                )
-              })}
-            </nav>
+      {/* ── Navigation ── */}
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide">
+        {sections.map((section, i) => (
+          <div key={section.title} className="px-3 pt-5 pb-1">
+            {/* Section label */}
+            <p className="mb-1 px-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-white/25">
+              {section.title}
+            </p>
+
+            {section.items.map((item) => (
+              <NavLink key={item.href} item={item} onClick={onClose} />
+            ))}
+
+            {/* Divider between sections except after last */}
+            {i < sections.length - 1 && (
+              <hr className="mx-1 mt-3 border-t border-white/[0.06]" />
+            )}
           </div>
         ))}
+      </nav>
 
-        {/* Action Card / Invite */}
-        <div className="p-4 pt-10">
-          <div className="bg-[#111114] border border-white/5 rounded-[22px] p-6 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 w-20 h-20 bg-accent/10 rounded-full blur-2xl group-hover:bg-accent/20 transition-colors" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-2">Workspace</p>
-            <h4 className="text-xs font-bold text-white mb-4">Gerencie sua equipe com IA.</h4>
-            <Button size="sm" className="w-full bg-white/5 hover:bg-white/10 text-white border-white/5 text-[10px] font-bold uppercase tracking-widest h-9 rounded-xl">
-              <Plus className="h-3 w-3 mr-2" /> Convidar
-            </Button>
+      {/* ── Bottom section ── */}
+      <div className="px-3 pb-3 pt-2">
+
+        {/* Workspace card */}
+        <div className="mb-3 rounded-[10px] border border-[rgba(201,162,39,0.2)] bg-[rgba(201,162,39,0.07)] p-3">
+          <p className="mb-0.5 text-[10px] font-medium uppercase tracking-[0.1em] text-[#c9a227]">
+            Workspace
+          </p>
+          <p className="mb-2.5 text-[11px] leading-[1.4] text-white/40">
+            Gerencie sua equipe com IA.
+          </p>
+          <button className="flex w-full items-center justify-center gap-1.5 rounded-[7px] border border-[rgba(201,162,39,0.35)] bg-transparent py-[7px] text-[11px] font-medium tracking-[0.04em] text-[#c9a227] transition-colors hover:bg-[rgba(201,162,39,0.1)]">
+            <UserPlus className="h-3.5 w-3.5" strokeWidth={1.5} />
+            Convidar
+          </button>
+        </div>
+
+        {/* Usage bar */}
+        <UsageBar percent={usagePercent} />
+
+        {/* User row */}
+        <div className="flex items-center gap-2.5 px-1 py-2 relative group">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#c9a227] text-[11px] font-medium text-[#0d0d0d]">
+            {initials}
           </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[12px] font-medium text-white/80">
+              {userName}
+            </p>
+            <p className="mt-0.5 text-[10px] text-white/30">{userRole}</p>
+          </div>
+          
+          <button 
+            onClick={() => signOut()}
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-white/10 rounded-md"
+            title="Sair"
+          >
+            <LogOut className="h-[14px] w-[14px] text-white/20 hover:text-red-400" strokeWidth={1.5} />
+          </button>
         </div>
       </div>
-
-      {/* Footer / User Profile */}
-      <div className="p-6 border-t border-white/5 bg-black/20">
-        {/* Usage Quota Area */}
-        <div className="mb-6 px-2 space-y-3">
-          <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-            <span className="text-white/20">Uso da Base</span>
-            <span className="text-accent">72%</span>
-          </div>
-          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-            <div className="h-full bg-accent rounded-full" style={{ width: '72%' }} />
-          </div>
-        </div>
-
-        <div className="group flex items-center gap-4 p-3 rounded-2xl hover:bg-white/[0.03] transition-all cursor-default relative">
-          <div className="h-10 w-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent font-black text-xs border border-accent/20">
-            {session?.user?.name?.charAt(0).toUpperCase() || "U"}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-white/90 truncate">{session?.user?.name || "Usuário"}</p>
-            <p className="text-[10px] text-white/30 truncate">{session?.user?.email}</p>
-          </div>
-          <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button 
-              onClick={() => signOut()}
-              className="p-1.5 hover:bg-white/10 rounded-md transition-colors"
-            >
-              <LogOut className="h-3 w-3 text-white/40 hover:text-red-400" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+    </aside>
+  );
 }
