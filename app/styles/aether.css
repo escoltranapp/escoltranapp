@@ -13,9 +13,9 @@
   --accent-primary: #d4af37;
   /* PIPELINE REFINED TOKENS (DASHBOARD PARITY) */
   --pipeline-bg: #0A0A0A;
-  --pipeline-col: rgba(255, 255, 255, 0.02);
-  --pipeline-card: #111111;
-  --pipeline-card-hover: #1A1A1A;
+  --pipeline-col: #161B22;
+  --pipeline-card: #1C2333;
+  --pipeline-card-hover: #21283b;
   --pipeline-border: rgba(255, 255, 255, 0.05);
 
   --pipeline-blue: #3B82F6;

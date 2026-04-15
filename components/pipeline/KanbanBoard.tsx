@@ -64,16 +64,16 @@ function KanbanColumn({ stage, children, onAddDeal }: { stage: Stage, children: 
       {/* REFINED DROPPABLE AREA */}
       <div 
         ref={setNodeRef}
-        className="flex-1 bg-[var(--pipeline-col)] border border-white/[0.07] rounded-[12px] p-3 min-h-[500px] flex flex-col gap-1 overflow-y-auto scrollbar-hide"
+        className="flex-1 bg-[var(--pipeline-col)] border border-white/[0.07] rounded-[12px] p-3 min-h-[500px] flex flex-col gap-2 overflow-y-auto scrollbar-hide shadow-lg"
       >
-        <div className="flex flex-col gap-3 mb-2">
+        <div className="flex flex-col gap-2 mb-2">
            {children}
         </div>
         
         {/* REFINED ADD DEAL BUTTON */}
         <button 
           onClick={() => onAddDeal?.(stage.id)}
-          className="w-full py-2.5 border border-dashed border-white/[0.15] hover:border-[#3B82F6] hover:bg-[#3B82F6]/[0.06] rounded-[8px] flex items-center justify-center gap-2 text-[11px] font-bold text-[#8B949E] hover:text-[#3B82F6] transition-all"
+          className="w-full p-[10px] border border-dashed border-white/[0.12] hover:border-[#3B82F6] hover:bg-[#3B82F6]/[0.05] rounded-[8px] flex items-center justify-center gap-2 text-[13px] font-medium text-[#8B949E] hover:text-[#3B82F6] transition-all mt-1"
         >
            <Plus size={14} /> Adicionar Card
         </button>
@@ -134,12 +134,12 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onAddDeal, onAd
         <div className="min-w-[280px] w-[280px]">
            <button 
              onClick={onAddStage}
-             className="w-full h-[600px] border border-dashed border-white/[0.12] hover:border-[#3B82F6] hover:bg-transparent rounded-[12px] flex flex-col items-center justify-center gap-4 transition-all group"
+             className="w-full h-[600px] border border-dashed border-white/[0.12] hover:border-[#3B82F6] hover:bg-[#3B82F6]/[0.02] rounded-[12px] flex flex-col items-center justify-center gap-4 transition-all group"
            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all bg-white/[0.02] group-hover:bg-[#3B82F6]/[0.05]">
                 <Plus size={24} className="text-[#8B949E] group-hover:text-[#3B82F6]" />
               </div>
-              <span className="text-[11px] font-black uppercase tracking-[0.1em] text-[#8B949E] group-hover:text-[#3B82F6]">Nova Coluna</span>
+              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8B949E] group-hover:text-[#3B82F6]">Nova Coluna</span>
            </button>
         </div>
       </div>
