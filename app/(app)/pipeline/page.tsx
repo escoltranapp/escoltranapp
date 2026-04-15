@@ -160,95 +160,92 @@ export default function PipelinePage() {
   return (
     <div className="pipeline-layout flex flex-col min-h-screen bg-[#090b11] text-white">
       {/* ════════════════════════════════════════
-          TOPBAR DA PÁGINA (RESPIRO PREMIUM)
+          TOPBAR DA PÁGINA (RESPIRO INDUSTRIAL)
           ════════════════════════════════════════ */}
-      <header className="px-[32px] pt-[40px] pb-[32px]">
-        <div className="flex items-start justify-between">
+      <header className="px-[64px] pt-[80px] pb-[48px]">
+        <div className="flex items-start justify-between max-w-[1800px] mx-auto w-full">
            <div>
-              <h1 className="text-[36px] font-bold tracking-tight leading-none mb-3">Pipeline</h1>
-              <p className="text-[14px] text-white/40 font-medium">Gestão de oportunidades · Visão Kanban</p>
+              <h1 className="text-[52px] font-black tracking-tighter leading-none mb-6 uppercase">Pipeline</h1>
+              <p className="text-[16px] text-white/30 font-bold tracking-[0.2em] uppercase">Gestão de oportunidades · Visão Kanban</p>
            </div>
 
-           <div className="flex items-center gap-[12px]">
+           <div className="flex items-center gap-[20px]">
                {/* PILL: PIPELINE PRINCIPAL */}
-               <button className="flex items-center gap-2 px-[20px] py-[11px] bg-[#1a1a24] border border-white/10 rounded-xl text-[13px] font-semibold text-white/90 hover:bg-white/[0.06] transition-all">
-                 <Clock size={16} className="text-[#818cf8]" />
+               <button className="flex items-center gap-3 px-[28px] py-[16px] bg-[#1a1a24] border border-white/10 rounded-2xl text-[15px] font-black text-white/90 hover:bg-white/[0.1] transition-all shadow-2xl">
+                 <Clock size={20} className="text-[#818cf8]" />
                  {activeBoard}
                  <ChevronDown size={14} className="text-white/20 ml-2" />
                </button>
 
-               {/* PILL: NOVA COLUNA */}
+               {/* PILL: NOVO DEAL (IMAGE 2 SCALE) */}
                <button 
-                 onClick={handleAddStage}
-                 className="flex items-center gap-2 px-[20px] py-[11px] bg-[#1a1a24] border border-white/10 rounded-xl text-[13px] font-semibold text-white/90 hover:bg-white/[0.06] transition-all"
+                 className="flex items-center gap-4 px-[40px] py-[16px] bg-[#4f46e5] hover:bg-[#4338ca] text-white font-black text-[15px] rounded-2xl transition-all shadow-[0_15px_35px_rgba(79,70,229,0.5)] active:scale-95 uppercase tracking-wider"
                >
-                  <Plus size={18} className="text-white/40" />
-                  Nova Coluna
-               </button>
-
-               {/* PILL: NOVO DEAL (IMAGE 2 VIBRANCE) */}
-               <button 
-                 className="flex items-center gap-2 px-[24px] py-[11px] bg-[#4f46e5] hover:bg-[#4338ca] text-white font-bold text-[13px] rounded-xl transition-all shadow-xl shadow-[#4f46e5]/20"
-               >
-                  <Plus size={18} strokeWidth={3} /> Novo Deal
+                  <Plus size={22} strokeWidth={4} /> Novo Deal
                </button>
            </div>
         </div>
       </header>
 
       {/* ════════════════════════════════════════
-          BARRA DE MÉTRICAS (LARGE SCALE GRID)
+          BARRA DE MÉTRICAS (HUGE BLOCK SCALE)
           ════════════════════════════════════════ */}
-      <div className="px-[32px] mb-[40px]">
-        <div className="grid grid-cols-3 gap-[20px]">
+      <div className="px-[64px] mb-[80px] max-w-[1800px] mx-auto w-full">
+        <div className="grid grid-cols-3 gap-[32px]">
            {/* Card 1 — Oportunidades */}
-           <div className="bg-[#111118]/70 border border-[#1e1e24] rounded-[16px] p-[28px] flex items-center gap-6 shadow-2xl transition-all hover:border-white/10 group">
-             <div className="w-[56px] h-[56px] rounded-[16px] bg-[#1a1a2e] flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-[#1a1a3a] transition-colors">
-                <LayoutGrid size={24} className="text-[#818cf8]" />
-             </div>
-             <div>
-               <p className="text-[12px] font-bold text-white/30 uppercase tracking-[0.1em] mb-2">OPORTUNIDADES</p>
-               <div className="flex items-baseline gap-2">
-                 <span className="text-[36px] font-black text-white leading-none tracking-tight">{deals.length}</span>
-                 <span className="text-[14px] text-white/20 font-semibold">cards ativos</span>
+           <div className="bg-[#111118] border border-[#1e1e24] rounded-[32px] p-[40px] min-h-[220px] flex flex-col justify-center shadow-2xl transition-all hover:border-[#818cf8]/30 group relative overflow-hidden">
+             <div className="flex items-center gap-8">
+               <div className="w-[80px] h-[80px] rounded-[24px] bg-[#1a1a2e] flex items-center justify-center shrink-0 border border-white/5 shadow-inner">
+                  <LayoutGrid size={32} className="text-[#818cf8]" />
+               </div>
+               <div>
+                  <p className="text-[14px] font-black text-white/20 uppercase tracking-[0.2em] mb-4">OPORTUNIDADES</p>
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-[64px] font-black text-white leading-none tracking-tighter">{deals.length}</span>
+                    <span className="text-[16px] text-white/10 font-bold uppercase tracking-[0.2em]">Ativos</span>
+                  </div>
                </div>
              </div>
            </div>
 
            {/* Card 2 — Valor Total */}
-           <div className="bg-[#111118]/70 border border-[#1e1e24] rounded-[16px] p-[28px] flex items-center gap-6 shadow-2xl transition-all hover:border-white/10 group">
-             <div className="w-[56px] h-[56px] rounded-[16px] bg-[#0f1e14] flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-[#0f1e1a] transition-colors">
-                <TrendingUp size={24} className="text-[#4ade80]" />
-             </div>
-             <div>
-               <p className="text-[12px] font-bold text-white/30 uppercase tracking-[0.1em] mb-2">VALOR TOTAL</p>
-               <div className="flex items-baseline gap-2">
-                 <span className="text-[36px] font-black text-[#4ade80] leading-none tracking-tight">R$ {totalValue.toLocaleString('pt-BR')}</span>
-                 <span className="text-[14px] text-white/20 font-semibold">em aberto</span>
+           <div className="bg-[#111118] border border-[#1e1e24] rounded-[32px] p-[40px] min-h-[220px] flex flex-col justify-center shadow-2xl transition-all hover:border-[#4ade80]/30 group relative overflow-hidden">
+             <div className="flex items-center gap-8">
+               <div className="w-[80px] h-[80px] rounded-[24px] bg-[#0f1e14] flex items-center justify-center shrink-0 border border-white/5 shadow-inner">
+                  <TrendingUp size={32} className="text-[#4ade80]" />
+               </div>
+               <div>
+                  <p className="text-[14px] font-black text-white/20 uppercase tracking-[0.2em] mb-4">VALOR TOTAL</p>
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-[64px] font-black text-[#4ade80] leading-none tracking-tighter">R$ {totalValue.toLocaleString('pt-BR')}</span>
+                    <span className="text-[16px] text-white/10 font-bold uppercase tracking-[0.2em]">Aberto</span>
+                  </div>
                </div>
              </div>
            </div>
 
            {/* Card 3 — Alertas */}
-           <div className="bg-[#111118]/70 border border-[#1e1e24] rounded-[16px] p-[28px] flex items-center gap-6 shadow-2xl transition-all hover:border-white/10 group">
-             <div className="w-[56px] h-[56px] rounded-[16px] bg-[#1f1010] flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-[#2a1010] transition-colors">
-                <AlertTriangle size={24} className="text-[#f87171]" />
-             </div>
-             <div>
-               <p className="text-[12px] font-bold text-white/30 uppercase tracking-[0.1em] mb-2">ALERTAS</p>
-               <div className="flex items-baseline gap-2">
-                 <span className="text-[36px] font-black text-[#f87171] leading-none tracking-tight">{expiredCount}</span>
-                 <span className="text-[14px] text-white/20 font-semibold">cards +30 dias</span>
+           <div className="bg-[#111118] border border-[#1e1e24] rounded-[32px] p-[40px] min-h-[220px] flex flex-col justify-center shadow-2xl transition-all hover:border-[#f87171]/30 group relative overflow-hidden">
+             <div className="flex items-center gap-8">
+               <div className="w-[80px] h-[80px] rounded-[24px] bg-[#1f1010] flex items-center justify-center shrink-0 border border-white/5 shadow-inner">
+                  <AlertTriangle size={32} className="text-[#f87171]" />
+               </div>
+               <div>
+                  <p className="text-[14px] font-black text-white/20 uppercase tracking-[0.2em] mb-4">ALERTAS</p>
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-[64px] font-black text-[#f87171] leading-none tracking-tighter">{expiredCount}</span>
+                    <span className="text-[16px] text-white/10 font-bold uppercase tracking-[0.2em]">+30 Dias</span>
+                  </div>
                </div>
              </div>
            </div>
         </div>
 
-        {/* PROGRESS BAR (IMAGE 2 INTEGRATION) */}
-        <div className="mt-[32px] px-2">
-          <div className="h-[5px] w-full bg-[#1e1e24] rounded-full overflow-hidden shadow-inner">
+        {/* PROGRESS BAR (HUGE & INDUSTRIAL) */}
+        <div className="mt-[64px] px-4">
+          <div className="h-[8px] w-full bg-[#1e1e24] rounded-full overflow-hidden shadow-2xl">
             <div 
-              className="h-full bg-gradient-to-r from-[#4f46e5] to-[#818cf8] shadow-[0_0_20px_rgba(79,70,229,0.6)] transition-all duration-1000"
+              className="h-full bg-gradient-to-r from-[#4f46e5] to-[#818cf8] shadow-[0_0_30px_rgba(79,70,229,1)] transition-all duration-1000"
               style={{ width: '45%' }}
             />
           </div>
@@ -256,15 +253,15 @@ export default function PipelinePage() {
       </div>
 
       {/* ════════════════════════════════════════
-          KANBAN BOARD (IMAGE 2 FULL SCALE)
+          KANBAN BOARD (INDUSTRIAL VERTICAL SCALE)
           ════════════════════════════════════════ */}
-      <div className="flex-1 overflow-x-auto kanban-scrollbar pl-[32px] pb-[40px]">
+      <div className="flex-1 overflow-x-auto kanban-scrollbar pl-[64px] pb-[100px]">
         {isLoading ? (
-          <div className="flex gap-[20px] h-full">
-             {[1,2,3,4,5].map(i => <div key={i} className="w-[300px] h-[calc(100vh-450px)] rounded-[20px] bg-[#111118]/40 animate-pulse border border-white/5" />)}
+          <div className="flex gap-[32px]">
+             {[1,2,3,4,5].map(i => <div key={i} className="w-[340px] min-h-[1200px] rounded-[32px] bg-[#111118]/60 animate-pulse border border-white/5" />)}
           </div>
         ) : (
-          <div className="h-full inline-block min-w-full">
+          <div className="min-h-[1200px] inline-block min-w-full h-full">
             <KanbanBoard 
               key={stages.map((s: any) => s.id + s.deals?.length).join('-')}
               stages={boardStages} 
