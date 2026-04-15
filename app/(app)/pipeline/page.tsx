@@ -3,168 +3,36 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
-import { Plus, RefreshCw, ChevronDown, Layers, TrendingUp, AlertTriangle, X } from "lucide-react"
+import { Plus, RefreshCw, Layers, TrendingUp, AlertTriangle, X, Clock, ChevronDown } from "lucide-react"
 import { KanbanBoard, type Stage } from "@/components/pipeline/KanbanBoard"
 import { DealDetailSheet } from "@/components/pipeline/DealDetailSheet"
 import { type Deal } from "@/components/pipeline/DealCard"
 import { cn } from "@/lib/utils"
 
-/* ═══════════════════════════════════════════════════════
-   NEW DEAL MODAL — Layered glass style
-   ═══════════════════════════════════════════════════════ */
-function NewDealModal({
-  open, stages, initialStageId, onClose, onSubmit, isPending,
-}: {
-  open: boolean
-  stages: Stage[]
-  initialStageId?: string | null
-  onClose: () => void
-  onSubmit: (d: { titulo: string; valorEstimado: string; prioridade: string; stageId: string }) => void
-  isPending: boolean
-}) {
-  const [form, setForm] = useState({
-    titulo: "", valorEstimado: "", prioridade: "MEDIA", stageId: initialStageId ?? "",
-  })
-
-  if (!open) return null
-  const set = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }))
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
-      style={{ backgroundColor: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)" }}
-      onClick={onClose}
-    >
-      <div
-        className="w-full sm:max-w-[440px] rounded-t-2xl sm:rounded-2xl p-7 shadow-2xl"
-        style={{
-          background: "linear-gradient(145deg, #14162b 0%, #0f1022 100%)",
-          border: "1px solid rgba(255,255,255,0.09)",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.8)",
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-[16px] font-semibold text-white">Novo Deal</h2>
-            <p className="text-[12px] text-white/30 mt-0.5">Adicionar oportunidade ao pipeline</p>
-          </div>
-          <button onClick={onClose} className="text-white/20 hover:text-white/60 transition-colors">
-            <X size={18} />
-          </button>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">Título *</label>
-            <input
-              autoFocus
-              value={form.titulo}
-              onChange={e => set("titulo", e.target.value)}
-              placeholder="Ex: João Silva – Plano Pro"
-              className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">Valor estimado</label>
-              <input
-                type="number"
-                value={form.valorEstimado}
-                onChange={e => set("valorEstimado", e.target.value)}
-                placeholder="0,00"
-                className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
-              />
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">Prioridade</label>
-              <select
-                value={form.prioridade}
-                onChange={e => set("prioridade", e.target.value)}
-                className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
-              >
-                <option value="ALTA">🔴 Alta</option>
-                <option value="MEDIA">🟡 Média</option>
-                <option value="BAIXA">🔵 Baixa</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">Estágio inicial</label>
-            <select
-              value={form.stageId}
-              onChange={e => set("stageId", e.target.value)}
-              className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
-            >
-              <option value="">Primeiro estágio</option>
-              {stages.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-          </div>
-        </div>
-
-        <div className="flex gap-2.5 mt-6">
-          <button onClick={onClose} className="flex-1 h-10 rounded-xl text-[13px] font-medium text-white/30 hover:text-white/60 transition-colors" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
-            Cancelar
-          </button>
-          <button
-            onClick={() => { onSubmit(form); setForm({ titulo: "", valorEstimado: "", prioridade: "MEDIA", stageId: "" }) }}
-            disabled={isPending || !form.titulo.trim()}
-            className="flex-1 h-10 rounded-xl text-[13px] font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{
-              background: "linear-gradient(135deg, #6366f1, #4f46e5)",
-              boxShadow: isPending || !form.titulo.trim() ? "none" : "0 4px 16px rgba(99,102,241,0.4)",
-            }}
-          >
-            {isPending ? "Criando..." : "Criar Deal"}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ═══════════════════════════════════════════════════════
-   STAT CARD — Elevated KPI block
-   ═══════════════════════════════════════════════════════ */
+/* ── Stat card ─────────────────────────────────────────────────── */
 function StatCard({
-  label, value, icon: Icon, accent,
+  label, value, sub, icon: Icon, iconBg, iconColor
 }: {
-  label: string; value: string; icon: React.ElementType; accent: string
+  label: string; value: string; sub: string; icon: React.ElementType; iconBg: string; iconColor: string
 }) {
   return (
-    <div
-      className="flex items-center gap-3 px-4 py-3 rounded-xl min-w-0 transition-all duration-200 group hover:-translate-y-px"
-      style={{
-        background: "rgba(255,255,255,0.025)",
-        border: "1px solid rgba(255,255,255,0.055)",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.015)",
-      }}
-    >
-      <div
-        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105"
-        style={{ background: `${accent}15`, border: `1px solid ${accent}20` }}
+    <div className="bg-[#18181f] border border-[#1e1e24] rounded-[10px] padding-[14px 16px] p-4 flex items-center gap-[12px]">
+      <div 
+        className="w-[36px] h-[36px] rounded-[8px] flex items-center justify-center shrink-0"
+        style={{ background: iconBg }}
       >
-        <Icon size={15} color={accent} />
+        <Icon size={16} color={iconColor} strokeWidth={2} />
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>
-          {label}
-        </p>
-        <p className="text-[16px] font-bold leading-none text-white truncate tracking-tight">{value}</p>
+      <div>
+        <div className="text-[11px] text-[#555] uppercase font-medium tracking-[0.06em] mb-[3px]">{label}</div>
+        <div className="text-[20px] font-semibold text-white leading-none">{value}</div>
+        <div className="text-[11px] text-[#555] mt-[3px]">{sub}</div>
       </div>
     </div>
   )
 }
 
-/* ═══════════════════════════════════════════════════════
-   PAGE — LAYER 1: Deepest background
-   ═══════════════════════════════════════════════════════ */
+/* ── Page ──────────────────────────────────────────────────────── */
 export default function PipelinePage() {
   const queryClient = useQueryClient()
   const { toast } = useToast()
@@ -186,7 +54,7 @@ export default function PipelinePage() {
   const stages: Stage[] = (boardData?.stages || []).map((s: any) => ({
     id: s.id,
     name: s.name,
-    color: s.color || "#6366f1",
+    color: s.color || "#4f46e5",
     order: s.order ?? 0,
     deals: (s.deals || []).map((d: any) => ({
       ...d,
@@ -216,35 +84,7 @@ export default function PipelinePage() {
     },
   })
 
-  const createDeal = useMutation({
-    mutationFn: async (data: { titulo: string; valorEstimado: string; prioridade: string; stageId: string }) => {
-      const res = await fetch("/api/deals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          titulo: data.titulo,
-          valorEstimado: data.valorEstimado ? parseFloat(data.valorEstimado) : null,
-          prioridade: data.prioridade,
-          stageId: data.stageId || stages[0]?.id,
-          pipelineId: boardData?.pipelineId,
-        }),
-      })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.error || "Falha ao criar deal")
-      }
-      return res.json()
-    },
-    onSuccess: () => {
-      toast({ title: "Deal criado!" })
-      setShowNewDeal(false)
-      setNewDealStageId(null)
-      queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
-    },
-    onError: (err: Error) => toast({ variant: "destructive", title: err.message }),
-  })
-
-  const addStage = useMutation({
+  const addStageAction = useMutation({
     mutationFn: async (name: string) => {
       const res = await fetch("/api/pipeline/stages", {
         method: "POST",
@@ -258,148 +98,106 @@ export default function PipelinePage() {
       toast({ title: "Coluna criada!" })
       queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
     },
-    onError: (err: Error) => toast({ variant: "destructive", title: err.message }),
   })
 
-  const handleAddDeal = (stageId: string) => {
-    setNewDealStageId(stageId)
-    setShowNewDeal(true)
-  }
-
-  const handleAddStage = () => {
-    const name = window.prompt("Nome da nova coluna:")
-    if (name?.trim()) addStage.mutate(name.trim())
-  }
-
-  /* ─── Render ──────────────────────────────────── */
   return (
-    <div className="flex flex-col -my-12 overflow-hidden bg-[#080a12]" style={{ height: 'calc(100vh - 64px)' }}>
-
-      {/* ═══════════ HEADER ═══════════════════════ */}
-      <div
-        className="px-5 pt-5 pb-4 shrink-0"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.055)" }}
-      >
-        {/* Top row: Title + Actions */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <div className="flex items-center gap-2.5 mb-2">
-              <div
-                className="text-[10px] font-semibold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full"
-                style={{ background: "rgba(99,102,241,0.1)", color: "#818cf8", border: "1px solid rgba(99,102,241,0.18)" }}
-              >
-                Pipeline Comercial
-              </div>
-            </div>
-            <h1 className="text-[26px] font-bold text-white tracking-[-0.5px] leading-none">Pipeline</h1>
-            <p className="text-[13px] text-white/25 mt-2 font-medium">
-              {boardData?.pipelineName || "Pipeline Principal"} · Visão Kanban
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => refetch()}
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-white/25 hover:text-white/60 hover:bg-white/[0.04] transition-all"
-              style={{ border: "1px solid rgba(255,255,255,0.06)" }}
-              title="Atualizar"
-            >
-              <RefreshCw size={14} />
-            </button>
-
-            <button
-              onClick={() => { setNewDealStageId(null); setShowNewDeal(true) }}
-              className="flex items-center gap-2 h-9 px-4 rounded-xl text-[13px] font-semibold text-white transition-all hover:brightness-110 active:scale-[0.97]"
-              style={{
-                background: "linear-gradient(135deg, #6366f1, #4f46e5)",
-                boxShadow: "0 4px 14px rgba(99,102,241,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
-              }}
-            >
-              <Plus size={15} strokeWidth={2.5} />
-              Novo Deal
-            </button>
-          </div>
+    <div className="flex flex-col h-full -m-4 md:-m-6 bg-[#0d0d0f] text-white font-sans overflow-hidden">
+      
+      {/* ── TOPBAR (kb-topbar) ─────────────────────────── */}
+      <div className="flex items-center justify-between p-[16px_24px] border-b border-[#1e1e24] shrink-0">
+        <div>
+          <h1 className="text-[22px] font-semibold text-white tracking-[-0.3px]">Pipeline</h1>
+          <p className="text-[12px] text-[#555] mt-[2px] tracking-[0.02em]">Gestão de oportunidades · Visão Kanban</p>
         </div>
-
-        {/* KPI Stats row — compact, not stretched */}
-        <div className="grid grid-cols-3 gap-3 max-w-[720px]">
-          <StatCard
-            label="Oportunidades"
-            value={isLoading ? "—" : String(allOpen.length)}
-            icon={Layers}
-            accent="#818cf8"
-          />
-          <StatCard
-            label="Valor Pipeline"
-            value={isLoading ? "—" : totalValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-            icon={TrendingUp}
-            accent="#34d399"
-          />
-          <StatCard
-            label="Alertas"
-            value={isLoading ? "—" : String(overdue)}
-            icon={AlertTriangle}
-            accent={overdue > 0 ? "#f87171" : "#6b7280"}
-          />
+        
+        <div className="flex items-center gap-[8px]">
+          <div className="flex items-center gap-[6px] p-[7px_14px] rounded-[8px] text-[12px] font-medium cursor-pointer border border-[#2a2a32] bg-[#18181f] text-[#aaa] hover:bg-[#222230] hover:text-[#ddd] transition-all">
+            <Clock size={12} strokeWidth={2} />
+            Pipeline Principal
+            <ChevronDown size={10} strokeWidth={2.5} />
+          </div>
+          <div 
+            onClick={() => {
+              const name = window.prompt("Nome da nova coluna:")
+              if (name) addStageAction.mutate(name)
+            }}
+            className="flex items-center gap-[6px] p-[7px_14px] rounded-[8px] text-[12px] font-medium cursor-pointer border border-[#2a2a32] bg-[#18181f] text-[#aaa] hover:bg-[#222230] hover:text-[#ddd] transition-all"
+          >
+            <Plus size={12} strokeWidth={2} />
+            Nova Coluna
+          </div>
+          <div className="flex items-center gap-[6px] p-[7px_14px] rounded-[8px] text-[12px] font-medium cursor-pointer border border-[#4f46e5] bg-[#4f46e5] text-white hover:bg-[#4338ca] transition-all shadow-[0_2px_8px_rgba(79,70,229,0.3)]">
+            <Plus size={12} strokeWidth={2.5} />
+            Novo Deal
+          </div>
         </div>
       </div>
 
-      {/* ═══════════ BOARD — LAYER 1: deepest ═════ */}
-      <div
-        className="flex-1 overflow-x-auto px-5 pt-4"
-        style={{
-          scrollbarWidth: "thin",
-          scrollbarColor: "rgba(255,255,255,0.06) transparent",
-        }}
-      >
+      {/* ── STATS (kb-stats) ───────────────────────────── */}
+      <div className="grid grid-cols-3 gap-[12px] p-[16px_24px] border-b border-[#1e1e24] shrink-0">
+        <StatCard 
+          label="Oportunidades"
+          value={isLoading ? "—" : String(allOpen.length)}
+          sub="cards ativos"
+          icon={Layers}
+          iconBg="#1a1a2e"
+          iconColor="#818cf8"
+        />
+        <StatCard 
+          label="Valor total"
+          value={isLoading ? "—" : `R$ ${totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`}
+          sub="em aberto"
+          icon={TrendingUp}
+          iconBg="#0f1e14"
+          iconColor="#4ade80"
+        />
+        <StatCard 
+          label="Alertas"
+          value={isLoading ? "—" : String(overdue)}
+          sub="cards +30 dias"
+          icon={AlertTriangle}
+          iconBg="#1f1010"
+          iconColor="#f87171"
+        />
+      </div>
+
+      {/* ── PROGRESS BAR ───────────────────────────────── */}
+      <div className="h-[2px] bg-[#1e1e24] rounded-[1px] m-[0_24px_16px] overflow-hidden shrink-0 mt-4">
+        <div 
+           className="h-full rounded-[1px] bg-gradient-to-r from-[#4f46e5] to-[#818cf8] transition-all duration-500" 
+           style={{ width: '20%' }}
+        ></div>
+      </div>
+
+      {/* ── BOARD AREA ─────────────────────────────────── */}
+      <div className="flex-1 overflow-hidden px-[24px]">
         {isLoading ? (
-          <div className="flex gap-4">
-            {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className="w-[290px] shrink-0 rounded-2xl animate-pulse"
-                style={{
-                  height: "420px",
-                  background: "rgba(255,255,255,0.02)",
-                  border: "1px solid rgba(255,255,255,0.04)",
-                }}
-              />
+          <div className="flex gap-[14px]">
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="w-[240px] h-[400px] bg-[#18181f]/50 border border-[#1e1e24] rounded-[10px] animate-pulse"></div>
             ))}
-          </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center h-64 gap-4 text-white/25">
-            <AlertTriangle size={28} className="text-red-400/60" />
-            <p className="text-[14px]">Erro ao carregar pipeline.</p>
-            <button onClick={() => refetch()} className="text-[12px] text-indigo-400 hover:text-indigo-300 underline underline-offset-2">
-              Tentar novamente
-            </button>
           </div>
         ) : (
           <KanbanBoard
-            key={stages.map(s => s.id + s.deals.length).join("-")}
             stages={stages}
             onDealMove={(id, _, stageId) => moveDeal.mutate({ dealId: id, stageId })}
-            onAddDeal={handleAddDeal}
-            onAddStage={handleAddStage}
-            onDealClick={deal => setSelectedDeal(deal)}
+            onAddDeal={(sId) => {
+              setNewDealStageId(sId)
+              setShowNewDeal(true)
+            }}
+            onAddStage={() => {
+              const name = window.prompt("Nome da nova coluna:")
+              if (name) addStageAction.mutate(name)
+            }}
+            onDealClick={(d) => setSelectedDeal(d)}
           />
         )}
       </div>
 
-      {/* ═══════════ MODALS ═══════════════════════ */}
-      <NewDealModal
-        open={showNewDeal}
-        stages={stages}
-        initialStageId={newDealStageId}
-        onClose={() => { setShowNewDeal(false); setNewDealStageId(null) }}
-        onSubmit={data => createDeal.mutate({ ...data, stageId: data.stageId || newDealStageId || "" })}
-        isPending={createDeal.isPending}
-      />
-
       <DealDetailSheet
         deal={selectedDeal}
         open={!!selectedDeal}
-        onOpenChange={open => !open && setSelectedDeal(null)}
+        onOpenChange={o => !o && setSelectedDeal(null)}
       />
     </div>
   )
