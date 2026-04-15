@@ -160,19 +160,19 @@ export default function PipelinePage() {
   return (
     <div className="pipeline-layout flex flex-col min-h-screen bg-[#090b11] text-white">
       {/* ════════════════════════════════════════
-          TOPBAR DA PÁGINA (IMAGE 1 PARITY)
+          TOPBAR DA PÁGINA (RESPIRO PREMIUM)
           ════════════════════════════════════════ */}
-      <header className="px-[32px] pt-[32px] pb-[24px]">
+      <header className="px-[32px] pt-[40px] pb-[32px]">
         <div className="flex items-start justify-between">
            <div>
-              <h1 className="text-[28px] font-bold tracking-tight leading-none mb-2">Pipeline</h1>
-              <p className="text-[13px] text-white/40 font-medium">Gestão de oportunidades · Visão Kanban</p>
+              <h1 className="text-[36px] font-bold tracking-tight leading-none mb-3">Pipeline</h1>
+              <p className="text-[14px] text-white/40 font-medium">Gestão de oportunidades · Visão Kanban</p>
            </div>
 
            <div className="flex items-center gap-[12px]">
                {/* PILL: PIPELINE PRINCIPAL */}
-               <button className="flex items-center gap-2 px-[18px] py-[10px] bg-white/[0.03] border border-white/10 rounded-xl text-[13px] font-semibold text-white/90 hover:bg-white/[0.06] transition-all">
-                 <Clock size={16} className="text-white/40" />
+               <button className="flex items-center gap-2 px-[20px] py-[11px] bg-[#1a1a24] border border-white/10 rounded-xl text-[13px] font-semibold text-white/90 hover:bg-white/[0.06] transition-all">
+                 <Clock size={16} className="text-[#818cf8]" />
                  {activeBoard}
                  <ChevronDown size={14} className="text-white/20 ml-2" />
                </button>
@@ -180,15 +180,15 @@ export default function PipelinePage() {
                {/* PILL: NOVA COLUNA */}
                <button 
                  onClick={handleAddStage}
-                 className="flex items-center gap-2 px-[18px] py-[10px] bg-white/[0.03] border border-white/10 rounded-xl text-[13px] font-semibold text-white/90 hover:bg-white/[0.06] transition-all"
+                 className="flex items-center gap-2 px-[20px] py-[11px] bg-[#1a1a24] border border-white/10 rounded-xl text-[13px] font-semibold text-white/90 hover:bg-white/[0.06] transition-all"
                >
                   <Plus size={18} className="text-white/40" />
                   Nova Coluna
                </button>
 
-               {/* PILL: NOVO DEAL (IMAGE 1 ACCENT) */}
+               {/* PILL: NOVO DEAL (IMAGE 2 VIBRANCE) */}
                <button 
-                 className="flex items-center gap-2 px-[22px] py-[10px] bg-[#4f46e5] hover:bg-[#4338ca] text-white font-bold text-[13px] rounded-xl transition-all shadow-[0_8px_20px_rgba(79,70,229,0.3)] active:scale-95"
+                 className="flex items-center gap-2 px-[24px] py-[11px] bg-[#4f46e5] hover:bg-[#4338ca] text-white font-bold text-[13px] rounded-xl transition-all shadow-xl shadow-[#4f46e5]/20"
                >
                   <Plus size={18} strokeWidth={3} /> Novo Deal
                </button>
@@ -197,58 +197,58 @@ export default function PipelinePage() {
       </header>
 
       {/* ════════════════════════════════════════
-          BARRA DE MÉTRICAS (IMAGE 1 SCALE)
+          BARRA DE MÉTRICAS (LARGE SCALE GRID)
           ════════════════════════════════════════ */}
-      <div className="px-[32px] mb-[28px]">
-        <div className="grid grid-cols-3 gap-[16px]">
+      <div className="px-[32px] mb-[40px]">
+        <div className="grid grid-cols-3 gap-[20px]">
            {/* Card 1 — Oportunidades */}
-           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[14px] p-[24px] flex items-center gap-5 shadow-2xl transition-all hover:border-white/10">
-             <div className="w-[52px] h-[52px] rounded-[14px] bg-[#1a1a2e] flex items-center justify-center shrink-0 border border-white/5">
-                <LayoutGrid size={22} className="text-[#818cf8]" />
+           <div className="bg-[#111118]/70 border border-[#1e1e24] rounded-[16px] p-[28px] flex items-center gap-6 shadow-2xl transition-all hover:border-white/10 group">
+             <div className="w-[56px] h-[56px] rounded-[16px] bg-[#1a1a2e] flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-[#1a1a3a] transition-colors">
+                <LayoutGrid size={24} className="text-[#818cf8]" />
              </div>
              <div>
-               <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.05em] mb-1">OPORTUNIDADES</p>
+               <p className="text-[12px] font-bold text-white/30 uppercase tracking-[0.1em] mb-2">OPORTUNIDADES</p>
                <div className="flex items-baseline gap-2">
-                 <span className="text-[32px] font-bold text-white leading-none">{deals.length}</span>
-                 <span className="text-[12px] text-white/20 font-medium">cards ativos</span>
+                 <span className="text-[36px] font-black text-white leading-none tracking-tight">{deals.length}</span>
+                 <span className="text-[14px] text-white/20 font-semibold">cards ativos</span>
                </div>
              </div>
            </div>
 
            {/* Card 2 — Valor Total */}
-           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[14px] p-[24px] flex items-center gap-5 shadow-2xl transition-all hover:border-white/10">
-             <div className="w-[52px] h-[52px] rounded-[14px] bg-[#0f1e14] flex items-center justify-center shrink-0 border border-white/5">
-                <TrendingUp size={22} className="text-[#4ade80]" />
+           <div className="bg-[#111118]/70 border border-[#1e1e24] rounded-[16px] p-[28px] flex items-center gap-6 shadow-2xl transition-all hover:border-white/10 group">
+             <div className="w-[56px] h-[56px] rounded-[16px] bg-[#0f1e14] flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-[#0f1e1a] transition-colors">
+                <TrendingUp size={24} className="text-[#4ade80]" />
              </div>
              <div>
-               <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.05em] mb-1">VALOR TOTAL</p>
+               <p className="text-[12px] font-bold text-white/30 uppercase tracking-[0.1em] mb-2">VALOR TOTAL</p>
                <div className="flex items-baseline gap-2">
-                 <span className="text-[32px] font-bold text-[#4ade80] leading-none">R$ {totalValue.toLocaleString('pt-BR')}</span>
-                 <span className="text-[12px] text-white/20 font-medium">em aberto</span>
+                 <span className="text-[36px] font-black text-[#4ade80] leading-none tracking-tight">R$ {totalValue.toLocaleString('pt-BR')}</span>
+                 <span className="text-[14px] text-white/20 font-semibold">em aberto</span>
                </div>
              </div>
            </div>
 
            {/* Card 3 — Alertas */}
-           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[14px] p-[24px] flex items-center gap-5 shadow-2xl transition-all hover:border-white/10">
-             <div className="w-[52px] h-[52px] rounded-[14px] bg-[#1f1010] flex items-center justify-center shrink-0 border border-white/5">
-                <AlertTriangle size={22} className="text-[#f87171]" />
+           <div className="bg-[#111118]/70 border border-[#1e1e24] rounded-[16px] p-[28px] flex items-center gap-6 shadow-2xl transition-all hover:border-white/10 group">
+             <div className="w-[56px] h-[56px] rounded-[16px] bg-[#1f1010] flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-[#2a1010] transition-colors">
+                <AlertTriangle size={24} className="text-[#f87171]" />
              </div>
              <div>
-               <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.05em] mb-1">ALERTAS</p>
+               <p className="text-[12px] font-bold text-white/30 uppercase tracking-[0.1em] mb-2">ALERTAS</p>
                <div className="flex items-baseline gap-2">
-                 <span className="text-[32px] font-bold text-[#f87171] leading-none">{expiredCount}</span>
-                 <span className="text-[12px] text-white/20 font-medium">cards +30 dias</span>
+                 <span className="text-[36px] font-black text-[#f87171] leading-none tracking-tight">{expiredCount}</span>
+                 <span className="text-[14px] text-white/20 font-semibold">cards +30 dias</span>
                </div>
              </div>
            </div>
         </div>
 
-        {/* PROGRESS BAR (IMAGE 1 - 4PX & VIBRANT) */}
-        <div className="mt-[24px] px-2">
-          <div className="h-[4px] w-full bg-[#1e1e24] rounded-full overflow-hidden">
+        {/* PROGRESS BAR (IMAGE 2 INTEGRATION) */}
+        <div className="mt-[32px] px-2">
+          <div className="h-[5px] w-full bg-[#1e1e24] rounded-full overflow-hidden shadow-inner">
             <div 
-              className="h-full bg-gradient-to-r from-[#4f46e5] to-[#818cf8] shadow-[0_0_15px_rgba(79,70,229,0.5)] transition-all duration-1000"
+              className="h-full bg-gradient-to-r from-[#4f46e5] to-[#818cf8] shadow-[0_0_20px_rgba(79,70,229,0.6)] transition-all duration-1000"
               style={{ width: '45%' }}
             />
           </div>
@@ -256,25 +256,27 @@ export default function PipelinePage() {
       </div>
 
       {/* ════════════════════════════════════════
-          KANBAN BOARD (IMAGE 1 CONTAINER)
+          KANBAN BOARD (IMAGE 2 FULL SCALE)
           ════════════════════════════════════════ */}
-      <div className="flex-1 overflow-x-auto kanban-scrollbar pl-[32px] pb-[32px]">
+      <div className="flex-1 overflow-x-auto kanban-scrollbar pl-[32px] pb-[40px]">
         {isLoading ? (
-          <div className="flex gap-[16px]">
-             {[1,2,3,4,5].map(i => <div key={i} className="w-[280px] h-[600px] rounded-[16px] bg-[#18181f]/40 animate-pulse border border-white/5" />)}
+          <div className="flex gap-[20px] h-full">
+             {[1,2,3,4,5].map(i => <div key={i} className="w-[300px] h-[calc(100vh-450px)] rounded-[20px] bg-[#111118]/40 animate-pulse border border-white/5" />)}
           </div>
         ) : (
-          <KanbanBoard 
-            key={stages.map((s: any) => s.id + s.deals?.length).join('-')}
-            stages={boardStages} 
-            onDealMove={(dealId, _, stageId) => moveDealMutation.mutate({ dealId, stageId })}
-            onAddDeal={handleAddDeal}
-            onAddStage={handleAddStage}
-            onDealClick={(deal) => {
-               setSelectedDeal(deal)
-               setIsDetailOpen(true)
-            }}
-          />
+          <div className="h-full inline-block min-w-full">
+            <KanbanBoard 
+              key={stages.map((s: any) => s.id + s.deals?.length).join('-')}
+              stages={boardStages} 
+              onDealMove={(dealId, _, stageId) => moveDealMutation.mutate({ dealId, stageId })}
+              onAddDeal={handleAddDeal}
+              onAddStage={handleAddStage}
+              onDealClick={(deal) => {
+                 setSelectedDeal(deal)
+                 setIsDetailOpen(true)
+              }}
+            />
+          </div>
         )}
       </div>
 
