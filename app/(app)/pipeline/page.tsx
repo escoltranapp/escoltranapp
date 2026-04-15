@@ -156,52 +156,93 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="pipeline-layout p-[28px] pt-[28px] space-y-[28px]">
-      {/* PAGE HEADER — STRICT TARGET V2 */}
-      <header className="flex items-start justify-between">
-        <div>
-           <h1 className="text-[32px] font-bold text-white leading-none tracking-tight">Pipeline</h1>
-           <p className="text-[11px] font-normal text-white/35 uppercase tracking-[0.1em] mt-1">Gestão de Oportunidades • Visão Kanban</p>
+    <div className="pipeline-layout flex flex-col min-h-screen bg-[#090b11]">
+      {/* ════════════════════════════════════════
+          TOPBAR DA PÁGINA
+          ════════════════════════════════════════ */}
+      <header className="flex items-center justify-between px-[24px] py-[20px] bg-[#090b11] border-b border-white/[0.03]">
+        <div className="flex flex-col">
+           <h1 className="text-[22px] font-semibold text-white tracking-[-0.3px] leading-none">Pipeline</h1>
+           <p className="text-[12px] text-white/40 mt-1.5 font-medium">Gestão de oportunidades · Visão Kanban</p>
         </div>
 
-        <div className="flex items-center gap-2">
-            {/* BOARD SELECTOR */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-[10px] px-[14px] py-[8px] bg-white/[0.04] border border-white/10 rounded-[8px] text-[13px] font-medium text-white hover:bg-white/[0.08] transition-all outline-none shadow-sm">
-                  <div className="w-2 h-2 rounded-full bg-[#4299e1] shadow-[0_0_8px_rgba(66,153,225,0.4)]" />
-                  {activeBoard}
-                  <ChevronDown size={14} className="opacity-40" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-[#111520] border-white/10 text-white min-w-[200px] rounded-[10px]">
-                <DropdownMenuItem onClick={() => setActiveBoard("Pipeline Principal")} className="hover:bg-white/5 cursor-pointer py-2 px-3">
-                  Pipeline Principal
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <button 
-              onClick={handleAddStage}
-              className="flex items-center gap-2 px-[18px] py-[8px] bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold text-[13px] rounded-[8px] transition-all active:scale-95 shadow-lg shadow-[#2563eb]/20"
-            >
-               <Plus size={16} /> Nova Coluna
+        <div className="flex items-center gap-[10px]">
+            {/* PILL: PIPELINE PRINCIPAL */}
+            <button className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/10 rounded-full text-[12px] font-medium text-white/80 hover:bg-white/[0.03] transition-all">
+              <Clock size={14} className="opacity-50" />
+              {activeBoard}
+              <ChevronDown size={14} className="opacity-30 ml-1" />
             </button>
 
+            {/* PILL: NOVA COLUNA */}
             <button 
-              onClick={() => toast({ title: "Módulo em Breve", description: "Capacidade de múltiplos boards em desenvolvimento." })}
-              className="flex items-center gap-2 px-[14px] py-[8px] bg-transparent border border-white/15 hover:bg-white/5 text-white/70 font-medium text-[13px] rounded-[8px] transition-all"
+              onClick={handleAddStage}
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/10 rounded-full text-[12px] font-medium text-white/80 hover:bg-white/[0.03] transition-all"
             >
-               <Plus size={16} /> Novo Board
+               <Plus size={16} className="opacity-70" />
+               Nova Coluna
+            </button>
+
+            {/* PILL: NOVO DEAL (ACCENT) */}
+            <button 
+              className="flex items-center gap-2 px-5 py-2 bg-[#4f46e5] hover:bg-[#4338ca] text-white font-semibold text-[12px] rounded-full transition-all shadow-lg shadow-[#4f46e5]/20 active:scale-95"
+            >
+               <Plus size={16} strokeWidth={3} /> Novo Deal
             </button>
         </div>
       </header>
 
-      {/* METRICS BAR — STRICT TARGET (26px value) */}
-      <div className="flex gap-[16px]">
-         <KPICard label="Oportunidades Ativas" value={deals.length} icon={LayoutGrid} type="blue" />
-         <KPICard label="Pipeline de Valor" value={formatCurrency(totalValue)} icon={DollarSign} type="green" />
-         <KPICard label="Alertas Críticos" value={expiredCount} icon={AlertTriangle} type="red" />
+      {/* ════════════════════════════════════════
+          BARRA DE MÉTRICAS (3 cards)
+          ════════════════════════════════════════ */}
+      <div className="px-[24px] pt-[24px] pb-[16px]">
+        <div className="grid grid-cols-3 gap-[12px]">
+           {/* Card 1 — Oportunidades */}
+           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[10px] p-[16px] flex items-center gap-4 shadow-sm">
+             <div className="w-[42px] h-[42px] rounded-[10px] bg-[#1a1a2e] flex items-center justify-center shrink-0">
+                <LayoutGrid size={18} className="text-[#818cf8]" />
+             </div>
+             <div>
+               <p className="text-[11px] font-bold text-white/40 uppercase tracking-tight">OPORTUNIDADES</p>
+               <p className="text-[22px] font-bold text-white leading-tight">{deals.length}</p>
+               <p className="text-[11px] text-white/30 font-medium lowercase">cards ativos</p>
+             </div>
+           </div>
+
+           {/* Card 2 — Valor Total */}
+           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[10px] p-[16px] flex items-center gap-4 shadow-sm">
+             <div className="w-[42px] h-[42px] rounded-[10px] bg-[#0f1e14] flex items-center justify-center shrink-0">
+                <TrendingUp size={18} className="text-[#4ade80]" />
+             </div>
+             <div>
+               <p className="text-[11px] font-bold text-white/40 uppercase tracking-tight">VALOR TOTAL</p>
+               <p className="text-[22px] font-bold text-[#4ade80] leading-tight">{formatCurrency(totalValue)}</p>
+               <p className="text-[11px] text-white/30 font-medium lowercase">em aberto</p>
+             </div>
+           </div>
+
+           {/* Card 3 — Alertas */}
+           <div className="bg-[#18181f] border border-[#1e1e24] rounded-[10px] p-[16px] flex items-center gap-4 shadow-sm">
+             <div className="w-[42px] h-[42px] rounded-[10px] bg-[#1f1010] flex items-center justify-center shrink-0">
+                <AlertTriangle size={18} className="text-[#f87171]" />
+             </div>
+             <div>
+               <p className="text-[11px] font-bold text-white/40 uppercase tracking-tight">ALERTAS</p>
+               <p className="text-[22px] font-bold text-[#f87171] leading-tight">{expiredCount}</p>
+               <p className="text-[11px] text-white/30 font-medium lowercase">cards +30 dias</p>
+             </div>
+           </div>
+        </div>
+      </div>
+
+      {/* PROGRESS BAR BELOW METRICS */}
+      <div className="mx-[24px] mb-[16px]">
+        <div className="h-[2px] w-full bg-[#1e1e24] rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-[#4f46e5] to-[#818cf8] transition-all duration-1000"
+            style={{ width: '65%' }} // Exemplo de representação
+          />
+        </div>
       </div>
 
       {/* KANBAN BOARD */}

@@ -39,57 +39,64 @@ function KanbanColumn({ stage, children, onAddDeal }: { stage: Stage, children: 
   const { setNodeRef } = useSortable({ id: stage.id })
   const totalValue = stage.deals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
 
-  const statusColors: Record<string, string> = {
-    PROSPECT: "#4299e1",
-    QUALIFICATION: "#9f7aea",
-    MEETING: "#f6ad55",
-    PROPOSAL: "#48c78e",
-    NEGOTIATION: "#f87171",
-    FOLLOW_UP: "#68d391"
+  // STRICT COLOR MAPPING FROM REQUEST
+  const configMap: Record<string, { dot: string, border: string }> = {
+    PROSPECT:      { dot: "#818cf8", border: "#2a2a42" }, // Indigo
+    QUALIFICATION: { dot: "#f59e0b", border: "#2e2410" }, // Âmbar
+    PROPOSAL:      { dot: "#a78bfa", border: "#2d2440" }, // Roxo
+    NEGOTIATION:   { dot: "#22d3ee", border: "#102830" }, // Ciano
+    FECHAMENTO:    { dot: "#4ade80", border: "#102810" }  // Verde
   }
-  const dotColor = statusColors[stage.id] || stage.color || "#4299e1"
+
+  const stageConfig = configMap[stage.id] || { dot: "#818cf8", border: "#2a2a42" }
 
   return (
-    <div className="min-w-[280px] w-[280px] flex flex-col h-full shrink-0">
-      {/* COLUMN CONTAINER — IMAGE 1 MATCH (#0F1117) */}
-      <div className="bg-[#0f1117] border-[0.5px] border-white/[0.08] rounded-[12px] p-[14px] px-[12px] flex flex-col min-h-[700px] h-full shadow-lg">
-        {/* HEADER DA COLUNA */}
-        <div className="flex items-center justify-between pb-[10px] border-b-[0.5px] border-white/[0.07] mb-1">
-           <div className="flex items-center gap-[8px]">
-              <div className="w-[9px] h-[9px] rounded-full" style={{ backgroundColor: dotColor }} />
-              <span className="text-[13px] font-bold text-white uppercase tracking-[0.07em] leading-none">{stage.name}</span>
-           </div>
-           
-           <div className="min-w-[22px] h-[20px] rounded-[6px] bg-white/[0.08] flex items-center justify-center px-1.5 shrink-0">
-              <span className="text-[11px] font-semibold text-white/70">{stage.deals.length}</span>
-           </div>
-        </div>
-
-        {/* VALOR TOTAL DA COLUNA */}
-        <div className="flex items-center gap-[4px] py-[6px] pb-[8px]">
-           <span className="text-[12px] opacity-30 text-white">↗</span>
-           <span className="text-[12px] font-medium" style={{ color: dotColor }}>
-             {formatCurrency(totalValue)}
-           </span>
-        </div>
-
-        {/* DROPPABLE AREA — GAP 8PX */}
-        <div 
-          ref={setNodeRef}
-          className="flex-1 flex flex-col gap-[8px] overflow-y-auto scrollbar-hide"
-        >
-          <div className="flex flex-col gap-[8px] mb-2">
-             {children}
-          </div>
-          
-          {/* BOTÃO ADICIONAR CARD */}
-          <button 
-            onClick={() => onAddDeal?.(stage.id)}
-            className="w-full p-[11px] border-[0.5px] border-dashed border-white/[0.12] hover:border-white/[0.28] hover:bg-white/[0.03] rounded-[10px] flex items-center justify-center gap-[6px] text-[12px] font-normal text-white/30 hover:text-white/65 transition-all mt-1"
+    <div className="w-[240px] flex flex-col h-full shrink-0">
+      {/* ════════════════════════════════════════
+          HEADER DA COLUNA (BORDERED)
+          ════════════════════════════════════════ */}
+      <div 
+        className="flex items-center justify-between p-[10px] px-[12px] border rounded-[10px] mb-2"
+        style={{ borderColor: stageConfig.border }}
+      >
+        <div className="flex items-center gap-[8px]">
+          <div className="w-[8px] h-[8px] rounded-full" style={{ backgroundColor: stageConfig.dot }} />
+          <span 
+            className="text-[12px] font-semibold uppercase tracking-tight"
+            style={{ color: stageConfig.dot }}
           >
-             <Plus size={14} /> Adicionar Card
-          </button>
+            {stage.name}
+          </span>
         </div>
+        
+        <div className="px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center">
+           <span className="text-[11px] font-semibold text-white/50">{stage.deals.length}</span>
+        </div>
+      </div>
+
+      {/* SUB-INFO BELOW HEADER */}
+      <div className="px-[12px] pb-[8px]">
+        <span className="text-[11px] font-medium text-white/25">
+          {formatCurrency(totalValue)} · {stage.deals.length} deals
+        </span>
+      </div>
+
+      {/* DROPPABLE AREA — NO BG FOR COLUMN BODY */}
+      <div 
+        ref={setNodeRef}
+        className="flex-1 flex flex-col gap-[10px] overflow-y-auto scrollbar-hide py-1"
+      >
+        <div className="flex flex-col gap-[10px] mb-2">
+           {children}
+        </div>
+        
+        {/* BOTÃO ADICIONAR CARD — DASHED */}
+        <button 
+          onClick={() => onAddDeal?.(stage.id)}
+          className="w-full p-[9px] border border-dashed border-[#1e1e28] hover:border-[#3a3a4e] hover:bg-white/[0.02] rounded-[8px] flex items-center justify-center gap-[6px] text-[12px] font-normal text-[#444] hover:text-[#777] transition-all mt-1"
+        >
+           <Plus size={14} /> Adicionar card
+        </button>
       </div>
     </div>
   )
@@ -132,7 +139,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onAddDeal, onAd
       onDragStart={(e) => setActiveId(e.active.id as string)}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-4 h-full pb-10">
+      <div className="flex gap-[14px] h-full p-[16px] px-[24px] pb-[24px]">
         <SortableContext items={stages.flatMap(s => s.deals.map(d => d.id))} strategy={verticalListSortingStrategy}>
           {stages.map((stage) => (
             <KanbanColumn key={stage.id} stage={stage} onAddDeal={onAddDeal}>
@@ -143,16 +150,16 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onAddDeal, onAd
           ))}
         </SortableContext>
 
-        {/* REFINED NEW COLUMN PLACEHOLDER — IMAGE 1 MATCH */}
-        <div className="min-w-[280px] w-[280px]">
+        {/* REFINED NEW COLUMN PLACEHOLDER — 240px MATCH */}
+        <div className="w-[240px] shrink-0">
            <button 
              onClick={onAddStage}
-             className="w-full h-full min-h-[700px] border border-dashed border-white/[0.12] hover:border-[#3B82F6]/40 hover:bg-[#3B82F6]/[0.02] rounded-[12px] flex flex-col items-center justify-center gap-[18px] transition-all group"
+             className="w-full h-full min-h-[600px] border border-dashed border-white/[0.05] hover:border-[#4f46e5]/40 hover:bg-[#4f46e5]/[0.02] rounded-[10px] flex flex-col items-center justify-center gap-4 transition-all group"
            >
-              <div className="w-[48px] h-[48px] rounded-full flex items-center justify-center transition-all bg-[#0f1117] border border-white/[0.08] group-hover:bg-[#3B82F6]/[0.08] group-hover:border-[#3B82F6]/20">
-                <Plus size={24} className="text-[#3b82f6]/70 group-hover:text-[#3B82F6] transition-colors" strokeWidth={3} />
+              <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all bg-white/[0.02] group-hover:bg-[#4f46e5]/[0.1]">
+                <Plus size={24} className="text-white/20 group-hover:text-[#4f46e5]" />
               </div>
-              <span className="text-[12px] font-black uppercase tracking-[0.15em] text-[#3B82F6]/60 group-hover:text-[#3B82F6] transition-all">Nova Coluna</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/20 group-hover:text-[#4f46e5]">Nova Coluna</span>
            </button>
         </div>
       </div>
