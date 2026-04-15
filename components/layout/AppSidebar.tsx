@@ -13,9 +13,13 @@ import {
   Bot,
   Settings,
   X,
+  Plus,
+  ChevronRight,
+  LogOut,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { useSession, signOut } from "next-auth/react"
 
 const menuGroups = [
   {
@@ -58,59 +62,51 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
   const { data: session } = useSession()
 
   return (
-    <div className="flex flex-col h-full bg-[#09090B] border-r border-white/5 w-[240px] shrink-0 overflow-hidden px-4 py-6">
+    <div className="flex flex-col h-full bg-[#09090B] border-r border-white/5 text-white/50 font-sans">
       {/* Header / Logo */}
-      <div className="flex items-center justify-between px-2 mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center shadow-lg shadow-accent/10">
-            <span className="text-base font-black text-black">E</span>
+      <div className="p-8 pb-10 flex items-center justify-between">
+        <Link href="/dashboard" className="flex items-center gap-3 group">
+          <div className="h-10 w-10 bg-accent rounded-xl flex items-center justify-center text-black font-black text-xl shadow-lg shadow-accent/20 transition-transform group-hover:scale-105">
+            E
           </div>
-          <div className="flex flex-col leading-tight">
-            <span className="font-sans font-bold text-sm tracking-tight text-white/90">Escoltran</span>
-            <span className="font-sans font-normal text-[11px] text-white/40">CRM Inteligente</span>
+          <div>
+            <span className="text-white font-black text-lg tracking-tight block leading-none">Escoltran</span>
+            <span className="text-[10px] font-bold text-accent uppercase tracking-widest mt-1 block">SaaS Intelligence</span>
           </div>
-        </div>
+        </Link>
         {onClose && (
-          <Button variant="ghost" size="icon" onClick={onClose} className="md:hidden h-8 w-8 text-white/40">
-            <X className="h-4 w-4" />
+          <Button variant="ghost" size="icon" onClick={onClose} className="lg:hidden text-white/20">
+            <X className="h-5 w-5" />
           </Button>
         )}
       </div>
 
       {/* Navigation Groups */}
-      <div className="flex-1 overflow-y-auto space-y-7 custom-scrollbar pr-2">
+      <div className="flex-1 px-4 space-y-10 overflow-y-auto scrollbar-hide">
         {menuGroups.map((group) => (
-          <div key={group.title} className="space-y-1.5">
-            <div className="px-2 mb-2">
-              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white/30">
-                {group.title}
-              </span>
-            </div>
+          <div key={group.title} className="space-y-4">
+            <h3 className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+              {group.title}
+            </h3>
             <nav className="space-y-1">
               {group.items.map((item) => {
+                const active = pathname === item.href
                 const Icon = item.icon
-                const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={onClose}
                     className={cn(
-                      "group flex items-center gap-3 px-3 py-2.5 transition-all duration-200 rounded-xl",
-                      isActive
-                        ? "bg-accent text-black font-semibold shadow-md shadow-accent/20"
-                        : "text-white/50 hover:bg-white/[0.03] hover:text-white/80"
+                      "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group",
+                      active 
+                        ? "bg-accent text-black font-black shadow-lg shadow-accent/10" 
+                        : "hover:bg-white/[0.03] hover:text-white"
                     )}
                   >
-                    <Icon
-                      className={cn(
-                        "h-4 w-4 shrink-0 transition-opacity",
-                        isActive ? "opacity-100 text-black" : "opacity-40 group-hover:opacity-100"
-                      )}
-                    />
-                    <span className="text-[13px] tracking-tight">
-                      {item.label}
-                    </span>
+                    <Icon className={cn("h-4 w-4 shrink-0", active ? "text-black" : "text-white/20 group-hover:text-accent transition-colors")} />
+                    <span className="text-[13px] tracking-tight">{item.label}</span>
+                    {active && <ChevronRight className="ml-auto h-3 w-3 opacity-50" />}
                   </Link>
                 )
               })}
@@ -118,35 +114,33 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
           </div>
         ))}
 
-        {/* Action Button */}
-        <div className="pt-4 px-2">
-          <Button 
-            className="w-full bg-accent/10 hover:bg-accent/20 text-accent border border-accent/20 h-11 rounded-xl flex items-center justify-between px-4 group transition-all"
-            onClick={() => {}}
-          >
-            <div className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              <span className="text-xs font-bold uppercase tracking-wider">Nova Prospecção</span>
-            </div>
-            <ChevronRight className="h-3 w-3 opacity-40 group-hover:translate-x-1 transition-transform" />
-          </Button>
+        {/* Action Card / Invite */}
+        <div className="p-4 pt-10">
+          <div className="bg-[#111114] border border-white/5 rounded-[22px] p-6 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 w-20 h-20 bg-accent/10 rounded-full blur-2xl group-hover:bg-accent/20 transition-colors" />
+            <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-2">Workspace</p>
+            <h4 className="text-xs font-bold text-white mb-4">Gerencie sua equipe com IA.</h4>
+            <Button size="sm" className="w-full bg-white/5 hover:bg-white/10 text-white border-white/5 text-[10px] font-bold uppercase tracking-widest h-9 rounded-xl">
+              <Plus className="h-3 w-3 mr-2" /> Convidar
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Quota Section */}
-      <div className="mt-8 px-2 space-y-3">
-        <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Cota Mensal</span>
-            <span className="text-[10px] font-bold text-accent">6/10</span>
+      {/* Footer / User Profile */}
+      <div className="p-6 border-t border-white/5 bg-black/20">
+        {/* Usage Quota Area */}
+        <div className="mb-6 px-2 space-y-3">
+          <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+            <span className="text-white/20">Uso da Base</span>
+            <span className="text-accent">72%</span>
           </div>
-          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-            <div className="h-full bg-accent rounded-full w-[60%]" />
+          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+            <div className="h-full bg-accent rounded-full" style={{ width: '72%' }} />
           </div>
         </div>
 
-        {/* User Card */}
-        <div className="flex items-center gap-3 p-2 bg-transparent hover:bg-white/[0.03] rounded-2xl transition-all cursor-pointer group">
+        <div className="group flex items-center gap-4 p-3 rounded-2xl hover:bg-white/[0.03] transition-all cursor-default relative">
           <div className="h-10 w-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent font-black text-xs border border-accent/20">
             {session?.user?.name?.charAt(0).toUpperCase() || "U"}
           </div>

@@ -35,7 +35,7 @@ import {
   ChevronDown,
 } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import { formatCurrency } from "@/lib/utils"
+import { formatCurrency, cn } from "@/lib/utils"
 import { ArrowUpRight, ArrowDownRight, Activity as ActivityIcon } from "lucide-react"
 
 function MetricCard({
@@ -95,6 +95,59 @@ function MetricCard({
     </Card>
   )
 }
+
+interface GoogleLead {
+  id: string
+  nome: string
+  telefone?: string
+  endereco?: string
+  site?: string
+  rating?: number
+  reviews?: number
+  vicinity?: string
+  nicho?: string
+  cidade?: string
+}
+
+interface CnpjLead {
+  id: string
+  cnpj: string
+  nome: string
+  telefone?: string
+  cnae?: string
+  cidade?: string
+  uf?: string
+  situacao?: string
+}
+
+interface StoredLead {
+  id: string
+  nome: string
+  telefone?: string
+  endereco?: string
+  cidade?: string
+  uf?: string
+  nicho?: string
+  status: any
+  createdAt: string
+}
+
+interface StoredCnpjLead {
+  id: string
+  cnpj: string
+  nome: string
+  telefone?: string
+  cidade?: string
+  uf?: string
+  status: any
+  createdAt: string
+}
+
+const states = [
+  "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA",
+  "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN",
+  "RO", "RR", "RS", "SC", "SE", "SP", "TO"
+]
 
 export default function LeadSearchPage() {
   const queryClient = useQueryClient()

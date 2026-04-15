@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import {
   PieChart,
   Pie,
@@ -69,6 +70,12 @@ function MetricCard({
         <span className={cn("text-[10px] font-bold text-white/20 uppercase tracking-widest italic")}>Dataset Sincronizado</span>
       </div>
     </Card>
+  )
+}
+
+function SkeletonCard() {
+  return (
+    <div className="rounded-lg border border-border-subtle bg-white/5 h-[120px] animate-pulse" />
   )
 }
 
