@@ -1,335 +1,194 @@
 :root {
-  --aether-bg: #0a0a0c;
-  --aether-surface: #0f1014;
-  --aether-surface-elevated: #16171c;
-  --aether-border: rgba(255, 255, 255, 0.05);
-  --aether-border-bright: rgba(255, 255, 255, 0.12);
+  --aether-bg: #08080a;
+  --aether-surface: #101116;
+  --aether-surface-elevated: #16171e;
+  --aether-border: rgba(255, 255, 255, 0.04);
+  --aether-border-bright: rgba(255, 255, 255, 0.08);
   --aether-gold: #c9a227;
   --aether-gold-glow: rgba(201, 162, 39, 0.4);
   --aether-gold-muted: rgba(201, 162, 39, 0.08);
   --aether-text-primary: #ffffff;
-  --aether-text-muted: rgba(255, 255, 255, 0.45);
-  --aether-text-dim: rgba(255, 255, 255, 0.2);
-  --aether-glass: blur(12px) saturate(180%);
+  --aether-text-muted: rgba(255, 255, 255, 0.4);
+  --aether-text-dim: rgba(255, 255, 255, 0.15);
+  --aether-glass: blur(20px) saturate(180%);
 }
 
 /* Base Body Refinement */
 body {
   background-color: var(--aether-bg);
+  background-image: radial-gradient(circle at 50% -20%, rgba(201, 162, 39, 0.03) 0%, transparent 50%);
   color: var(--aether-text-primary);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Global Page Entrance Animation */
-@keyframes aether-entrance {
-  from { opacity: 0; transform: translateY(12px) scale(0.99); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.animate-aether {
-  animation: aether-entrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Page Header Structure */
-.page-header {
-  margin-bottom: 3.5rem;
-  display: flex;
-  gap: 1rem;
-}
-
-.header-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: var(--aether-gold-muted);
-  border: 1px solid rgba(201, 162, 39, 0.15);
-  color: var(--aether-gold);
-  font-size: 9px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  padding: 6px 14px;
-  border-radius: 100px;
-  width: fit-content;
-  backdrop-filter: var(--aether-glass);
-}
-
-.header-badge .dot {
-  width: 6px;
-  height: 6px;
-  background: var(--aether-gold);
-  border-radius: 50%;
-  box-shadow: 0 0 12px var(--aether-gold);
-  animation: pulse-gold 2s infinite;
-}
-
-@keyframes pulse-gold {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.4); opacity: 0.6; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
+/* Typography Refinements */
 .page-title {
-  font-size: 3.5rem;
+  font-size: 3.25rem;
   font-weight: 900;
-  letter-spacing: -0.05em;
-  color: var(--aether-text-primary);
-  line-height: 0.95;
-  margin: 0;
-}
-
-.page-title span {
-  color: var(--aether-gold);
-  text-shadow: 0 0 40px rgba(201, 162, 39, 0.2);
-}
-
-.page-subtitle {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--aether-text-muted);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-top: 8px;
-}
-
-.page-subtitle .sep {
-  width: 4px;
-  height: 4px;
-  background: var(--aether-text-dim);
-  border-radius: 50%;
-}
-
-.page-subtitle .status {
-  color: var(--aether-gold);
-  font-weight: 800;
-}
-
-/* Aether Cards - Premium Refinement */
-.aether-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-  background-color: var(--aether-surface);
-  border: 1px solid var(--aether-border);
-  border-radius: 24px;
-  padding: 28px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-}
-
-.aether-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
-  pointer-events: none;
-}
-
-.aether-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(201, 162, 39, 0.3);
-  box-shadow: 0 20px 40px -15px rgba(0,0,0,0.6);
-}
-
-.metric-card {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.metric-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  position: relative;
-  z-index: 1;
-}
-
-.metric-icon-wrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--aether-border-bright);
-  color: var(--aether-gold);
-  transition: all 0.3s ease;
-}
-
-.aether-card:hover .metric-icon-wrap {
-  background: var(--aether-gold-muted);
-  border-color: rgba(201, 162, 39, 0.3);
-  transform: scale(1.1) rotate(5deg);
-}
-
-.metric-label-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.metric-label {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--aether-text-muted);
-}
-
-.metric-value {
-  font-size: 2.25rem;
-  font-weight: 950;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
   color: var(--aether-text-primary);
   line-height: 1;
 }
 
-.metric-footer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  position: relative;
-  z-index: 1;
+.page-title span {
+  color: var(--aether-text-primary); /* keeping titles white as per print, using gold for accents */
 }
 
-.metric-growth.pos { color: #4ade80; text-shadow: 0 0 15px rgba(74, 222, 128, 0.3); }
-.metric-growth.neg { color: #f87171; text-shadow: 0 0 15px rgba(248, 113, 113, 0.3); }
-
-/* Main Action Button */
-.aether-btn-primary {
-  background: var(--aether-gold);
-  color: #0d0d0d;
-  font-size: 13px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  height: 54px;
-  padding: 0 32px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 8px 25px rgba(201, 162, 39, 0.2);
-}
-
-.aether-btn-primary:hover {
-  background: #d4ac2b;
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 35px rgba(201, 162, 39, 0.35);
-}
-
-.aether-btn-secondary {
-  background: rgba(255, 255, 255, 0.04);
+/* Aether Cards - High Fidelity Refinement */
+.aether-card {
+  background: var(--aether-surface);
   border: 1px solid var(--aether-border);
-  color: var(--aether-text-muted);
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  height: 50px;
-  padding: 0 24px;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.aether-card:hover {
+  border-color: rgba(255,255,255,0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* Kanban System - From Prints */
+.kanban-col {
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kanban-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--aether-border);
   border-radius: 14px;
-  transition: all 0.3s ease;
-  backdrop-filter: var(--aether-glass);
 }
 
-.aether-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--aether-text-primary);
-  border-color: var(--aether-border-bright);
-}
-
-/* Kanban Cards High-Fidelity */
 .kanban-card {
   background: var(--aether-surface-elevated);
   border: 1px solid var(--aether-border);
   border-radius: 16px;
   padding: 16px;
-  margin-bottom: 12px;
-  transition: all 0.3s ease;
-  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .kanban-card:hover {
-  border-color: rgba(201, 162, 39, 0.4);
-  transform: translateX(4px);
-  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-2px);
+  border-color: var(--aether-gold-glow);
+  background: rgba(255, 255, 255, 0.04);
 }
 
-/* Tables - High Fidelity */
-.aether-table-wrap {
-  background: var(--aether-surface);
-  border: 1px solid var(--aether-border);
-  border-radius: 28px;
-  overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-}
-
-.aether-table-header {
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid var(--aether-border);
-}
-
-.aether-table th {
-  font-size: 11px;
-  font-weight: 850;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--aether-text-muted);
-  padding: 20px 28px;
-}
-
-.aether-table td {
-  padding: 18px 28px;
-  font-size: 14px;
-  color: var(--aether-text-primary);
-  border-bottom: 1px solid rgba(255,255,255,0.03);
-  transition: background 0.2s ease;
-}
-
-.aether-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-/* Form Elements Re-imagined */
-.aether-input {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid var(--aether-border) !important;
-  border-radius: 16px !important;
-  transition: all 0.3s ease !important;
-  height: 52px !important;
-}
-
-.aether-input:focus {
-  border-color: var(--aether-gold) !important;
-  background: rgba(0,0,0,0.5) !important;
-  box-shadow: 0 0 20px rgba(201, 162, 39, 0.1) !important;
-}
-
-.aether-label {
-  font-size: 11px;
+.kanban-card .priority-badge {
+  font-size: 9px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--aether-text-dim);
-  margin-bottom: 10px;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-/* Global Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--aether-gold); }
+.kanban-card .card-value {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--aether-gold);
+}
+
+.kanban-card .card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Aether Buttons Refinement */
+.aether-btn-primary {
+  background: var(--aether-gold);
+  color: #000;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(201, 162, 39, 0.2);
+  transition: all 0.3s ease;
+}
+
+.aether-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(201, 162, 39, 0.35);
+  background: #d4ac2b;
+}
+
+.aether-btn-secondary {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--aether-border);
+  color: var(--aether-text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+}
+
+/* Modal Styling From Prints */
+.aether-dialog-content {
+  background: var(--aether-bg);
+  border: 1px solid var(--aether-border-bright);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  backdrop-filter: var(--aether-glass);
+}
+
+/* Metric Cluster Refinement */
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.metric-card-refined {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.metric-card-refined .icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--aether-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--aether-gold);
+}
+
+.metric-card-refined .label {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--aether-text-muted);
+  display: block;
+}
+
+.metric-card-refined .value {
+  font-size: 1.5rem;
+  font-weight: 950;
+  color: var(--aether-text-primary);
+}
