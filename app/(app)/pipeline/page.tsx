@@ -9,7 +9,9 @@ import { DealDetailSheet } from "@/components/pipeline/DealDetailSheet"
 import { type Deal } from "@/components/pipeline/DealCard"
 import { cn } from "@/lib/utils"
 
-/* ─── New Deal Modal ─────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   NEW DEAL MODAL — Layered glass style
+   ═══════════════════════════════════════════════════════ */
 function NewDealModal({
   open, stages, initialStageId, onClose, onSubmit, isPending,
 }: {
@@ -25,7 +27,6 @@ function NewDealModal({
   })
 
   if (!open) return null
-
   const set = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }))
 
   return (
@@ -43,7 +44,6 @@ function NewDealModal({
         }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-[16px] font-semibold text-white">Novo Deal</h2>
@@ -55,44 +55,36 @@ function NewDealModal({
         </div>
 
         <div className="space-y-4">
-          {/* Title */}
           <div>
-            <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">
-              Título *
-            </label>
+            <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">Título *</label>
             <input
               autoFocus
               value={form.titulo}
               onChange={e => set("titulo", e.target.value)}
               placeholder="Ex: João Silva – Plano Pro"
-              className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[#6366f1]/50 transition-all"
+              className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all"
               style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
             />
           </div>
 
-          {/* Value + Priority */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">
-                Valor estimado
-              </label>
+              <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">Valor estimado</label>
               <input
                 type="number"
                 value={form.valorEstimado}
                 onChange={e => set("valorEstimado", e.target.value)}
                 placeholder="0,00"
-                className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[#6366f1]/50 transition-all"
+                className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all"
                 style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
               />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">
-                Prioridade
-              </label>
+              <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">Prioridade</label>
               <select
                 value={form.prioridade}
                 onChange={e => set("prioridade", e.target.value)}
-                className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white focus:outline-none focus:ring-1 focus:ring-[#6366f1]/50"
+                className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
                 style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
               >
                 <option value="ALTA">🔴 Alta</option>
@@ -102,15 +94,12 @@ function NewDealModal({
             </div>
           </div>
 
-          {/* Stage */}
           <div>
-            <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">
-              Estágio inicial
-            </label>
+            <label className="block text-[11px] font-medium text-white/30 uppercase tracking-wider mb-1.5">Estágio inicial</label>
             <select
               value={form.stageId}
               onChange={e => set("stageId", e.target.value)}
-              className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white focus:outline-none focus:ring-1 focus:ring-[#6366f1]/50"
+              className="w-full rounded-xl h-10 px-3.5 text-[13px] text-white focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
               style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
             >
               <option value="">Primeiro estágio</option>
@@ -119,20 +108,12 @@ function NewDealModal({
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex gap-2.5 mt-6">
-          <button
-            onClick={onClose}
-            className="flex-1 h-10 rounded-xl text-[13px] font-medium text-white/30 hover:text-white/60 transition-colors"
-            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
-          >
+          <button onClick={onClose} className="flex-1 h-10 rounded-xl text-[13px] font-medium text-white/30 hover:text-white/60 transition-colors" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
             Cancelar
           </button>
           <button
-            onClick={() => {
-              onSubmit(form)
-              setForm({ titulo: "", valorEstimado: "", prioridade: "MEDIA", stageId: "" })
-            }}
+            onClick={() => { onSubmit(form); setForm({ titulo: "", valorEstimado: "", prioridade: "MEDIA", stageId: "" }) }}
             disabled={isPending || !form.titulo.trim()}
             className="flex-1 h-10 rounded-xl text-[13px] font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
@@ -148,7 +129,9 @@ function NewDealModal({
   )
 }
 
-/* ─── Stat card ─────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   STAT CARD — Elevated KPI block
+   ═══════════════════════════════════════════════════════ */
 function StatCard({
   label, value, sub, icon: Icon, accent,
 }: {
@@ -156,27 +139,33 @@ function StatCard({
 }) {
   return (
     <div
-      className="flex items-center gap-4 px-5 py-4 rounded-xl flex-1 min-w-0"
-      style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)" }}
+      className="flex items-center gap-4 px-5 py-[18px] rounded-xl flex-1 min-w-0 transition-all duration-200 group hover:-translate-y-px"
+      style={{
+        background: "rgba(255,255,255,0.025)",
+        border: "1px solid rgba(255,255,255,0.055)",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.015)",
+      }}
     >
       <div
-        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-        style={{ background: `${accent}18` }}
+        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105"
+        style={{ background: `${accent}15`, border: `1px solid ${accent}20` }}
       >
-        <Icon size={16} color={accent} />
+        <Icon size={18} color={accent} />
       </div>
-      <div className="min-w-0">
-        <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>
+      <div className="min-w-0 flex-1">
+        <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em] mb-[6px]" style={{ color: "rgba(255,255,255,0.3)" }}>
           {label}
         </p>
-        <p className="text-[18px] font-semibold leading-none text-white truncate">{value}</p>
-        {sub && <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.2)" }}>{sub}</p>}
+        <p className="text-[20px] font-bold leading-none text-white truncate tracking-tight">{value}</p>
+        {sub && <p className="text-[11px] mt-[5px] font-medium" style={{ color: "rgba(255,255,255,0.18)" }}>{sub}</p>}
       </div>
     </div>
   )
 }
 
-/* ─── Page ──────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   PAGE — LAYER 1: Deepest background
+   ═══════════════════════════════════════════════════════ */
 export default function PipelinePage() {
   const queryClient = useQueryClient()
   const { toast } = useToast()
@@ -283,23 +272,28 @@ export default function PipelinePage() {
     if (name?.trim()) addStage.mutate(name.trim())
   }
 
+  /* ─── Render ──────────────────────────────────── */
   return (
     <div className="flex flex-col h-full -m-4 md:-m-6 bg-[#080a12]">
 
-      {/* ── HEADER ─────────────────────────────────────────── */}
-      <div className="px-6 pt-7 pb-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+      {/* ═══════════ HEADER ═══════════════════════ */}
+      <div
+        className="px-6 pt-7 pb-5 shrink-0"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.055)" }}
+      >
+        {/* Top row: Title + Actions */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <div className="flex items-center gap-2.5 mb-1.5">
+            <div className="flex items-center gap-2.5 mb-2">
               <div
                 className="text-[10px] font-semibold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full"
-                style={{ background: "rgba(99,102,241,0.12)", color: "#818cf8", border: "1px solid rgba(99,102,241,0.2)" }}
+                style={{ background: "rgba(99,102,241,0.1)", color: "#818cf8", border: "1px solid rgba(99,102,241,0.18)" }}
               >
                 Pipeline Comercial
               </div>
             </div>
-            <h1 className="text-[24px] font-bold text-white tracking-[-0.4px] leading-none">Pipeline</h1>
-            <p className="text-[13px] text-white/25 mt-1.5 font-medium">
+            <h1 className="text-[26px] font-bold text-white tracking-[-0.5px] leading-none">Pipeline</h1>
+            <p className="text-[13px] text-white/25 mt-2 font-medium">
               {boardData?.pipelineName || "Pipeline Principal"} · Visão Kanban
             </p>
           </div>
@@ -307,8 +301,8 @@ export default function PipelinePage() {
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => refetch()}
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-white/25 hover:text-white/60 transition-colors"
-              style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-white/25 hover:text-white/60 hover:bg-white/[0.04] transition-all"
+              style={{ border: "1px solid rgba(255,255,255,0.06)" }}
               title="Atualizar"
             >
               <RefreshCw size={14} />
@@ -316,10 +310,10 @@ export default function PipelinePage() {
 
             <button
               onClick={() => { setNewDealStageId(null); setShowNewDeal(true) }}
-              className="flex items-center gap-2 h-9 px-4 rounded-xl text-[13px] font-semibold text-white transition-all hover:brightness-110 active:scale-95"
+              className="flex items-center gap-2 h-9 px-4 rounded-xl text-[13px] font-semibold text-white transition-all hover:brightness-110 active:scale-[0.97]"
               style={{
                 background: "linear-gradient(135deg, #6366f1, #4f46e5)",
-                boxShadow: "0 4px 14px rgba(99,102,241,0.35)",
+                boxShadow: "0 4px 14px rgba(99,102,241,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
               }}
             >
               <Plus size={15} strokeWidth={2.5} />
@@ -328,7 +322,7 @@ export default function PipelinePage() {
           </div>
         </div>
 
-        {/* Stats */}
+        {/* KPI Stats row */}
         <div className="flex gap-3">
           <StatCard
             label="Oportunidades"
@@ -354,12 +348,12 @@ export default function PipelinePage() {
         </div>
       </div>
 
-      {/* ── BOARD ──────────────────────────────────────────── */}
+      {/* ═══════════ BOARD — LAYER 1: deepest ═════ */}
       <div
         className="flex-1 overflow-x-auto px-6 pt-6"
         style={{
           scrollbarWidth: "thin",
-          scrollbarColor: "rgba(255,255,255,0.08) transparent",
+          scrollbarColor: "rgba(255,255,255,0.06) transparent",
         }}
       >
         {isLoading ? (
@@ -367,7 +361,7 @@ export default function PipelinePage() {
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="w-[272px] shrink-0 rounded-xl animate-pulse"
+                className="w-[290px] shrink-0 rounded-2xl animate-pulse"
                 style={{
                   height: "420px",
                   background: "rgba(255,255,255,0.02)",
@@ -380,10 +374,7 @@ export default function PipelinePage() {
           <div className="flex flex-col items-center justify-center h-64 gap-4 text-white/25">
             <AlertTriangle size={28} className="text-red-400/60" />
             <p className="text-[14px]">Erro ao carregar pipeline.</p>
-            <button
-              onClick={() => refetch()}
-              className="text-[12px] text-[#818cf8] hover:text-[#6366f1] underline underline-offset-2"
-            >
+            <button onClick={() => refetch()} className="text-[12px] text-indigo-400 hover:text-indigo-300 underline underline-offset-2">
               Tentar novamente
             </button>
           </div>
@@ -399,7 +390,7 @@ export default function PipelinePage() {
         )}
       </div>
 
-      {/* ── MODALS ─────────────────────────────────────────── */}
+      {/* ═══════════ MODALS ═══════════════════════ */}
       <NewDealModal
         open={showNewDeal}
         stages={stages}

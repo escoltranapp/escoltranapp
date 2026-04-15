@@ -8,7 +8,7 @@ import {
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { DealCard, type Deal } from "./DealCard"
 import { DealDetailSheet } from "./DealDetailSheet"
-import { Plus } from "lucide-react"
+import { Plus, MoreHorizontal } from "lucide-react"
 
 export interface Stage {
   id: string
@@ -26,6 +26,7 @@ interface KanbanBoardProps {
   onDealClick?: (deal: Deal) => void
 }
 
+/* ── Helpers ──────────────────────────────────────── */
 function hexToRgba(hex: string, alpha: number) {
   const h = hex.replace("#", "")
   const r = parseInt(h.slice(0, 2), 16)
@@ -34,67 +35,92 @@ function hexToRgba(hex: string, alpha: number) {
   return `rgba(${r},${g},${b},${alpha})`
 }
 
-function DroppableCards({ stage, children }: { stage: Stage; children: React.ReactNode }) {
+function currency(v: number) {
+  if (v === 0) return "—"
+  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })
+}
+
+/* ── Droppable zone inside each column ───────────── */
+function DroppableZone({ stage, children }: { stage: Stage; children: React.ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage.id })
   return (
     <div
       ref={setNodeRef}
-      className="flex flex-col gap-2 min-h-[80px] transition-colors duration-200 rounded-[8px] p-1"
-      style={isOver ? { backgroundColor: hexToRgba(stage.color, 0.05), outline: `1px dashed ${hexToRgba(stage.color, 0.3)}` } : undefined}
+      className="flex flex-col gap-2 min-h-[60px] rounded-lg p-1 transition-all duration-200"
+      style={
+        isOver
+          ? {
+              backgroundColor: hexToRgba(stage.color, 0.06),
+              outline: `2px dashed ${hexToRgba(stage.color, 0.25)}`,
+              outlineOffset: "-2px",
+            }
+          : undefined
+      }
     >
       {children}
     </div>
   )
 }
 
-function AddCardButton({ stageColor, onClick }: { stageColor: string; onClick: () => void }) {
-  const [hovered, setHovered] = useState(false)
+/* ── Add card button ─────────────────────────────── */
+function AddCardBtn({ color, onClick }: { color: string; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="w-full flex items-center justify-center gap-1.5 h-8 rounded-[8px] text-[11px] font-[500] transition-all duration-150"
+      className="w-full flex items-center justify-center gap-1.5 h-[34px] rounded-lg text-[11px] font-medium transition-all duration-150 mt-1"
       style={{
-        color: hovered ? stageColor : "rgba(255,255,255,0.22)",
-        border: `1px dashed ${hovered ? hexToRgba(stageColor, 0.4) : "rgba(255,255,255,0.08)"}`,
-        background: hovered ? hexToRgba(stageColor, 0.06) : "transparent",
+        color: "rgba(255,255,255,0.18)",
+        border: "1px dashed rgba(255,255,255,0.06)",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.color = color
+        e.currentTarget.style.borderColor = hexToRgba(color, 0.35)
+        e.currentTarget.style.background = hexToRgba(color, 0.04)
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.color = "rgba(255,255,255,0.18)"
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"
+        e.currentTarget.style.background = "transparent"
       }}
     >
-      <Plus size={11} strokeWidth={2.5} />
-      Adicionar card
+      <Plus size={12} strokeWidth={2.5} />
+      Adicionar
     </button>
   )
 }
 
-function AddStageButton({ onClick }: { onClick?: () => void }) {
+/* ── Add stage placeholder ───────────────────────── */
+function AddStageBtn({ onClick }: { onClick?: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="w-[280px] shrink-0 flex items-center justify-center gap-2 h-11 px-4 rounded-[14px] text-[12px] font-[500] self-start transition-all duration-150"
+      className="w-[280px] shrink-0 flex flex-col items-center justify-center gap-3 self-stretch rounded-2xl transition-all duration-200 group"
       style={{
-        border: "1px dashed rgba(255,255,255,0.07)",
-        color: "rgba(255,255,255,0.2)",
+        border: "2px dashed rgba(255,255,255,0.05)",
+        minHeight: "200px",
       }}
-      onMouseEnter={e => {
-        const el = e.currentTarget
-        el.style.borderColor = "rgba(255,255,255,0.18)"
-        el.style.color = "rgba(255,255,255,0.5)"
-        el.style.background = "rgba(255,255,255,0.025)"
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = "rgba(99,102,241,0.25)"
+        e.currentTarget.style.background = "rgba(99,102,241,0.02)"
       }}
-      onMouseLeave={e => {
-        const el = e.currentTarget
-        el.style.borderColor = "rgba(255,255,255,0.07)"
-        el.style.color = "rgba(255,255,255,0.2)"
-        el.style.background = "transparent"
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)"
+        e.currentTarget.style.background = "transparent"
       }}
     >
-      <Plus size={13} strokeWidth={2} />
-      Nova Coluna
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/[0.03] group-hover:bg-indigo-500/10 transition-colors">
+        <Plus size={20} className="text-white/15 group-hover:text-indigo-400 transition-colors" />
+      </div>
+      <span className="text-[11px] font-semibold uppercase tracking-widest text-white/15 group-hover:text-indigo-400/80 transition-colors">
+        Nova Coluna
+      </span>
     </button>
   )
 }
 
+/* ════════════════════════════════════════════════════
+   KANBAN BOARD — Premium SaaS Layout
+   ════════════════════════════════════════════════════ */
 export function KanbanBoard({
   stages: initial, onDealMove, onAddDeal, onAddStage, onDealClick,
 }: KanbanBoardProps) {
@@ -140,67 +166,79 @@ export function KanbanBoard({
             const total = open.reduce((s, d) => s + (d.valorEstimado || 0), 0)
 
             return (
-              <div key={stage.id} className="w-[280px] shrink-0 flex flex-col">
+              <div key={stage.id} className="w-[290px] shrink-0 flex flex-col">
+                {/* ── COLUMN CONTAINER ─ LAYER 2: elevated above board ── */}
                 <div
-                  className="rounded-[14px] overflow-hidden flex flex-col"
+                  className="rounded-2xl flex flex-col overflow-hidden"
                   style={{
-                    background: "rgba(255,255,255,0.016)",
-                    border: "1px solid rgba(255,255,255,0.052)",
+                    // LAYER 2: Subtle elevation above bg
+                    background: "rgba(255,255,255,0.018)",
+                    border: "1px solid rgba(255,255,255,0.05)",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.02)",
                   }}
                 >
-                  {/* Top stage color line */}
+                  {/* Stage color strip — identity line */}
                   <div
                     className="h-[3px] shrink-0"
                     style={{
-                      background: `linear-gradient(90deg, ${stage.color} 0%, ${hexToRgba(stage.color, 0.1)} 100%)`,
+                      background: `linear-gradient(90deg, ${stage.color}, ${hexToRgba(stage.color, 0.15)})`,
                     }}
                   />
 
-                  {/* Column header */}
-                  <div className="px-4 pt-3.5 pb-3 shrink-0">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
+                  {/* ── Column header ───────────────────── */}
+                  <div className="px-4 pt-4 pb-3 shrink-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2.5">
                         <div
-                          className="w-[7px] h-[7px] rounded-full shrink-0"
-                          style={{ backgroundColor: stage.color }}
+                          className="w-2 h-2 rounded-full shrink-0"
+                          style={{
+                            backgroundColor: stage.color,
+                            boxShadow: `0 0 6px ${hexToRgba(stage.color, 0.4)}`,
+                          }}
                         />
                         <span
-                          className="text-[11px] font-[600] uppercase tracking-[0.07em]"
+                          className="text-[12px] font-semibold uppercase tracking-[0.06em]"
                           style={{ color: stage.color }}
                         >
                           {stage.name}
                         </span>
                       </div>
-                      <div
-                        className="text-[10px] font-[700] px-[7px] py-[2.5px] rounded-full tabular-nums"
-                        style={{
-                          background: hexToRgba(stage.color, 0.1),
-                          color: stage.color,
-                          border: `1px solid ${hexToRgba(stage.color, 0.2)}`,
-                        }}
-                      >
-                        {open.length}
+
+                      <div className="flex items-center gap-2">
+                        {/* Deal count badge */}
+                        <div
+                          className="text-[10px] font-bold px-2 py-[3px] rounded-md tabular-nums"
+                          style={{
+                            background: hexToRgba(stage.color, 0.1),
+                            color: stage.color,
+                            border: `1px solid ${hexToRgba(stage.color, 0.18)}`,
+                          }}
+                        >
+                          {open.length}
+                        </div>
+
+                        {/* Column menu */}
+                        <button className="text-white/15 hover:text-white/40 transition-colors p-0.5">
+                          <MoreHorizontal size={14} />
+                        </button>
                       </div>
                     </div>
+
+                    {/* Stage total value */}
                     <p
-                      className="text-[11px] pl-[15px] font-[500]"
-                      style={{ color: "rgba(255,255,255,0.2)" }}
+                      className="text-[12px] font-medium pl-[18px] tabular-nums"
+                      style={{ color: "rgba(255,255,255,0.22)" }}
                     >
-                      {total > 0
-                        ? total.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })
-                        : "—"}
+                      {currency(total)}
                     </p>
                   </div>
 
                   {/* Divider */}
-                  <div
-                    className="mx-3.5 shrink-0"
-                    style={{ height: "1px", background: "rgba(255,255,255,0.042)" }}
-                  />
+                  <div className="mx-3.5 shrink-0" style={{ height: "1px", background: "rgba(255,255,255,0.04)" }} />
 
-                  {/* Cards area — scrollable */}
+                  {/* ── Cards area — scrollable ────────── */}
                   <div
-                    className="px-2.5 pt-2.5 flex-1 overflow-y-auto"
+                    className="px-2.5 pt-2.5 pb-2 flex-1 overflow-y-auto"
                     style={{
                       maxHeight: "calc(100vh - 340px)",
                       scrollbarWidth: "thin",
@@ -208,7 +246,7 @@ export function KanbanBoard({
                     }}
                   >
                     <SortableContext items={open.map(d => d.id)} strategy={verticalListSortingStrategy}>
-                      <DroppableCards stage={stage}>
+                      <DroppableZone stage={stage}>
                         {open.map(deal => (
                           <DealCard
                             key={deal.id}
@@ -219,39 +257,40 @@ export function KanbanBoard({
                         ))}
                         {open.length === 0 && (
                           <div
-                            className="flex items-center justify-center h-16 rounded-[8px] text-[11px] font-[500]"
+                            className="flex items-center justify-center h-16 rounded-lg text-[11px] font-medium"
                             style={{
                               border: "1px dashed rgba(255,255,255,0.05)",
-                              color: "rgba(255,255,255,0.18)",
+                              color: "rgba(255,255,255,0.15)",
                             }}
                           >
-                            Nenhum deal aqui
+                            Nenhum deal
                           </div>
                         )}
-                      </DroppableCards>
+                      </DroppableZone>
                     </SortableContext>
                   </div>
 
                   {/* Add card button */}
-                  <div className="px-2.5 pt-2 pb-3 shrink-0">
-                    <AddCardButton stageColor={stage.color} onClick={() => onAddDeal?.(stage.id)} />
+                  <div className="px-2.5 pt-1 pb-3 shrink-0">
+                    <AddCardBtn color={stage.color} onClick={() => onAddDeal?.(stage.id)} />
                   </div>
                 </div>
               </div>
             )
           })}
 
-          <AddStageButton onClick={onAddStage} />
+          <AddStageBtn onClick={onAddStage} />
         </div>
 
-        <DragOverlay dropAnimation={{ duration: 150, easing: "ease" }}>
+        {/* Drag overlay — elevated ghost card */}
+        <DragOverlay dropAnimation={{ duration: 180, easing: "cubic-bezier(0.2, 0, 0, 1)" }}>
           {activeDeal && (
             <div
-              className="w-[280px]"
+              className="w-[290px]"
               style={{
-                transform: "rotate(2deg) scale(1.03)",
-                filter: "drop-shadow(0 20px 50px rgba(0,0,0,0.7))",
-                opacity: 0.96,
+                transform: "rotate(2.5deg) scale(1.04)",
+                filter: "drop-shadow(0 24px 48px rgba(0,0,0,0.7))",
+                opacity: 0.95,
               }}
             >
               <DealCard deal={activeDeal} stageColor={activeStageColor} />
@@ -260,6 +299,7 @@ export function KanbanBoard({
         </DragOverlay>
       </DndContext>
 
+      {/* Internal detail sheet (fallback when no onDealClick) */}
       {!onDealClick && (
         <DealDetailSheet
           deal={selected}
