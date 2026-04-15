@@ -8,7 +8,7 @@ import {
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { DealCard, type Deal } from "./DealCard"
 import { DealDetailSheet } from "./DealDetailSheet"
-import { Plus } from "lucide-react"
+import { Plus, MoreHorizontal } from "lucide-react"
 
 export interface Stage {
   id: string
@@ -26,24 +26,16 @@ interface KanbanBoardProps {
   onDealClick?: (deal: Deal) => void
 }
 
-function DroppableCards({ stage, children }: { stage: Stage; children: React.ReactNode }) {
+function DroppableColumn({ stage, children }: { stage: Stage; children: React.ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage.id })
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col gap-[8px] min-h-[100px] transition-colors duration-200 rounded-[10px] ${isOver ? 'bg-white/5' : ''}`}
+      className={`flex flex-col gap-4 min-h-[150px] transition-all duration-300 rounded-xl p-1 ${isOver ? 'bg-white/[0.03] ring-1 ring-white/10' : ''}`}
     >
       {children}
     </div>
   )
-}
-
-function hexToRgba(hex: string, alpha: number) {
-  const h = hex.replace("#", "")
-  const r = parseInt(h.slice(0, 2), 16)
-  const g = parseInt(h.slice(2, 4), 16)
-  const b = parseInt(h.slice(4, 6), 16)
-  return `rgba(${r},${g},${b},${alpha})`
 }
 
 export function KanbanBoard({
@@ -83,34 +75,37 @@ export function KanbanBoard({
         onDragStart={e => setActiveId(e.active.id as string)}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-[14px] items-start pb-[24px] overflow-x-auto scrollbar-thin scrollbar-thumb-[#2a2a35] scrollbar-track-transparent">
+        <div className="flex gap-6 items-start pb-8 overflow-x-auto kanban-scrollbar">
           {stages.map(stage => {
             const open = stage.deals.filter(d => d.status === "OPEN")
             const total = open.reduce((s, d) => s + (d.valorEstimado || 0), 0)
 
             return (
-              <div key={stage.id} className="w-[240px] shrink-0 flex flex-col gap-[8px]">
-                <div 
-                   className="flex items-center justify-between px-[12px] py-[10px] rounded-[10px] border border-[#1e1e24]"
-                   style={{ borderLeftColor: stage.color, borderLeftWidth: '2px' }}
-                >
-                  <div className="flex items-center gap-[8px]">
-                    <div className="w-[8px] h-[8px] rounded-full" style={{ backgroundColor: stage.color }}></div>
-                    <span className="text-[12px] font-semibold uppercase tracking-[0.04em]" style={{ color: stage.color }}>
-                      {stage.name}
-                    </span>
+              <div key={stage.id} className="w-[300px] shrink-0 flex flex-col gap-4">
+                {/* COLUMN HEADER */}
+                <div className="kanban-col-header">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="stage-dot" style={{ backgroundColor: stage.color }}></div>
+                      <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/90">
+                        {stage.name}
+                      </span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/5 text-white/40">
+                        {open.length}
+                      </span>
+                    </div>
+                    <button className="text-white/20 hover:text-white transition-colors">
+                      <MoreHorizontal size={14} />
+                    </button>
                   </div>
-                  <span className="text-[11px] font-semibold px-[7px] py-[2px] rounded-full bg-[#1e1e26]" style={{ color: stage.color }}>
-                    {open.length}
-                  </span>
-                </div>
-                
-                <div className="text-[11px] text-[#555] px-[12px] mb-[4px]">
-                  R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} · {open.length} {open.length === 1 ? 'deal' : 'deals'}
+                  <div className="text-[11px] font-medium text-white/20">
+                     Total: {total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
+                  </div>
                 </div>
 
+                {/* CARDS AREA */}
                 <SortableContext items={open.map(d => d.id)} strategy={verticalListSortingStrategy}>
-                  <DroppableCards stage={stage}>
+                  <DroppableColumn stage={stage}>
                     {open.map(deal => (
                       <DealCard
                         key={deal.id}
@@ -118,31 +113,35 @@ export function KanbanBoard({
                         onClick={() => onDealClick ? onDealClick(deal) : setSelected(deal)}
                       />
                     ))}
+                    
+                    {/* ADD BUTTON */}
                     <button
                       onClick={() => onAddDeal?.(stage.id)}
-                      className="w-full flex items-center justify-center gap-[6px] p-[9px] rounded-[8px] border border-dashed border-[#1e1e28] text-[#444] text-[12px] hover:border-[#3a3a4e] hover:text-[#777] transition-all bg-transparent"
+                      className="w-full h-[44px] flex items-center justify-center gap-2 rounded-xl border border-dashed border-white/5 bg-transparent text-white/20 hover:text-white/40 hover:bg-white/[0.02] hover:border-white/10 transition-all text-xs font-semibold"
                     >
-                      <Plus size={12} strokeWidth={1.5} />
-                      Adicionar card
+                      <Plus size={14} /> Adicionar Deal
                     </button>
-                  </DroppableCards>
+                  </DroppableColumn>
                 </SortableContext>
               </div>
             )
           })}
           
+          {/* NEW COLUMN ACTION */}
           <button
             onClick={onAddStage}
-            className="w-[240px] shrink-0 flex flex-col items-center justify-center gap-[6px] p-[20px] rounded-[10px] border border-dashed border-[#1e1e28] text-[#444] text-[12px] hover:border-[#3a3a4e] hover:text-[#777] transition-all bg-transparent min-h-[100px]"
+            className="w-[300px] h-[100px] shrink-0 flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/5 bg-white/[0.01] text-white/10 hover:text-white/30 hover:bg-white/[0.03] transition-all group"
           >
-             <Plus size={16} strokeWidth={1.5} />
-             Nova Coluna
+             <div className="w-10 h-10 rounded-full border border-dashed border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Plus size={18} />
+             </div>
+             <span className="text-[10px] font-bold uppercase tracking-widest">Nova Etapa</span>
           </button>
         </div>
 
         <DragOverlay>
-          {activeDeal && (
-            <div className="w-[240px] opacity-80 rotate-2 cursor-grabbing">
+          {activeId && activeDeal && (
+            <div className="w-[300px] opacity-80 cursor-grabbing">
               <DealCard deal={activeDeal} />
             </div>
           )}

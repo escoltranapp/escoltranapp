@@ -3,36 +3,34 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
-import { Plus, RefreshCw, Layers, TrendingUp, AlertTriangle, X, Clock, ChevronDown } from "lucide-react"
+import { Plus, RefreshCw, Layers, TrendingUp, AlertTriangle, Filter, Layout } from "lucide-react"
 import { KanbanBoard, type Stage } from "@/components/pipeline/KanbanBoard"
 import { DealDetailSheet } from "@/components/pipeline/DealDetailSheet"
 import { type Deal } from "@/components/pipeline/DealCard"
 import { cn } from "@/lib/utils"
 
-/* ── Stat card ─────────────────────────────────────────────────── */
-function StatCard({
-  label, value, sub, icon: Icon, iconBg, iconColor
+/* ═══════════════════════════════════════════════════════
+   KPI CARD — Standardized with Aether Design System
+   ═══════════════════════════════════════════════════════ */
+function KPICard({
+  label, value, subtext, icon: Icon, color = "#d4af37"
 }: {
-  label: string; value: string; sub: string; icon: React.ElementType; iconBg: string; iconColor: string
+  label: string; value: string | number; subtext: string; icon: React.ElementType; color?: string
 }) {
   return (
-    <div className="bg-[#18181f] border border-[#1e1e24] rounded-[10px] padding-[14px 16px] p-4 flex items-center gap-[12px]">
-      <div 
-        className="w-[36px] h-[36px] rounded-[8px] flex items-center justify-center shrink-0"
-        style={{ background: iconBg }}
-      >
-        <Icon size={16} color={iconColor} strokeWidth={2} />
+    <div className="kpi-card">
+      <div className="kpi-icon-container" style={{ backgroundColor: `${color}15`, color: color }}>
+        <Icon size={20} />
       </div>
-      <div>
-        <div className="text-[11px] text-[#555] uppercase font-medium tracking-[0.06em] mb-[3px]">{label}</div>
-        <div className="text-[20px] font-semibold text-white leading-none">{value}</div>
-        <div className="text-[11px] text-[#555] mt-[3px]">{sub}</div>
+      <div className="kpi-label-row">
+        <span className="kpi-label">{label}</span>
       </div>
+      <div className="kpi-value">{value}</div>
+      <div className="kpi-subtext">{subtext}</div>
     </div>
   )
 }
 
-/* ── Page ──────────────────────────────────────────────────────── */
 export default function PipelinePage() {
   const queryClient = useQueryClient()
   const { toast } = useToast()
@@ -48,13 +46,13 @@ export default function PipelinePage() {
       if (!res.ok) throw new Error("Falha ao carregar pipeline")
       return res.json()
     },
-    staleTime: 10_000,
+    staleTime: 15_000,
   })
 
   const stages: Stage[] = (boardData?.stages || []).map((s: any) => ({
     id: s.id,
     name: s.name,
-    color: s.color || "#4f46e5",
+    color: s.color || "#3b82f6",
     order: s.order ?? 0,
     deals: (s.deals || []).map((d: any) => ({
       ...d,
@@ -66,7 +64,7 @@ export default function PipelinePage() {
 
   const allOpen = stages.flatMap(s => s.deals.filter(d => d.status === "OPEN"))
   const totalValue = allOpen.reduce((a, d) => a + (d.valorEstimado || 0), 0)
-  const overdue = allOpen.filter(d => Date.now() - new Date(d.createdAt).getTime() > 30 * 86400_000).length
+  const overdueValue = allOpen.filter(d => Date.now() - new Date(d.createdAt).getTime() > 30 * 86400_000).length
 
   const moveDeal = useMutation({
     mutationFn: async ({ dealId, stageId }: { dealId: string; stageId: string }) => {
@@ -84,97 +82,84 @@ export default function PipelinePage() {
     },
   })
 
-  const addStageAction = useMutation({
-    mutationFn: async (name: string) => {
-      const res = await fetch("/api/pipeline/stages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, pipelineId: boardData?.pipelineId }),
-      })
-      if (!res.ok) throw new Error("Falha ao criar coluna")
-      return res.json()
-    },
-    onSuccess: () => {
-      toast({ title: "Coluna criada!" })
-      queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
-    },
-  })
+  if (error) {
+    return (
+      <div className="page-container flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4 opacity-50" />
+          <h2 className="text-xl font-bold mb-2">Ops! Algo deu errado.</h2>
+          <p className="text-sm text-white/40 mb-6">Não conseguimos carregar o seu pipeline.</p>
+          <button onClick={() => refetch()} className="btn-cta-primary">Tentar Novamente</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="flex flex-col h-full -m-4 md:-m-6 bg-[#0d0d0f] text-white font-sans overflow-hidden">
+    <div className="page-container animate-aether">
       
-      {/* ── TOPBAR (kb-topbar) ─────────────────────────── */}
-      <div className="flex items-center justify-between p-[16px_24px] border-b border-[#1e1e24] shrink-0">
-        <div>
-          <h1 className="text-[22px] font-semibold text-white tracking-[-0.3px]">Pipeline</h1>
-          <p className="text-[12px] text-[#555] mt-[2px] tracking-[0.02em]">Gestão de oportunidades · Visão Kanban</p>
+      {/* ─── HEADER (AETHER STANDARD) ─────────────────────────── */}
+      <header className="page-header-wrapper">
+        <div className="animate-slide-up">
+          <div className="breadcrumb-pill">
+            <Layout size={12} /> GESTÃO COMERCIAL
+          </div>
+          <h1 className="page-title-h1">Pipeline de Vendas</h1>
+          <p className="page-subtitle">Visualize e gerencie suas oportunidades em tempo real</p>
         </div>
         
-        <div className="flex items-center gap-[8px]">
-          <div className="flex items-center gap-[6px] p-[7px_14px] rounded-[8px] text-[12px] font-medium cursor-pointer border border-[#2a2a32] bg-[#18181f] text-[#aaa] hover:bg-[#222230] hover:text-[#ddd] transition-all">
-            <Clock size={12} strokeWidth={2} />
-            Pipeline Principal
-            <ChevronDown size={10} strokeWidth={2.5} />
-          </div>
-          <div 
-            onClick={() => {
-              const name = window.prompt("Nome da nova coluna:")
-              if (name) addStageAction.mutate(name)
-            }}
-            className="flex items-center gap-[6px] p-[7px_14px] rounded-[8px] text-[12px] font-medium cursor-pointer border border-[#2a2a32] bg-[#18181f] text-[#aaa] hover:bg-[#222230] hover:text-[#ddd] transition-all"
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => refetch()}
+            className="p-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 transition-all text-white/40 hover:text-white"
+            title="Atualizar"
           >
-            <Plus size={12} strokeWidth={2} />
-            Nova Coluna
-          </div>
-          <div className="flex items-center gap-[6px] p-[7px_14px] rounded-[8px] text-[12px] font-medium cursor-pointer border border-[#4f46e5] bg-[#4f46e5] text-white hover:bg-[#4338ca] transition-all shadow-[0_2px_8px_rgba(79,70,229,0.3)]">
-            <Plus size={12} strokeWidth={2.5} />
-            Novo Deal
-          </div>
+            <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
+          </button>
+          
+          <button className="btn-cta-primary flex items-center gap-2" onClick={() => setShowNewDeal(true)}>
+            <Plus size={16} /> Novo Deal
+          </button>
+        </div>
+      </header>
+
+      {/* ─── KPI GRID ─────────────────────────────────────────── */}
+      <div className="kpi-grid">
+        <KPICard 
+          label="Total Leads"
+          value={isLoading ? "..." : allOpen.length}
+          subtext="oportunidades ativas"
+          icon={Layers}
+          color="#3b82f6"
+        />
+        <KPICard 
+          label="Volume Total"
+          value={isLoading ? "..." : totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
+          subtext="valor em negociação"
+          icon={TrendingUp}
+          color="#10b981"
+        />
+        <KPICard 
+          label="Tickets Abertos"
+          value={isLoading ? "..." : overdueValue}
+          subtext="revisão necessária"
+          icon={AlertTriangle}
+          color="#f59e0b"
+        />
+        <div className="flex items-center justify-center border border-dashed border-white/10 rounded-[14px] bg-white/[0.01] hover:bg-white/[0.03] transition-all cursor-pointer group">
+           <div className="text-center">
+              <Plus size={20} className="mx-auto mb-1 text-white/10 group-hover:text-white/40 transition-colors" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-white/10 group-hover:text-white/40 transition-colors">Nova Métrica</span>
+           </div>
         </div>
       </div>
 
-      {/* ── STATS (kb-stats) ───────────────────────────── */}
-      <div className="grid grid-cols-3 gap-[12px] p-[16px_24px] border-b border-[#1e1e24] shrink-0">
-        <StatCard 
-          label="Oportunidades"
-          value={isLoading ? "—" : String(allOpen.length)}
-          sub="cards ativos"
-          icon={Layers}
-          iconBg="#1a1a2e"
-          iconColor="#818cf8"
-        />
-        <StatCard 
-          label="Valor total"
-          value={isLoading ? "—" : `R$ ${totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`}
-          sub="em aberto"
-          icon={TrendingUp}
-          iconBg="#0f1e14"
-          iconColor="#4ade80"
-        />
-        <StatCard 
-          label="Alertas"
-          value={isLoading ? "—" : String(overdue)}
-          sub="cards +30 dias"
-          icon={AlertTriangle}
-          iconBg="#1f1010"
-          iconColor="#f87171"
-        />
-      </div>
-
-      {/* ── PROGRESS BAR ───────────────────────────────── */}
-      <div className="h-[2px] bg-[#1e1e24] rounded-[1px] m-[0_24px_16px] overflow-hidden shrink-0 mt-4">
-        <div 
-           className="h-full rounded-[1px] bg-gradient-to-r from-[#4f46e5] to-[#818cf8] transition-all duration-500" 
-           style={{ width: '20%' }}
-        ></div>
-      </div>
-
-      {/* ── BOARD AREA ─────────────────────────────────── */}
-      <div className="flex-1 overflow-hidden px-[24px]">
+      {/* ─── PIPELINE BOARD ───────────────────────────────────── */}
+      <div className="mt-4">
         {isLoading ? (
-          <div className="flex gap-[14px]">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="w-[240px] h-[400px] bg-[#18181f]/50 border border-[#1e1e24] rounded-[10px] animate-pulse"></div>
+          <div className="grid grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="h-[500px] rounded-2xl bg-white/5 animate-pulse border border-white/5" />
             ))}
           </div>
         ) : (
@@ -184,10 +169,6 @@ export default function PipelinePage() {
             onAddDeal={(sId) => {
               setNewDealStageId(sId)
               setShowNewDeal(true)
-            }}
-            onAddStage={() => {
-              const name = window.prompt("Nome da nova coluna:")
-              if (name) addStageAction.mutate(name)
             }}
             onDealClick={(d) => setSelectedDeal(d)}
           />

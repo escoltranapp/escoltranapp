@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { DollarSign, User, Clock, Calendar } from "lucide-react"
+import { DollarSign, User, Calendar, Tag } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface Deal {
@@ -43,13 +43,13 @@ export function DealCard({ deal, onClick }: DealCardProps) {
     zIndex: isDragging ? 50 : 1,
   }
 
-  const priorityColors = {
-    ALTA: { bg: "#1f1010", text: "#ef4444", border: "#3e1a1a", label: "Alta" },
-    MEDIA: { bg: "#1c1a10", text: "#d97706", border: "#3a2e10", label: "Média" },
-    BAIXA: { bg: "#1a1a2e", text: "#818cf8", border: "#2d2d4e", label: "Novo" },
+  const priorityStyles = {
+    ALTA: { color: "#ef4444", bg: "rgba(239, 68, 68, 0.1)", label: "Crítico" },
+    MEDIA: { color: "#f59e0b", bg: "rgba(245, 158, 11, 0.1)", label: "Pendente" },
+    BAIXA: { color: "#3b82f6", bg: "rgba(59, 130, 246, 0.1)", label: "Novo" },
   }
   
-  const priority = priorityColors[deal.prioridade]
+  const priority = priorityStyles[deal.prioridade]
 
   return (
     <div 
@@ -59,48 +59,56 @@ export function DealCard({ deal, onClick }: DealCardProps) {
       {...listeners}
       onClick={onClick}
       className={cn(
-        "bg-[#18181f] border border-[#1e1e24] rounded-[10px] p-[14px] cursor-pointer transition-all hover:bg-[#1e1e28] hover:border-[#2e2e3e] group",
-        isDragging && "z-50 ring-2 ring-[#4f46e5]/50 shadow-2xl"
+        "bg-[#161b2a] border border-white/[0.05] rounded-xl p-5 cursor-grab active:cursor-grabbing transition-all hover:bg-[#1c223c] hover:border-white/10 hover:-translate-y-1 hover:shadow-2xl group",
+        isDragging && "z-50 ring-2 ring-indigo-500/50 shadow-2xl"
       )}
     >
-      <div className="flex items-start justify-between mb-[10px]">
-        <span className="text-[13px] font-medium text-[#e8e8f0] line-clamp-2 leading-[1.3]">
-          {deal.titulo}
-        </span>
-        <span 
-          className="text-[10px] font-semibold px-[8px] py-[2px] rounded-full shrink-0 mt-[1px]"
-          style={{ background: priority.bg, color: priority.text, border: `1px solid ${priority.border}` }}
+      {/* TOP: Priority & Badge */}
+      <div className="flex items-center justify-between mb-4">
+        <div 
+           className="priority-pill" 
+           style={{ color: priority.color, backgroundColor: priority.bg, borderColor: `${priority.color}20` }}
         >
+          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: priority.color }}></div>
           {priority.label}
-        </span>
+        </div>
+        <Tag size={12} className="text-white/10 group-hover:text-white/20 transition-colors" />
       </div>
 
-      <div className="flex flex-col gap-[6px]">
-        <div className="flex items-center gap-[6px]">
-          <User size={11} className="text-[#555]" />
-          <span className="text-[11px] color-[#555]">
+      {/* TITLE */}
+      <h3 className="text-sm font-bold text-white/90 mb-4 leading-tight group-hover:text-white transition-colors">
+        {deal.titulo}
+      </h3>
+
+      {/* METADATA GRID */}
+      <div className="space-y-2.5 mb-5">
+        <div className="flex items-center gap-2 text-white/40 group-hover:text-white/60 transition-colors">
+          <User size={12} />
+          <span className="text-[11px] font-medium leading-none">
             {deal.contact ? `${deal.contact.nome} ${deal.contact.sobrenome || ''}` : 'Sem responsável'}
           </span>
         </div>
-        <div className="flex items-center gap-[6px]">
-          <DollarSign size={11} className="text-[#555]" />
-          <span className="text-[11px] text-[#888] font-medium">
-             R$ {(deal.valorEstimado || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+        <div className="flex items-center gap-2 text-white/40 group-hover:text-white/60 transition-colors">
+          <Calendar size={12} />
+          <span className="text-[11px] font-medium leading-none">
+            {deal.dataPrevista ? new Date(deal.dataPrevista).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' }) : 'Previsão: S/D'}
           </span>
         </div>
       </div>
 
-      <div className="h-[1px] bg-[#1e1e24] my-[10px]"></div>
-
-      <div className="flex items-center justify-between">
-        <div className="w-[22px] h-[22px] rounded-full bg-[#2a2a3e] border border-[#333345] flex items-center justify-center text-[9px] font-semibold text-[#7c7caa]">
-          SR
+      {/* FOOTER: VALUE & INITIALS */}
+      <div className="flex items-center justify-between pt-4 border-t border-white/[0.04]">
+        <div className="flex items-center gap-1.5">
+          <div className="w-6 h-6 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-[10px] font-black text-white/20">
+             {deal.contact ? (deal.contact.nome[0] + (deal.contact.sobrenome?.[0] || '')).toUpperCase() : 'SR'}
+          </div>
         </div>
-        <div className="flex items-center gap-1 text-[#444]">
-          <Calendar size={10} />
-          <span className="text-[10px] font-bold">
-            {deal.dataPrevista ? new Date(deal.dataPrevista).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : 'S/D'}
-          </span>
+        
+        <div className="text-right">
+           <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-0.5">Valor</div>
+           <div className="text-[13px] font-black text-white group-hover:text-indigo-400 transition-colors">
+              R$ {(deal.valorEstimado || 0).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
+           </div>
         </div>
       </div>
     </div>
