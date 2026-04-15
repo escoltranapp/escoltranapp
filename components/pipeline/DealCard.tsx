@@ -2,9 +2,8 @@
 
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { DollarSign, Calendar, Clock, AlertCircle, User } from "lucide-react"
-import { formatCurrency, getInitials, cn } from "@/lib/utils"
-import { format, isPast, isToday } from "date-fns"
+import { cn } from "@/lib/utils"
+import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 export interface Deal {
@@ -14,10 +13,13 @@ export interface Deal {
   prioridade: "ALTA" | "MEDIA" | "BAIXA"
   status: "OPEN" | "WON" | "LOST"
   stageId?: string | null
+  createdAt: string
   dataPrevista?: string | null
+  origem?: string | null
   contact?: {
     nome: string
     sobrenome?: string | null
+    email?: string | null
   } | null
 }
 
@@ -26,15 +28,18 @@ interface DealCardProps {
   onClick?: () => void
 }
 
+const badgeStyle: Record<string, string> = {
+  ALTA:  "bg-[#1f1010] text-[#ef4444] border border-[#3e1a1a]",
+  MEDIA: "bg-[#1c1a10] text-[#d97706] border border-[#3a2e10]",
+  BAIXA: "bg-[#1a1a2e] text-[#818cf8] border border-[#2d2d4e]",
+}
+
+const badgeLabel: Record<string, string> = {
+  ALTA: "Alta", MEDIA: "Média", BAIXA: "Baixa",
+}
+
 export function DealCard({ deal, onClick }: DealCardProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: deal.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: deal.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -43,78 +48,66 @@ export function DealCard({ deal, onClick }: DealCardProps) {
     zIndex: isDragging ? 50 : 1,
   }
 
-  const contactName = deal.contact ? `${deal.contact.nome} ${deal.contact.sobrenome || ""}` : "Sem Responsável"
+  const contactName = deal.contact
+    ? `${deal.contact.nome}${deal.contact.sobrenome ? " " + deal.contact.sobrenome : ""}`
+    : "Sem responsável"
 
-  const priorityColors = {
-    ALTA: { bg: "rgba(248, 113, 113, 0.15)", text: "#f87171", dot: "#f87171" },
-    MEDIA: { bg: "rgba(251, 191, 36, 0.15)", text: "#fbbf24", dot: "#fbbf24" },
-    BAIXA: { bg: "rgba(129, 140, 248, 0.15)", text: "#818cf8", dot: "#818cf8" }
-  }
-  const colors = priorityColors[deal.prioridade as keyof typeof priorityColors] || priorityColors.MEDIA
+  const valor = (deal.valorEstimado || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+
+  const dateStr = deal.dataPrevista
+    ? format(new Date(deal.dataPrevista), "dd/MM", { locale: ptBR })
+    : "S/D"
 
   return (
-    <div 
-      ref={setNodeRef} 
-      style={style} 
+    <div
+      ref={setNodeRef}
+      style={style}
       {...attributes}
       {...listeners}
       onClick={onClick}
       className={cn(
-        "bg-[#111118]/80 border border-[#23232b] hover:border-[#4f46e5]/40 p-[28px] rounded-[24px] transition-all cursor-grab active:cursor-grabbing shadow-2xl hover:shadow-[#4f46e5]/10 group min-h-[180px] flex flex-col justify-between backdrop-blur-md",
-        isDragging && "opacity-50 z-50 ring-4 ring-[#4f46e5]/30 scale-[1.05]"
+        "bg-[#18181f] border border-[#1e1e24] rounded-[10px] p-[14px] cursor-pointer transition-all select-none",
+        "hover:bg-[#1e1e28] hover:border-[#2e2e3e]",
+        isDragging && "opacity-50 ring-2 ring-[#4f46e5]/40"
       )}
     >
-      {/* TOP: STATUS & PRIORITY BADGE */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="w-[10px] h-[10px] rounded-full shadow-[0_0_12px_rgba(255,255,255,0.2)]" style={{ backgroundColor: colors.dot }} />
-          <span className="text-[11px] font-black text-white/10 uppercase tracking-[0.25em]">Pipeline</span>
-        </div>
-        
-        <div 
-          className="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest"
-          style={{ backgroundColor: colors.bg, color: colors.text }}
-        >
-          {deal.prioridade}
-        </div>
-      </div>
-
-      {/* CENTER: TITLE (UPPERCASE IMPACT) */}
-      <div className="mb-6">
-        <h4 className="text-[16px] font-black text-white/90 leading-tight mb-4 group-hover:text-[#818cf8] transition-colors uppercase tracking-tight">
+      {/* Top: name + badge */}
+      <div className="flex items-start justify-between mb-[10px] gap-1.5">
+        <span className="text-[13px] font-medium text-[#e8e8f0] leading-snug line-clamp-2 flex-1">
           {deal.titulo}
-        </h4>
-        
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-center gap-2.5">
-             <User size={15} className="text-white/15" />
-             <span className="text-[12px] font-bold text-white/30 truncate">{getInitials(contactName)} · {contactName.split(' ')[0]}</span>
-          </div>
-          <div className="flex items-center gap-2.5">
-             <DollarSign size={15} className="text-[#4ade80]/40" />
-             <span className="text-[13px] font-black text-[#4ade80]">R$ {(deal.valorEstimado || 0).toLocaleString('pt-BR')}</span>
-          </div>
+        </span>
+        <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 mt-0.5 leading-tight", badgeStyle[deal.prioridade])}>
+          {badgeLabel[deal.prioridade]}
+        </span>
+      </div>
+
+      {/* Meta rows */}
+      <div className="flex flex-col gap-1.5">
+        <div className="flex items-center gap-1.5">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" className="shrink-0">
+            <circle cx="8" cy="6" r="2.5" stroke="#555" strokeWidth="1.2"/>
+            <path d="M3 13c0-2.8 2.2-4 5-4s5 1.2 5 4" stroke="#555" strokeWidth="1.2" strokeLinecap="round"/>
+          </svg>
+          <span className="text-[11px] text-[#555] truncate">{contactName}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" className="shrink-0">
+            <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="#555" strokeWidth="1.2"/>
+            <path d="M5 7h6M5 10h4" stroke="#555" strokeWidth="1.2" strokeLinecap="round"/>
+          </svg>
+          <span className="text-[11px] text-[#888]">{valor}</span>
         </div>
       </div>
 
-      {/* DIVIDER */}
-      <div className="h-[1px] w-full bg-white/[0.04] mb-4" />
+      {/* Divider */}
+      <div className="h-px bg-[#1e1e24] my-[10px]" />
 
-      {/* FOOTER: AVATAR & DATE */}
+      {/* Footer */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-[#1e1e2d] to-[#111118] border border-white/10 flex items-center justify-center shadow-inner">
-             <span className="text-[11px] font-black text-white/20">SR</span>
-          </div>
-          <span className="text-[10px] font-black text-white/5 uppercase tracking-[0.2em]">{deal.stageId ? 'Ativo' : 'Lead'}</span>
+        <div className="w-[22px] h-[22px] rounded-full bg-[#2a2a3e] border border-[#333345] flex items-center justify-center text-[9px] font-semibold text-[#7c7caa]">
+          {contactName === "Sem responsável" ? "SR" : contactName.slice(0, 2).toUpperCase()}
         </div>
-
-        <div className="flex items-center gap-2 text-white/10 group-hover:text-[#4f46e5]/40 transition-colors">
-          <Calendar size={14} strokeWidth={3} />
-          <span className="text-[11px] font-black">
-            {deal.dataPrevista ? format(new Date(deal.dataPrevista), "dd/MM") : "--/--"}
-          </span>
-        </div>
+        <span className="text-[10px] text-[#444]">{dateStr}</span>
       </div>
     </div>
   )
