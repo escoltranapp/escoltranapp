@@ -23,7 +23,6 @@ const STAGES_CONFIG = [
   { id: "FOLLOW_UP", name: "FOLLOW UP", color: "#3B82F6" },
 ]
 
-// ─── REUSABLE KPI CARD (REFINED) ────────────────────────────────
 function KPICard({ label, value, icon: Icon, type = "default" }: any) {
   const configs: any = {
     blue: { bg: "rgba(59,130,246,0.15)", icon: "#3B82F6" },
@@ -77,53 +76,55 @@ export default function PipelinePage() {
   const expiredCount = deals.filter(d => (d.priority === "Alta" && d.status === "OPEN")).length
 
   return (
-    <div className="pipeline-layout">
-      <div className="page-container max-w-[1700px] mx-auto px-1">
-        
-        {/* HEADER SECTION */}
-        <header className="flex items-start justify-between mb-12">
-          <div className="space-y-4">
-             <div className="pipeline-header-badge">
-                <Grid size={14} />
-                <span>Pipeline Comercial</span>
-             </div>
-             <div>
-                <h1 className="text-[48px] font-black text-white tracking-tighter leading-none uppercase">Pipeline</h1>
-                <p className="text-[11px] font-bold text-[#8B949E] uppercase tracking-[0.4em] mt-3">Gestão de Oportunidades • Visão Kanban</p>
-             </div>
-          </div>
-
-          <div className="flex items-center gap-4 pt-4">
-             <button className="flex items-center gap-4 px-6 py-4 bg-[#161B22] border border-white/[0.08] rounded-[12px] text-[13px] font-bold text-[#8B949E] hover:text-white transition-all">
-                <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
-                {activeBoard}
-                <ChevronDown size={18} className="opacity-40" />
-             </button>
-
-             <button className="flex items-center gap-2.5 px-8 py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-[13px] uppercase tracking-wider rounded-[12px] shadow-[0_10px_30px_rgba(37,99,235,0.3)] transition-all active:scale-95">
-                <Plus size={18} strokeWidth={3} /> Nova Coluna
-             </button>
-          </div>
-        </header>
-
-        {/* METRICS BAR (REFINED) */}
-        <div className="flex gap-6 mb-12">
-           <KPICard label="Total de Cards" value={deals.length} icon={LayoutGrid} type="blue" />
-           <KPICard label="Valor Total" value={formatCurrency(totalValue)} icon={DollarSign} type="green" />
-           <KPICard label="Cards Vencidos" value={expiredCount} icon={AlertTriangle} type="red" />
+    <div className="pipeline-layout page-container">
+      {/* HEADER SECTION (SENIOR REF RECOVERY) */}
+      <header className="flex items-start justify-between mb-12">
+        <div className="space-y-4">
+           <div className="pipeline-header-badge">
+              <Grid size={13} />
+              <span>Pipeline Comercial</span>
+           </div>
+           <div>
+              <h1 className="text-[42px] font-bold text-white tracking-tight leading-none">Pipeline</h1>
+              <p className="text-[10px] font-semibold text-[#8B949E] uppercase tracking-[0.3em] mt-3">Gestão de Oportunidades • Visão Kanban</p>
+           </div>
         </div>
 
-        {/* BOARD AREA (WITH GAP & PADDING REFINEMENT) */}
-        <div className="relative mt-8 px-1 overflow-x-auto kanban-scrollbar">
-          {isLoading ? (
-            <div className="flex gap-4">
-               {[1,2,3,4].map(i => <div key={i} className="min-w-[300px] h-[600px] rounded-[12px] bg-[#161B22] animate-pulse" />)}
-            </div>
-          ) : (
-            <KanbanBoard stages={boardStages} />
-          )}
-        </div>
+        <div className="flex items-center gap-3 pt-2">
+           {/* Pipeline Switcher */}
+           <button className="flex items-center gap-3 px-4 py-2.5 bg-[#161B22] border border-white/[0.08] rounded-[10px] text-[12px] font-semibold text-[#8B949E] hover:text-white transition-all">
+              <div className="w-2 h-2 rounded-full bg-blue-500" />
+              {activeBoard}
+              <ChevronDown size={14} className="opacity-40" />
+           </button>
 
+           {/* ACTIONS */}
+           <button className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[12px] uppercase tracking-wide rounded-[10px] transition-all active:scale-95 shadow-[0_4px_12px_rgba(37,99,235,0.2)]">
+              <Plus size={16} strokeWidth={3} /> Nova Coluna
+           </button>
+
+           <button className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-white/[0.15] hover:border-white/[0.3] text-[#8B949E] hover:text-white font-bold text-[12px] uppercase tracking-wide rounded-[10px] transition-all active:scale-95">
+              <Plus size={16} /> Novo Board
+           </button>
+        </div>
+      </header>
+
+      {/* METRICS BAR */}
+      <div className="flex gap-4 mb-10">
+         <KPICard label="Total de Cards" value={deals.length} icon={LayoutGrid} type="blue" />
+         <KPICard label="Valor Total" value={formatCurrency(totalValue)} icon={DollarSign} type="green" />
+         <KPICard label="Cards Vencidos" value={expiredCount} icon={AlertTriangle} type="red" />
+      </div>
+
+      {/* KANBAN BOARD (CLEAN WRAPPER FOR SIDEBAR ALIGNMENT) */}
+      <div className="overflow-x-auto kanban-scrollbar -mx-1 px-1">
+        {isLoading ? (
+          <div className="flex gap-4">
+             {[1,2,3,4].map(i => <div key={i} className="min-w-[280px] h-[600px] rounded-[12px] bg-[#161B22] animate-pulse" />)}
+          </div>
+        ) : (
+          <KanbanBoard stages={boardStages} />
+        )}
       </div>
     </div>
   )
