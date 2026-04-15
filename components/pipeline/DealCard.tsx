@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { DollarSign, Calendar, Clock, AlertCircle } from "lucide-react"
+import { DollarSign, Calendar, Clock, AlertCircle, User } from "lucide-react"
 import { formatCurrency, getInitials, cn } from "@/lib/utils"
 import { format, isPast, isToday } from "date-fns"
 import { ptBR } from "date-fns/locale"

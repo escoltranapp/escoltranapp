@@ -9,7 +9,9 @@ import {
   Plus, 
   AlertTriangle, 
   ChevronDown, 
-  Grid
+  Grid,
+  Clock,
+  TrendingUp
 } from "lucide-react"
 import { formatCurrency, cn } from "@/lib/utils"
 import { KanbanBoard, type Stage } from "@/components/pipeline/KanbanBoard"
