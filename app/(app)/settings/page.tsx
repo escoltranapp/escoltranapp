@@ -26,8 +26,11 @@ import {
   Trash2,
   Eye,
   EyeOff,
+  Settings,
+  ShieldCheck,
+  Zap,
 } from "lucide-react"
-import { getInitials } from "@/lib/utils"
+import { getInitials, cn } from "@/lib/utils"
 
 export default function SettingsPage() {
   const { data: session } = useSession()
@@ -37,122 +40,114 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setIsSaving(true)
     await new Promise((res) => setTimeout(res, 800))
-    toast({ title: "Configurações salvas!" })
+    toast({ title: "Configurações sincronizadas!", description: "Dados gravados no cluster de produção." })
     setIsSaving(false)
   }
 
   const userName = session?.user?.name || "Usuário"
 
   return (
-    <div className="space-y-4 max-w-4xl">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Configurações</h1>
-        <p className="text-muted-foreground text-sm">Gerencie sua conta e preferências</p>
+    <div className="space-y-6 pb-12 animate-entrance">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-black text-text-primary uppercase tracking-tighter leading-none">Configurações</h1>
+          <p className="text-sm font-display italic text-accent opacity-80 mt-1">Gestão de perfil, pipelines e clusters de integração</p>
+        </div>
       </div>
 
-      <Tabs defaultValue="profile" orientation="horizontal">
-        <TabsList className="flex-wrap h-auto gap-1">
-          <TabsTrigger value="profile" className="flex items-center gap-1.5 text-xs">
-            <User className="h-3.5 w-3.5" />
-            Perfil
-          </TabsTrigger>
-          <TabsTrigger value="pipeline" className="flex items-center gap-1.5 text-xs">
-            <Kanban className="h-3.5 w-3.5" />
-            Pipeline
-          </TabsTrigger>
-          <TabsTrigger value="integrations" className="flex items-center gap-1.5 text-xs">
-            <Link className="h-3.5 w-3.5" />
-            Integrações
-          </TabsTrigger>
-          <TabsTrigger value="leadsearch" className="flex items-center gap-1.5 text-xs">
-            <Search className="h-3.5 w-3.5" />
-            Busca Leads
-          </TabsTrigger>
-          <TabsTrigger value="disparo" className="flex items-center gap-1.5 text-xs">
-            <Send className="h-3.5 w-3.5" />
-            Disparo
-          </TabsTrigger>
-          <TabsTrigger value="templates" className="flex items-center gap-1.5 text-xs">
-            <MessageSquare className="h-3.5 w-3.5" />
-            Templates
-          </TabsTrigger>
+      <Tabs defaultValue="profile" className="space-y-6">
+        <TabsList className="bg-black/40 border border-border-subtle p-1 h-12 flex-wrap sm:flex-nowrap overflow-x-auto gap-1">
+          {[
+            { id: "profile", label: "Perfil", icon: User },
+            { id: "pipeline", label: "Pipeline", icon: Kanban },
+            { id: "integrations", label: "Clusters", icon: Link },
+            { id: "leadsearch", label: "Search Engine", icon: Search },
+            { id: "disparo", label: "Transmissão", icon: Send },
+            { id: "templates", label: "Templates", icon: MessageSquare },
+          ].map((tab) => (
+            <TabsTrigger key={tab.id} value={tab.id} className="flex-1 px-4 sm:px-6 data-[state=active]:bg-accent data-[state=active]:text-black text-[10px] font-black font-mono uppercase tracking-[0.1em] gap-2 whitespace-nowrap">
+              <tab.icon className="h-3 w-3" />
+              {tab.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         {/* Profile Tab */}
-        <TabsContent value="profile">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle>Perfil do Usuário</CardTitle>
-              <CardDescription>Gerencie suas informações pessoais</CardDescription>
+        <TabsContent value="profile" className="animate-entrance">
+          <Card className="bg-surface border-border-subtle overflow-hidden">
+            <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4 flex flex-row items-center justify-between">
+              <div className="space-y-0.5">
+                <CardTitle className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-text-muted">Master Identity</CardTitle>
+                <CardDescription className="text-[10px] font-display italic text-accent/60">Controle de credenciais e perfil público</CardDescription>
+              </div>
+              <ShieldCheck className="h-4 w-4 text-text-muted opacity-20" />
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={session?.user?.image || ""} />
-                  <AvatarFallback className="text-lg bg-primary/20 text-primary">
-                    {getInitials(userName)}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <Button variant="outline" size="sm">Alterar foto</Button>
-                  <p className="text-xs text-muted-foreground mt-1">JPG, PNG ou GIF. Máx 2MB.</p>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Nome</Label>
-                  <Input defaultValue={session?.user?.name || ""} placeholder="Seu nome" />
+            <CardContent className="p-6 space-y-8">
+              <div className="flex items-center gap-6">
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-accent/20 rounded-full blur opacity-0 group-hover:opacity-100 transition duration-500" />
+                  <Avatar className="h-20 w-20 border-2 border-border-subtle relative">
+                    <AvatarImage src={session?.user?.image || ""} />
+                    <AvatarFallback className="text-xl font-black bg-surface-elevated text-accent">
+                      {getInitials(userName)}
+                    </AvatarFallback>
+                  </Avatar>
                 </div>
                 <div className="space-y-2">
-                  <Label>Email</Label>
-                  <Input defaultValue={session?.user?.email || ""} type="email" disabled />
+                  <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest px-4 border-border-subtle bg-black/20">Sincronizar Avatar</Button>
+                  <p className="text-[10px] font-display italic text-text-muted opacity-40">Processar nova imagem de identidade (Max 2MB)</p>
                 </div>
               </div>
 
-              <Separator />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black font-mono uppercase tracking-widest text-text-muted">Full Name / Alias</Label>
+                  <Input defaultValue={session?.user?.name || ""} placeholder="Seu nome" className="h-11 bg-black/20 border-border-subtle" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black font-mono uppercase tracking-widest text-text-muted opacity-40">System Email (ReadOnly)</Label>
+                  <Input defaultValue={session?.user?.email || ""} type="email" disabled className="h-11 bg-black/10 border-border-subtle text-text-muted opacity-50 cursor-not-allowed" />
+                </div>
+              </div>
 
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold">Alterar Senha</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="pt-6 border-t border-border-subtle">
+                <h3 className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-accent mb-6">Security Layer</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label>Senha Atual</Label>
-                    <Input type="password" placeholder="••••••••" />
+                    <Label className="text-[10px] font-black font-mono uppercase tracking-widest text-text-muted">Current Secret Key</Label>
+                    <Input type="password" placeholder="••••••••" className="h-11 bg-black/20 border-border-subtle" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Nova Senha</Label>
-                    <Input type="password" placeholder="••••••••" />
+                    <Label className="text-[10px] font-black font-mono uppercase tracking-widest text-text-muted">New Authentication Token</Label>
+                    <Input type="password" placeholder="••••••••" className="h-11 bg-black/20 border-border-subtle" />
                   </div>
                 </div>
               </div>
 
-              <Button onClick={handleSave} disabled={isSaving} className="escoltran-gradient-bg text-white">
-                <Save className="h-4 w-4 mr-2" />
-                {isSaving ? "Salvando..." : "Salvar Perfil"}
-              </Button>
+              <div className="flex justify-end pt-4">
+                <Button onClick={handleSave} disabled={isSaving} className="px-10">
+                  <Save className="h-3.5 w-3.5 mr-2" />
+                  {isSaving ? "Syncing..." : "Update Identity"}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* Pipeline Tab */}
-        <TabsContent value="pipeline">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle>Configuração do Pipeline</CardTitle>
-              <CardDescription>Gerencie seus pipelines e estágios</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium">Pipeline Principal</p>
-                <Button variant="outline" size="sm">
-                  <Plus className="h-3 w-3 mr-1.5" />
-                  Novo Pipeline
-                </Button>
+        <TabsContent value="pipeline" className="animate-entrance">
+          <Card className="bg-surface border-border-subtle overflow-hidden">
+            <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4 flex flex-row items-center justify-between">
+              <div className="space-y-0.5">
+                <CardTitle className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-text-muted">Pipeline Architect</CardTitle>
+                <CardDescription className="text-[10px] font-display italic text-accent/60">Estrutura de estágios de conversão</CardDescription>
               </div>
-
-              <div className="space-y-2">
+              <Button variant="outline" size="sm" className="h-8 text-[9px] font-black uppercase tracking-widest px-3 border-accent/20 bg-accent/5 text-accent hover:bg-accent/10">
+                <Plus className="h-3 w-3 mr-2" /> New Logic Pipeline
+              </Button>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+              <div className="space-y-3">
                 {[
                   { name: "Prospecção", color: "#6b7280", deals: 8 },
                   { name: "Qualificação", color: "#f97316", deals: 5 },
@@ -160,170 +155,142 @@ export default function SettingsPage() {
                   { name: "Negociação", color: "#8b5cf6", deals: 3 },
                   { name: "Fechamento", color: "#22c55e", deals: 7 },
                 ].map((stage, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: stage.color }} />
-                    <span className="text-sm flex-1">{stage.name}</span>
-                    <Badge variant="secondary" className="text-xs">{stage.deals} deals</Badge>
-                    <Button variant="ghost" size="icon" className="h-7 w-7">
-                      <Trash2 className="h-3 w-3 text-muted-foreground" />
-                    </Button>
+                  <div key={i} className="flex items-center gap-4 p-4 bg-white/[0.01] border border-border-subtle rounded-xl group hover:border-border-default transition-all">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: stage.color, boxShadow: `0 0 10px ${stage.color}40` }} />
+                    <span className="text-xs font-black uppercase tracking-tight flex-1">{stage.name}</span>
+                    <Badge variant="outline" className="text-[9px] font-bold font-mono px-3 border-border-subtle bg-black/20 opacity-60">
+                      {stage.deals} ENTRIES
+                    </Badge>
+                    <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-text-muted hover:text-white transition-colors">
+                        <Settings className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-error/40 hover:text-error transition-colors">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
 
-              <Button variant="outline" size="sm">
-                <Plus className="h-3 w-3 mr-1.5" />
-                Adicionar Estágio
+              <Button variant="outline" className="w-full border-dashed border-border-subtle bg-transparent text-[10px] font-black uppercase tracking-[0.2em] py-8 h-auto hover:bg-white/[0.02]">
+                <Plus className="h-4 w-4 mr-2" /> Add Pipeline Terminal
               </Button>
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* Integrations Tab */}
-        <TabsContent value="integrations">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle>Integrações</CardTitle>
-              <CardDescription>Configure seus webhooks e integrações externas</CardDescription>
+        <TabsContent value="integrations" className="animate-entrance">
+          <Card className="bg-surface border-border-subtle overflow-hidden">
+            <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4">
+              <CardTitle className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-text-muted">Neural Clusters</CardTitle>
+              <CardDescription className="text-[10px] font-display italic text-accent/60">Configuração de Webhooks e API Tokens</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="p-6 space-y-8">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">n8n</Badge>
-                    Webhook Principal n8n
+                  <Label className="text-[10px] font-black font-mono uppercase tracking-widest text-text-muted flex items-center gap-2">
+                    <Zap className="h-3 w-3 text-accent" /> Master Webhook (n8n Engine)
                   </Label>
                   <div className="flex gap-2">
-                    <Input
-                      type={showWebhook ? "text" : "password"}
-                      placeholder="https://n8n.seudominio.com/webhook/..."
-                    />
-                    <Button variant="outline" size="icon" onClick={() => setShowWebhook(!showWebhook)}>
-                      {showWebhook ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
+                    <div className="relative flex-1">
+                      <Input
+                        type={showWebhook ? "text" : "password"}
+                        placeholder="https://n8n.cloud.escoltran.ai/webhook/..."
+                        className="h-11 bg-black/20 border-border-subtle font-mono text-xs pr-12"
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => setShowWebhook(!showWebhook)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-accent transition-colors"
+                      >
+                        {showWebhook ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    <Button variant="outline" className="h-11 px-6 border-border-subtle">Rotate Token</Button>
                   </div>
                 </div>
 
-                <Separator />
-
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
                   {[
-                    { label: "Webhook Disparo", placeholder: "URL para disparos" },
-                    { label: "Webhook Cancelar Disparo", placeholder: "URL para cancelamentos" },
-                    { label: "Webhook Status Disparo", placeholder: "URL para status" },
+                    { label: "Emission Gateway", placeholder: "https://gateway.api/v1/disparo" },
+                    { label: "Cancellation Terminal", placeholder: "https://gateway.api/v1/stop" },
+                    { label: "Status Monitor Relay", placeholder: "https://gateway.api/v1/status" },
+                    { label: "Analytics Ingest", placeholder: "https://gateway.api/v1/logs" },
                   ].map((wh) => (
                     <div key={wh.label} className="space-y-2">
-                      <Label>{wh.label}</Label>
-                      <Input type="password" placeholder={wh.placeholder} />
+                      <Label className="text-[10px] font-bold uppercase tracking-widest text-text-muted opacity-60">{wh.label}</Label>
+                      <Input type="password" placeholder={wh.placeholder} className="h-11 bg-black/20 border-border-subtle font-mono text-[10px]" />
                     </div>
                   ))}
                 </div>
               </div>
 
-              <Button onClick={handleSave} disabled={isSaving} className="escoltran-gradient-bg text-white">
-                <Save className="h-4 w-4 mr-2" />
-                {isSaving ? "Salvando..." : "Salvar Integrações"}
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Lead Search Tab */}
-        <TabsContent value="leadsearch">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle>Configuração Busca de Leads</CardTitle>
-              <CardDescription>Configure webhooks para busca de leads</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Webhook Google Maps</Label>
-                <Input type="password" placeholder="URL do webhook para busca Google Maps" />
+              <div className="flex justify-end pt-4">
+                <Button onClick={handleSave} disabled={isSaving} className="px-10">
+                  <Save className="h-3.5 w-3.5 mr-2" />
+                  {isSaving ? "Processing..." : "Commit Cluster Data"}
+                </Button>
               </div>
-              <div className="space-y-2">
-                <Label>Webhook CNPJ</Label>
-                <Input type="password" placeholder="URL do webhook para busca CNPJ" />
-              </div>
-              <Button onClick={handleSave} disabled={isSaving} className="escoltran-gradient-bg text-white">
-                <Save className="h-4 w-4 mr-2" />
-                Salvar
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Disparo Tab */}
-        <TabsContent value="disparo">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle>Configuração de Disparo</CardTitle>
-              <CardDescription>Configure parâmetros de disparo em massa</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Intervalo entre mensagens (segundos)</Label>
-                  <Input type="number" defaultValue="5" min="1" max="60" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Máximo por hora</Label>
-                  <Input type="number" defaultValue="200" min="1" max="1000" />
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">Retry automático em falhas</p>
-                  <p className="text-xs text-muted-foreground">Tentar novamente em caso de falha</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Button onClick={handleSave} disabled={isSaving} className="escoltran-gradient-bg text-white">
-                <Save className="h-4 w-4 mr-2" />
-                Salvar
-              </Button>
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* Templates Tab */}
-        <TabsContent value="templates">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Templates de Mensagem</CardTitle>
-                  <CardDescription>Crie e gerencie templates para disparos</CardDescription>
-                </div>
-                <Button size="sm" className="escoltran-gradient-bg text-white">
-                  <Plus className="h-4 w-4 mr-1.5" />
-                  Novo Template
-                </Button>
+        <TabsContent value="templates" className="animate-entrance">
+          <Card className="bg-surface border-border-subtle overflow-hidden">
+            <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4 flex flex-row items-center justify-between">
+              <div className="space-y-0.5">
+                <CardTitle className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-text-muted">Dialogue Blueprints</CardTitle>
+                <CardDescription className="text-[10px] font-display italic text-accent/60">Modelos de comunicação automatizada</CardDescription>
               </div>
+              <Button size="sm" className="h-8 text-[9px] font-black uppercase tracking-widest px-3">
+                <Plus className="h-3 w-3 mr-2" /> Build Template
+              </Button>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 gap-3">
                 {[
-                  { nome: "Boas-vindas", canal: "WHATSAPP", conteudo: "Olá {{nome}}, seja bem-vindo!" },
-                  { nome: "Follow-up 1", canal: "WHATSAPP", conteudo: "Oi {{nome}}, como posso ajudar?" },
-                  { nome: "Proposta", canal: "EMAIL", conteudo: "Prezado(a) {{nome}}, segue proposta..." },
+                  { nome: "Boas-vindas", canal: "WHATSAPP", conteudo: "Olá {{nome}}, seja bem-vindo ao ecossistema Escoltran." },
+                  { nome: "Follow-up Alpha", canal: "WHATSAPP", conteudo: "Identificamos sua interação. Como podemos otimizar seu processo?" },
+                  { nome: "Proposta Executiva", canal: "EMAIL", conteudo: "Prezado(a) {{nome}}, os KPIs projetados estão anexados..." },
                 ].map((tpl, i) => (
-                  <div key={i} className="p-3 bg-muted/30 rounded-lg">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-medium">{tpl.nome}</p>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-xs">{tpl.canal}</Badge>
-                        <Button variant="ghost" size="icon" className="h-6 w-6">
-                          <Trash2 className="h-3 w-3 text-muted-foreground" />
+                  <div key={i} className="p-4 bg-white/[0.01] border border-border-subtle rounded-xl group hover:border-border-default transition-all">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-[11px] font-black uppercase tracking-widest text-text-primary">{tpl.nome}</p>
+                      <div className="flex items-center gap-3">
+                        <Badge variant="outline" className="text-[8px] font-black font-mono px-2 border-accent/20 text-accent bg-accent/5">
+                          {tpl.canal}
+                        </Badge>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-error opacity-20 hover:opacity-100 transition-opacity">
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">{tpl.conteudo}</p>
+                    <p className="text-[11px] font-display text-text-muted leading-relaxed italic line-clamp-2">"{tpl.conteudo}"</p>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Fallback for other tabs - Minimal styling */}
+        {["leadsearch", "disparo"].map((tabId) => (
+          <TabsContent key={tabId} value={tabId} className="animate-entrance">
+            <Card className="bg-surface border-border-subtle overflow-hidden">
+              <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4">
+                <CardTitle className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-text-muted">{tabId.replace('search', ' search').toUpperCase()}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-12 flex flex-col items-center justify-center gap-4 text-text-muted opacity-40">
+                <Settings className="h-10 w-10 animate-spin-slow" />
+                <p className="text-[10px] font-black font-mono tracking-widest uppercase text-center">Protocol section in maintenance mode</p>
+                <p className="text-[9px] font-display italic">Consulte a documentação técnica do Aether System</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   )

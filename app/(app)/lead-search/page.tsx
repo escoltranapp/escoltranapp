@@ -32,8 +32,10 @@ import {
   TrendingUp,
   UserPlus,
   AlertTriangle,
+  ChevronDown,
 } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
 
 interface GoogleLead {
   nome: string
@@ -91,7 +93,7 @@ function SkeletonRow({ cols = 5 }: { cols?: number }) {
   return (
     <TableRow>
       {[...Array(cols)].map((_, i) => (
-        <TableCell key={i}><div className="h-4 rounded bg-muted animate-pulse" /></TableCell>
+        <TableCell key={i}><div className="h-4 rounded bg-white/5 animate-pulse" /></TableCell>
       ))}
     </TableRow>
   )
@@ -174,7 +176,6 @@ export default function LeadSearchPage() {
     setGoogleResults([])
     setSelectedGoogle(new Set())
     try {
-      // Try user's configured webhook first
       const webhookRes = await fetch("/api/webhooks/n8n", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -195,15 +196,11 @@ export default function LeadSearchPage() {
 
       toast({
         title: "Webhook não configurado",
-        description: "Configure o webhook Google Maps em Configurações para buscar leads reais.",
+        description: "Configure o webhook Google Maps em Configurações.",
         variant: "destructive",
       })
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Erro na busca",
-        description: "Verifique o webhook configurado em Configurações.",
-      })
+      toast({ variant: "destructive", title: "Erro na busca" })
     } finally {
       setIsSearching(false)
     }
@@ -235,7 +232,7 @@ export default function LeadSearchPage() {
 
       toast({
         title: "Webhook não configurado",
-        description: "Configure o webhook CNPJ em Configurações para buscar empresas reais.",
+        description: "Configure o webhook CNPJ em Configurações.",
         variant: "destructive",
       })
     } catch {
@@ -261,28 +258,33 @@ export default function LeadSearchPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Busca de Leads</h1>
-        <p className="text-muted-foreground text-sm">Encontre novos leads via Google Maps e CNPJ</p>
+    <div className="space-y-8 pb-8 animate-entrance">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-black text-text-primary uppercase tracking-tighter leading-none">Busca de Leads</h1>
+          <p className="text-sm font-display italic text-accent opacity-80 mt-1">Inteligência de mercado e prospecção ativa</p>
+        </div>
+        <Users className="h-8 w-8 text-white opacity-10" />
       </div>
 
-      {/* Metrics */}
+      {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: "Total Google", value: storedGoogle?.total ?? "—", icon: MapPin, color: "text-primary" },
-          { label: "Total CNPJ", value: storedCnpj?.total ?? "—", icon: Building2, color: "text-blue-400" },
-          { label: "Leads Hoje", value: (storedGoogle?.today ?? 0) + (storedCnpj?.today ?? 0), icon: CalendarDays, color: "text-amber-400" },
-          { label: "Na Semana", value: (storedGoogle?.week ?? 0) + (storedCnpj?.week ?? 0), icon: TrendingUp, color: "text-green-400" },
-        ].map((s) => {
+          { label: "Base Google", value: storedGoogle?.total ?? "—", icon: MapPin, color: "text-accent" },
+          { label: "Base CNPJ", value: storedCnpj?.total ?? "—", icon: Building2, color: "text-info" },
+          { label: "Capturas Hoje", value: (storedGoogle?.today ?? 0) + (storedCnpj?.today ?? 0), icon: CalendarDays, color: "text-success" },
+          { label: "Performance", value: (storedGoogle?.week ?? 0) + (storedCnpj?.week ?? 0), icon: TrendingUp, color: "text-warning" },
+        ].map((s, i) => {
           const Icon = s.icon
           return (
-            <Card key={s.label} className="bg-card border-border">
-              <CardContent className="flex items-center gap-3 p-4">
-                <Icon className={`h-7 w-7 ${s.color}`} />
+            <Card key={s.label} className="bg-surface border-border-subtle group hover:border-border-default transition-all animate-entrance" style={{ animationDelay: `${i * 100}ms` }}>
+              <CardContent className="flex items-center gap-4 p-4">
+                <div className="w-10 h-10 rounded-lg bg-surface-elevated flex items-center justify-center border border-border-subtle group-hover:bg-white/[0.02] transition-colors">
+                  <Icon className={cn("h-5 w-5", s.color)} />
+                </div>
                 <div>
-                  <p className="text-xl font-bold">{s.value}</p>
-                  <p className="text-xs text-muted-foreground">{s.label}</p>
+                  <p className="text-xl font-black font-sans leading-none">{s.value}</p>
+                  <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-muted mt-1 opacity-60">{s.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -290,188 +292,139 @@ export default function LeadSearchPage() {
         })}
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="google" className="flex items-center gap-2">
-            <MapPin className="h-4 w-4" /> Google Maps
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="bg-black/40 border border-border-subtle w-full justify-start h-12 p-1.5 overflow-x-auto">
+          <TabsTrigger value="google" className="text-[11px] uppercase font-black tracking-tight flex items-center gap-2.5 px-6">
+            <MapPin className="h-3.5 w-3.5" /> Google Maps
           </TabsTrigger>
-          <TabsTrigger value="cnpj" className="flex items-center gap-2">
-            <Building2 className="h-4 w-4" /> CNPJ
+          <TabsTrigger value="cnpj" className="text-[11px] uppercase font-black tracking-tight flex items-center gap-2.5 px-6">
+            <Building2 className="h-3.5 w-3.5" /> Base CNPJ
           </TabsTrigger>
         </TabsList>
 
         {/* ── Google Maps Tab ── */}
-        <TabsContent value="google" className="space-y-4">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="text-base">Busca por Google Maps</CardTitle>
-              <CardDescription>
-                Configure o webhook em{" "}
-                <span className="text-primary">Configurações → Busca de Leads</span> para buscar leads reais
-              </CardDescription>
+        <TabsContent value="google" className="space-y-6">
+          <Card className="bg-surface border-border-subtle overflow-hidden">
+            <CardHeader className="bg-white/[0.01] border-b border-border-subtle pb-4">
+              <CardTitle className="text-[13px] font-black font-mono uppercase tracking-[0.1em] text-text-primary">Motores de Busca Google</CardTitle>
+              <CardDescription className="text-xs font-mono text-text-muted uppercase italic">Extração de dados via geolocalização e nicho</CardDescription>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={googleForm.handleSubmit(onGoogleSearch)} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <CardContent className="pt-6">
+              <form onSubmit={googleForm.handleSubmit(onGoogleSearch)} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label>Estado</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Unidade Federativa</Label>
                   <Select onValueChange={(v) => googleForm.setValue("estado", v)}>
-                    <SelectTrigger><SelectValue placeholder="Selecione o estado" /></SelectTrigger>
-                    <SelectContent>
+                    <SelectTrigger className="bg-surface-elevated border-border-default h-11"><SelectValue placeholder="Selecione UF" /></SelectTrigger>
+                    <SelectContent className="bg-surface-overlay border-border-strong">
                       {states.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Cidade</Label>
-                  <Input placeholder="São Paulo" {...googleForm.register("cidade")} />
+                  <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Cidade / Região</Label>
+                  <Input placeholder="Ex: São Paulo" className="h-11" {...googleForm.register("cidade")} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Nicho / Categoria</Label>
-                  <Input placeholder="Restaurante, Farmácia..." {...googleForm.register("nicho")} />
+                  <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Nicho Operacional</Label>
+                  <Input placeholder="Ex: Escritórios, Clinicas..." className="h-11" {...googleForm.register("nicho")} />
                 </div>
-                <div className="sm:col-span-3">
-                  <Button type="submit" disabled={isSearching} className="escoltran-gradient-bg text-white">
+                <div className="sm:col-span-3 pt-2">
+                  <Button type="submit" disabled={isSearching} className="w-full sm:w-auto h-11 px-8">
                     <Search className="h-4 w-4 mr-2" />
-                    {isSearching ? "Buscando..." : "Buscar Leads"}
+                    {isSearching ? "Escaneando Rede..." : "Iniciar Extração Google"}
                   </Button>
                 </div>
               </form>
             </CardContent>
           </Card>
 
-          {/* Search results (from webhook) */}
-          {googleResults.length > 0 && (
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">{googleResults.length} leads encontrados</CardTitle>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => exportCsv(googleResults as unknown as Record<string, unknown>[], "leads-google.csv")}
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Exportar CSV
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="escoltran-gradient-bg text-white"
-                      onClick={() => saveLeads.mutate({
-                        type: "google",
-                        leads: selectedGoogle.size > 0
-                          ? [...selectedGoogle].map((i) => googleResults[i])
-                          : googleResults,
-                      })}
-                      disabled={saveLeads.isPending}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      {selectedGoogle.size > 0 ? `Salvar ${selectedGoogle.size} selecionados` : "Salvar todos"}
-                    </Button>
-                  </div>
+          {/* Results Grid / Table */}
+          {googleResults.length > 0 ? (
+            <Card className="bg-surface border-border-subtle overflow-hidden animate-entrance">
+              <CardHeader className="flex flex-row items-center justify-between bg-white/[0.01] border-b border-border-subtle py-4">
+                <CardTitle className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-accent">Found {googleResults.length} Result(s)</CardTitle>
+                <div className="flex gap-2">
+                  <Button variant="secondary" size="sm" onClick={() => exportCsv(googleResults as any, "google-leads.csv")}>
+                    <Download className="h-3.5 w-3.5 mr-2" /> Export
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={() => saveLeads.mutate({
+                      type: "google",
+                      leads: selectedGoogle.size > 0 ? [...selectedGoogle].map(i => googleResults[i]) : googleResults
+                    })}
+                    disabled={saveLeads.isPending}
+                  >
+                    <Plus className="h-3.5 w-3.5 mr-2" /> {selectedGoogle.size > 0 ? `Salvar (${selectedGoogle.size})` : "Salvar Todos"}
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-10"></TableHead>
-                      <TableHead>Nome</TableHead>
-                      <TableHead>Telefone</TableHead>
-                      <TableHead className="hidden sm:table-cell">Endereço</TableHead>
-                      <TableHead className="hidden md:table-cell">Nicho</TableHead>
-                      <TableHead className="hidden lg:table-cell">Site</TableHead>
+                  <TableHeader className="bg-white/[0.02]">
+                    <TableRow className="border-border-subtle">
+                      <TableHead className="w-12 text-center"><ChevronDown className="h-3 w-3 mx-auto opacity-20" /></TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Razão / Nome</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Digital</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Localidade</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Segmento</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {googleResults.map((lead, i) => (
-                      <TableRow key={i}>
+                      <TableRow key={i} className="border-border-subtle hover:bg-white/[0.01] group">
+                        <TableCell className="text-center">
+                          <Checkbox checked={selectedGoogle.has(i)} onCheckedChange={(v) => {
+                            const next = new Set(selectedGoogle); v ? next.add(i) : next.delete(i); setSelectedGoogle(next);
+                          }} />
+                        </TableCell>
+                        <TableCell className="text-[13px] font-bold text-text-primary">{lead.nome}</TableCell>
                         <TableCell>
-                          <Checkbox
-                            checked={selectedGoogle.has(i)}
-                            onCheckedChange={(checked) => {
-                              setSelectedGoogle((prev) => {
-                                const next = new Set(prev)
-                                checked ? next.add(i) : next.delete(i)
-                                return next
-                              })
-                            }}
-                          />
+                          <div className="flex flex-col gap-1">
+                            {lead.telefone && <span className="text-[11px] font-mono text-accent flex items-center gap-1.5"><Phone className="h-3 w-3 opacity-50" /> {lead.telefone}</span>}
+                            {lead.site && <span className="text-[10px] font-sans text-text-muted hover:text-white transition-colors flex items-center gap-1.5 truncate max-w-[140px]"><Globe className="h-3 w-3 opacity-50" /> {lead.site}</span>}
+                          </div>
                         </TableCell>
-                        <TableCell className="font-medium">{lead.nome}</TableCell>
-                        <TableCell className="text-muted-foreground text-sm">
-                          {lead.telefone ? (
-                            <div className="flex items-center gap-1"><Phone className="h-3 w-3" />{lead.telefone}</div>
-                          ) : "—"}
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell text-muted-foreground text-xs">
-                          {lead.endereco ? `${lead.endereco}, ${lead.cidade}` : "—"}
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {lead.nicho && <Badge variant="secondary" className="text-xs">{lead.nicho}</Badge>}
-                        </TableCell>
-                        <TableCell className="hidden lg:table-cell">
-                          {lead.site ? (
-                            <div className="flex items-center gap-1 text-primary text-xs">
-                              <Globe className="h-3 w-3" />{lead.site}
-                            </div>
-                          ) : "—"}
-                        </TableCell>
+                        <TableCell className="text-[11px] text-text-muted italic opacity-80">{lead.endereco ? `${lead.endereco}, ${lead.cidade}` : "—"}</TableCell>
+                        <TableCell>{lead.nicho && <Badge variant="secondary" className="bg-white/5 opacity-80">{lead.nicho}</Badge>}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </CardContent>
             </Card>
-          )}
-
-          {/* Stored Google leads from DB */}
-          {!googleResults.length && storedGoogle && storedGoogle.leads.length > 0 && (
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-base">Leads salvos ({storedGoogle.total})</CardTitle>
-                <CardDescription>Últimos leads extraídos e salvos no banco</CardDescription>
+          ) : storedGoogle && storedGoogle.leads.length > 0 ? (
+            <Card className="bg-surface border-border-subtle overflow-hidden">
+               <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4">
+                <CardTitle className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-text-muted">Histórico de Extração ({storedGoogle.total})</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nome</TableHead>
-                      <TableHead>Telefone</TableHead>
-                      <TableHead className="hidden sm:table-cell">Cidade/UF</TableHead>
-                      <TableHead className="hidden md:table-cell">Nicho</TableHead>
-                      <TableHead>Ação</TableHead>
+                  <TableHeader className="bg-white/[0.02]">
+                    <TableRow className="border-border-subtle">
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Nome do Lead</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Geo / Contato</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Segmento</TableHead>
+                      <TableHead className="text-right text-[10px] font-black font-mono uppercase text-text-muted">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {storedGoogle.leads.map((lead) => (
-                      <TableRow key={lead.id}>
-                        <TableCell className="font-medium text-sm">{lead.nome}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {lead.telefone || "—"}
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
-                          {lead.cidade && lead.uf ? `${lead.cidade}/${lead.uf}` : "—"}
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {lead.nicho ? <Badge variant="secondary" className="text-xs">{lead.nicho}</Badge> : "—"}
-                        </TableCell>
+                      <TableRow key={lead.id} className="border-border-subtle hover:bg-white/[0.01] group transition-colors">
+                        <TableCell className="text-[13px] font-bold text-text-primary">{lead.nome}</TableCell>
                         <TableCell>
-                          {lead.status === "ATIVO" && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 text-xs text-primary"
-                              onClick={() => convertLead.mutate({ leadId: lead.id })}
-                              disabled={convertLead.isPending}
-                            >
-                              <UserPlus className="h-3 w-3 mr-1" />
-                              Adicionar ao CRM
+                          <div className="flex flex-col">
+                            <span className="text-[11px] font-mono font-bold text-text-muted">{lead.telefone || "—"}</span>
+                            <span className="text-[10px] font-display italic text-text-muted opacity-60">{lead.cidade}/{lead.uf}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{lead.nicho ? <Badge variant="secondary" className="bg-white/5">{lead.nicho}</Badge> : "—"}</TableCell>
+                        <TableCell className="text-right">
+                          {lead.status === "ATIVO" ? (
+                            <Button variant="ghost" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest hover:text-accent" onClick={() => convertLead.mutate({ leadId: lead.id })}>
+                              <UserPlus className="h-3 w-3 mr-1.5" /> Adicionar
                             </Button>
-                          )}
-                          {lead.status === "CONTATADO" && (
-                            <Badge className="bg-green-500/10 text-green-400 border-green-500/20 text-xs">No CRM</Badge>
-                          )}
+                          ) : <Badge variant="ativa">Internalizado</Badge>}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -479,139 +432,99 @@ export default function LeadSearchPage() {
                 </Table>
               </CardContent>
             </Card>
-          )}
-
-          {!googleResults.length && !storedGoogle?.leads.length && (
-            <Card className="bg-card border-border">
-              <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-2">
-                <MapPin className="h-8 w-8 opacity-30" />
-                <p className="text-sm">Nenhum lead do Google Maps ainda</p>
-                <p className="text-xs">Configure o webhook e faça uma busca acima</p>
-              </CardContent>
-            </Card>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-24 bg-surface-elevated/20 border border-dashed border-border-subtle rounded-xl text-text-muted opacity-40">
+              <MapPin className="h-10 w-10 mb-4" />
+              <p className="text-xs font-mono font-black uppercase tracking-[0.2em]">Sem resultados recentes</p>
+            </div>
           )}
         </TabsContent>
 
         {/* ── CNPJ Tab ── */}
-        <TabsContent value="cnpj" className="space-y-4">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="text-base">Busca por CNPJ</CardTitle>
-              <CardDescription>
-                Configure o webhook em{" "}
-                <span className="text-primary">Configurações → Busca de Leads</span> para buscar empresas reais
-              </CardDescription>
+        <TabsContent value="cnpj" className="space-y-6">
+          <Card className="bg-surface border-border-subtle overflow-hidden">
+            <CardHeader className="bg-white/[0.01] border-b border-border-subtle pb-4">
+              <CardTitle className="text-[13px] font-black font-mono uppercase tracking-[0.1em] text-text-primary">Escaner de Dados RFB</CardTitle>
+              <CardDescription className="text-xs font-mono text-text-muted uppercase italic">Consulta estruturada por CNAE e localidade</CardDescription>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={cnpjForm.handleSubmit(onCnpjSearch)} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <CardContent className="pt-6">
+              <form onSubmit={cnpjForm.handleSubmit(onCnpjSearch)} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label>Estado</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Unidade Federativa</Label>
                   <Select onValueChange={(v) => cnpjForm.setValue("estado", v)}>
-                    <SelectTrigger><SelectValue placeholder="Selecione o estado" /></SelectTrigger>
-                    <SelectContent>
+                    <SelectTrigger className="bg-surface-elevated border-border-default h-11"><SelectValue placeholder="Selecione UF" /></SelectTrigger>
+                    <SelectContent className="bg-surface-overlay border-border-strong">
                       {states.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Cidade</Label>
-                  <Input placeholder="São Paulo" {...cnpjForm.register("cidade")} />
+                  <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Cidade / Região</Label>
+                  <Input placeholder="Ex: Curitiba" className="h-11" {...cnpjForm.register("cidade")} />
                 </div>
                 <div className="space-y-2">
-                  <Label>CNAE</Label>
-                  <Input placeholder="6201-5/00" {...cnpjForm.register("cnae")} />
+                  <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">CNAE Fiscal</Label>
+                  <Input placeholder="Ex: 62.01-5-00" className="h-11" {...cnpjForm.register("cnae")} />
                 </div>
-                <div className="sm:col-span-3">
-                  <Button type="submit" disabled={isSearching} className="escoltran-gradient-bg text-white">
-                    <Search className="h-4 w-4 mr-2" />
-                    {isSearching ? "Buscando..." : "Buscar Empresas"}
+                <div className="sm:col-span-3 pt-2">
+                  <Button type="submit" disabled={isSearching} className="w-full sm:w-auto h-11 px-8">
+                    <Building2 className="h-4 w-4 mr-2" />
+                    {isSearching ? "Consultando Receita..." : "Consultar CNPJs"}
                   </Button>
                 </div>
               </form>
             </CardContent>
           </Card>
 
-          {/* CNPJ search results */}
-          {cnpjResults.length > 0 && (
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">{cnpjResults.length} empresas encontradas</CardTitle>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => exportCsv(cnpjResults as unknown as Record<string, unknown>[], "leads-cnpj.csv")}
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Exportar CSV
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="escoltran-gradient-bg text-white"
-                      onClick={() => saveLeads.mutate({
-                        type: "cnpj",
-                        leads: selectedCnpj.size > 0
-                          ? [...selectedCnpj].map((i) => cnpjResults[i])
-                          : cnpjResults,
-                      })}
-                      disabled={saveLeads.isPending}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      {selectedCnpj.size > 0 ? `Salvar ${selectedCnpj.size}` : "Salvar todos"}
-                    </Button>
-                  </div>
+          {cnpjResults.length > 0 ? (
+            <Card className="bg-surface border-border-subtle overflow-hidden animate-entrance">
+              <CardHeader className="flex flex-row items-center justify-between bg-white/[0.01] border-b border-border-subtle py-4">
+                <CardTitle className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-accent">Query Result ({cnpjResults.length})</CardTitle>
+                <div className="flex gap-2">
+                  <Button variant="secondary" size="sm" onClick={() => exportCsv(cnpjResults as any, "cnpj-leads.csv")}>
+                    <Download className="h-3.5 w-3.5 mr-2" /> Export
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={() => saveLeads.mutate({
+                      type: "cnpj",
+                      leads: selectedCnpj.size > 0 ? [...selectedCnpj].map(i => cnpjResults[i]) : cnpjResults
+                    })}
+                    disabled={saveLeads.isPending}
+                  >
+                    <Plus className="h-3.5 w-3.5 mr-2" /> Salvar
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-10"></TableHead>
-                      <TableHead>CNPJ</TableHead>
-                      <TableHead>Razão Social</TableHead>
-                      <TableHead className="hidden sm:table-cell">Telefone</TableHead>
-                      <TableHead className="hidden md:table-cell">CNAE</TableHead>
-                      <TableHead className="hidden md:table-cell">Cidade/UF</TableHead>
-                      <TableHead>Situação</TableHead>
+                  <TableHeader className="bg-white/[0.02]">
+                    <TableRow className="border-border-subtle">
+                      <TableHead className="w-12 text-center">#</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Identificação / CNPJ</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Razão Social</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Localidade</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted text-right">Situação</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {cnpjResults.map((lead, i) => (
-                      <TableRow key={i}>
-                        <TableCell>
-                          <Checkbox
-                            checked={selectedCnpj.has(i)}
-                            onCheckedChange={(checked) => {
-                              setSelectedCnpj((prev) => {
-                                const next = new Set(prev)
-                                checked ? next.add(i) : next.delete(i)
-                                return next
-                              })
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell className="text-xs font-mono">{lead.cnpj}</TableCell>
-                        <TableCell className="font-medium text-sm">{lead.nome}</TableCell>
-                        <TableCell className="hidden sm:table-cell text-muted-foreground text-sm">
-                          {lead.telefone || "—"}
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {lead.cnae && <Badge variant="outline" className="text-xs">{lead.cnae}</Badge>}
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                          {lead.cidade && lead.uf ? `${lead.cidade}/${lead.uf}` : "—"}
+                      <TableRow key={i} className="border-border-subtle hover:bg-white/[0.01] group">
+                        <TableCell className="text-center">
+                          <Checkbox checked={selectedCnpj.has(i)} onCheckedChange={(v) => {
+                            const next = new Set(selectedCnpj); v ? next.add(i) : next.delete(i); setSelectedCnpj(next);
+                          }} />
                         </TableCell>
                         <TableCell>
-                          <Badge
-                            className={
-                              lead.situacao === "ATIVA"
-                                ? "bg-green-500/10 text-green-400 border-green-500/20"
-                                : "bg-muted text-muted-foreground"
-                            }
-                          >
-                            {lead.situacao || "—"}
-                          </Badge>
+                          <div className="flex flex-col">
+                            <span className="text-[11px] font-mono font-bold text-accent tracking-tighter">{lead.cnpj}</span>
+                            <span className="text-[10px] font-mono text-text-muted opacity-60">{lead.telefone || "N/A"}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-[13px] font-bold text-text-primary uppercase tracking-tight">{lead.nome}</TableCell>
+                        <TableCell className="text-[11px] text-text-muted italic opacity-80">{lead.cidade}/{lead.uf}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant={lead.situacao === "ATIVA" ? "ativa" : "inativa"}>{lead.situacao}</Badge>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -619,58 +532,30 @@ export default function LeadSearchPage() {
                 </Table>
               </CardContent>
             </Card>
-          )}
-
-          {/* Stored CNPJ leads */}
-          {!cnpjResults.length && storedCnpj && storedCnpj.leads.length > 0 && (
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-base">Empresas salvas ({storedCnpj.total})</CardTitle>
+          ) : storedCnpj && storedCnpj.leads.length > 0 ? (
+            <Card className="bg-surface border-border-subtle overflow-hidden">
+               <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4">
+                <CardTitle className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-text-muted">Empresas Monitoradas ({storedCnpj.total})</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>CNPJ</TableHead>
-                      <TableHead>Razão Social</TableHead>
-                      <TableHead className="hidden sm:table-cell">Telefone</TableHead>
-                      <TableHead className="hidden md:table-cell">Cidade/UF</TableHead>
-                      <TableHead>Situação</TableHead>
-                      <TableHead>Ação</TableHead>
+                  <TableHeader className="bg-white/[0.02]">
+                    <TableRow className="border-border-subtle">
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">CNPJ / Registro</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Razão Social</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted">Cidade/UF</TableHead>
+                      <TableHead className="text-[10px] font-black font-mono uppercase text-text-muted text-right">Ação</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {storedCnpj.leads.map((lead) => (
-                      <TableRow key={lead.id}>
-                        <TableCell className="text-xs font-mono">{lead.cnpj}</TableCell>
-                        <TableCell className="font-medium text-sm">{lead.nome}</TableCell>
-                        <TableCell className="hidden sm:table-cell text-muted-foreground text-sm">
-                          {lead.telefone || "—"}
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                          {lead.cidade && lead.uf ? `${lead.cidade}/${lead.uf}` : "—"}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            className={
-                              lead.situacao === "ATIVA"
-                                ? "bg-green-500/10 text-green-400 border-green-500/20"
-                                : "bg-muted text-muted-foreground"
-                            }
-                          >
-                            {lead.situacao || "—"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 text-xs text-primary"
-                            onClick={() => convertLead.mutate({ leadCnpjId: lead.id })}
-                            disabled={convertLead.isPending}
-                          >
-                            <UserPlus className="h-3 w-3 mr-1" />
-                            Adicionar ao CRM
+                      <TableRow key={lead.id} className="border-border-subtle hover:bg-white/[0.01] group transition-colors">
+                        <TableCell className="text-[11px] font-mono font-bold text-accent">{lead.cnpj}</TableCell>
+                        <TableCell className="text-[13px] font-bold text-text-primary uppercase truncate max-w-[200px]">{lead.nome}</TableCell>
+                        <TableCell className="text-[11px] text-text-muted italic opacity-60">{lead.cidade && lead.uf ? `${lead.cidade}/${lead.uf}` : "—"}</TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest hover:text-accent" onClick={() => convertLead.mutate({ leadCnpjId: lead.id })}>
+                            <Plus className="h-3 w-3 mr-1.5" /> Importar
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -679,33 +564,27 @@ export default function LeadSearchPage() {
                 </Table>
               </CardContent>
             </Card>
-          )}
-
-          {!cnpjResults.length && !storedCnpj?.leads.length && (
-            <Card className="bg-card border-border">
-              <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-2">
-                <Building2 className="h-8 w-8 opacity-30" />
-                <p className="text-sm">Nenhuma empresa CNPJ encontrada ainda</p>
-                <p className="text-xs">Configure o webhook e faça uma busca acima</p>
-              </CardContent>
-            </Card>
+          ) : (
+             <div className="flex flex-col items-center justify-center py-24 bg-surface-elevated/20 border border-dashed border-border-subtle rounded-xl text-text-muted opacity-40">
+              <Building2 className="h-10 w-10 mb-4" />
+              <p className="text-xs font-mono font-black uppercase tracking-[0.2em]">Sem empresas salvas</p>
+            </div>
           )}
         </TabsContent>
       </Tabs>
 
-      {/* Webhook config notice */}
-      <Card className="bg-amber-500/5 border-amber-500/20">
-        <CardContent className="flex items-start gap-3 p-4">
-          <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-medium text-amber-400">Configuração necessária</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Para buscar leads reais, configure os webhooks em{" "}
-              <strong>Configurações → Busca de Leads</strong>. O sistema usa n8n para integrar com Google Maps e APIs de CNPJ.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Security/Config Disclaimer */}
+      <div className="p-6 bg-accent/5 border border-accent/20 rounded-xl flex items-start gap-4 animate-entrance" style={{ animationDelay: '600ms' }}>
+        <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 border border-accent/20">
+          <AlertTriangle className="h-5 w-5 text-accent" />
+        </div>
+        <div>
+          <h5 className="text-[13px] font-black uppercase tracking-tight text-accent">Protocolo de Integração n8n</h5>
+          <p className="text-[12px] text-text-muted leading-relaxed mt-1 italic font-display">
+            A extração automatizada depende da ativação dos fluxos de trabalho via webhook. Verifique a chave de API e o endpoint configurado em <span className="text-text-primary font-bold">Painel &gt; Configurações &gt; Integrações</span> para garantir a integridade da coleta de dados.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

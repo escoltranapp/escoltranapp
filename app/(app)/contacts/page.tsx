@@ -19,7 +19,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,8 +43,10 @@ import {
   Building2,
   Phone,
   Mail,
+  ChevronRight,
+  ChevronLeft,
 } from "lucide-react"
-import { formatDate, getInitials } from "@/lib/utils"
+import { formatDate, getInitials, cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 
@@ -75,14 +76,6 @@ interface ContactsResponse {
   counts: { all: number; leads: number; clientes: number; inativos: number }
 }
 
-// ─── Status config ──────────────────────────────────────────────────
-const statusConfig: Record<string, { label: string; className: string }> = {
-  lead: { label: "Lead", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-  cliente: { label: "Cliente", className: "bg-green-500/10 text-green-400 border-green-500/20" },
-  inativo: { label: "Inativo", className: "bg-muted text-muted-foreground" },
-  prospect: { label: "Prospect", className: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
-}
-
 const CANAL_OPCOES = [
   "Google Ads", "Facebook", "Instagram", "LinkedIn", "Orgânico",
   "Indicação", "Email Marketing", "WhatsApp", "Evento", "Outro",
@@ -96,7 +89,7 @@ function SkeletonRow() {
     <TableRow>
       {[...Array(6)].map((_, i) => (
         <TableCell key={i}>
-          <div className="h-4 rounded bg-muted animate-pulse" style={{ width: `${50 + i * 10}%` }} />
+          <div className="h-4 rounded bg-white/5 animate-pulse" style={{ width: `${50 + i * 10}%` }} />
         </TableCell>
       ))}
     </TableRow>
@@ -153,86 +146,81 @@ function NewContactModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[540px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[540px] bg-surface-overlay border-border-strong animate-entrance">
         <DialogHeader>
-          <DialogTitle>Novo Contato</DialogTitle>
+          <DialogTitle className="text-xl font-black uppercase tracking-tight text-text-primary">Novo Contato</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 py-2">
+        <div className="space-y-5 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label>Nome *</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Nome*</Label>
               <Input placeholder="João" value={form.nome} onChange={(e) => setForm((p) => ({ ...p, nome: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label>Sobrenome</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Sobrenome</Label>
               <Input placeholder="Silva" value={form.sobrenome} onChange={(e) => setForm((p) => ({ ...p, sobrenome: e.target.value }))} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label>Email *</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Email Profissional*</Label>
               <Input type="email" placeholder="joao@empresa.com" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label>Telefone *</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Wpp / Telefone*</Label>
               <Input placeholder="(11) 99999-0000" value={form.telefone} onChange={(e) => setForm((p) => ({ ...p, telefone: e.target.value }))} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label>Empresa *</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Empresa Vinculada*</Label>
               <Input placeholder="Empresa LTDA" value={form.empresa} onChange={(e) => setForm((p) => ({ ...p, empresa: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <Label>Cargo</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Cargo Atual</Label>
               <Input placeholder="Diretor Comercial" value={form.cargo} onChange={(e) => setForm((p) => ({ ...p, cargo: e.target.value }))} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label>Canal de Origem *</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Canal de Origem*</Label>
               <Select value={form.canalOrigem} onValueChange={(v) => setForm((p) => ({ ...p, canalOrigem: v }))}>
-                <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className="bg-surface-elevated border-border-default"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                <SelectContent className="bg-surface-overlay border-border-strong">
                   {CANAL_OPCOES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>Estágio no Funil</Label>
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Estágio Inicial</Label>
               <Select value={form.etapaFunil} onValueChange={(v) => setForm((p) => ({ ...p, etapaFunil: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className="bg-surface-elevated border-border-default"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-surface-overlay border-border-strong">
                   {ETAPAS_FUNIL.map((e) => <SelectItem key={e} value={e}>{e}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
           </div>
-          <div className="space-y-1.5">
-            <Label>Tags (separadas por vírgula)</Label>
-            <Input placeholder="b2b, premium, indicação" value={form.tags} onChange={(e) => setForm((p) => ({ ...p, tags: e.target.value }))} />
-          </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 bg-accent/5 p-3 rounded-lg border border-accent/10">
             <input
               type="checkbox"
               id="lgpd"
               checked={form.lgpdConsent}
               onChange={(e) => setForm((p) => ({ ...p, lgpdConsent: e.target.checked }))}
-              className="rounded"
+              className="w-4 h-4 accent-accent"
             />
-            <Label htmlFor="lgpd" className="cursor-pointer text-sm font-normal">
-              Consentimento LGPD confirmado
+            <Label htmlFor="lgpd" className="cursor-pointer text-xs font-bold text-accent uppercase tracking-tighter">
+              Confirmo consentimento para processamento de dados (LGPD)
             </Label>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+        <DialogFooter className="border-t border-border-subtle pt-4">
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button
-            className="escoltran-gradient-bg text-white"
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending || !form.nome.trim()}
           >
-            {mutation.isPending ? "Criando..." : "Criar Contato"}
+            {mutation.isPending ? "Propagando..." : "Finalizar Cadastro"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -261,12 +249,14 @@ function FunilStepper({ contact, onUpdate }: { contact: Contact; onUpdate: () =>
       {ETAPAS_FUNIL.map((e) => (
         <button
           key={e}
+          disabled={mutation.isPending}
           onClick={() => mutation.mutate(e)}
-          className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
+          className={cn(
+            "text-[9px] px-2 py-0.5 rounded-full font-mono font-bold uppercase transition-all",
             contact.etapaFunil === e
-              ? "bg-primary text-white"
-              : "bg-muted text-muted-foreground hover:bg-muted/80"
-          }`}
+              ? "bg-accent text-accent-foreground shadow-[0_0_10px_rgba(224,176,80,0.3)]"
+              : "bg-surface-elevated text-text-muted hover:text-text-primary hover:bg-border-subtle"
+          )}
         >
           {e}
         </button>
@@ -292,8 +282,8 @@ export default function ContactsPage() {
     (value: string) => {
       setSearch(value)
       setPage(1)
-      clearTimeout((window as unknown as { searchTimer?: ReturnType<typeof setTimeout> }).searchTimer)
-      ;(window as unknown as { searchTimer?: ReturnType<typeof setTimeout> }).searchTimer = setTimeout(() => {
+      clearTimeout((window as any).searchTimer)
+      ;(window as any).searchTimer = setTimeout(() => {
         setDebouncedSearch(value)
       }, 300)
     },
@@ -361,41 +351,43 @@ export default function ContactsPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 pb-8 animate-entrance">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Contatos</h1>
-          <p className="text-muted-foreground text-sm">{counts.all} contatos cadastrados</p>
+          <h1 className="text-3xl font-black text-text-primary uppercase tracking-tighter leading-none">Contatos</h1>
+          <p className="text-sm font-display italic text-accent opacity-80 mt-1">{counts.all} entidades na base</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => router.push("/lead-search")}>
+        <div className="flex gap-3">
+          <Button variant="secondary" onClick={() => router.push("/lead-search")}>
             <Search className="h-4 w-4 mr-2" />
             Prospectar
           </Button>
-          <Button className="escoltran-gradient-bg text-white" onClick={() => setShowNew(true)}>
+          <Button onClick={() => setShowNew(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Novo Contato
           </Button>
         </div>
       </div>
 
-      {/* Metric cards */}
+      {/* Metric Cards Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: "Total", value: counts.all, icon: Users, color: "text-primary" },
-          { label: "Leads", value: counts.leads, icon: TrendingUp, color: "text-blue-400" },
-          { label: "Clientes", value: counts.clientes, icon: UserCheck, color: "text-green-400" },
-          { label: "Inativos", value: counts.inativos, icon: UserX, color: "text-muted-foreground" },
-        ].map((s) => {
+          { label: "Base Total", value: counts.all, icon: Users, color: "text-accent" },
+          { label: "Leads Novos", value: counts.leads, icon: TrendingUp, color: "text-info" },
+          { label: "Conversões", value: counts.clientes, icon: UserCheck, color: "text-success" },
+          { label: "Inativos", value: counts.inativos, icon: UserX, color: "text-text-muted" },
+        ].map((s, i) => {
           const Icon = s.icon
           return (
-            <Card key={s.label} className="bg-card border-border">
-              <CardContent className="flex items-center gap-3 p-4">
-                <Icon className={`h-7 w-7 ${s.color}`} />
+            <Card key={s.label} className="bg-surface border-border-subtle group hover:border-border-default transition-all animate-entrance" style={{ animationDelay: `${i * 100}ms` }}>
+              <CardContent className="flex items-center gap-4 p-4">
+                <div className="w-10 h-10 rounded-lg bg-surface-elevated flex items-center justify-center border border-border-subtle group-hover:bg-white/[0.02] transition-colors">
+                  <Icon className={cn("h-5 w-5", s.color)} />
+                </div>
                 <div>
-                  <p className="text-xl font-bold">{s.value}</p>
-                  <p className="text-xs text-muted-foreground">{s.label}</p>
+                  <p className="text-xl font-black font-sans leading-none">{s.value}</p>
+                  <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-muted mt-1 opacity-60">{s.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -403,49 +395,48 @@ export default function ContactsPage() {
         })}
       </div>
 
-      {/* Table card */}
-      <Card className="bg-card border-border">
-        <CardHeader className="pb-3 space-y-3">
-          {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setPage(1) }}>
-            <TabsList className="h-9">
-              <TabsTrigger value="all" className="text-xs">Todos ({counts.all})</TabsTrigger>
-              <TabsTrigger value="lead" className="text-xs">Leads ({counts.leads})</TabsTrigger>
-              <TabsTrigger value="cliente" className="text-xs">Clientes ({counts.clientes})</TabsTrigger>
-              <TabsTrigger value="inativo" className="text-xs">Inativos ({counts.inativos})</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          {/* Search + actions */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <div className="relative flex-1 w-full sm:max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por nome, empresa, email..."
-                className="pl-9"
-                value={search}
-                onChange={(e) => handleSearchChange(e.target.value)}
-              />
+      {/* Table Section */}
+      <Card className="bg-surface border-border-subtle overflow-hidden">
+        <CardHeader className="pb-4 space-y-4 bg-white/[0.01] border-b border-border-subtle">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setPage(1) }}>
+              <TabsList className="bg-black/40 border border-border-subtle">
+                <TabsTrigger value="all" className="text-[10px] uppercase font-bold tracking-tighter">Todos</TabsTrigger>
+                <TabsTrigger value="lead" className="text-[10px] uppercase font-bold tracking-tighter">Leads</TabsTrigger>
+                <TabsTrigger value="cliente" className="text-[10px] uppercase font-bold tracking-tighter">Clientes</TabsTrigger>
+                <TabsTrigger value="inativo" className="text-[10px] uppercase font-bold tracking-tighter">Inativos</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="relative flex-1 sm:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+                <Input
+                  placeholder="Filtrar base..."
+                  className="pl-9 h-10"
+                  value={search}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                />
+              </div>
+              <Button variant="secondary" onClick={handleExport} disabled={contacts.length === 0} className="h-10 px-4">
+                <Download className="h-4 w-4 mr-0 sm:mr-2" />
+                <span className="hidden sm:inline">Exportar CSV</span>
+              </Button>
             </div>
-            <Button variant="outline" size="sm" onClick={handleExport} disabled={contacts.length === 0}>
-              <Download className="h-4 w-4 mr-2" />
-              Exportar CSV
-            </Button>
           </div>
         </CardHeader>
 
         <CardContent className="p-0">
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Contato</TableHead>
-                <TableHead className="hidden md:table-cell">Empresa / Cargo</TableHead>
-                <TableHead className="hidden sm:table-cell">Canal</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="hidden lg:table-cell">Funil</TableHead>
-                <TableHead className="hidden lg:table-cell">Deals</TableHead>
-                <TableHead className="hidden md:table-cell">Criado em</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+            <TableHeader className="bg-white/[0.02]">
+              <TableRow className="border-border-subtle hover:bg-transparent">
+                <TableHead className="text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted">Entidade</TableHead>
+                <TableHead className="hidden md:table-cell text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted">Corporativo</TableHead>
+                <TableHead className="hidden sm:table-cell text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted">Canal</TableHead>
+                <TableHead className="text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted">Fase</TableHead>
+                <TableHead className="hidden lg:table-cell text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted">Pipeline Funil</TableHead>
+                <TableHead className="hidden lg:table-cell text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted text-center">Deals</TableHead>
+                <TableHead className="text-right text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -453,79 +444,53 @@ export default function ContactsPage() {
                 [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
               ) : contacts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-12">
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                      <Users className="h-8 w-8 opacity-30" />
-                      <p className="text-sm">
-                        {debouncedSearch
-                          ? `Nenhum contato encontrado para "${debouncedSearch}"`
-                          : "Nenhum contato cadastrado ainda"}
-                      </p>
-                      {!debouncedSearch && (
-                        <Button size="sm" className="mt-2 escoltran-gradient-bg text-white" onClick={() => setShowNew(true)}>
-                          <Plus className="h-4 w-4 mr-1" />
-                          Adicionar primeiro contato
-                        </Button>
-                      )}
+                  <TableCell colSpan={7} className="text-center py-20">
+                    <div className="flex flex-col items-center gap-4 text-text-muted opacity-30">
+                      <Users className="h-12 w-12" />
+                      <p className="text-sm font-mono uppercase tracking-widest">Nenhum registro encontrado</p>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 contacts.map((contact) => {
                   const fullName = `${contact.nome}${contact.sobrenome ? " " + contact.sobrenome : ""}`
-                  const sc = statusConfig[contact.status] || statusConfig.lead
+                  const statusVariant = contact.status === "cliente" ? "ativa" : contact.status === "inativo" ? "inativa" : "novo"
+                  
                   return (
-                    <TableRow key={contact.id} className="hover:bg-muted/30">
+                    <TableRow key={contact.id} className="border-border-subtle hover:bg-white/[0.01] transition-colors group">
                       <TableCell>
-                        <div className="flex items-center gap-2.5">
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-9 w-9 border border-border-subtle group-hover:border-accent/40 transition-all">
+                            <AvatarFallback className="text-[10px] font-black bg-surface-elevated text-text-muted">
                               {getInitials(fullName)}
                             </AvatarFallback>
                           </Avatar>
-                          <div>
-                            <p className="text-sm font-medium">{fullName}</p>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              {contact.email && (
-                                <span className="text-xs text-muted-foreground flex items-center gap-0.5">
-                                  <Mail className="h-3 w-3" />
-                                  {contact.email}
-                                </span>
-                              )}
-                              {contact.telefone && !contact.email && (
-                                <span className="text-xs text-muted-foreground flex items-center gap-0.5">
-                                  <Phone className="h-3 w-3" />
-                                  {contact.telefone}
-                                </span>
-                              )}
-                            </div>
+                          <div className="min-w-0">
+                            <p className="text-[13px] font-bold text-text-primary truncate">{fullName}</p>
+                            <p className="text-[10px] font-mono text-text-muted opacity-60 truncate">{contact.email || contact.telefone}</p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         {contact.empresa ? (
-                          <div>
-                            <p className="text-xs font-medium flex items-center gap-1">
-                              <Building2 className="h-3 w-3" />
+                          <div className="max-w-[150px]">
+                            <p className="text-[12px] font-black font-sans flex items-center gap-1.5 truncate">
+                              <Building2 className="h-3 w-3 text-accent opacity-50" />
                               {contact.empresa}
                             </p>
-                            {contact.cargo && (
-                              <p className="text-xs text-muted-foreground">{contact.cargo}</p>
-                            )}
+                            <p className="text-[10px] font-display italic text-text-muted opacity-80 mt-0.5 truncate">{contact.cargo || "—"}</p>
                           </div>
-                        ) : (
-                          <span className="text-muted-foreground text-xs">—</span>
-                        )}
+                        ) : "—"}
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">
                         {contact.canalOrigem ? (
-                          <Badge variant="outline" className="text-xs">{contact.canalOrigem}</Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-xs">—</span>
-                        )}
+                          <Badge variant="secondary" className="bg-white/5 border-white/5 opacity-80">
+                            {contact.canalOrigem}
+                          </Badge>
+                        ) : "—"}
                       </TableCell>
                       <TableCell>
-                        <Badge className={`text-xs ${sc.className}`}>{sc.label}</Badge>
+                        <Badge variant={statusVariant}>{contact.status}</Badge>
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         <FunilStepper
@@ -533,28 +498,29 @@ export default function ContactsPage() {
                           onUpdate={() => queryClient.invalidateQueries({ queryKey: ["contacts"] })}
                         />
                       </TableCell>
-                      <TableCell className="hidden lg:table-cell text-sm text-center">
-                        {contact._count?.deals || 0}
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
-                        {formatDate(contact.createdAt)}
+                      <TableCell className="hidden lg:table-cell text-center">
+                        <span className={cn(
+                          "text-[10px] font-mono font-black",
+                          (contact._count?.deals || 0) > 0 ? "text-accent" : "text-text-muted opacity-40"
+                        )}>
+                          {(contact._count?.deals || 0).toString().padStart(2, '0')}
+                        </span>
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Ver contato">
-                            <Eye className="h-3.5 w-3.5" />
+                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-accent">
+                            <Eye className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Editar">
-                            <Pencil className="h-3.5 w-3.5" />
+                          <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-accent">
+                            <Pencil className="h-4 w-4" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-red-400 hover:text-red-400"
-                            title="Excluir"
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 text-danger/60 hover:text-danger"
                             onClick={() => setDeleteId(contact.id)}
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
@@ -565,18 +531,30 @@ export default function ContactsPage() {
             </TableBody>
           </Table>
 
-          {/* Pagination */}
+          {/* Pagination Section */}
           {total > 0 && (
-            <div className="flex items-center justify-between p-4 border-t border-border">
-              <p className="text-sm text-muted-foreground">
-                Mostrando {Math.min((page - 1) * pageSize + 1, total)}–{Math.min(page * pageSize, total)} de {total}
+            <div className="flex items-center justify-between p-6 bg-white/[0.01] border-t border-border-subtle">
+              <p className="text-[11px] font-mono font-bold text-text-muted uppercase tracking-widest">
+                Exibindo <span className="text-text-primary px-1">{Math.min((page - 1) * pageSize + 1, total)}—{Math.min(page * pageSize, total)}</span> de <span className="text-text-primary px-1">{total}</span>
               </p>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
-                  Anterior
+                <Button 
+                  variant="secondary" 
+                  size="sm" 
+                  onClick={() => setPage((p) => Math.max(1, p - 1))} 
+                  disabled={page === 1}
+                  className="h-8 px-3"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setPage((p) => p + 1)} disabled={page * pageSize >= total}>
-                  Próximo
+                <Button 
+                  variant="secondary" 
+                  size="sm" 
+                  onClick={() => setPage((p) => p + 1)} 
+                  disabled={page * pageSize >= total}
+                  className="h-8 px-3"
+                >
+                  <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
             </div>
@@ -584,29 +562,28 @@ export default function ContactsPage() {
         </CardContent>
       </Card>
 
-      {/* New contact modal */}
+      {/* Modals and dialogs */}
       <NewContactModal
         open={showNew}
         onOpenChange={setShowNew}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["contacts"] })}
       />
 
-      {/* Delete confirmation */}
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-surface-overlay border-border-strong">
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir contato?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação não pode ser desfeita. O contato e todos os seus dados serão removidos permanentemente.
+            <AlertDialogTitle className="text-xl font-black uppercase tracking-tight">Expurgar Registro?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm font-sans italic opacity-80">
+              Esta ação é irreversível. O contato e todos os deals vinculados serão deletados permanentemente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel className="bg-transparent border-border-default">Abortar</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-500 hover:bg-red-600"
+              className="bg-danger text-white hover:bg-danger/80"
               onClick={() => deleteId && deleteMutation.mutate(deleteId)}
             >
-              Excluir
+              Confirmar Exclusão
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

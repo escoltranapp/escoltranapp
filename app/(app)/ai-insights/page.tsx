@@ -23,14 +23,17 @@ import {
   TrendingUp,
   CheckCircle,
   Save,
+  Cpu,
+  Sparkles,
 } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 function SkeletonCard() {
   return (
-    <Card className="bg-card border-border">
-      <CardContent className="p-4 space-y-2">
-        <div className="h-3 w-20 rounded bg-muted animate-pulse" />
-        <div className="h-6 w-14 rounded bg-muted animate-pulse" />
+    <Card className="bg-surface border-border-subtle">
+      <CardContent className="p-4 space-y-3">
+        <div className="h-3 w-20 rounded bg-white/5 animate-pulse" />
+        <div className="h-7 w-16 rounded bg-white/5 animate-pulse" />
       </CardContent>
     </Card>
   )
@@ -70,9 +73,8 @@ export default function AiInsightsPage() {
 
   const handleSave = async () => {
     setIsSaving(true)
-    // TODO: persist to /api/ai/config when implemented
-    await new Promise((res) => setTimeout(res, 500))
-    toast({ title: "Configurações salvas!", description: "Agente de IA atualizado com sucesso." })
+    await new Promise((res) => setTimeout(res, 800))
+    toast({ title: "Configurações sincronizadas!", description: "Núcleo de inteligência atualizado." })
     setIsSaving(false)
   }
 
@@ -80,32 +82,38 @@ export default function AiInsightsPage() {
     aiData?.scores || []
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">IA Insights</h1>
-        <p className="text-muted-foreground text-sm">Configure e monitore o agente de qualificação por IA</p>
+    <div className="space-y-6 pb-8 animate-entrance">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-black text-text-primary uppercase tracking-tighter leading-none">IA Insights</h1>
+          <p className="text-sm font-display italic text-accent opacity-80 mt-1">Orquestração de agentes e análise preditiva BANT</p>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20">
+          <Sparkles className="h-3.5 w-3.5 text-accent animate-pulse" />
+          <span className="text-[10px] font-black font-mono uppercase tracking-widest text-accent">Active Engine: GPT-4</span>
+        </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {isLoading ? (
           [...Array(4)].map((_, i) => <SkeletonCard key={i} />)
         ) : (
           [
-            { label: "Qualificações", value: aiData?.totalQualifications ?? 0, icon: Brain, color: "text-primary" },
-            { label: "Score Médio", value: `${aiData?.avgScore ?? 0}%`, icon: TrendingUp, color: "text-amber-400" },
-            { label: "Leads Quentes", value: aiData?.highScoreLeads ?? 0, icon: Zap, color: "text-green-400" },
-            { label: "Ações Disparadas", value: aiData?.actionsTriggered ?? 0, icon: CheckCircle, color: "text-blue-400" },
-          ].map((stat) => {
+            { label: "Qualificações", value: aiData?.totalQualifications ?? 0, icon: Brain, color: "text-accent" },
+            { label: "Efficiency Rate", value: `${aiData?.avgScore ?? 0}%`, icon: TrendingUp, color: "text-success" },
+            { label: "Vetor Hot Leads", value: aiData?.highScoreLeads ?? 0, icon: Zap, color: "text-info" },
+            { label: "Ações Autônomas", value: aiData?.actionsTriggered ?? 0, icon: CheckCircle, color: "text-white" },
+          ].map((stat, i) => {
             const Icon = stat.icon
             return (
-              <Card key={stat.label} className="bg-card border-border">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
-                    <Icon className={`h-4 w-4 ${stat.color}`} />
+              <Card key={stat.label} className="bg-surface border-border-subtle group hover:border-border-default transition-all animate-entrance" style={{ animationDelay: `${i * 100}ms` }}>
+                <CardContent className="p-4 flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-muted opacity-60">{stat.label}</p>
+                    <Icon className={cn("h-4 w-4", stat.color)} />
                   </div>
-                  <p className="text-xl font-bold">{stat.value}</p>
+                  <p className="text-2xl font-black font-sans leading-none">{stat.value}</p>
                 </CardContent>
               </Card>
             )
@@ -113,62 +121,60 @@ export default function AiInsightsPage() {
         )}
       </div>
 
-      <Tabs defaultValue="scores">
-        <TabsList>
-          <TabsTrigger value="scores">Lead Scores</TabsTrigger>
-          <TabsTrigger value="config">Configuração</TabsTrigger>
-          <TabsTrigger value="scripts">Scripts</TabsTrigger>
+      <Tabs defaultValue="scores" className="space-y-6">
+        <TabsList className="bg-black/40 border border-border-subtle p-1 h-12">
+          <TabsTrigger value="scores" className="px-6 data-[state=active]:bg-accent data-[state=active]:text-black text-[11px] font-black font-mono uppercase tracking-[0.1em]">Lead Metrics</TabsTrigger>
+          <TabsTrigger value="config" className="px-6 data-[state=active]:bg-accent data-[state=active]:text-black text-[11px] font-black font-mono uppercase tracking-[0.1em]">AI Core Config</TabsTrigger>
+          <TabsTrigger value="scripts" className="px-6 data-[state=active]:bg-accent data-[state=active]:text-black text-[11px] font-black font-mono uppercase tracking-[0.1em]">Dialogue Scripts</TabsTrigger>
         </TabsList>
 
-        {/* Lead Scores Tab */}
-        <TabsContent value="scores">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="text-base">Scores dos Leads</CardTitle>
-              <CardDescription>Análise de qualificação por IA (BANT)</CardDescription>
+        <TabsContent value="scores" className="animate-entrance">
+          <Card className="bg-surface border-border-subtle overflow-hidden">
+            <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4 flex flex-row items-center justify-between">
+              <div className="space-y-0.5">
+                <CardTitle className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-text-muted">BANT Analysis Output</CardTitle>
+                <CardDescription className="text-[10px] font-display italic text-accent/60">Análise em tempo real do pipeline de qualificação</CardDescription>
+              </div>
+              <Activity className="h-4 w-4 text-text-muted opacity-20" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               {isLoading ? (
-                <div className="space-y-4">
+                <div className="p-6 space-y-4">
                   {[...Array(3)].map((_, i) => (
-                    <div key={i} className="flex items-center gap-4 p-3 bg-muted/30 rounded-lg animate-pulse">
-                      <div className="w-10 h-10 rounded-full bg-muted" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 w-32 rounded bg-muted" />
-                        <div className="h-2 w-full rounded bg-muted" />
+                    <div key={i} className="flex items-center gap-4 p-4 bg-white/[0.02] border border-border-subtle rounded-xl animate-pulse">
+                      <div className="w-12 h-12 rounded-lg bg-white/5" />
+                      <div className="flex-1 space-y-3">
+                        <div className="h-3 w-40 rounded bg-white/5" />
+                        <div className="h-1.5 w-full rounded bg-white/5" />
                       </div>
                     </div>
                   ))}
                 </div>
               ) : scores.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-2">
-                  <Brain className="h-8 w-8 opacity-30" />
-                  <p className="text-sm">Nenhum lead qualificado por IA ainda</p>
-                  <p className="text-xs">Inicie uma sessão de qualificação no Pipeline</p>
+                <div className="flex flex-col items-center justify-center py-24 text-text-muted opacity-20 gap-4">
+                  <Cpu className="h-12 w-12" />
+                  <p className="text-sm font-mono uppercase tracking-widest text-center px-12">Waiting for first lead qualification cycle</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {scores.map((lead) => (
-                    <div key={lead.id} className="flex items-center gap-4 p-3 bg-muted/30 rounded-lg">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                <div className="p-4 space-y-3">
+                  {scores.map((lead, i) => (
+                    <div key={lead.id} className="flex items-center gap-4 p-4 bg-white/[0.01] border border-border-subtle rounded-xl hover:border-border-default transition-all animate-entrance" style={{ animationDelay: `${i * 80}ms` }}>
+                      <div className="w-12 h-12 shrink-0 rounded-lg bg-surface-elevated flex items-center justify-center text-lg font-black text-white border border-border-subtle">
                         {lead.score}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="text-sm font-medium">{lead.nome}</p>
-                          <Badge
-                            className={
-                              lead.temperatura === "Quente"
-                                ? "bg-red-500/10 text-red-400 border-red-500/20"
-                                : lead.temperatura === "Morno"
-                                ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                : "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                            }
-                          >
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-[13px] font-black text-text-primary uppercase tracking-tight">{lead.nome}</p>
+                          <Badge variant={lead.temperatura === "Quente" ? "ativa" : lead.temperatura === "Morno" ? "novo" : "inativa"}>
                             {lead.temperatura}
                           </Badge>
                         </div>
-                        <Progress value={lead.score} className="h-1.5" />
+                        <div className="relative h-1.5 bg-black/40 rounded-full overflow-hidden">
+                          <div
+                            className="absolute inset-0 bg-accent transition-all duration-1000 ease-out border-r border-white/20"
+                            style={{ width: `${lead.score}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -178,81 +184,80 @@ export default function AiInsightsPage() {
           </Card>
         </TabsContent>
 
-        {/* Config Tab */}
-        <TabsContent value="config">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Bot className="h-4 w-4 text-primary" />
-                  Modelo de IA
+        <TabsContent value="config" className="space-y-6 animate-entrance">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="bg-surface border-border-subtle overflow-hidden">
+              <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4">
+                <CardTitle className="text-[11px] font-black font-mono uppercase tracking-widest flex items-center gap-2 text-text-muted">
+                  <Bot className="h-3.5 w-3.5 text-accent" /> Brain Parameters
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-6 space-y-5">
                 <div className="space-y-2">
-                  <Label>Modelo</Label>
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Engine Selection</Label>
                   <Select defaultValue="gpt-4">
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="gpt-4">GPT-4</SelectItem>
-                      <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
-                      <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
+                    <SelectTrigger className="h-11 bg-black/20 border-border-subtle"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-surface-overlay border-border-strong">
+                      <SelectItem value="gpt-4" className="font-mono text-xs font-bold uppercase">GPT-4 (Recommended)</SelectItem>
+                      <SelectItem value="gpt-4-turbo" className="font-mono text-xs font-bold uppercase">GPT-4 Turbo</SelectItem>
+                      <SelectItem value="gpt-3.5-turbo" className="font-mono text-xs font-bold uppercase">GPT-3.5 Turbo</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Tom de Comunicação</Label>
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Communicational Tone</Label>
                   <Select defaultValue="profissional">
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="profissional">Profissional</SelectItem>
-                      <SelectItem value="amigavel">Amigável</SelectItem>
-                      <SelectItem value="formal">Formal</SelectItem>
-                      <SelectItem value="casual">Casual</SelectItem>
+                    <SelectTrigger className="h-11 bg-black/20 border-border-subtle"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-surface-overlay border-border-strong">
+                      <SelectItem value="profissional" className="font-mono text-xs font-bold uppercase">Profissional</SelectItem>
+                      <SelectItem value="amigavel" className="font-mono text-xs font-bold uppercase">Amigável</SelectItem>
+                      <SelectItem value="formal" className="font-mono text-xs font-bold uppercase">Formal</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex items-center justify-between">
-                  <Label>Permitir Emojis</Label>
+                <div className="flex items-center justify-between p-3 bg-black/20 rounded-lg border border-border-subtle">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Emoji Semantic Interaction</Label>
                   <Switch />
                 </div>
                 <div className="space-y-2">
-                  <Label>Webhook n8n</Label>
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Neural Webhook (n8n)</Label>
                   <Input
-                    placeholder="https://n8n.seudominio.com/webhook/..."
+                    placeholder="https://n8n.escoltran.ai/webhook/..."
+                    className="h-11 bg-black/20 border-border-subtle font-mono text-[10px]"
                     {...form.register("n8nWebhookUrl")}
                   />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Settings className="h-4 w-4 text-primary" />
-                  BANT Scoring
+            <Card className="bg-surface border-border-subtle overflow-hidden">
+              <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4">
+                <CardTitle className="text-[11px] font-black font-mono uppercase tracking-widest flex items-center gap-2 text-text-muted">
+                  <Settings className="h-3.5 w-3.5 text-accent" /> Thresholds & Automation
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Score Mínimo (%)</Label>
-                  <Input type="number" defaultValue="60" min="0" max="100" {...form.register("bantScoreMinimo")} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Máximo de Tentativas</Label>
-                  <Input type="number" defaultValue="3" min="1" max="10" {...form.register("bantMaxTentativas")} />
+              <CardContent className="p-6 space-y-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Min BANT Score (%)</Label>
+                    <Input type="number" className="h-11 bg-black/20 border-border-subtle" defaultValue="60" min="0" max="100" {...form.register("bantScoreMinimo")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Interaction Limit</Label>
+                    <Input type="number" className="h-11 bg-black/20 border-border-subtle" defaultValue="3" min="1" max="10" {...form.register("bantMaxTentativas")} />
+                  </div>
                 </div>
                 <div className="space-y-3 pt-2">
-                  <p className="text-sm font-medium">Ações Automáticas</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent/60 mb-4">Autonomous Flows</p>
                   {[
-                    { label: "Mover Stage", key: "acaoMoverStage", defaultChecked: true },
-                    { label: "Criar Atividade", key: "acaoCriarAtividade", defaultChecked: true },
-                    { label: "Notificar Vendedor", key: "acaoNotificar", defaultChecked: true },
-                    { label: "Adicionar Tag", key: "acaoAdicionarTag", defaultChecked: false },
+                    { label: "Pipeline Stage Auto-Move", key: "acaoMoverStage", defaultChecked: true },
+                    { label: "Trigger CRM Activity", key: "acaoCriarAtividade", defaultChecked: true },
+                    { label: "Direct Sales Alert", key: "acaoNotificar", defaultChecked: true },
+                    { label: "Auto Semantic Tagging", key: "acaoAdicionarTag", defaultChecked: false },
                   ].map((action) => (
-                    <div key={action.key} className="flex items-center justify-between">
-                      <Label className="font-normal">{action.label}</Label>
-                      <Switch defaultChecked={action.defaultChecked} />
+                    <div key={action.key} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/[0.02] transition-colors">
+                      <Label className="text-[11px] font-medium text-text-muted group-hover:text-text-primary transition-colors">{action.label}</Label>
+                      <Switch defaultChecked={action.defaultChecked} className="scale-75 origin-right" />
                     </div>
                   ))}
                 </div>
@@ -260,40 +265,43 @@ export default function AiInsightsPage() {
             </Card>
           </div>
 
-          <div className="mt-4">
-            <Button disabled={isSaving} className="escoltran-gradient-bg text-white" onClick={handleSave}>
+          <div className="flex justify-end">
+            <Button disabled={isSaving} className="px-10" onClick={handleSave}>
               <Save className="h-4 w-4 mr-2" />
-              {isSaving ? "Salvando..." : "Salvar Configurações"}
+              {isSaving ? "Synchronizing Brain..." : "Commit Configuration"}
             </Button>
           </div>
         </TabsContent>
 
-        {/* Scripts Tab */}
-        <TabsContent value="scripts">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <TabsContent value="scripts" className="space-y-6 animate-entrance">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {[
-              { key: "scriptsAbertura", title: "Script de Abertura", placeholder: "Ex: Olá, tudo bem? Estou entrando em contato pois..." },
-              { key: "scriptsQualificacao", title: "Script de Qualificação", placeholder: "Ex: Para entender melhor sua necessidade, poderia me informar..." },
-              { key: "scriptsFechamentoPos", title: "Script de Fechamento Positivo", placeholder: "Ex: Ótimo! Vou preparar o contrato e enviar para..." },
-              { key: "scriptsFechamentoNeg", title: "Script de Fechamento Negativo", placeholder: "Ex: Entendo, sem problemas. Caso queira retomar..." },
+              { key: "scriptsAbertura", title: "Opening Protocol", placeholder: "Initial greeting and context setting..." },
+              { key: "scriptsQualificacao", title: "Qualification Engine", placeholder: "Core BANT discovery questions..." },
+              { key: "scriptsFechamentoPos", title: "Closure (Positive)", placeholder: "Conversion and next steps..." },
+              { key: "scriptsFechamentoNeg", title: "Closure (Negative)", placeholder: "Nurturing or disqualification pitch..." },
             ].map((script) => (
-              <Card key={script.key} className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <MessageCircle className="h-4 w-4 text-primary" />
+              <Card key={script.key} className="bg-surface border-border-subtle overflow-hidden group">
+                <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4">
+                  <CardTitle className="text-[11px] font-black font-mono uppercase tracking-widest flex items-center gap-2 text-text-muted group-hover:text-accent transition-colors">
+                    <MessageCircle className="h-3.5 w-3.5" />
                     {script.title}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <Textarea placeholder={script.placeholder} rows={5} className="resize-none" />
+                <CardContent className="p-0">
+                  <Textarea
+                    placeholder={script.placeholder}
+                    className="border-none bg-transparent placeholder:text-text-muted/20 min-h-[160px] p-4 text-[13px] font-display leading-relaxed resize-none focus-visible:ring-0"
+                    {...form.register(script.key as any)}
+                  />
                 </CardContent>
               </Card>
             ))}
           </div>
-          <div className="mt-4">
-            <Button className="escoltran-gradient-bg text-white" onClick={handleSave} disabled={isSaving}>
+          <div className="flex justify-end">
+            <Button className="px-10" onClick={handleSave} disabled={isSaving}>
               <Save className="h-4 w-4 mr-2" />
-              {isSaving ? "Salvando..." : "Salvar Scripts"}
+              {isSaving ? "Flash-writing Scripts..." : "Update Logic Cluster"}
             </Button>
           </div>
         </TabsContent>

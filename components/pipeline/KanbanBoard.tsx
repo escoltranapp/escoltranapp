@@ -20,7 +20,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { formatCurrency } from "@/lib/utils"
+import { formatCurrency, cn } from "@/lib/utils"
 
 export interface Stage {
   id: string
@@ -98,95 +98,97 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onAddDeal, onAd
         onDragStart={(e) => setActiveId(e.active.id as string)}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 overflow-x-auto pb-4 items-start">
+        <div className="flex gap-5 overflow-x-auto pb-6 items-start h-[calc(100vh-180px)] scrollbar-hide">
           {stages.map((stage) => {
-            const totalValue = stage.deals
-              .filter((d) => d.status === "OPEN")
-              .reduce((sum, d) => sum + (d.valorEstimado || 0), 0)
+            const openDeals = stage.deals.filter((d) => d.status === "OPEN")
+            const totalValue = openDeals.reduce((sum, d) => sum + (d.valorEstimado || 0), 0)
 
             return (
               <div
                 key={stage.id}
-                className="shrink-0 w-72 flex flex-col rounded-xl bg-card/50 border border-border"
+                className="shrink-0 w-[300px] flex flex-col rounded-xl bg-surface-elevated/40 border border-border-subtle overflow-hidden h-full max-h-full"
                 id={stage.id}
               >
+                {/* Stage Accent Line */}
+                <div 
+                  className="h-1 w-full shrink-0" 
+                  style={{ backgroundColor: stage.color }}
+                />
+
                 {/* Stage Header */}
-                <div className="p-3 border-b border-border">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: stage.color }}
-                      />
-                      <span className="text-sm font-bold text-foreground truncate">
+                <div className="p-4 border-b border-border-subtle bg-white/[0.01]">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2.5 overflow-hidden">
+                      <span className="text-[13px] font-black font-sans uppercase tracking-tight text-text-primary truncate">
                         {stage.name}
                       </span>
+                      <Badge variant="secondary" className="text-[10px] font-mono h-4 px-1 opacity-70">
+                        {openDeals.length}
+                      </Badge>
                     </div>
-                    <Badge variant="secondary" className="text-[10px] h-5">
-                      {stage.deals.filter((d) => d.status === "OPEN").length}
-                    </Badge>
                   </div>
-                  {totalValue > 0 && (
-                    <p className="text-xs text-primary font-medium pl-4">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-sm font-mono font-bold text-accent">
                       {formatCurrency(totalValue)}
-                    </p>
-                  )}
+                    </span>
+                    <span className="text-[9px] font-mono text-text-muted uppercase tracking-widest opacity-60">Total Estimado</span>
+                  </div>
                 </div>
 
-                {/* Deals */}
-                <ScrollArea className="flex-1 p-2 max-h-[calc(100vh-320px)]">
+                {/* Deals List */}
+                <ScrollArea className="flex-1 px-2.5 py-3">
                   <SortableContext
                     items={stage.deals.map((d) => d.id)}
                     strategy={verticalListSortingStrategy}
                   >
-                    {stage.deals
-                      .filter((d) => d.status === "OPEN")
-                      .map((deal) => (
+                    <div className="space-y-3 pb-4">
+                      {openDeals.map((deal) => (
                         <DealCard
                           key={deal.id}
                           deal={deal}
                           onClick={() => setSelectedDeal(deal)}
                         />
                       ))}
+                    </div>
                   </SortableContext>
-                  {stage.deals.filter((d) => d.status === "OPEN").length === 0 && (
-                    <div className="py-8 text-center bg-muted/5 rounded-lg border border-dashed border-border m-1">
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Sem deals</p>
+                  {openDeals.length === 0 && (
+                    <div className="py-12 text-center rounded-lg border border-dashed border-border-default/50 m-2">
+                      <p className="text-[10px] text-text-muted uppercase tracking-[0.2em] font-black opacity-30">Vazio</p>
                     </div>
                   )}
                 </ScrollArea>
 
-                {/* Add Deal */}
-                <div className="p-2 border-t border-border">
+                {/* Add Deal Action */}
+                <div className="p-2 border-t border-border-subtle bg-black/10">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full text-muted-foreground text-xs hover:text-primary transition-colors"
+                    className="w-full text-[11px] font-mono font-black uppercase tracking-widest hover:bg-accent/10 hover:text-accent transition-all h-10"
                     onClick={() => onAddDeal?.(stage.id)}
                   >
-                    <Plus className="h-3 w-3 mr-1" />
-                    Adicionar Deal
+                    <Plus className="h-4 w-4 mr-2" />
+                    Novo Deal
                   </Button>
                 </div>
               </div>
             )
           })}
 
-          {/* New Column ghost card */}
-          <div
-            className="shrink-0 w-72 h-32 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 hover:bg-muted/10 transition-colors cursor-pointer group"
+          {/* New Column Action */}
+          <button
             onClick={onAddStage}
+            className="shrink-0 w-[300px] h-[120px] rounded-xl border-2 border-dashed border-border-default bg-white/[0.01] flex flex-col items-center justify-center gap-3 hover:bg-white/[0.03] hover:border-accent/40 transition-all group animate-entrance"
           >
-            <div className="w-10 h-10 rounded-full bg-muted/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Plus className="h-5 w-5 text-muted-foreground" />
+            <div className="w-10 h-10 rounded-full bg-surface-elevated flex items-center justify-center group-hover:scale-110 group-hover:bg-accent/10 transition-all border border-border-subtle">
+              <Plus className="h-5 w-5 text-text-muted group-hover:text-accent" />
             </div>
-            <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Nova Coluna</span>
-          </div>
+            <span className="text-[11px] font-black font-mono text-text-muted group-hover:text-text-primary uppercase tracking-[0.2em]">Add Estágio</span>
+          </button>
         </div>
 
         <DragOverlay>
           {activeDeal ? (
-            <div className="rotate-2 opacity-90">
+            <div className="rotate-3 opacity-95 scale-105 transition-transform duration-200">
               <DealCard deal={activeDeal} />
             </div>
           ) : null}

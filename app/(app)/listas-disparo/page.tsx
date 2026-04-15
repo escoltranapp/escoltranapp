@@ -30,8 +30,10 @@ import {
   Clock,
   Trash2,
   AlertTriangle,
+  Activity,
+  TrendingUp,
 } from "lucide-react"
-import { formatDate } from "@/lib/utils"
+import { formatDate, cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 
 interface Lista {
@@ -46,21 +48,12 @@ interface Lista {
   createdAt: string
 }
 
-const statusConfig = {
-  RASCUNHO: { label: "Rascunho", className: "bg-muted text-muted-foreground" },
-  ATIVA: { label: "Ativa", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-  PAUSADA: { label: "Pausada", className: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
-  EM_PROCESSAMENTO: { label: "Em Processamento", className: "bg-primary/10 text-primary border-primary/20" },
-  CONCLUIDA: { label: "Concluída", className: "bg-green-500/10 text-green-400 border-green-500/20" },
-  CANCELADA: { label: "Cancelada", className: "bg-red-500/10 text-red-400 border-red-500/20" },
-}
-
 // ─── Skeleton row ───────────────────────────────────────────────────
 function SkeletonRow() {
   return (
     <TableRow>
       {[...Array(6)].map((_, i) => (
-        <TableCell key={i}><div className="h-4 rounded bg-muted animate-pulse" /></TableCell>
+        <TableCell key={i}><div className="h-4 rounded bg-white/5 animate-pulse" /></TableCell>
       ))}
     </TableRow>
   )
@@ -117,56 +110,61 @@ function NovaListaModal({ open, onOpenChange, onSuccess }: {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px]">
+      <DialogContent className="sm:max-w-[520px] bg-surface-overlay border-border-strong animate-entrance">
         <DialogHeader>
-          <DialogTitle>Nova Lista de Disparo</DialogTitle>
+          <DialogTitle className="text-xl font-black uppercase tracking-tight text-text-primary">Nova Lista de Disparo</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 py-2">
+        <div className="space-y-5 py-4">
           <div className="space-y-1.5">
-            <Label>Nome da Lista *</Label>
+            <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Identificador da Campanha *</Label>
             <Input
-              placeholder="Campanha Novembro"
+              placeholder="Ex: Black Friday 2024"
+              className="h-11"
               value={form.nome}
               onChange={(e) => setForm((p) => ({ ...p, nome: e.target.value }))}
             />
           </div>
           <div className="space-y-1.5">
-            <Label>Descrição</Label>
+            <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Observações Estratégicas</Label>
             <Input
-              placeholder="Leads Google Maps - SP"
+              placeholder="Canal: WhatsApp / Leads Inbound"
+              className="h-11"
               value={form.descricao}
               onChange={(e) => setForm((p) => ({ ...p, descricao: e.target.value }))}
             />
           </div>
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label>Números de Telefone (um por linha) *</Label>
+            <div className="flex items-center justify-between mb-1">
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Dataset de Contatos (Números) *</Label>
               {form.telefones && (
-                <span className={`text-xs ${parsed.valid.length === parsed.total ? "text-green-400" : "text-amber-400"}`}>
-                  {parsed.valid.length} válidos / {parsed.total} total
+                <span className={cn(
+                  "text-[10px] font-mono font-bold px-2 py-0.5 rounded-full",
+                  parsed.valid.length === parsed.total ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
+                )}>
+                  {parsed.valid.length} Válidos
                 </span>
               )}
             </div>
             <Textarea
-              placeholder={`+5511999990001\n+5521988880002\n5531977770003`}
+              placeholder={`+5511999990001\n+5521988880002`}
               value={form.telefones}
               onChange={(e) => setForm((p) => ({ ...p, telefones: e.target.value }))}
-              rows={8}
-              className="font-mono text-xs"
+              rows={6}
+              className="font-mono text-xs bg-black/20 border-border-subtle focus:border-accent/40"
             />
-            <p className="text-xs text-muted-foreground">
-              Formatos aceitos: +5511999990001, 5511999990001, 11999990001
+            <p className="text-[10px] text-text-muted font-display italic">
+              Insira um número por linha com código de área (ex: 11999998888)
             </p>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+        <DialogFooter className="border-t border-border-subtle pt-4">
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>Abortar</Button>
           <Button
-            className="escoltran-gradient-bg text-white"
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending || !form.nome.trim() || parsed.valid.length === 0}
+            className="px-8"
           >
-            {mutation.isPending ? "Criando..." : `Criar Lista (${parsed.valid.length} números)`}
+            {mutation.isPending ? "Configurando Disparos..." : `Gerar Campanha (${parsed.valid.length})`}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -188,7 +186,7 @@ export default function ListasDisparoPage() {
       return res.json()
     },
     staleTime: 15_000,
-    refetchInterval: 10_000, // poll for progress updates
+    refetchInterval: 10_000,
   })
 
   const patchStatus = useMutation({
@@ -223,37 +221,38 @@ export default function ListasDisparoPage() {
   const totalLeads = listas.reduce((sum, l) => sum + l.totalLeads, 0)
   const taxaSucesso = totalLeads > 0 ? ((totalEnviados / totalLeads) * 100).toFixed(1) : "0"
   const emProgresso = listas.filter((l) => l.status === "EM_PROCESSAMENTO").length
-  const ativas = listas.filter((l) => l.status === "ATIVA").length
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 pb-8 animate-entrance">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Listas de Disparo</h1>
-          <p className="text-muted-foreground text-sm">Gerenciar campanhas de disparo em massa</p>
+          <h1 className="text-3xl font-black text-text-primary uppercase tracking-tighter leading-none">Listas de Disparo</h1>
+          <p className="text-sm font-display italic text-accent opacity-80 mt-1">Orquestração de campanhas massivas</p>
         </div>
-        <Button className="escoltran-gradient-bg text-white" onClick={() => setShowNew(true)}>
+        <Button onClick={() => setShowNew(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nova Lista
         </Button>
       </div>
 
-      {/* Stats */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: "Listas Ativas", value: isLoading ? "—" : ativas, icon: Send, color: "text-primary" },
-          { label: "Em Progresso", value: isLoading ? "—" : emProgresso, icon: Clock, color: "text-amber-400" },
-          { label: "Enviados", value: isLoading ? "—" : totalEnviados, icon: CheckCircle, color: "text-green-400" },
-          { label: "Taxa de Sucesso", value: isLoading ? "—" : `${taxaSucesso}%`, icon: Users, color: "text-blue-400" },
-        ].map((stat) => {
+          { label: "Campanhas", value: listas.length, icon: Send, color: "text-accent" },
+          { label: "Disparando", value: emProgresso, icon: Activity, color: "text-info" },
+          { label: "Total Leads", value: totalLeads, icon: Users, color: "text-white" },
+          { label: "Taxa Flow", value: `${taxaSucesso}%`, icon: TrendingUp, color: "text-success" },
+        ].map((stat, i) => {
           const Icon = stat.icon
           return (
-            <Card key={stat.label} className="bg-card border-border">
-              <CardContent className="flex items-center gap-3 p-4">
-                <Icon className={`h-7 w-7 ${stat.color}`} />
+            <Card key={stat.label} className="bg-surface border-border-subtle group hover:border-border-default transition-all animate-entrance" style={{ animationDelay: `${i * 100}ms` }}>
+              <CardContent className="flex items-center gap-4 p-4">
+                <div className="w-10 h-10 rounded-lg bg-surface-elevated flex items-center justify-center border border-border-subtle group-hover:bg-white/[0.02] transition-colors">
+                  <Icon className={cn("h-5 w-5", stat.color)} />
+                </div>
                 <div>
-                  <p className="text-xl font-bold">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground">{stat.label}</p>
+                  <p className="text-xl font-black font-sans leading-none">{stat.value}</p>
+                  <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-muted mt-1 opacity-60">{stat.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -261,22 +260,21 @@ export default function ListasDisparoPage() {
         })}
       </div>
 
-      {/* Table */}
-      <Card className="bg-card border-border">
-        <CardHeader>
-          <CardTitle>Listas</CardTitle>
-          <CardDescription>Gerencie suas campanhas de disparo</CardDescription>
+      {/* Table Section */}
+      <Card className="bg-surface border-border-subtle overflow-hidden">
+        <CardHeader className="bg-white/[0.01] border-b border-border-subtle py-4">
+          <CardTitle className="text-[11px] font-black font-mono uppercase tracking-[0.2em] text-text-muted">Campaign Overview</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="hidden sm:table-cell">Progresso</TableHead>
-                <TableHead className="hidden md:table-cell">Leads</TableHead>
-                <TableHead className="hidden lg:table-cell">Criado em</TableHead>
-                <TableHead>Ações</TableHead>
+            <TableHeader className="bg-white/[0.02]">
+              <TableRow className="border-border-subtle hover:bg-transparent">
+                <TableHead className="text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted">Campanha</TableHead>
+                <TableHead className="text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted">Fase</TableHead>
+                <TableHead className="hidden sm:table-cell text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted w-48">Execution Pulse</TableHead>
+                <TableHead className="hidden md:table-cell text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted">Volumetria</TableHead>
+                <TableHead className="hidden lg:table-cell text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted">Criação</TableHead>
+                <TableHead className="text-right text-[11px] font-black font-mono uppercase tracking-[0.1em] text-text-muted">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -284,125 +282,69 @@ export default function ListasDisparoPage() {
                 [...Array(3)].map((_, i) => <SkeletonRow key={i} />)
               ) : listas.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12">
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                      <Send className="h-8 w-8 opacity-30" />
-                      <p className="text-sm">Nenhuma lista criada ainda</p>
-                      <Button size="sm" className="mt-2 escoltran-gradient-bg text-white" onClick={() => setShowNew(true)}>
-                        <Plus className="h-4 w-4 mr-1" />
-                        Criar primeira lista
-                      </Button>
+                  <TableCell colSpan={6} className="text-center py-24">
+                    <div className="flex flex-col items-center gap-4 text-text-muted opacity-30">
+                      <Send className="h-12 w-12" />
+                      <p className="text-sm font-mono uppercase tracking-widest">Nenhuma campanha orquestrada</p>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
-                listas.map((lista) => {
-                  const config = statusConfig[lista.status]
-                  const progress = lista.totalLeads > 0
-                    ? ((lista.enviados + lista.falhos) / lista.totalLeads) * 100
-                    : 0
+                listas.map((lista, i) => {
+                  const progress = lista.totalLeads > 0 ? ((lista.enviados + lista.falhos) / lista.totalLeads) * 100 : 0
+                  const isProcessing = lista.status === "EM_PROCESSAMENTO"
+                  const statusVariant = lista.status === "CONCLUIDA" ? "ativa" : lista.status === "CANCELADA" ? "inativa" : "novo"
 
                   return (
-                    <TableRow key={lista.id}>
+                    <TableRow key={lista.id} className="border-border-subtle hover:bg-white/[0.01] group transition-colors animate-entrance" style={{ animationDelay: `${i * 100}ms` }}>
                       <TableCell>
-                        <div>
-                          <p className="text-sm font-medium">{lista.nome}</p>
-                          {lista.descricao && (
-                            <p className="text-xs text-muted-foreground">{lista.descricao}</p>
-                          )}
+                        <div className="min-w-0">
+                          <p className="text-[13px] font-black text-text-primary uppercase tracking-tight">{lista.nome}</p>
+                          <p className="text-[10px] font-display italic text-text-muted opacity-60 truncate max-w-[200px]">{lista.descricao || "Sem notas descritivas"}</p>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={config.className}>{config.label}</Badge>
+                        <Badge variant={statusVariant} className={cn(isProcessing && "animate-pulse")}>{lista.status}</Badge>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">
-                        {lista.totalLeads > 0 ? (
-                          <div className="space-y-1 w-36">
-                            <Progress value={progress} className="h-1.5" />
-                            <p className="text-xs text-muted-foreground">
-                              {lista.enviados}/{lista.totalLeads} ({progress.toFixed(0)}%)
-                            </p>
+                        <div className="space-y-1.5 pt-1">
+                          <Progress value={progress} className="h-1 bg-surface-elevated" />
+                          <div className="flex justify-between items-center text-[9px] font-mono font-bold uppercase text-text-muted tracking-tighter">
+                            <span>{progress.toFixed(1)}% Completed</span>
+                            <span>{lista.enviados} / {lista.totalLeads}</span>
                           </div>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        <div className="flex gap-2 text-xs">
-                          <span className="text-green-400 flex items-center gap-0.5">
-                            <CheckCircle className="h-3 w-3" />{lista.enviados}
-                          </span>
-                          <span className="text-red-400 flex items-center gap-0.5">
-                            <XCircle className="h-3 w-3" />{lista.falhos}
-                          </span>
-                          <span className="text-muted-foreground flex items-center gap-0.5">
-                            <Clock className="h-3 w-3" />{lista.pendentes}
-                          </span>
                         </div>
                       </TableCell>
-                      <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
+                      <TableCell className="hidden md:table-cell">
+                        <div className="flex gap-4 text-[11px] font-mono">
+                          <div className="flex items-center gap-1.5 text-success font-bold"><CheckCircle className="h-3 w-3 opacity-50" /> {lista.enviados}</div>
+                          <div className="flex items-center gap-1.5 text-danger font-bold"><XCircle className="h-3 w-3 opacity-50" /> {lista.falhos}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell text-[11px] font-mono text-text-muted">
                         {formatDate(lista.createdAt)}
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          {/* Play: ATIVA ou RASCUNHO → start */}
-                          {(lista.status === "ATIVA" || lista.status === "RASCUNHO") && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7"
-                              title="Iniciar disparo"
-                              onClick={() => patchStatus.mutate({ id: lista.id, status: "EM_PROCESSAMENTO" })}
-                            >
-                              <Play className="h-3 w-3 text-green-400" />
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1 opacity-10 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                          {/* Controls */}
+                          {(lista.status === "ATIVA" || lista.status === "RASCUNHO" || lista.status === "PAUSADA") && (
+                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-success" onClick={() => patchStatus.mutate({ id: lista.id, status: "EM_PROCESSAMENTO" })}>
+                              <Play className="h-3.5 w-3.5" />
                             </Button>
                           )}
-                          {/* Pause: EM_PROCESSAMENTO → pausar */}
-                          {lista.status === "EM_PROCESSAMENTO" && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7"
-                              title="Pausar"
-                              onClick={() => patchStatus.mutate({ id: lista.id, status: "PAUSADA" })}
-                            >
-                              <Pause className="h-3 w-3 text-amber-400" />
+                          {isProcessing && (
+                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-warning" onClick={() => patchStatus.mutate({ id: lista.id, status: "PAUSADA" })}>
+                              <Pause className="h-3.5 w-3.5" />
                             </Button>
                           )}
-                          {/* Resume: PAUSADA → resume */}
-                          {lista.status === "PAUSADA" && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7"
-                              title="Retomar"
-                              onClick={() => patchStatus.mutate({ id: lista.id, status: "EM_PROCESSAMENTO" })}
-                            >
-                              <Play className="h-3 w-3 text-green-400" />
+                          {(isProcessing || lista.status === "PAUSADA") && (
+                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-danger" onClick={() => patchStatus.mutate({ id: lista.id, status: "CANCELADA" })}>
+                              <StopCircle className="h-3.5 w-3.5" />
                             </Button>
                           )}
-                          {/* Stop: EM_PROCESSAMENTO or PAUSADA → cancel */}
-                          {(lista.status === "EM_PROCESSAMENTO" || lista.status === "PAUSADA") && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7"
-                              title="Cancelar"
-                              onClick={() => patchStatus.mutate({ id: lista.id, status: "CANCELADA" })}
-                            >
-                              <StopCircle className="h-3 w-3 text-red-400" />
-                            </Button>
-                          )}
-                          {/* Delete: only RASCUNHO or CANCELADA or CONCLUIDA */}
                           {(lista.status === "RASCUNHO" || lista.status === "CANCELADA" || lista.status === "CONCLUIDA") && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 text-red-400 hover:text-red-400"
-                              title="Excluir"
-                              onClick={() => setDeleteId(lista.id)}
-                            >
-                              <Trash2 className="h-3 w-3" />
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-danger/60 hover:text-danger" onClick={() => setDeleteId(lista.id)}>
+                              <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           )}
                         </div>
@@ -422,22 +364,24 @@ export default function ListasDisparoPage() {
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["listas-disparo"] })}
       />
 
-      {/* Delete confirmation dialog */}
+      {/* Delete/Expurge Alert */}
       <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
-        <DialogContent className="sm:max-w-[400px]">
+        <DialogContent className="sm:max-w-[420px] bg-surface-overlay border-border-strong p-6">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-400" />
-              Excluir lista?
+            <DialogTitle className="text-xl font-black uppercase tracking-tight flex items-center gap-3">
+              <AlertTriangle className="h-6 w-6 text-danger" /> Expurgo de Campanha
             </DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Esta ação não pode ser desfeita. A lista e todos os seus leads serão removidos.
-          </p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>Cancelar</Button>
+          <div className="py-4">
+            <p className="text-sm font-sans italic text-text-muted leading-relaxed">
+              Você está prestes a deletar permanentemente esta lista de disparo. Todos os metadados de progresso e logs de envios serão perdidos. Esta ação é <span className="text-text-primary font-bold">irreversível</span>.
+            </p>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="ghost" onClick={() => setDeleteId(null)}>Desistir</Button>
             <Button
               variant="destructive"
+              className="bg-danger text-white hover:bg-danger/80"
               onClick={() => deleteId && deleteLista.mutate(deleteId)}
               disabled={deleteLista.isPending}
             >
