@@ -5,6 +5,7 @@ import { CSS } from "@dnd-kit/utilities"
 import { DollarSign, Calendar, Clock, AlertCircle } from "lucide-react"
 import { formatCurrency, getInitials, cn } from "@/lib/utils"
 import { format, isPast, isToday } from "date-fns"
+import { ptBR } from "date-fns/locale"
 
 export interface Deal {
   id: string
@@ -46,9 +47,9 @@ export function DealCard({ deal, onClick }: DealCardProps) {
   const contactName = deal.contact ? `${deal.contact.nome} ${deal.contact.sobrenome || ""}` : "Sem Responsável"
 
   const priorityMap = {
-    ALTA: { label: "Alta", color: "#EF4444" },
-    MEDIA: { label: "Média", color: "#F59E0B" },
-    BAIXA: { label: "Baixa", color: "#10B981" },
+    ALTA: { label: "Alta", color: "#eb5757" },
+    MEDIA: { label: "Média", color: "#f2994a" },
+    BAIXA: { label: "Baixa", color: "#27ae60" },
   }
   const priorityMeta = priorityMap[deal.prioridade] || priorityMap.MEDIA
 
@@ -60,62 +61,65 @@ export function DealCard({ deal, onClick }: DealCardProps) {
       {...listeners}
       onClick={onClick}
       className={cn(
-        "bg-[var(--pipeline-card)] border border-white/[0.07] rounded-[10px] p-[14px] px-[16px] group hover:bg-[var(--pipeline-card-hover)] hover:border-white/20 transition-all cursor-grab active:cursor-grabbing shadow-[0_2px_8px_rgba(0,0,0,0.3)]",
-        isDragging && "shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-white/30"
+        "bg-[#141821] border-[0.5px] border-white/[0.08] rounded-[10px] p-[14px] pb-[12px] group hover:bg-[#1a2030] hover:border-white/[0.15] transition-all cursor-grab active:cursor-grabbing",
+        isDragging && "shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-white/30 z-50"
       )}
     >
-      {/* LINHA 1: TÍTULO + STATUS */}
-      <div className="flex items-center justify-between gap-3 mb-3">
-        <h4 className="text-[14px] font-semibold text-[#E6EDF3] leading-tight truncate flex-1">
+      {/* LINHA 1: TÍTULO + BADGE NOVO */}
+      <div className="flex items-center justify-between gap-3 mb-[10px]">
+        <h4 className="text-[14px] font-medium text-white leading-[1.3] truncate flex-1">
           {deal.titulo}
         </h4>
-        <div className="bg-[#388BFD]/15 border border-[#388BFD]/30 px-2.5 py-0.5 rounded-full text-[11px] font-medium text-[#388BFD] whitespace-nowrap">
-          {deal.status === "OPEN" ? "Novo" : "Ativo"}
+        <div className="bg-[#63b3ed]/15 border-[0.5px] border-[#63b3ed]/30 px-2 py-0.5 rounded-[6px] text-[11px] font-medium text-[#63b3ed] whitespace-nowrap">
+          Novo
         </div>
       </div>
 
-      {/* LINHA 2: PRIORIDADE PILL */}
-      <div className="mb-4">
+      {/* LINHA 2: BADGE DE PRIORIDADE (PILL) */}
+      <div className="mb-[14px] flex">
         <div 
-           className="flex items-center gap-2 px-2.5 py-1 rounded-full w-fit"
-           style={{ backgroundColor: `${priorityMeta.color}26` }} // 15% opacity
+           className="inline-flex items-center gap-[5px] px-[10px] pl-[7px] py-[3px] rounded-[20px] transition-colors border-[0.5px]"
+           style={{ backgroundColor: `${priorityMeta.color}26`, borderColor: `${priorityMeta.color}4D` }}
         >
-           <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: priorityMeta.color }} />
-           <span className="text-[12px] font-medium uppercase tracking-tight" style={{ color: priorityMeta.color }}>
+           <div className="w-[6px] h-[6px] rounded-full" style={{ backgroundColor: priorityMeta.color }} />
+           <span className="text-[11px] font-medium leading-none" style={{ color: priorityMeta.color }}>
              {priorityMeta.label}
            </span>
         </div>
       </div>
 
       {/* LINHA 3: VALOR */}
-      <div className="flex items-center gap-[6px] mb-4">
-        <DollarSign size={13} className="text-[#8B949E]" />
-        <span className="text-[15px] font-bold text-white">
+      <div className="flex items-center gap-[6px] mb-2">
+        <span className="text-[11px] font-medium text-white/30">$</span>
+        <span className="text-[14px] font-semibold text-white">
           {formatCurrency(deal.valorEstimado || 0)}
         </span>
       </div>
 
-      {/* LINHA 4: RODAPÉ */}
-      <div className="pt-3 border-t border-white/[0.04] flex items-center justify-between">
-        <div className="flex items-center gap-2 max-w-[65%]">
+      {/* DIVIDER */}
+      <div className="h-[0.5px] bg-white/[0.06] my-[10px] -mx-1" />
+
+      {/* FOOTER: RESPONSÁVEL + DATA */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-[6px] max-w-[65%]">
           <div 
-            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white/90 shrink-0"
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold text-[#0d0d0d] shrink-0"
             style={{ backgroundColor: `hsl(${contactName.length * 40}, 60%, 45%)` }}
           >
             {getInitials(contactName)}
           </div>
-          <span className="text-[12px] font-medium text-[#8B949E] truncate">
+          <span className="text-[12px] font-normal text-white/50 truncate">
             {contactName}
           </span>
         </div>
         
         <div className={cn(
-          "flex items-center gap-1.5",
-          isOverdue ? "text-[#EF4444]" : "text-[#8B949E]"
+          "flex items-center gap-[6px]",
+          isOverdue ? "text-[#eb5757]" : "text-white/30"
         )}>
           {isOverdue ? <AlertCircle size={12} /> : <Calendar size={12} />}
-          <span className="text-[12px] font-medium">
-            {deal.dataPrevista ? format(new Date(deal.dataPrevista), "dd/MM") : "S/D"}
+          <span className="text-[11px] font-normal">
+            {deal.dataPrevista ? format(new Date(deal.dataPrevista), "dd 'de' MMM", { locale: ptBR }) : "S/D"}
           </span>
         </div>
       </div>
