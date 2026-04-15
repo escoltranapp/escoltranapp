@@ -39,53 +39,57 @@ function KanbanColumn({ stage, children, onAddDeal }: { stage: Stage, children: 
   const { setNodeRef } = useSortable({ id: stage.id })
   const totalValue = stage.deals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
 
-  // Mapping status colors based on stage name/id if possible, or using stage.color
   const statusColors: Record<string, string> = {
-    PROSPECT: "#6b7280",
-    QUALIFICATION: "#f2994a",
-    PROPOSAL: "#63b3ed",
-    NEGOTIATION: "#27ae60",
-    FOLLOW_UP: "#eb5757"
+    PROSPECT: "#4299e1",
+    QUALIFICATION: "#9f7aea",
+    MEETING: "#f6ad55",
+    PROPOSAL: "#48c78e",
+    NEGOTIATION: "#f87171",
+    FOLLOW_UP: "#68d391"
   }
-  const dotColor = statusColors[stage.id] || stage.color || "#6b7280"
+  const dotColor = statusColors[stage.id] || stage.color || "#4299e1"
 
   return (
-    <div className="min-w-[280px] w-[280px] flex flex-col h-full">
-      {/* COLUMN HEADER */}
-      <div className="flex flex-col gap-2 px-1 mb-4">
-        <div className="flex items-center justify-between">
-           <div className="flex items-center gap-2.5">
-              <div className="w-[8px] h-[8px] rounded-full" style={{ backgroundColor: dotColor }} />
-              <span className="text-[13px] font-semibold text-white uppercase tracking-[0.08em]">{stage.name}</span>
+    <div className="min-w-[280px] w-[280px] flex flex-col h-full shrink-0">
+      {/* COLUMN CONTAINER */}
+      <div className="bg-[#111520] border border-white/[0.09] rounded-[12px] p-[14px] px-[12px] flex flex-col h-full shadow-lg">
+        {/* REFINED HEADER WITH BORDER BOTTOM */}
+        <div className="flex items-center justify-between pb-[10px] border-bottom border-white/5 mb-1 px-1">
+           <div className="flex items-center gap-2">
+              <div className="w-[9px] h-[9px] rounded-full" style={{ backgroundColor: dotColor }} />
+              <span className="text-[13px] font-bold text-white uppercase tracking-[0.07em]">{stage.name}</span>
            </div>
-           {/* REFINED NUMERIC BADGE 20x20 */}
-           <div className="w-5 h-5 rounded-[6px] bg-white/[0.08] flex items-center justify-center">
-              <span className="text-[11px] font-medium text-white">{stage.deals.length}</span>
+           
+           <div className="min-w-[22px] h-[20px] rounded-[6px] bg-white/[0.08] flex items-center justify-center px-1.5">
+              <span className="text-[11px] font-bold text-white/70">{stage.deals.length}</span>
            </div>
         </div>
-        <div className="flex items-center gap-1.5 mt-0.5">
-           <span className="text-[12px] font-medium text-[#27ae60] flex items-center gap-1">
-             <span className="text-[10px]">↑</span> {formatCurrency(totalValue)}
+
+        {/* VALUE LINE BELOW HEADER */}
+        <div className="flex items-center gap-1.5 px-1 py-[6px] pb-[8px]">
+           <span className="text-[12px] opacity-40">↗</span>
+           <span className="text-[12px] font-medium" style={{ color: `${dotColor}cc` }}>
+             {formatCurrency(totalValue)}
            </span>
         </div>
-      </div>
 
-      {/* REFINED DROPPABLE AREA */}
-      <div 
-        ref={setNodeRef}
-        className="flex-1 bg-[#0f1117] rounded-[12px] p-3 min-h-[500px] flex flex-col gap-2 overflow-y-auto scrollbar-hide"
-      >
-        <div className="flex flex-col gap-2 mb-2">
-           {children}
-        </div>
-        
-        {/* REFINED ADD DEAL BUTTON */}
-        <button 
-          onClick={() => onAddDeal?.(stage.id)}
-          className="w-full p-[10px] border-[0.5px] border-dashed border-white/[0.12] hover:border-white/[0.25] hover:bg-white/[0.03] rounded-[10px] flex items-center justify-center gap-2 text-[12px] font-normal text-white/30 hover:text-white/60 transition-all mt-1"
+        {/* DROPPABLE AREA */}
+        <div 
+          ref={setNodeRef}
+          className="flex-1 flex flex-col gap-2 overflow-y-auto scrollbar-hide"
         >
-           <Plus size={14} /> Adicionar Card
-        </button>
+          <div className="flex flex-col gap-2 mb-2">
+             {children}
+          </div>
+          
+          {/* REFINED ADD DEAL BUTTON */}
+          <button 
+            onClick={() => onAddDeal?.(stage.id)}
+            className="w-full p-[11px] border border-dashed border-white/[0.12] hover:border-white/[0.28] hover:bg-white/[0.03] rounded-[10px] flex items-center justify-center gap-1.5 text-[12px] font-normal text-white/30 hover:text-white/65 transition-all mt-1"
+          >
+             <Plus size={14} /> Adicionar Card
+          </button>
+        </div>
       </div>
     </div>
   )

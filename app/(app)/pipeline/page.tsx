@@ -28,30 +28,26 @@ const STAGES_CONFIG = [
   { id: "QUALIFICATION", name: "QUALIFICAÇÃO", color: "#8B5CF6" },
   { id: "MEETING", name: "REUNIÃO MARCADA", color: "#F59E0B" },
   { id: "PROPOSAL", name: "PROPOSTA", color: "#10B981" },
-  { id: "NEGOTIATION", name: "NEGOCIAÇÃO", color: "#EF4444" },
-  { id: "FOLLOW_UP", name: "FOLLOW UP", color: "#3B82F6" },
-]
-
-function KPICard({ label, value, icon: Icon, type = "default" }: any) {
+  { id: "NEGOTIATION", nafunction KPICard({ label, value, icon: Icon, type = "default" }: any) {
   const configs: any = {
-    blue: { bg: "rgba(59,130,246,0.15)", icon: "#3B82F6" },
-    green: { bg: "rgba(16,185,129,0.15)", icon: "#10B981" },
-    red: { bg: "rgba(239,68,68,0.15)", icon: "#EF4444" },
-    default: { bg: "rgba(255,255,255,0.03)", icon: "#8B949E" }
+    blue: { bg: "rgba(66,153,225,0.12)", icon: "#4299e1", text: "#ffffff" },
+    green: { bg: "rgba(72,199,142,0.12)", icon: "#48c78e", text: "#48c78e" },
+    red: { bg: "rgba(235,87,87,0.12)", icon: "#eb5757", text: "#f87171" },
+    default: { bg: "rgba(255,255,255,0.06)", icon: "rgba(255,255,255,0.40)", text: "#ffffff" }
   }
   const config = configs[type] || configs.default
 
   return (
-    <div className="bg-[var(--bg-surface)] border border-white/[0.08] rounded-[16px] p-6 flex-1 flex items-center gap-5">
+    <div className="bg-[#111520] border border-white/[0.09] rounded-[12px] p-[18px] px-[20px] flex-1 flex items-center gap-[16px]">
       <div 
-        className="w-10 h-10 rounded-[10px] flex items-center justify-center" 
+        className="w-[42px] h-[42px] rounded-[10px] flex items-center justify-center shrink-0" 
         style={{ backgroundColor: config.bg, color: config.icon }}
       >
          <Icon size={20} />
       </div>
       <div>
-        <div className="text-[10px] font-black text-[#8B949E] uppercase tracking-[0.2em] mb-1">{label}</div>
-        <div className="text-[22px] font-black text-white tracking-tighter leading-none">{value}</div>
+        <div className="text-[11px] font-medium text-white/40 uppercase tracking-[0.09em] leading-none mb-1.5">{label}</div>
+        <div className="text-[26px] font-bold tracking-tight leading-none" style={{ color: config.text }}>{value}</div>
       </div>
     </div>
   )
@@ -61,7 +57,6 @@ export default function PipelinePage() {
   const queryClient = useQueryClient()
   const { toast } = useToast()
   const [activeBoard, setActiveBoard] = useState("Pipeline Principal")
-  const [pipelineId, setPipelineId] = useState<string | null>(null)
   
   // Modals state
   const [isAddStageOpen, setIsAddStageOpen] = useState(false)
@@ -135,7 +130,7 @@ export default function PipelinePage() {
   const boardStages: Stage[] = stages.map((s: any) => ({
     id: s.id,
     name: s.name,
-    color: s.color || "#3B82F6",
+    color: s.color || "#4299e1",
     deals: (s.deals || []).map((d: any) => ({
       ...d,
       valorEstimado: Number(d.valorEstimado) || 0,
@@ -167,51 +162,40 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="pipeline-layout page-container">
-      {/* HEADER SECTION (SENIOR REF RECOVERY) */}
-      <header className="flex items-start justify-between mb-12">
-        <div className="space-y-4">
-           <div className="pipeline-header-badge">
-              <Grid size={13} />
-              <span>Pipeline Comercial</span>
-           </div>
-           <div>
-              <h1 className="text-[42px] font-bold text-white tracking-tight leading-none">Pipeline</h1>
-              <p className="text-[10px] font-semibold text-[#8B949E] uppercase tracking-[0.3em] mt-3">Gestão de Oportunidades • Visão Kanban</p>
-           </div>
+    <div className="pipeline-layout p-[28px] pt-[28px] space-y-[28px]">
+      {/* PAGE HEADER */}
+      <header className="flex items-start justify-between">
+        <div>
+           <h1 className="text-[32px] font-bold text-white leading-none">Pipeline</h1>
+           <p className="text-[11px] font-normal text-white/35 uppercase tracking-[0.1em] mt-1">Gestão de Oportunidades • Visão Kanban</p>
         </div>
 
-         <div className="flex items-center gap-3 pt-2">
-            {/* Pipeline Switcher */}
+        <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-3 px-4 py-2.5 bg-[var(--bg-surface)] border border-white/[0.08] rounded-[10px] text-[12px] font-semibold text-[#8B949E] hover:text-white transition-all outline-none">
-                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <button className="flex items-center gap-2 px-[14px] py-[8px] bg-white/5 border border-white/10 rounded-[8px] text-[13px] font-medium text-white hover:bg-white/[0.08] transition-all outline-none">
+                  <div className="w-2 h-2 rounded-full bg-[#4299e1]" />
                   {activeBoard}
-                  <ChevronDown size={14} className="opacity-40" />
+                  <ChevronDown size={14} className="opacity-40 ml-1" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-[#0a0c10] border-white/10 text-white min-w-[200px]">
+              <DropdownMenuContent align="end" className="bg-[#111520] border-white/10 text-white min-w-[200px]">
                 <DropdownMenuItem onClick={() => setActiveBoard("Pipeline Principal")} className="hover:bg-white/5 cursor-pointer">
                   Pipeline Principal
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => toast({ title: "Módulo em Breve", description: "Boards adicionais serão liberados em breve." })} className="hover:bg-white/5 cursor-pointer opacity-50">
-                  Pipeline de Pós-Venda
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* ACTIONS */}
             <button 
               onClick={handleAddStage}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[12px] uppercase tracking-wide rounded-[10px] transition-all active:scale-95 shadow-[0_4px_12px_rgba(37,99,235,0.2)]"
+              className="flex items-center gap-2 px-[18px] py-[8px] bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold text-[13px] rounded-[8px] transition-all active:scale-95"
             >
-               <Plus size={16} strokeWidth={3} /> Nova Coluna
+               <Plus size={16} /> Nova Coluna
             </button>
 
             <button 
-              onClick={() => toast({ title: "Módulo em Breve", description: "A criação de múltiplos boards será liberada na próxima versão." })}
-              className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-white/[0.15] hover:border-white/[0.3] text-[#8B949E] hover:text-white font-bold text-[12px] uppercase tracking-wide rounded-[10px] transition-all active:scale-95"
+              onClick={() => toast({ title: "Módulo em Breve", description: "Boards adicionais serão liberados em breve." })}
+              className="flex items-center gap-2 px-[14px] py-[8px] bg-transparent border border-white/15 hover:bg-white/5 text-white/70 font-medium text-[13px] rounded-[8px] transition-all active:scale-95"
             >
                <Plus size={16} /> Novo Board
             </button>
@@ -219,17 +203,17 @@ export default function PipelinePage() {
       </header>
 
       {/* METRICS BAR */}
-      <div className="flex gap-4 mb-10">
+      <div className="flex gap-[16px]">
          <KPICard label="Total de Cards" value={deals.length} icon={LayoutGrid} type="blue" />
          <KPICard label="Valor Total" value={formatCurrency(totalValue)} icon={DollarSign} type="green" />
          <KPICard label="Cards Vencidos" value={expiredCount} icon={AlertTriangle} type="red" />
       </div>
 
-      {/* KANBAN BOARD (CLEAN WRAPPER FOR SIDEBAR ALIGNMENT) */}
+      {/* KANBAN BOARD */}
       <div className="overflow-x-auto kanban-scrollbar -mx-1 px-1">
         {isLoading ? (
-          <div className="flex gap-4">
-             {[1,2,3,4].map(i => <div key={i} className="min-w-[280px] h-[600px] rounded-[12px] bg-[var(--bg-surface)] animate-pulse" />)}
+          <div className="flex gap-[12px]">
+             {[1,2,3,4].map(i => <div key={i} className="min-w-[280px] h-[600px] rounded-[12px] bg-[#111520] animate-pulse" />)}
           </div>
         ) : (
           <KanbanBoard 

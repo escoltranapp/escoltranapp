@@ -1,30 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Geist+Mono:wght@100..900&display=swap');
 
 :root {
-  /* TOKENS DE DESIGN PADRONIZADOS (IDÊNTICO AO DASHBOARD) */
-  --bg-page: #0A0A0A;
-  --bg-surface: rgba(255, 255, 255, 0.03);
-  --bg-surface-2: #111111;
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --text-primary: #F5F5F7;
-  --text-secondary: #A1A1AA;
-  --text-muted: #71717A;
+  /* GLOBAL TOKENS — DEEP DARK BLUE THEME */
+  --bg-page: #0b0d14;
+  --bg-surface: #111520;
+  --bg-card: #161b2a;
+  --bg-card-hover: #1c2236;
+  --border-sutil: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.50);
+  --text-muted: rgba(255, 255, 255, 0.35);
   
-  --accent-primary: #d4af37;
-  /* PIPELINE REFINED TOKENS (DASHBOARD PARITY) */
-  --pipeline-bg: #0A0A0A;
-  --pipeline-col: #161B22;
-  --pipeline-card: #1C2333;
-  --pipeline-card-hover: #21283b;
-  --pipeline-border: rgba(255, 255, 255, 0.05);
-
-  --pipeline-blue: #3B82F6;
-  --pipeline-green: #10B981;
-  --pipeline-red: #EF4444;
-  --pipeline-muted: #71717A;
-
-  --accent-green: #10b981;
-  --accent-red: #ef4444;
+  --pipeline-blue: #4299e1;
+  --pipeline-purple: #9f7aea;
+  --pipeline-amber: #f6ad55;
+  --pipeline-green: #48c78e;
+  --pipeline-red: #f87171;
+  --pipeline-green-light: #68d391;
   --accent-amber: #f59e0b;
 
   /* TIPOGRAFIA */
