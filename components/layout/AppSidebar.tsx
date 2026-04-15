@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useSession, signOut } from "next-auth/react"
 import {
   LayoutGrid,
   List,
@@ -10,126 +11,27 @@ import {
   Search,
   Phone,
   Activity,
-  Settings,
   Sparkles,
-  UserPlus,
-  LogOut,
+  Settings,
   X,
+  LogOut,
+  UserPlus
 } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useSession, signOut } from "next-auth/react"
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface NavItem {
-  label: string;
-  href: string;
-  icon: React.ElementType;
-}
-
-interface NavSection {
-  title: string;
-  items: NavItem[];
-}
-
-// ─── Navigation structure ─────────────────────────────────────────────────────
-
-const sections: NavSection[] = [
-  {
-    title: "Dashboard",
-    items: [
-      { label: "Overview", href: "/dashboard", icon: LayoutGrid },
-    ],
-  },
-  {
-    title: "Comercial",
-    items: [
-      { label: "Pipeline",    href: "/pipeline",    icon: List },
-      { label: "Contatos",    href: "/contacts",    icon: User },
-      { label: "Atividades",  href: "/activities",  icon: CalendarDays },
-    ],
-  },
-  {
-    title: "Marketing",
-    items: [
-      { label: "Busca de Leads",  href: "/lead-search",   icon: Search },
-      { label: "Disparo em Massa", href: "/listas-disparo", icon: Phone },
-      { label: "UTM Analytics",   href: "/utm-analytics", icon: Activity },
-      { label: "IA Insights",     href: "/ai-insights",   icon: Sparkles },
-    ],
-  },
-  {
-    title: "Config",
-    items: [
-      { label: "Configurações", href: "/settings", icon: Settings },
-    ],
-  },
-];
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function NavLink({ item, onClick }: { item: NavItem; onClick?: () => void }) {
-  const pathname = usePathname();
-  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-  const Icon = item.icon;
-
-  return (
-    <Link
-      href={item.href}
-      onClick={onClick}
-      className={cn(
-        "group flex items-center gap-2.5 rounded-lg px-2 py-[7px] text-[12.5px] transition-colors duration-150 mb-[1px]",
-        isActive
-          ? "bg-[rgba(201,162,39,0.12)] text-white font-medium"
-          : "text-white/55 hover:bg-white/[0.05] hover:text-white/80"
-      )}
-    >
-      <Icon
-        className={cn(
-          "h-[15px] w-[15px] shrink-0 transition-opacity",
-          isActive ? "text-[#c9a227] opacity-100" : "opacity-45 group-hover:opacity-60"
-        )}
-        strokeWidth={1.5}
-      />
-      <span className="leading-none">{item.label}</span>
-      {isActive && (
-        <span className="ml-auto h-4 w-0.5 shrink-0 rounded-full bg-[#c9a227]" />
-      )}
-    </Link>
-  );
-}
-
-// ─── Usage bar ────────────────────────────────────────────────────────────────
-
-function UsageBar({ percent = 72 }: { percent?: number }) {
-  return (
-    <div className="px-1 pb-1.5 pt-0.5">
-      <div className="mb-1.5 flex justify-between text-[10px] text-white/30">
-        <span>Uso da base</span>
-        <span>{percent}%</span>
-      </div>
-      <div className="h-0.5 rounded-full bg-white/[0.08]">
-        <div
-          className="h-0.5 rounded-full bg-[#c9a227]"
-          style={{ width: `${percent}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-// ─── Main sidebar ─────────────────────────────────────────────────────────────
+import "./sidebar.css"
 
 interface AppSidebarProps {
   onClose?: () => void;
 }
 
 export function AppSidebar({ onClose }: AppSidebarProps) {
+  const pathname = usePathname();
   const { data: session } = useSession();
+  
   const userName = session?.user?.name || "Usuário";
   const userRole = "Administrador";
   const usagePercent = 72;
-  
+
   const initials = userName
     .split(" ")
     .slice(0, 2)
@@ -137,97 +39,129 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
     .join("")
     .toUpperCase();
 
+  const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
+
   return (
-    <aside className="flex h-screen w-[220px] shrink-0 flex-col overflow-hidden border-r border-[rgba(255,255,255,0.07)] bg-[#0d0d0d] font-sans">
-      {/* ── Brand ── */}
-      <div className="flex items-center gap-2.5 border-b border-[rgba(255,255,255,0.06)] px-4 py-5 relative">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#c9a227] text-sm font-medium text-[#0d0d0d]">
-          E
-        </div>
-        <div className="flex flex-col">
-          <span className="text-[13px] font-medium leading-none tracking-[0.02em] text-white">
-            Escoltran
-          </span>
-          <span className="mt-1 text-[10px] uppercase tracking-[0.08em] text-white/35">
-            Sales Intelligence
-          </span>
+    <aside className="sidebar">
+      {/* Brand */}
+      <div className="brand">
+        <div className="brand-icon">E</div>
+        <div>
+          <div className="brand-name">Escoltran</div>
+          <div className="brand-sub">Sales Intelligence</div>
         </div>
         {onClose && (
-          <button 
-            onClick={onClose} 
-            className="md:hidden absolute right-4 text-white/40 hover:text-white transition-colors"
-          >
-            <X className="h-4 w-4" />
+          <button onClick={onClose} className="mobile-close-btn md:hidden">
+            <X size={16} />
           </button>
         )}
       </div>
 
-      {/* ── Navigation ── */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide">
-        {sections.map((section, i) => (
-          <div key={section.title} className="px-3 pt-5 pb-1">
-            {/* Section label */}
-            <p className="mb-1 px-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-white/25">
-              {section.title}
-            </p>
+      {/* Navegação */}
+      <div className="nav-container">
+        
+        {/* DASHBOARD */}
+        <div className="nav-section">
+          <div className="nav-label">Dashboard</div>
+          <Link href="/dashboard" onClick={onClose} className={`nav-item ${isActive("/dashboard") ? "active" : ""}`}>
+            <LayoutGrid className="nav-item-icon" />
+            <span className="nav-item-label">Overview</span>
+            {isActive("/dashboard") && <div className="active-bar"></div>}
+          </Link>
+        </div>
 
-            {section.items.map((item) => (
-              <NavLink key={item.href} item={item} onClick={onClose} />
-            ))}
+        {/* COMERCIAL */}
+        <div className="nav-section">
+          <div className="nav-label">Comercial</div>
+          <Link href="/pipeline" onClick={onClose} className={`nav-item ${isActive("/pipeline") ? "active" : ""}`}>
+            <List className="nav-item-icon" />
+            <span className="nav-item-label">Pipeline</span>
+            {isActive("/pipeline") && <div className="active-bar"></div>}
+          </Link>
+          <Link href="/contacts" onClick={onClose} className={`nav-item ${isActive("/contacts") ? "active" : ""}`}>
+            <User className="nav-item-icon" />
+            <span className="nav-item-label">Contatos</span>
+            {isActive("/contacts") && <div className="active-bar"></div>}
+          </Link>
+          <Link href="/activities" onClick={onClose} className={`nav-item ${isActive("/activities") ? "active" : ""}`}>
+            <CalendarDays className="nav-item-icon" />
+            <span className="nav-item-label">Atividades</span>
+            {isActive("/activities") && <div className="active-bar"></div>}
+          </Link>
+        </div>
 
-            {/* Divider between sections except after last */}
-            {i < sections.length - 1 && (
-              <hr className="mx-1 mt-3 border-t border-white/[0.06]" />
-            )}
-          </div>
-        ))}
-      </nav>
+        {/* MARKETING */}
+        <div className="nav-section">
+          <div className="nav-label">Marketing</div>
+          <Link href="/lead-search" onClick={onClose} className={`nav-item ${isActive("/lead-search") ? "active" : ""}`}>
+            <Search className="nav-item-icon" />
+            <span className="nav-item-label">Busca de Leads</span>
+            {isActive("/lead-search") && <div className="active-bar"></div>}
+          </Link>
+          <Link href="/listas-disparo" onClick={onClose} className={`nav-item ${isActive("/listas-disparo") ? "active" : ""}`}>
+            <Phone className="nav-item-icon" />
+            <span className="nav-item-label">Disparo em Massa</span>
+            {isActive("/listas-disparo") && <div className="active-bar"></div>}
+          </Link>
+          <Link href="/utm-analytics" onClick={onClose} className={`nav-item ${isActive("/utm-analytics") ? "active" : ""}`}>
+            <Activity className="nav-item-icon" />
+            <span className="nav-item-label">UTM Analytics</span>
+            {isActive("/utm-analytics") && <div className="active-bar"></div>}
+          </Link>
+          <Link href="/ai-insights" onClick={onClose} className={`nav-item ${isActive("/ai-insights") ? "active" : ""}`}>
+            <Sparkles className="nav-item-icon" />
+            <span className="nav-item-label">IA Insights</span>
+            {isActive("/ai-insights") && <div className="active-bar"></div>}
+          </Link>
+        </div>
 
-      {/* ── Bottom section ── */}
-      <div className="px-3 pb-3 pt-2">
+        <div className="divider"></div>
 
-        {/* Workspace card */}
-        <div className="mb-3 rounded-[10px] border border-[rgba(201,162,39,0.2)] bg-[rgba(201,162,39,0.07)] p-3">
-          <p className="mb-0.5 text-[10px] font-medium uppercase tracking-[0.1em] text-[#c9a227]">
-            Workspace
-          </p>
-          <p className="mb-2.5 text-[11px] leading-[1.4] text-white/40">
-            Gerencie sua equipe com IA.
-          </p>
-          <button className="flex w-full items-center justify-center gap-1.5 rounded-[7px] border border-[rgba(201,162,39,0.35)] bg-transparent py-[7px] text-[11px] font-medium tracking-[0.04em] text-[#c9a227] transition-colors hover:bg-[rgba(201,162,39,0.1)]">
-            <UserPlus className="h-3.5 w-3.5" strokeWidth={1.5} />
+        {/* CONFIG */}
+        <div className="nav-section">
+          <div className="nav-label">Config</div>
+          <Link href="/settings" onClick={onClose} className={`nav-item ${isActive("/settings") ? "active" : ""}`}>
+            <Settings className="nav-item-icon" />
+            <span className="nav-item-label">Configurações</span>
+            {isActive("/settings") && <div className="active-bar"></div>}
+          </Link>
+        </div>
+
+      </div>
+
+      {/* BOTTOM SECTION */}
+      <div className="bottom-section">
+        
+        <div className="workspace-card">
+          <div className="workspace-title">Workspace</div>
+          <div className="workspace-desc">Gerencie sua equipe com IA.</div>
+          <button className="invite-btn">
+            <UserPlus size={13} strokeWidth={2} />
             Convidar
           </button>
         </div>
 
-        {/* Usage bar */}
-        <UsageBar percent={usagePercent} />
+        <div className="usage-bar-wrap">
+          <div className="usage-label">
+            <span>Uso da base</span>
+            <span>{usagePercent}%</span>
+          </div>
+          <div className="usage-track">
+            <div className="usage-fill" style={{ width: `${usagePercent}%` }}></div>
+          </div>
+        </div>
 
-        {/* User row */}
-        <div className="group flex items-center gap-2.5 px-1 py-2 relative rounded-md transition-colors hover:bg-white/[0.05] cursor-default">
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#c9a227] text-[11px] font-medium text-[#0d0d0d]">
-            {initials}
+        <div className="user-row">
+          <div className="user-avatar">{initials}</div>
+          <div className="user-name-wrapper">
+            <div className="user-name">{userName}</div>
+            <div className="user-role">{userRole}</div>
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[12px] font-medium text-white/80">
-              {userName}
-            </p>
-            <p className="mt-0.5 text-[10px] text-white/30">{userRole}</p>
-          </div>
-          
-          <Settings
-            className="h-[14px] w-[14px] shrink-0 text-white/20 transition-all group-hover:opacity-0 absolute right-2"
-            strokeWidth={1.5}
-          />
-          
-          <button 
-            onClick={(e) => { e.stopPropagation(); signOut(); }}
-            className="opacity-0 group-hover:opacity-100 transition-all absolute right-2 text-white/20 hover:text-red-400"
-            title="Sair do sistema"
-          >
-            <LogOut className="h-[14px] w-[14px] shrink-0" strokeWidth={1.5} />
+          <button onClick={() => signOut()} className="logout-btn" title="Sair do sistema">
+            <LogOut size={14} />
           </button>
         </div>
+
       </div>
     </aside>
   );
