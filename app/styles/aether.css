@@ -1,194 +1,140 @@
 :root {
-  --aether-bg: #08080a;
-  --aether-surface: #101116;
-  --aether-surface-elevated: #16171e;
-  --aether-border: rgba(255, 255, 255, 0.04);
-  --aether-border-bright: rgba(255, 255, 255, 0.08);
+  --aether-bg: #030407;
+  --aether-surface: #0a0c12;
+  --aether-surface-elevated: #0f121a;
+  --aether-border: rgba(255, 255, 255, 0.03);
+  --aether-border-bright: rgba(255, 255, 255, 0.06);
   --aether-gold: #c9a227;
-  --aether-gold-glow: rgba(201, 162, 39, 0.4);
-  --aether-gold-muted: rgba(201, 162, 39, 0.08);
+  --aether-gold-glow: rgba(201, 162, 39, 0.3);
+  --aether-blue: #2563eb;
+  --aether-blue-glow: rgba(37, 99, 235, 0.4);
   --aether-text-primary: #ffffff;
-  --aether-text-muted: rgba(255, 255, 255, 0.4);
-  --aether-text-dim: rgba(255, 255, 255, 0.15);
-  --aether-glass: blur(20px) saturate(180%);
+  --aether-text-muted: rgba(255, 255, 255, 0.3);
+  --aether-text-dim: rgba(255, 255, 255, 0.1);
 }
 
-/* Base Body Refinement */
+/* Base Layout Refresh */
 body {
   background-color: var(--aether-bg);
-  background-image: radial-gradient(circle at 50% -20%, rgba(201, 162, 39, 0.03) 0%, transparent 50%);
+  background-image: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 40%);
   color: var(--aether-text-primary);
-  -webkit-font-smoothing: antialiased;
+  font-family: 'Inter', sans-serif;
 }
 
-/* Typography Refinements */
-.page-title {
-  font-size: 3.25rem;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  color: var(--aether-text-primary);
-  line-height: 1;
+/* CRM Typography */
+.crm-header-title {
+  font-size: 24px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
-.page-title span {
-  color: var(--aether-text-primary); /* keeping titles white as per print, using gold for accents */
+.crm-header-subtitle {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--aether-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
 }
 
-/* Aether Cards - High Fidelity Refinement */
-.aether-card {
+/* CRM Cards - From Reference */
+.crm-metric-card {
   background: var(--aether-surface);
   border: 1px solid var(--aether-border);
-  border-radius: 20px;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-
-.aether-card:hover {
-  border-color: rgba(255,255,255,0.1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-}
-
-/* Kanban System - From Prints */
-.kanban-col {
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.kanban-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--aether-border);
-  border-radius: 14px;
-}
-
-.kanban-card {
-  background: var(--aether-surface-elevated);
-  border: 1px solid var(--aether-border);
-  border-radius: 16px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.kanban-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--aether-gold-glow);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.kanban-card .priority-badge {
-  font-size: 9px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.kanban-card .card-value {
-  font-size: 14px;
-  font-weight: 900;
-  color: var(--aether-gold);
-}
-
-.kanban-card .card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 10px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-/* Aether Buttons Refinement */
-.aether-btn-primary {
-  background: var(--aether-gold);
-  color: #000;
-  font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  height: 48px;
-  padding: 0 24px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(201, 162, 39, 0.2);
+  border-radius: 24px;
+  padding: 32px 24px;
   transition: all 0.3s ease;
 }
 
-.aether-btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(201, 162, 39, 0.35);
-  background: #d4ac2b;
+.crm-metric-card:hover {
+  border-color: var(--aether-border-bright);
+  background: var(--aether-surface-elevated);
 }
 
-.aether-btn-secondary {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--aether-border);
-  color: var(--aether-text-muted);
-  font-size: 11px;
-  font-weight: 800;
-  height: 44px;
-  padding: 0 16px;
-  border-radius: 10px;
-}
-
-/* Modal Styling From Prints */
-.aether-dialog-content {
-  background: var(--aether-bg);
-  border: 1px solid var(--aether-border-bright);
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-  backdrop-filter: var(--aether-glass);
-}
-
-/* Metric Cluster Refinement */
-.metric-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-}
-
-.metric-card-refined {
-  padding: 24px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.metric-card-refined .icon-wrap {
-  width: 48px;
-  height: 48px;
+.crm-metric-icon-box {
+  width: 36px;
+  height: 36px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--aether-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--aether-gold);
+  margin-bottom: 24px;
 }
 
-.metric-card-refined .label {
+/* CRM Table Refinement */
+.crm-table-header th {
   font-size: 10px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: var(--aether-text-muted);
-  display: block;
+  padding: 24px 16px;
+  border-bottom: 1px solid var(--aether-border);
 }
 
-.metric-card-refined .value {
-  font-size: 1.5rem;
-  font-weight: 950;
-  color: var(--aether-text-primary);
+.crm-table-row td {
+  padding: 24px 16px;
+  vertical-align: middle;
+}
+
+.crm-table-row:hover {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+/* CRM Filter Pill Support */
+.filter-pill {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.filter-pill.active {
+  background: var(--aether-blue);
+  color: white;
+  box-shadow: 0 4px 15px var(--aether-blue-glow);
+}
+
+/* Glowing Primary Button */
+.btn-glow-blue {
+  background: var(--aether-blue);
+  box-shadow: 0 0 20px var(--aether-blue-glow);
+  color: white;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 11px;
+  height: 44px;
+  padding: 0 24px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-glow-blue:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 30px var(--aether-blue-glow);
+  background: #3b82f6;
+}
+
+/* Search Box - Dark Minimalist */
+.crm-search-input {
+  background: #05060a;
+  border: 1px solid var(--aether-border);
+  height: 52px;
+  border-radius: 16px;
+  padding: 0 24px 0 52px;
+  font-size: 13px;
+  color: white;
+  width: 100%;
 }
