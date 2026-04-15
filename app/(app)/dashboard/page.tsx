@@ -73,7 +73,7 @@ export default function DashboardPage() {
     <div className="animate-aether space-y-12 pb-12">
       
       {/* Prime Header */}
-      <header className="page-header flex-row items-end justify-between">
+      <header className="page-header flex-col md:flex-row items-start justify-between gap-8">
         <div className="space-y-5">
           <div className="header-badge">
             <span className="dot" />

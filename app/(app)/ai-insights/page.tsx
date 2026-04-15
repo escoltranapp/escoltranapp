@@ -74,7 +74,7 @@ export default function AiInsightsPage() {
     <div className="animate-aether space-y-10 pb-10">
       
       {/* Header Section */}
-      <header className="page-header flex-row items-end justify-between">
+      <header className="page-header flex-col lg:flex-row items-start justify-between gap-8">
         <div className="space-y-4">
           <div className="header-badge">
             <span className="dot" />
