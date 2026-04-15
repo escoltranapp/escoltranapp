@@ -14,16 +14,17 @@
   --accent-gold: #d4af37;
   --bg-auth-base: #050608;
   
-  /* PIPELINE SPECIFIC TOKENS */
+  /* PIPELINE REFINED TOKENS */
   --pipeline-bg: #0D1117;
-  --pipeline-surface: #161B22;
-  --pipeline-surface-2: #1C2333;
+  --pipeline-col: #161B22;
+  --pipeline-card: #1C2333;
+  --pipeline-card-hover: #1F2A3D;
   --pipeline-border: rgba(255, 255, 255, 0.08);
+
   --pipeline-blue: #3B82F6;
-  --pipeline-purple: #8B5CF6;
-  --pipeline-yellow: #F59E0B;
   --pipeline-green: #10B981;
   --pipeline-red: #EF4444;
+  --pipeline-muted: #8B949E;
 
   --accent-green: #10b981;
   --accent-red: #ef4444;
@@ -597,4 +598,19 @@ body {
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
+}
+
+/* --- KANBAN SCROLLBAR ----------------------------------------- */
+.kanban-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+.kanban-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.kanban-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.kanban-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }

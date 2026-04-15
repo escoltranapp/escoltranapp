@@ -17,7 +17,7 @@ import {
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { DealCard, type Deal } from "./DealCard"
-import { Plus, TrendingUp, MoreHorizontal } from "lucide-react"
+import { Plus, TrendingUp } from "lucide-react"
 import { formatCurrency, cn } from "@/lib/utils"
 
 export interface Stage {
@@ -39,39 +39,42 @@ function KanbanColumn({ stage, children, onAddDeal }: { stage: Stage, children: 
   const totalValue = stage.deals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
 
   return (
-    <div className="min-w-[300px] w-[300px] flex flex-col h-full">
+    <div className="min-w-[280px] w-[280px] flex flex-col h-full">
       {/* COLUMN HEADER */}
-      <div className="kanban-col-header flex flex-col gap-2 px-1">
+      <div className="kanban-col-header flex flex-col gap-2 px-1 mb-4">
         <div className="flex items-center justify-between">
-           <div className="flex items-center gap-3">
-              <div className="stage-dot" style={{ backgroundColor: stage.color, boxShadow: `0 0 10px ${stage.color}40` }} />
-              <span className="text-[12px] font-black text-white uppercase tracking-[0.15em]">{stage.name}</span>
+           <div className="flex items-center gap-2.5">
+              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: stage.color, boxShadow: `0 0 10px ${stage.color}40` }} />
+              <span className="text-[12px] font-black text-white uppercase tracking-[0.1em]">{stage.name}</span>
            </div>
-           <div className="bg-white/[0.05] px-2 py-0.5 rounded-md border border-white/5">
-              <span className="text-[10px] font-bold text-white/40">{stage.deals.length}</span>
+           {/* REFINED NUMERIC BADGE */}
+           <div className="bg-white/[0.08] px-2 py-0.5 rounded-[20px] min-w-[24px] flex items-center justify-center">
+              <span className="text-[12px] font-semibold text-[#8B949E]">{stage.deals.length}</span>
            </div>
         </div>
-        <div className="flex items-center gap-2 mt-1">
-           <TrendingUp size={14} style={{ color: stage.color }} className="opacity-60" />
-           <span className="text-[14px] font-black" style={{ color: stage.color }}>
+        <div className="flex items-center gap-2 mt-0.5">
+           <TrendingUp size={12} style={{ color: stage.color }} className="opacity-60" />
+           <span className="text-[13px] font-black" style={{ color: stage.color }}>
              {formatCurrency(totalValue)}
            </span>
         </div>
       </div>
 
-      {/* DROPPABLE AREA */}
+      {/* REFINED DROPPABLE AREA */}
       <div 
         ref={setNodeRef}
-        className="flex-1 bg-[#161B22]/40 border border-white/[0.03] rounded-[16px] p-3 min-h-[500px] flex flex-col gap-1 overflow-y-auto scrollbar-hide"
+        className="flex-1 bg-[#161B22] border border-white/[0.07] rounded-[12px] p-3 min-h-[500px] flex flex-col gap-1 overflow-y-auto scrollbar-hide"
       >
-        {children}
+        <div className="flex flex-col gap-3 mb-2">
+           {children}
+        </div>
         
-        {/* ADD DEAL BUTTON */}
+        {/* REFINED ADD DEAL BUTTON */}
         <button 
           onClick={() => onAddDeal?.(stage.id)}
-          className="w-full py-4 mt-2 border border-dashed border-white/[0.05] hover:border-white/20 hover:bg-white/[0.02] rounded-[12px] flex items-center justify-center gap-2 text-[11px] font-bold text-white/10 hover:text-white/40 transition-all uppercase tracking-widest"
+          className="w-full py-2.5 border border-dashed border-white/[0.15] hover:border-[#3B82F6] hover:bg-[#3B82F6]/[0.06] rounded-[8px] flex items-center justify-center gap-2 text-[11px] font-bold text-[#8B949E] hover:text-[#3B82F6] transition-all"
         >
-           <Plus size={16} /> Adicionar Card
+           <Plus size={14} /> Adicionar Card
         </button>
       </div>
     </div>
@@ -115,7 +118,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onAddDeal, onAd
       onDragStart={(e) => setActiveId(e.active.id as string)}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-8 h-full pb-10">
+      <div className="flex gap-4 h-full pb-10">
         <SortableContext items={stages.flatMap(s => s.deals.map(d => d.id))} strategy={verticalListSortingStrategy}>
           {stages.map((stage) => (
             <KanbanColumn key={stage.id} stage={stage} onAddDeal={onAddDeal}>
@@ -126,23 +129,23 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onAddDeal, onAd
           ))}
         </SortableContext>
 
-        {/* NEW COLUMN PLACEHOLDER */}
-        <div className="min-w-[300px] w-[300px]">
+        {/* REFINED NEW COLUMN PLACEHOLDER */}
+        <div className="min-w-[280px] w-[280px]">
            <button 
              onClick={onAddStage}
-             className="w-full h-[600px] border border-dashed border-white/[0.05] hover:border-white/20 hover:bg-white/[0.02] rounded-[16px] flex flex-col items-center justify-center gap-4 transition-all group"
+             className="w-full h-[600px] border border-dashed border-white/[0.12] hover:border-[#3B82F6] hover:bg-transparent rounded-[12px] flex flex-col items-center justify-center gap-4 transition-all group"
            >
-              <div className="w-12 h-12 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center group-hover:scale-110 transition-all">
-                <Plus size={24} className="text-white/10 group-hover:text-white/40" />
+              <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all">
+                <Plus size={24} className="text-[#8B949E] group-hover:text-[#3B82F6]" />
               </div>
-              <span className="text-[12px] font-black uppercase tracking-[0.3em] text-white/10 group-hover:text-white/40">Nova Coluna</span>
+              <span className="text-[11px] font-black uppercase tracking-[0.1em] text-[#8B949E] group-hover:text-[#3B82F6]">Nova Coluna</span>
            </button>
         </div>
       </div>
 
       <DragOverlay>
         {activeDeal ? (
-          <div className="scale-105 rotate-3 opacity-90 shadow-2xl">
+          <div className="scale-105 rotate-2 opacity-90">
             <DealCard deal={activeDeal} />
           </div>
         ) : null}
