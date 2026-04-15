@@ -1,32 +1,40 @@
 :root {
-  --aether-bg: #030407;
+  --aether-bg: #030406;
   --aether-surface: #0a0c12;
   --aether-surface-elevated: #0f121a;
-  --aether-border: rgba(255, 255, 255, 0.03);
-  --aether-border-bright: rgba(255, 255, 255, 0.06);
+  --aether-border: rgba(255, 255, 255, 0.04);
+  --aether-border-bright: rgba(255, 255, 255, 0.08);
   --aether-gold: #c9a227;
-  --aether-gold-glow: rgba(201, 162, 39, 0.3);
+  --aether-gold-glow: rgba(201, 162, 39, 0.25);
   --aether-blue: #2563eb;
   --aether-blue-glow: rgba(37, 99, 235, 0.4);
   --aether-text-primary: #ffffff;
-  --aether-text-muted: rgba(255, 255, 255, 0.3);
-  --aether-text-dim: rgba(255, 255, 255, 0.1);
+  --aether-text-muted: rgba(255, 255, 255, 0.4);
+  --aether-text-dim: rgba(255, 255, 255, 0.15);
+  --aether-radius-lg: 20px;
+  --aether-radius-xl: 32px;
 }
 
 /* Base Layout Refresh */
 body {
   background-color: var(--aether-bg);
-  background-image: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 40%);
+  background-image: 
+    radial-gradient(circle at 50% -10%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(201, 162, 39, 0.02) 0%, transparent 40%);
   color: var(--aether-text-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* CRM Typography */
+/* Premium Component: CRM Header */
 .crm-header-title {
-  font-size: 24px;
-  font-weight: 850;
+  font-size: 26px;
+  font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .crm-header-subtitle {
@@ -34,107 +42,113 @@ body {
   font-weight: 800;
   color: var(--aether-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
+  margin-top: 4px;
 }
 
-/* CRM Cards - From Reference */
+/* CRM Cards - Depth & Glassmorphism */
 .crm-metric-card {
-  background: var(--aether-surface);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
   border: 1px solid var(--aether-border);
-  border-radius: 24px;
-  padding: 32px 24px;
-  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border-radius: var(--aether-radius-lg);
+  padding: 32px 28px;
+  transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.crm-metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at top left, rgba(255,255,255,0.05), transparent 60%);
+  pointer-events: none;
 }
 
 .crm-metric-card:hover {
+  transform: translateY(-4px);
   border-color: var(--aether-border-bright);
-  background: var(--aether-surface-elevated);
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
 .crm-metric-icon-box {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.05);
 }
 
-/* CRM Table Refinement */
+/* CRM Table UX */
 .crm-table-header th {
-  font-size: 10px;
-  font-weight: 900;
+  font-size: 9px;
+  font-weight: 950;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--aether-text-muted);
-  padding: 24px 16px;
+  letter-spacing: 0.2em;
+  color: var(--aether-text-dim);
+  padding: 28px 16px;
   border-bottom: 1px solid var(--aether-border);
 }
 
 .crm-table-row td {
   padding: 24px 16px;
-  vertical-align: middle;
-}
-
-.crm-table-row:hover {
-  background: rgba(255, 255, 255, 0.01);
-}
-
-/* CRM Filter Pill Support */
-.filter-pill {
-  height: 36px;
-  padding: 0 16px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  gap: 8px;
   transition: all 0.2s ease;
 }
 
-.filter-pill.active {
-  background: var(--aether-blue);
-  color: white;
-  box-shadow: 0 4px 15px var(--aether-blue-glow);
+.crm-table-row:hover {
+  background: rgba(255, 255, 255, 0.015);
 }
 
-/* Glowing Primary Button */
+/* Button & Controls Refinement */
 .btn-glow-blue {
-  background: var(--aether-blue);
-  box-shadow: 0 0 20px var(--aether-blue-glow);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 0 25px var(--aether-blue-glow), inset 0 2px 4px rgba(255,255,255,0.2);
   color: white;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   font-size: 11px;
-  height: 44px;
-  padding: 0 24px;
-  border-radius: 12px;
+  height: 46px;
+  padding: 0 28px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  transition: all 0.3s ease;
+  gap: 12px;
+  transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+  border: 0.5px solid rgba(255,255,255,0.1);
 }
 
 .btn-glow-blue:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 30px var(--aether-blue-glow);
-  background: #3b82f6;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 40px var(--aether-blue-glow), inset 0 2px 8px rgba(255,255,255,0.3);
 }
 
-/* Search Box - Dark Minimalist */
-.crm-search-input {
-  background: #05060a;
+/* Kanban Card Evolution */
+.kanban-card {
+  background: rgba(255,255,255,0.015);
   border: 1px solid var(--aether-border);
-  height: 52px;
-  border-radius: 16px;
-  padding: 0 24px 0 52px;
-  font-size: 13px;
-  color: white;
-  width: 100%;
+  border-radius: 20px;
+  padding: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: grab;
 }
+
+.kanban-card:hover {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+  transform: scale(1.01);
+}
+
+/* Scrollbar Style */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.1); }

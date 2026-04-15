@@ -51,47 +51,31 @@ export function TopBar({ onMenuClick }: TopBarProps) {
   return (
     <>
       <header className={cn(
-        "h-14 flex items-center justify-between px-6 sticky top-0 z-40 transition-all duration-300 border-b",
+        "h-16 flex items-center justify-between px-8 sticky top-0 z-40 transition-all duration-300",
         scrolled 
-          ? "bg-black/80 backdrop-blur-md border-border-default shadow-lg" 
-          : "bg-transparent border-transparent"
+          ? "bg-black/60 backdrop-blur-xl border-b border-white/[0.05] shadow-2xl" 
+          : "bg-transparent border-b border-transparent"
       )}>
-        {/* Left */}
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={onMenuClick}
-            className="md:hidden text-text-secondary hover:text-accent"
+            className="md:hidden text-white/40 hover:text-white"
           >
             <Menu className="h-5 w-5" />
           </Button>
-
-          <div 
-            className="hidden sm:flex items-center gap-2 text-text-muted text-[13px] w-64 justify-start px-3 py-1.5 rounded-md bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] transition-all cursor-pointer group"
-            onClick={() => setSearchOpen(true)}
-          >
-            <Search className="h-3.5 w-3.5 group-hover:text-accent transition-colors" />
-            <span className="font-sans">Buscar no CRM...</span>
-            <kbd className="ml-auto text-[10px] bg-white/10 text-text-muted px-1.5 py-0.5 rounded font-mono border border-white/5 uppercase">⌘K</kbd>
+          
+          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/10 select-none">
+             <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]" /> Node: Prod-Edge
           </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSearchOpen(true)}
-            className="sm:hidden text-text-secondary hover:text-accent"
-          >
-            <Search className="h-5 w-5" />
-          </Button>
         </div>
 
-        {/* Right */}
-        <div className="flex items-center gap-1 sm:gap-3">
+        <div className="flex items-center gap-2">
           {/* Notifications */}
-          <Button variant="ghost" size="icon" className="text-text-secondary hover:text-accent relative">
+          <Button variant="ghost" size="icon" className="text-white/20 hover:text-white relative hover:bg-white/5 transition-all">
             <Bell className="h-4 w-4" />
-            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-danger rounded-full" />
+            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_#3b82f6]" />
           </Button>
 
           {/* Theme Toggle */}
