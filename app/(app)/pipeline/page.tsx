@@ -144,9 +144,9 @@ export default function PipelinePage() {
     }))
   }))
 
-  const allDeals = stages.flatMap((s: any) => s.deals || [])
-  const totalValue = allDeals.reduce((acc: number, d: any) => acc + (Number(d.valorEstimado) || 0), 0)
-  const expiredCount = allDeals.filter((d: any) => (d.prioridade === "ALTA" && d.status === "OPEN")).length
+  const deals = stages.flatMap((s: any) => s.deals || [])
+  const totalValue = deals.reduce((acc: number, d: any) => acc + (Number(d.valorEstimado) || 0), 0)
+  const expiredCount = deals.filter((d: any) => (d.prioridade === "ALTA" && d.status === "OPEN")).length
 
   const handleAddStage = () => {
     const name = window.prompt("Nome da nova coluna:")
