@@ -117,7 +117,35 @@ export default function DashboardPage() {
     staleTime: 30_000,
   })
 
-  // ... (other useQuery calls kept same)
+  const { data: chartData, isLoading: chartLoading } = useQuery({
+    queryKey: ["dashboard-chart"],
+    queryFn: async () => {
+      const res = await fetch("/api/dashboard/chart")
+      if (!res.ok) throw new Error("Falha ao carregar dados do gráfico")
+      return res.json()
+    },
+    staleTime: 60_000,
+  })
+
+  const { data: utmData, isLoading: utmLoading } = useQuery({
+    queryKey: ["utm-analytics-basic"],
+    queryFn: async () => {
+      const res = await fetch("/api/utm-analytics")
+      if (!res.ok) throw new Error("Falha ao carregar UTM analytics")
+      return res.json()
+    },
+    staleTime: 60_000,
+  })
+
+  const { data: activityFeed, isLoading: activityLoading } = useQuery({
+    queryKey: ["dashboard-activity"],
+    queryFn: async () => {
+      const res = await fetch("/api/dashboard/activity")
+      if (!res.ok) throw new Error("Falha ao carregar atividade")
+      return res.json()
+    },
+    staleTime: 10_000,
+  })
 
   return (
     <div className="max-w-[1600px] mx-auto space-y-12 pb-12 px-2 sm:px-6 lg:px-10">
