@@ -1,25 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Geist+Mono:wght@100..900&display=swap');
 
 :root {
-  /* CORES - TOKENS GLOBAIS (ABSOLUTE ZERO) */
-  --bg-page: #000000;
-  --bg-surface: #0a0c10;
-  --bg-surface-2: #111318;
-  --border-subtle: rgba(255, 255, 255, 0.05);
+  /* CORES - TOKENS GLOBAIS (EXECUTIVE NAVY) */
+  --bg-page: #0D1117;
+  --bg-surface: rgba(255, 255, 255, 0.03);
+  --bg-surface-2: #161B22;
+  --border-subtle: rgba(255, 255, 255, 0.07);
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.45);
-  --text-muted: #626C76;
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-muted: #8B949E;
   
   --accent-primary: #d4af37;
   --accent-gold: #d4af37;
-  --bg-auth-base: #050608;
-  
-  /* PIPELINE REFINED TOKENS (ABSOLUTE ZERO) */
-  --pipeline-bg: #000000;
-  --pipeline-col: #0a0c10;
-  --pipeline-card: #111318;
-  --pipeline-card-hover: #161B22;
-  --pipeline-border: rgba(255, 255, 255, 0.04);
+  /* PIPELINE REFINED TOKENS (GLASS STYLE) */
+  --pipeline-bg: #0D1117;
+  --pipeline-col: rgba(255, 255, 255, 0.03);
+  --pipeline-card: #1C2333;
+  --pipeline-card-hover: #1F2A3D;
+  --pipeline-border: rgba(255, 255, 255, 0.08);
 
   --pipeline-blue: #3B82F6;
   --pipeline-green: #10B981;
