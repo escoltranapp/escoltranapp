@@ -133,13 +133,13 @@ function NewDealModal({
    STAT CARD — Elevated KPI block
    ═══════════════════════════════════════════════════════ */
 function StatCard({
-  label, value, sub, icon: Icon, accent,
+  label, value, icon: Icon, accent,
 }: {
-  label: string; value: string; sub?: string; icon: React.ElementType; accent: string
+  label: string; value: string; icon: React.ElementType; accent: string
 }) {
   return (
     <div
-      className="flex items-center gap-4 px-5 py-[18px] rounded-xl flex-1 min-w-0 transition-all duration-200 group hover:-translate-y-px"
+      className="flex items-center gap-3 px-4 py-3 rounded-xl min-w-0 transition-all duration-200 group hover:-translate-y-px"
       style={{
         background: "rgba(255,255,255,0.025)",
         border: "1px solid rgba(255,255,255,0.055)",
@@ -147,17 +147,16 @@ function StatCard({
       }}
     >
       <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105"
+        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105"
         style={{ background: `${accent}15`, border: `1px solid ${accent}20` }}
       >
-        <Icon size={18} color={accent} />
+        <Icon size={15} color={accent} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em] mb-[6px]" style={{ color: "rgba(255,255,255,0.3)" }}>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>
           {label}
         </p>
-        <p className="text-[20px] font-bold leading-none text-white truncate tracking-tight">{value}</p>
-        {sub && <p className="text-[11px] mt-[5px] font-medium" style={{ color: "rgba(255,255,255,0.18)" }}>{sub}</p>}
+        <p className="text-[16px] font-bold leading-none text-white truncate tracking-tight">{value}</p>
       </div>
     </div>
   )
@@ -278,11 +277,11 @@ export default function PipelinePage() {
 
       {/* ═══════════ HEADER ═══════════════════════ */}
       <div
-        className="px-6 pt-7 pb-5 shrink-0"
+        className="px-5 pt-5 pb-4 shrink-0"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.055)" }}
       >
         {/* Top row: Title + Actions */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div>
             <div className="flex items-center gap-2.5 mb-2">
               <div
@@ -322,26 +321,23 @@ export default function PipelinePage() {
           </div>
         </div>
 
-        {/* KPI Stats row */}
-        <div className="flex gap-3">
+        {/* KPI Stats row — compact, not stretched */}
+        <div className="grid grid-cols-3 gap-3 max-w-[720px]">
           <StatCard
             label="Oportunidades"
             value={isLoading ? "—" : String(allOpen.length)}
-            sub="cards ativos"
             icon={Layers}
             accent="#818cf8"
           />
           <StatCard
-            label="Valor do Pipeline"
+            label="Valor Pipeline"
             value={isLoading ? "—" : totalValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-            sub="em aberto"
             icon={TrendingUp}
             accent="#34d399"
           />
           <StatCard
             label="Alertas"
             value={isLoading ? "—" : String(overdue)}
-            sub="deals +30 dias"
             icon={AlertTriangle}
             accent={overdue > 0 ? "#f87171" : "#6b7280"}
           />
@@ -350,7 +346,7 @@ export default function PipelinePage() {
 
       {/* ═══════════ BOARD — LAYER 1: deepest ═════ */}
       <div
-        className="flex-1 overflow-x-auto px-6 pt-6"
+        className="flex-1 overflow-x-auto px-5 pt-4"
         style={{
           scrollbarWidth: "thin",
           scrollbarColor: "rgba(255,255,255,0.06) transparent",
