@@ -16,11 +16,12 @@ import { toast } from "@/hooks/use-toast"
 import {
   DollarSign,
   User,
-  Phone,
-  Link,
   Calendar,
   CheckCircle,
   XCircle,
+  Clock,
+  Zap,
+  Tag
 } from "lucide-react"
 import type { Deal } from "./DealCard"
 
@@ -40,154 +41,116 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.error || "Falha ao atualizar deal")
-      }
+      if (!res.ok) throw new Error("Falha ao atualizar")
       return res.json()
     },
     onSuccess: (_, status) => {
-      toast({ title: status === "WON" ? "Deal marcado como Ganho!" : "Deal marcado como Perdido." })
+      toast({ title: status === "WON" ? "Deal Ganho!" : "Deal Perdido." })
       onOpenChange(false)
-      queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
-    },
-    onError: (err: Error) => {
-      toast({ variant: "destructive", title: err.message })
+      queryClient.invalidateQueries({ queryKey: ["deals"] })
     },
   })
 
   if (!deal) return null
 
-  const contactName = deal.contact
-    ? `${deal.contact.nome}${deal.contact.sobrenome ? " " + deal.contact.sobrenome : ""}`
-    : null
+  const contactName = deal.contact ? `${deal.contact.nome} ${deal.contact.sobrenome || ""}` : "Sem Responsável"
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-lg bg-card border-l border-border" side="right">
-        <SheetHeader className="mb-4">
-          <div className="flex items-start justify-between pr-6">
-            <div>
-              <SheetTitle className="text-foreground text-lg">{deal.titulo}</SheetTitle>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge
-                  className={
-                    deal.status === "WON"
-                      ? "bg-green-500/10 text-green-400 border-green-500/20"
-                      : deal.status === "LOST"
-                      ? "bg-red-500/10 text-red-400 border-red-500/20"
-                      : "bg-primary/10 text-primary border-primary/20"
-                  }
-                >
-                  {deal.status === "OPEN" ? "Aberto" : deal.status === "WON" ? "Ganho" : "Perdido"}
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  {deal.prioridade === "ALTA" ? "Alta Prioridade" : deal.prioridade === "MEDIA" ? "Média Prioridade" : "Baixa Prioridade"}
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </SheetHeader>
-
-        <ScrollArea className="h-[calc(100vh-140px)]">
-          <div className="space-y-4 pr-1">
-            {/* Value */}
-            {deal.valorEstimado && (
-              <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-primary" />
-                  <span className="text-sm text-muted-foreground">Valor Estimado</span>
+      <SheetContent className="w-full sm:max-w-xl bg-[#0a0c10] border-l border-white/10 p-0" side="right">
+        
+        <div className="h-full flex flex-col">
+          {/* Header Area */}
+          <div className="p-10 pb-6 bg-gradient-to-b from-white/[0.02] to-transparent">
+             <div className="flex items-center gap-3 mb-6">
+                <div className="bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full text-[10px] font-black text-blue-400 uppercase tracking-widest">
+                   {deal.status}
                 </div>
-                <p className="text-xl font-bold text-primary mt-1">
-                  {formatCurrency(deal.valorEstimado)}
-                </p>
-              </div>
-            )}
+                <div className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-[10px] font-black text-white/40 uppercase tracking-widest">
+                   #{deal.id.slice(0, 8)}
+                </div>
+             </div>
+             <SheetTitle className="text-[32px] font-black text-white tracking-tighter leading-none mb-4 uppercase">
+                {deal.titulo}
+             </SheetTitle>
+             <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 text-white/30">
+                   <Clock size={14} />
+                   <span className="text-[11px] font-bold uppercase tracking-wider">Criado em {formatDate(new Date().toISOString())}</span>
+                </div>
+             </div>
+          </div>
 
-            {/* Contact */}
-            {contactName && (
-              <>
-                <Separator />
-                <div className="space-y-2">
-                  <h3 className="text-sm font-semibold text-foreground">Contato</h3>
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{contactName}</span>
-                  </div>
-                  {deal.contact?.email && (
-                    <div className="flex items-center gap-2">
-                      <Link className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">{deal.contact.email}</span>
+          <ScrollArea className="flex-1 px-10">
+            <div className="space-y-12 pb-20">
+              
+              {/* Financial Box */}
+              <div className="bg-white/[0.02] border border-white/[0.05] rounded-[24px] p-8">
+                 <div className="flex items-center gap-3 text-white/20 mb-4">
+                    <DollarSign size={18} />
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">Estimativa Financeira</span>
+                 </div>
+                 <div className="text-[42px] font-black text-white tracking-tighter">
+                   {formatCurrency(deal.valorEstimado || 0)}
+                 </div>
+              </div>
+
+              {/* Data Grid */}
+              <div className="grid grid-cols-2 gap-10">
+                 <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-white/20">
+                       <User size={14} />
+                       <span className="text-[11px] font-black uppercase tracking-widest">Responsável</span>
                     </div>
-                  )}
-                </div>
-              </>
-            )}
+                    <div className="flex items-center gap-3">
+                       <div className="w-8 h-8 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-[10px] font-black text-blue-400">
+                         {contactName[0]}
+                       </div>
+                       <span className="text-[14px] font-bold text-white/80">{contactName}</span>
+                    </div>
+                 </div>
 
-            {/* Details */}
-            <Separator />
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-foreground">Detalhes</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {deal.origem && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Origem</p>
-                    <p className="text-sm font-medium">{deal.origem}</p>
-                  </div>
-                )}
-                <div>
-                  <p className="text-xs text-muted-foreground">Criado em</p>
-                  <p className="text-sm font-medium">{formatDate(deal.createdAt)}</p>
-                </div>
+                 <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-white/20">
+                       <Zap size={14} />
+                       <span className="text-[11px] font-black uppercase tracking-widest">Prioridade</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                       <div className="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+                       <span className="text-[14px] font-bold text-white/80">{deal.prioridade}</span>
+                    </div>
+                 </div>
               </div>
-            </div>
 
-            {/* Actions — only show for OPEN deals */}
-            {deal.status === "OPEN" && (
-              <>
-                <Separator />
-                <div className="space-y-2">
-                  <h3 className="text-sm font-semibold text-foreground">Ações</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-green-400 border-green-500/20 hover:bg-green-500/10"
-                      disabled={updateStatus.isPending}
-                      onClick={() => updateStatus.mutate("WON")}
-                    >
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      {updateStatus.isPending ? "..." : "Marcar como Ganho"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-red-400 border-red-500/20 hover:bg-red-500/10"
-                      disabled={updateStatus.isPending}
-                      onClick={() => updateStatus.mutate("LOST")}
-                    >
-                      <XCircle className="h-4 w-4 mr-2" />
-                      {updateStatus.isPending ? "..." : "Marcar como Perdido"}
-                    </Button>
-                  </div>
+              {/* Actions */}
+              {deal.status === "OPEN" && (
+                <div className="pt-10 border-t border-white/5">
+                   <h3 className="text-[11px] font-black text-white/20 uppercase tracking-[0.3em] mb-6">Ações Estratégicas</h3>
+                   <div className="grid grid-cols-2 gap-4">
+                      <Button
+                        className="h-16 bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 text-green-400 font-black text-[12px] uppercase tracking-widest rounded-2xl"
+                        onClick={() => updateStatus.mutate("WON")}
+                        disabled={updateStatus.isPending}
+                      >
+                        <CheckCircle className="mr-3" size={20} />
+                        Ganho
+                      </Button>
+                      <Button
+                        className="h-16 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 font-black text-[12px] uppercase tracking-widest rounded-2xl"
+                        onClick={() => updateStatus.mutate("LOST")}
+                        disabled={updateStatus.isPending}
+                      >
+                        <XCircle className="mr-3" size={20} />
+                        Perdido
+                      </Button>
+                   </div>
                 </div>
-              </>
-            )}
+              )}
 
-            {/* Activities placeholder */}
-            <Separator />
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-foreground">Atividades</h3>
-              <p className="text-sm text-muted-foreground">Nenhuma atividade registrada</p>
-              <Button variant="outline" size="sm" className="w-full" onClick={() => {
-                toast({ title: "Em breve", description: "Crie atividades na aba Atividades e associe a este deal." })
-              }}>
-                <Calendar className="h-4 w-4 mr-2" />
-                Adicionar Atividade
-              </Button>
             </div>
-          </div>
-        </ScrollArea>
+          </ScrollArea>
+        </div>
+
       </SheetContent>
     </Sheet>
   )

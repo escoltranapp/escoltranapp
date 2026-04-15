@@ -13,6 +13,17 @@
   --accent-primary: #d4af37;
   --accent-gold: #d4af37;
   --bg-auth-base: #050608;
+  
+  /* PIPELINE SPECIFIC TOKENS */
+  --pipeline-bg: #0D1117;
+  --pipeline-surface: #161B22;
+  --pipeline-surface-2: #1C2333;
+  --pipeline-border: rgba(255, 255, 255, 0.08);
+  --pipeline-blue: #3B82F6;
+  --pipeline-purple: #8B5CF6;
+  --pipeline-yellow: #F59E0B;
+  --pipeline-green: #10B981;
+  --pipeline-red: #EF4444;
 
   --accent-green: #10b981;
   --accent-red: #ef4444;
@@ -514,3 +525,76 @@ body {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+/* --- PIPELINE REFACTOR (SENIOR ENG SPEC) -------------------- */
+.pipeline-layout {
+  background-color: var(--pipeline-bg);
+  min-height: 100vh;
+  padding: 40px;
+}
+
+.pipeline-header-badge {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: var(--pipeline-blue);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+}
+
+.kpi-card-v2 {
+  background: var(--pipeline-surface);
+  border: 1px solid var(--pipeline-border);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.kpi-icon-v2 {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kanban-col-header {
+  padding: 4px 4px 16px 4px;
+}
+
+.stage-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.card-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.priority-pill {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
