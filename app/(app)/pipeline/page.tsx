@@ -33,7 +33,7 @@ function KPICard({ label, value, icon: Icon, type = "default" }: any) {
   const config = configs[type] || configs.default
 
   return (
-    <div className="bg-[#161B22] border border-white/[0.08] rounded-[16px] p-6 flex-1 flex items-center gap-5">
+    <div className="bg-[var(--bg-surface)] border border-white/[0.08] rounded-[16px] p-6 flex-1 flex items-center gap-5">
       <div 
         className="w-10 h-10 rounded-[10px] flex items-center justify-center" 
         style={{ backgroundColor: config.bg, color: config.icon }}
@@ -92,7 +92,7 @@ export default function PipelinePage() {
 
         <div className="flex items-center gap-3 pt-2">
            {/* Pipeline Switcher */}
-           <button className="flex items-center gap-3 px-4 py-2.5 bg-[#161B22] border border-white/[0.08] rounded-[10px] text-[12px] font-semibold text-[#8B949E] hover:text-white transition-all">
+           <button className="flex items-center gap-3 px-4 py-2.5 bg-[var(--bg-surface)] border border-white/[0.08] rounded-[10px] text-[12px] font-semibold text-[#8B949E] hover:text-white transition-all">
               <div className="w-2 h-2 rounded-full bg-blue-500" />
               {activeBoard}
               <ChevronDown size={14} className="opacity-40" />

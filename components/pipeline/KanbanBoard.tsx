@@ -63,7 +63,7 @@ function KanbanColumn({ stage, children, onAddDeal }: { stage: Stage, children: 
       {/* REFINED DROPPABLE AREA */}
       <div 
         ref={setNodeRef}
-        className="flex-1 bg-[#161B22] border border-white/[0.07] rounded-[12px] p-3 min-h-[500px] flex flex-col gap-1 overflow-y-auto scrollbar-hide"
+        className="flex-1 bg-[var(--bg-surface)] border border-white/[0.07] rounded-[12px] p-3 min-h-[500px] flex flex-col gap-1 overflow-y-auto scrollbar-hide"
       >
         <div className="flex flex-col gap-3 mb-2">
            {children}
