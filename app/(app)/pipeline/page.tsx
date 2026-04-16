@@ -41,6 +41,19 @@ export default function PipelinePage() {
   const [newDealStageId, setNewDealStageId] = useState<string | null>(null)
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
   const [isPipelineMenuOpen, setIsPipelineMenuOpen] = useState(false)
+  const [showNewColumnModal, setShowNewColumnModal] = useState(false)
+  const [newColumnName, setNewColumnName] = useState("")
+  const [selectedColor, setSelectedColor] = useState("#3b82f6")
+
+  const colors = [
+    "#3b82f6", // Blue
+    "#60a5fa", // Light Blue
+    "#8b5cf6", // Purple
+    "#f59e0b", // Amber
+    "#ef4444", // Red
+    "#ec4899", // Pink
+    "#10b981", // Green
+  ]
 
   const { data: boardData, isLoading, error, refetch } = useQuery({
     queryKey: ["pipeline-stages"],
@@ -100,6 +113,79 @@ export default function PipelinePage() {
 
   return (
     <div className="page-container animate-aether !bg-[#050505]">
+      
+      {/* ─── MODAL: NOVA COLUNA (REFERENCE MATCH) ────────────────── */}
+      {showNewColumnModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-300" 
+            onClick={() => setShowNewColumnModal(false)}
+          />
+          <div className="relative w-full max-w-[440px] bg-[#0c0c0e] border border-white/10 rounded-[28px] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.8)] animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between mb-8">
+               <h2 className="text-sm font-black text-white uppercase tracking-[0.2em]">Nova Coluna</h2>
+               <button 
+                 onClick={() => setShowNewColumnModal(false)}
+                 className="w-8 h-8 rounded-lg flex items-center justify-center border border-white/5 hover:bg-white/5 transition-colors"
+                >
+                 <Plus size={18} className="rotate-45 text-white/40" />
+               </button>
+            </div>
+
+            <div className="space-y-6">
+               <div>
+                  <label className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-3 block">Nome da Coluna</label>
+                  <input 
+                    autoFocus
+                    value={newColumnName}
+                    onChange={(e) => setNewColumnName(e.target.value)}
+                    placeholder="Ex: Em Negociação"
+                    className="w-full bg-[#111115] border border-white/5 rounded-xl px-5 py-3.5 text-sm text-white placeholder:text-white/10 focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/20 transition-all outline-none"
+                  />
+               </div>
+
+               <div>
+                  <label className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-3 block">Cor</label>
+                  <div className="flex flex-wrap gap-3">
+                    {colors.map(color => (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        className={cn(
+                          "w-8 h-8 rounded-full transition-all duration-300 relative",
+                          selectedColor === color ? "scale-110 ring-2 ring-white/20 ring-offset-2 ring-offset-[#0c0c0e]" : "hover:scale-105"
+                        )}
+                        style={{ backgroundColor: color }}
+                      >
+                         {selectedColor === color && (
+                            <div className="absolute inset-0 rounded-full shadow-[0_0_15px_currentColor]" style={{ color }} />
+                         )}
+                      </button>
+                    ))}
+                  </div>
+               </div>
+            </div>
+
+            <div className="flex items-center gap-3 mt-10">
+               <button 
+                 onClick={() => setShowNewColumnModal(false)}
+                 className="flex-1 py-3.5 rounded-xl border border-white/5 text-xs font-black text-white/40 hover:bg-white/5 hover:text-white transition-all"
+                >
+                 Cancelar
+               </button>
+               <button 
+                 className="flex-1 py-3.5 rounded-xl bg-blue-600 text-xs font-black text-white shadow-[0_8px_20px_-8px_rgba(37,99,235,0.6)] hover:bg-blue-500 transition-all"
+                 onClick={() => {
+                   setShowNewColumnModal(false)
+                   setNewColumnName("")
+                 }}
+                >
+                 Criar Coluna
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* ─── HEADER (REFINED SAAS DESIGN) ─────────────────────── */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
@@ -171,7 +257,10 @@ export default function PipelinePage() {
           </div>
 
           {/* NOVA COLUNA (PRIMARY GLOW) */}
-          <button className="relative flex items-center gap-3 px-8 py-3 rounded-[12px] bg-[#2563eb] hover:bg-[#3b82f6] text-white transition-all shadow-[0_8px_20px_-8px_rgba(37,99,235,0.5)] whitespace-nowrap">
+          <button 
+            onClick={() => setShowNewColumnModal(true)}
+            className="relative flex items-center gap-3 px-8 py-3 rounded-[12px] bg-[#2563eb] hover:bg-[#3b82f6] text-white transition-all shadow-[0_8px_20px_-8px_rgba(37,99,235,0.5)] whitespace-nowrap"
+          >
             <Plus size={16} strokeWidth={3} />
             <span className="text-[13px] font-black tracking-tight">Nova Coluna</span>
           </button>
