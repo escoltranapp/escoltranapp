@@ -151,7 +151,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-6 h-full min-h-[calc(100vh-250px)] overflow-x-auto pb-4 kanban-scrollbar">
+      <div className="flex gap-6 h-full min-h-[calc(100vh-250px)] overflow-x-auto pb-2 kanban-scrollbar">
         {stages.map((stage) => {
           const style = getHeaderStyle(stage.name)
           const totalValue = stage.deals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
@@ -231,17 +231,17 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
 
       <style jsx global>{`
         .kanban-scrollbar::-webkit-scrollbar {
-          height: 6px;
+          height: 5px;
         }
         .kanban-scrollbar::-webkit-scrollbar-track {
           background: transparent;
         }
         .kanban-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.08);
+          border-radius: 20px;
         }
         .kanban-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.15);
         }
       `}</style>
     </DndContext>
