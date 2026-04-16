@@ -64,6 +64,8 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
   const [isAddingStage, setIsAddingStage] = useState(false)
   const [newStageName, setNewStageName] = useState("")
+  const [editingStageId, setEditingStageId] = useState<string | null>(null)
+  const [editStageName, setEditStageName] = useState("")
   
   // DRAGGABLE SCROLL LOGIC
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -119,6 +121,38 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
 
   const handleDragEnd = (event: DragEndEvent) => {
      setActiveDeal(null)
+  }
+
+  const handleUpdateStage = async (id: string) => {
+    if (!editStageName.trim()) return
+    try {
+      const res = await fetch(`/api/pipeline/stages/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: editStageName })
+      })
+      if (res.ok) {
+        setEditingStageId(null)
+        window.location.reload()
+      }
+    } catch (e) { console.error(e) }
+  }
+
+  const handleDeleteStage = async (id: string, dealsCount: number) => {
+    if (dealsCount > 0) {
+      alert("Não é possível excluir uma etapa que contém registros.")
+      return
+    }
+    if (!confirm("Tem certeza que deseja excluir esta etapa?")) return
+
+    try {
+      const res = await fetch(`/api/pipeline/stages/${id}`, {
+        method: "DELETE"
+      })
+      if (res.ok) {
+        window.location.reload()
+      }
+    } catch (e) { console.error(e) }
   }
 
   const handleAddStage = async () => {
@@ -196,13 +230,51 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
           return (
             <div key={stage.id} className="flex flex-col min-w-[320px] max-w-[320px] select-none">
               {/* STAGE HEADER ESCOLTRAN STYLE */}
-              <div className="mb-6 px-1">
+              <div className="mb-6 px-1 group/header">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_10px_rgba(249,115,22,0.6)]" style={{ backgroundColor: stage.color || '#F97316' }} />
-                    <h2 className="text-[13px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">
-                      {stage.name}
-                    </h2>
+                    
+                    {editingStageId === stage.id ? (
+                      <div className="flex items-center gap-2">
+                         <input 
+                            autoFocus
+                            value={editStageName}
+                            onChange={(e) => setEditStageName(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleUpdateStage(stage.id)}
+                            className="bg-[#1A1A1A] border border-[#F97316]/30 rounded-lg px-2 py-1 text-[13px] font-black text-white w-32 focus:border-[#F97316] outline-none"
+                         />
+                         <button onClick={() => handleUpdateStage(stage.id)} className="text-[#F97316]">
+                           <span className="material-symbols-outlined text-[18px]">check</span>
+                         </button>
+                         <button onClick={() => setEditingStageId(null)} className="text-[#404040]">
+                           <span className="material-symbols-outlined text-[18px]">close</span>
+                         </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 group/title">
+                        <h2 className="text-[13px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">
+                          {stage.name}
+                        </h2>
+                        <div className="flex opacity-0 group-hover/header:opacity-100 transition-opacity">
+                            <button 
+                               onClick={() => {
+                                  setEditingStageId(stage.id)
+                                  setEditStageName(stage.name)
+                               }}
+                               className="p-1 hover:text-[#F97316] transition-colors"
+                            >
+                               <span className="material-symbols-outlined text-[14px]">edit</span>
+                            </button>
+                            <button 
+                               onClick={() => handleDeleteStage(stage.id, stage.deals.length)}
+                               className="p-1 hover:text-red-500 transition-colors"
+                            >
+                               <span className="material-symbols-outlined text-[14px]">delete</span>
+                            </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <span className="text-[10px] font-mono font-black text-[#F97316] bg-[#F97316]/10 px-2.5 py-0.5 rounded-lg border border-[#F97316]/20">
                     {stage.deals.length}
