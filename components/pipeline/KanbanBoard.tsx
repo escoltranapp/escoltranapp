@@ -25,6 +25,7 @@ import { DealCard, Deal } from "./DealCard"
 
 export interface Stage {
   id: string
+  pipelineId: string
   name: string
   color: string
   deals: Deal[]

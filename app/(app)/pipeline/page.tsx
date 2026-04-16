@@ -68,6 +68,7 @@ export default function PipelinePage() {
 
   const stages: Stage[] = (boardData?.stages || []).map((s: any) => ({
     id: s.id,
+    pipelineId: s.pipelineId,
     name: s.name,
     color: s.color || "#F97316",
     deals: (s.deals || []).map((d: any) => ({
