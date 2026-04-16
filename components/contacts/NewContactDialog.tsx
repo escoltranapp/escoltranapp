@@ -49,7 +49,7 @@ export function NewContactDialog({ open, onOpenChange }: NewContactDialogProps) 
       return res.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["contacts-list"] })
+      queryClient.invalidateQueries({ queryKey: ["contacts"] })
       toast({ 
         title: "ENTIDADE SINCRONIZADA 🛡️", 
         description: "Novo nó de contato adicionado ao diretório mestre." 
