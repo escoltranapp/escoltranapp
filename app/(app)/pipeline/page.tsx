@@ -18,15 +18,15 @@ function KPICard({
   label: string; value: string | number; icon: React.ElementType; color?: string
 }) {
   return (
-    <div className="bg-[#111114] border border-white/[0.06] rounded-[12px] p-[20px_24px] flex flex-col gap-4 group">
+    <div className="bg-[#111114] border border-white/[0.06] rounded-[16px] p-7 flex flex-col gap-5 group transition-all hover:border-white/10">
       <div className="flex items-center justify-between">
         <div style={{ color: color }} className="opacity-80">
           <Icon size={24} strokeWidth={2} />
         </div>
       </div>
       <div>
-        <div className="text-[11px] font-bold text-[#8A8FA3] uppercase tracking-[0.05em] mb-1">{label}</div>
-        <div className="text-[24px] font-semibold text-white tracking-tight">{value}</div>
+        <div className="text-[11px] font-bold text-white/30 uppercase tracking-[0.1em] mb-2">{label}</div>
+        <div className="text-[28px] font-semibold text-white tracking-tight">{value}</div>
       </div>
     </div>
   )
@@ -111,43 +111,43 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="page-container animate-aether !bg-[#0A0A0A]">
+    <div className="page-container animate-aether !bg-[#0A0A0A] !px-10 !pt-10">
       
-      {/* ─── MODAL: NOVA COLUNA (REFERENCE MATCH) ────────────────── */}
+      {/* ─── MODAL: NOVA COLUNA (REFINED PADDING) ────────────────── */}
       {showNewColumnModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowNewColumnModal(false)} />
-          <div className="relative w-full max-w-md bg-[#111114] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-white/5 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-white uppercase tracking-wider">Nova Coluna</h2>
+          <div className="relative w-full max-w-md bg-[#111114] border border-white/10 rounded-[24px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-8 border-b border-white/5 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white uppercase tracking-wider">Nova Coluna</h2>
               <button onClick={() => setShowNewColumnModal(false)} className="text-white/20 hover:text-white transition-colors">
-                <Plus size={24} className="rotate-45" />
+                <Plus size={28} className="rotate-45" />
               </button>
             </div>
             
-            <div className="p-6 space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Nome da Coluna</label>
+            <div className="p-8 space-y-8">
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-white/20 uppercase tracking-[0.2em] ml-1">Nome da Coluna</label>
                 <input 
                   type="text" 
                   value={newColumnName}
                   onChange={(e) => setNewColumnName(e.target.value)}
                   placeholder="Ex: Em Negociação"
-                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-blue-500/50 outline-none transition-all"
+                  className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:border-blue-500/50 outline-none transition-all"
                   autoFocus
                 />
               </div>
 
-              <div className="space-y-3">
-                <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Cor</label>
-                <div className="flex flex-wrap gap-3">
+              <div className="space-y-4">
+                <label className="text-xs font-bold text-white/20 uppercase tracking-[0.2em] ml-1">Selecione a Cor</label>
+                <div className="flex flex-wrap gap-4 px-1">
                   {colors.map(color => (
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
                       className={cn(
-                        "w-8 h-8 rounded-full transition-all relative",
-                        selectedColor === color ? "ring-2 ring-white/40 ring-offset-2 ring-offset-[#111114]" : "hover:scale-110"
+                        "w-9 h-9 rounded-full transition-all relative",
+                        selectedColor === color ? "ring-2 ring-white/40 ring-offset-4 ring-offset-[#111114]" : "hover:scale-110"
                       )}
                       style={{ backgroundColor: color }}
                     />
@@ -156,16 +156,16 @@ export default function PipelinePage() {
               </div>
             </div>
 
-            <div className="p-6 bg-black/20 flex gap-3">
+            <div className="p-8 bg-black/20 flex gap-4">
               <button 
                 onClick={() => setShowNewColumnModal(false)}
-                className="flex-1 py-3 px-4 rounded-xl border border-white/5 text-xs font-bold text-white/40 hover:bg-white/5 transition-all"
+                className="flex-1 py-4 px-6 rounded-2xl border border-white/5 text-xs font-bold text-white/40 hover:bg-white/5 transition-all"
               >
                 Cancelar
               </button>
               <button 
                 onClick={() => { setShowNewColumnModal(false); setNewColumnName(""); }}
-                className="flex-1 py-3 px-4 rounded-xl bg-blue-600 text-xs font-bold text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20"
+                className="flex-1 py-4 px-6 rounded-2xl bg-blue-600 text-xs font-bold text-white hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/10"
               >
                 Criar Coluna
               </button>
@@ -175,42 +175,42 @@ export default function PipelinePage() {
       )}
       
       {/* ─── HEADER (REFACTORED SPACING) ─────────────────────── */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pt-2">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
         <div>
-          <h1 className="text-[32px] font-bold text-white tracking-tight mb-0.5">Pipeline</h1>
-          <div className="text-[11px] font-medium tracking-[0.1em] text-white/30 uppercase">Gestão de Oportunidades • Visão Kanban</div>
+          <h1 className="text-[36px] font-bold text-white tracking-tight mb-1">Pipeline</h1>
+          <div className="text-[12px] font-medium tracking-[0.1em] text-white/20 uppercase">Gestão de Oportunidades • Visão Kanban</div>
         </div>
         
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-4">
           <div className="relative">
             <button 
               onClick={() => setIsPipelineMenuOpen(!isPipelineMenuOpen)}
-              className="flex items-center gap-3 px-4 py-2 rounded-lg bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all"
+              className="flex items-center gap-4 px-5 py-2.5 rounded-xl bg-white/[0.03] border border-white/5 hover:border-white/20 transition-all"
             >
               <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
-              <span className="text-[13px] font-medium text-white/80">Pipeline Principal</span>
-              <Plus size={14} className={cn("text-white/20 transition-transform", isPipelineMenuOpen && "rotate-45")} />
+              <span className="text-[14px] font-medium text-white/80">Pipeline Principal</span>
+              <Plus size={16} className={cn("text-white/20 transition-transform", isPipelineMenuOpen && "rotate-45")} />
             </button>
           </div>
 
-          <button onClick={() => setShowNewColumnModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition-all font-medium text-[13px]">
-            <Plus size={16} />
-            <span>Nova Coluna</span>
+          <button onClick={() => setShowNewColumnModal(true)} className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-500 transition-all font-bold text-[13px] shadow-lg shadow-blue-600/10">
+            <Plus size={18} />
+            <span className="uppercase tracking-wider">Nova Coluna</span>
           </button>
 
-          <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 text-white/80 hover:bg-white/5 transition-all text-[13px]">
-            <Plus size={16} />
+          <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl border border-white/10 text-white/80 hover:bg-white/5 transition-all text-[13px] font-bold uppercase tracking-wider">
+            <Plus size={18} />
             <span>Novo Board</span>
           </button>
           
-          <button onClick={() => refetch()} className="p-2 rounded-lg border border-white/10 hover:bg-white/5 transition-all text-white/40">
-            <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
+          <button onClick={() => refetch()} className="p-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all text-white/20">
+            <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
           </button>
         </div>
       </header>
 
       {/* ─── METRICS (CLEAN NOIR) ───────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         <KPICard 
           label="Total Leads"
           value={isLoading ? "..." : allOpen.length}

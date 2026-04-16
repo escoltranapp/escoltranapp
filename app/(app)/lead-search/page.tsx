@@ -132,21 +132,20 @@ export default function LeadSearchPage() {
          <KPICard label="Performance" value="98.2%" subtext="Dataset sincronizado" icon={TrendingUp} color="#10b981" />
       </div>
 
-      {/* SELEÇÃO DE MOTOR */}
-      <div className="flex flex-col gap-6">
-         <h4 className="font-bold text-[11px] uppercase tracking-widest text-white/30 ml-1">Seleção de Motor Neural</h4>
-         <div className="flex bg-white/5 p-1 rounded-2xl w-fit border border-white/5">
+      <div className="flex flex-col gap-8">
+         <h4 className="font-bold text-[11px] uppercase tracking-[0.2em] text-white/20 ml-2">Seleção de Motor Neural</h4>
+         <div className="flex bg-white/[0.03] p-2 rounded-[22px] w-fit border border-white/5 backdrop-blur-sm">
             <button
               onClick={() => setActiveTab("cnpj")}
-              className={cn("h-11 px-8 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
-                activeTab === "cnpj" ? "bg-[#d4af37] text-white shadow-lg" : "text-white/30 hover:text-white")}
+              className={cn("h-12 px-10 rounded-[16px] text-[10px] font-bold uppercase tracking-widest transition-all",
+                activeTab === "cnpj" ? "bg-[#d4af37] text-white shadow-[0_8px_20px_rgba(212,175,55,0.3)]" : "text-white/30 hover:text-white")}
             >
                Receita Federal Cloud
             </button>
             <button
               onClick={() => setActiveTab("google")}
-              className={cn("h-11 px-8 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
-                activeTab === "google" ? "bg-[#d4af37] text-white shadow-lg" : "text-white/30 hover:text-white")}
+              className={cn("h-12 px-10 rounded-[16px] text-[10px] font-bold uppercase tracking-widest transition-all",
+                activeTab === "google" ? "bg-[#d4af37] text-white shadow-[0_8px_20px_rgba(212,175,55,0.3)]" : "text-white/30 hover:text-white")}
             >
                Parâmetros Locais
             </button>

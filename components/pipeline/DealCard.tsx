@@ -56,8 +56,8 @@ export function DealCard({ deal, onClick }: DealCardProps) {
       {...listeners}
       onClick={onClick}
       className={cn(
-        "bg-[#111114] border border-white/[0.05] rounded-xl p-4 cursor-grab active:cursor-grabbing transition-all duration-150 shadow-sm hover:border-white/10 hover:-translate-y-0.5 group relative",
-        isDragging && "z-50 ring-1 ring-blue-500/20"
+        "bg-[#111114] border border-white/[0.05] rounded-2xl p-6 cursor-grab active:cursor-grabbing transition-all duration-150 shadow-md hover:border-white/10 hover:-translate-y-1 group relative",
+        isDragging && "z-50 ring-2 ring-blue-500/20"
       )}
     >
       <div className="flex items-start justify-between mb-3">
