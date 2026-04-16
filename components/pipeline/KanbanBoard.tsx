@@ -206,13 +206,13 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
                       />
                     ))}
                     
-                    {/* ADD CARD BUTTON (GHOST STYLE) */}
+                    {/* ADD CARD BUTTON (RECTANGULAR STYLE) */}
                     <button 
                       onClick={() => onAddDeal?.(stage.id)}
-                      className="flex items-center justify-center gap-2 w-full py-4 border-2 border-dashed border-white/[0.05] rounded-[10px] text-white/10 hover:text-white/30 hover:border-white/10 hover:bg-white/[0.01] transition-all group mt-1"
+                      className="flex items-center justify-center gap-2 w-full py-4 border border-dashed border-white/[0.05] rounded-[8px] text-[#444] hover:text-[#777] hover:border-white/10 hover:bg-white/[0.01] transition-all group mt-1"
                     >
-                      <Plus size={16} className="group-hover:scale-110 transition-transform" />
-                      <span className="text-[13px] font-medium">Adicionar card</span>
+                      <Plus size={14} className="opacity-40 group-hover:opacity-100 transition-opacity" />
+                      <span className="text-[13px] font-medium tracking-tight">Adicionar card</span>
                     </button>
                   </div>
                 </SortableContext>
