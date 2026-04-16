@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   DndContext,
   DragOverlay,
@@ -21,25 +21,29 @@ import {
 } from "@dnd-kit/sortable"
 import { KanbanColumn } from "./KanbanColumn"
 import { DealCard, Deal } from "./DealCard"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { updateDealStage } from "@/app/(app)/pipeline/actions"
 
-interface Stage {
+export interface Stage {
   id: string
-  nome: string
-  ordem: number
-  cor: string
+  name: string
+  color: string
+  order: number
+  deals: Deal[]
 }
 
 interface KanbanBoardProps {
   stages: Stage[]
-  initialDeals: Deal[]
+  onDealMove: (dealId: string, oldStageId: string, newStageId: string) => void
+  onAddDeal?: (stageId: string) => void
+  onDealClick?: (deal: Deal) => void
 }
 
-export function KanbanBoard({ stages, initialDeals }: KanbanBoardProps) {
-  const [deals, setDeals] = useState<Deal[]>(initialDeals)
+export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick }: KanbanBoardProps) {
+  const [stages, setStages] = useState<Stage[]>(initialStages)
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
-  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    setStages(initialStages)
+  }, [initialStages])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -52,50 +56,49 @@ export function KanbanBoard({ stages, initialDeals }: KanbanBoardProps) {
     })
   )
 
-  const mutation = useMutation({
-    mutationFn: ({ id, stageId }: { id: string; stageId: string }) =>
-      updateDealStage(id, stageId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deals"] })
-    },
-  })
-
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
-    const deal = deals.find((d) => d.id === active.id)
-    if (deal) setActiveDeal(deal)
+    const dealId = active.id
+    for (const stage of stages) {
+      const deal = stage.deals.find((d) => d.id === dealId)
+      if (deal) {
+        setActiveDeal(deal)
+        break
+      }
+    }
   }
 
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event
     if (!over) return
 
-    const activeId = active.id
-    const overId = over.id
+    const activeId = active.id as string
+    const overId = over.id as string
 
-    if (activeId === overId) return
+    // Find source and destination stages
+    let sourceStageId = ""
+    let destStageId = ""
 
-    const activeIndex = deals.findIndex((d) => d.id === activeId)
-    const overIndex = deals.findIndex((d) => d.id === overId)
+    for (const stage of stages) {
+      if (stage.deals.find(d => d.id === activeId)) sourceStageId = stage.id
+      if (stage.id === overId || stage.deals.find(d => d.id === overId)) destStageId = stage.id
+    }
 
-    const isOverAColumn = stages.some((s) => s.id === overId)
+    if (!sourceStageId || !destStageId || sourceStageId === destStageId) return
 
-    setDeals((prevDeals) => {
-      const newDeals = [...prevDeals]
-      const activeDeal = newDeals[activeIndex]
+    setStages(prev => {
+      const sourceStage = prev.find(s => s.id === sourceStageId)!
+      const destStage = prev.find(s => s.id === destStageId)!
+      const activeDeal = sourceStage.deals.find(d => d.id === activeId)!
 
-      if (isOverAColumn) {
-        activeDeal.stageId = overId as string
-        return arrayMove(newDeals, activeIndex, activeIndex)
-      }
+      const newSourceDeals = sourceStage.deals.filter(d => d.id !== activeId)
+      const newDestDeals = [...destStage.deals, { ...activeDeal, stageId: destStageId }]
 
-      const overDeal = newDeals[overIndex]
-      if (activeDeal.stageId !== overDeal.stageId) {
-        activeDeal.stageId = overDeal.stageId
-        return arrayMove(newDeals, activeIndex, overIndex)
-      }
-
-      return arrayMove(newDeals, activeIndex, overIndex)
+      return prev.map(s => {
+        if (s.id === sourceStageId) return { ...s, deals: newSourceDeals }
+        if (s.id === destStageId) return { ...s, deals: newDestDeals }
+        return s
+      })
     })
   }
 
@@ -106,26 +109,41 @@ export function KanbanBoard({ stages, initialDeals }: KanbanBoardProps) {
       return
     }
 
-    const deal = deals.find((d) => d.id === active.id)
-    if (deal && deal.stageId !== activeDeal?.stageId) {
-      mutation.mutate({ id: deal.id, stageId: deal.stageId! })
+    const activeId = active.id as string
+    const overId = over.id as string
+
+    // Find destination stage
+    let destStageId = overId
+    if (!stages.find(s => s.id === overId)) {
+        // If "over" is a card, find its stage
+        for (const stage of stages) {
+            if (stage.deals.find(d => d.id === overId)) {
+                destStageId = stage.id
+                break
+            }
+        }
+    }
+
+    // Call the callback to update the database
+    const startStageId = initialStages.find(s => s.deals.some(d => d.id === activeId))?.id
+    if (startStageId && destStageId !== startStageId) {
+      onDealMove(activeId, startStageId, destStageId)
     }
 
     setActiveDeal(null)
   }
 
-  // Predefined colors from the image (Blue, Orange, Purple, Cyan, Green)
-  const getHeaderStyle = (cor: string) => {
-    // Basic mapping for the reference colors
+  const getHeaderStyle = (nome: string) => {
     const colors: Record<string, { text: string; bg: string; border: string; dot: string }> = {
       default: { text: "#6366f1", bg: "#1a1a2e", border: "#6366f130", dot: "#6366f1" },
-      PROSPECÇÃO: { text: "#4f46e5", bg: "#11111e", border: "#4f46e540", dot: "#4f46e5" },
-      QUALIFICAÇÃO: { text: "#f59e0b", bg: "#1e1611", border: "#f59e0b40", dot: "#f59e0b" },
-      PROPOSTA: { text: "#8b5cf6", bg: "#1a111e", border: "#8b5cf640", dot: "#8b5cf6" },
-      NEGOCIAÇÃO: { text: "#06b6d4", bg: "#111e1e", border: "#06b6d440", dot: "#06b6d4" },
-      FECHAMENTO: { text: "#10b981", bg: "#111e15", border: "#10b98140", dot: "#10b981" },
+      "PROSPECÇÃO": { text: "#4f46e5", bg: "#11111e", border: "#4f46e540", dot: "#4f46e5" },
+      "QUALIFICAÇÃO": { text: "#f59e0b", bg: "#1e1611", border: "#f59e0b40", dot: "#f59e0b" },
+      "PROPOSTA": { text: "#8b5cf6", bg: "#1a111e", border: "#8b5cf640", dot: "#8b5cf6" },
+      "NEGOCIAÇÃO": { text: "#06b6d4", bg: "#111e1e", border: "#06b6d440", dot: "#06b6d4" },
+      "FECHAMENTO": { text: "#10b981", bg: "#111e15", border: "#10b98140", dot: "#10b981" },
     }
-    return colors[cor.toUpperCase()] || colors.default
+    const key = nome.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    return colors[key] || colors.default
   }
 
   return (
@@ -138,9 +156,8 @@ export function KanbanBoard({ stages, initialDeals }: KanbanBoardProps) {
     >
       <div className="flex gap-6 h-full min-h-[calc(100vh-250px)] overflow-x-auto pb-4 kanban-scrollbar">
         {stages.map((stage) => {
-          const style = getHeaderStyle(stage.nome)
-          const columnDeals = deals.filter((d) => d.stageId === stage.id)
-          const totalValue = columnDeals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
+          const style = getHeaderStyle(stage.name)
+          const totalValue = stage.deals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
 
           return (
             <div key={stage.id} className="flex flex-col min-w-[320px] max-w-[320px]">
@@ -160,11 +177,11 @@ export function KanbanBoard({ stages, initialDeals }: KanbanBoardProps) {
                       style={{ backgroundColor: style.dot }}
                     />
                     <h2 className="text-[11px] font-black uppercase tracking-[0.15em]">
-                      {stage.nome}
+                      {stage.name}
                     </h2>
                   </div>
                   <div className="bg-black/40 px-2.5 py-1 rounded-full text-[10px] font-bold text-white/40 border border-white/[0.05]">
-                    {columnDeals.length}
+                    {stage.deals.length}
                   </div>
                 </div>
                 
@@ -178,15 +195,19 @@ export function KanbanBoard({ stages, initialDeals }: KanbanBoardProps) {
               </div>
 
               {/* COLUMN BODY */}
-              <KanbanColumn id={stage.id} deals={columnDeals}>
+              <KanbanColumn id={stage.id} deals={stage.deals}>
                 <SortableContext
                   id={stage.id}
-                  items={columnDeals.map((d) => d.id)}
+                  items={stage.deals.map((d) => d.id)}
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="flex flex-col gap-3 min-h-[150px]">
-                    {columnDeals.map((deal) => (
-                      <DealCard key={deal.id} deal={deal} />
+                    {stage.deals.map((deal) => (
+                      <DealCard 
+                        key={deal.id} 
+                        deal={deal} 
+                        onClick={() => onDealClick?.(deal)}
+                      />
                     ))}
                   </div>
                 </SortableContext>
@@ -197,7 +218,11 @@ export function KanbanBoard({ stages, initialDeals }: KanbanBoardProps) {
       </div>
 
       <DragOverlay>
-        {activeDeal ? <DealCard deal={activeDeal} /> : null}
+        {activeDeal ? (
+          <div className="opacity-80 rotate-3 scale-105">
+            <DealCard deal={activeDeal} />
+          </div>
+        ) : null}
       </DragOverlay>
 
       <style jsx global>{`
