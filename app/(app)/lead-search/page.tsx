@@ -13,6 +13,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+import { brazilianStates, mainCitiesByState } from "@/lib/geo-data"
+import { businessNiches } from "@/lib/niches"
+
 function KPICard({ label, value, icon, color = "#F97316" }: { label: string; value: string | number; icon: string; color?: string }) {
   return (
     <div className="relative group overflow-hidden">
@@ -48,9 +51,12 @@ export default function LeadSearchPage() {
   })
   const [isNewContactOpen, setIsNewContactOpen] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
+  const [customCity, setCustomCity] = useState("")
 
   const handleSearch = async () => {
-    if (!searchData.estado || !searchData.cidade || !searchData.nicho) {
+    const finalCity = customCity || searchData.cidade
+    
+    if (!searchData.estado || !finalCity || !searchData.nicho) {
       toast({ title: "ERRO DE PARÂMETRO", description: "Preencha todos os campos para iniciar o crawler.", variant: "destructive" })
       return
     }
@@ -61,8 +67,8 @@ export default function LeadSearchPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          estado: searchData.estado,
-          cidade: searchData.cidade,
+          estado: brazilianStates.find(s => s.value === searchData.estado)?.label || searchData.estado,
+          cidade: finalCity,
           nicho: searchData.nicho
         })
       })
@@ -70,35 +76,28 @@ export default function LeadSearchPage() {
       if (res.ok) {
         toast({ title: "CRAWLER INICIADO 🚀", description: "O agente de extração foi disparado. Os dados aparecerão em instantes." })
       } else {
-        throw new Error()
+        const errorData = await res.text()
+        throw new Error(errorData)
       }
-    } catch (e) {
-      toast({ title: "ERRO NA AUTOMAÇÃO", description: "Não foi possível conectar com o broker do N8N.", variant: "destructive" })
+    } catch (e: any) {
+      toast({ 
+        title: "ERRO NA AUTOMAÇÃO", 
+        description: e.message || "Não foi possível conectar com o broker do N8N.", 
+        variant: "destructive" 
+      })
     } finally {
       setIsSearching(false)
     }
   }
 
-  const states = [
-    { value: "GO", label: "Goiás" },
-    { value: "SP", label: "São Paulo" },
-    { value: "RJ", label: "Rio de Janeiro" },
-    { value: "MG", label: "Minas Gerais" },
-    { value: "DF", label: "Distrito Federal" }
-  ]
-
-  const niches = [
-    { value: "agro", label: "Agronegócio" },
-    { value: "tech", label: "Tecnologia / Software" },
-    { value: "auto", label: "Automotivo" },
-    { value: "vendas", label: "Varejo / Shopping" }
-  ]
+  const citiesForState = searchData.estado ? mainCitiesByState[searchData.estado] || [] : []
 
   const recentLeads = [
-    { id: 1, empresa: "ServiAgro", telefone: "(64) 99627-4427", time: "15/04/26 às 16:46", type: "LEAD" },
-    { id: 2, empresa: "CEAG - Centro Empresarial", telefone: "(64) 3623-1645", time: "15/04/26 às 16:46", type: "LEAD" },
-    { id: 3, empresa: "Onofre agronegocio", telefone: "(64) 99658-1667", time: "15/04/26 às 16:46", type: "LEAD" }
+    { id: 1, empresa: "ServiAgro", telefone: "(64) 99627-4427", time: "16/04/26 às 16:46", type: "LEAD" },
+    { id: 2, empresa: "CEAG - Centro Empresarial", telefone: "(64) 3623-1645", time: "16/04/26 às 16:46", type: "LEAD" },
+    { id: 3, empresa: "Onofre agronegocio", telefone: "(64) 99658-1667", time: "16/04/26 às 16:46", type: "LEAD" }
   ]
+
 
   const cnpjLeads = [
     { cnpj: "46.403.379/0001-81", empresa: "SHEGO LENE E ANN...", telefone: "(64) 9320-3707", email: "xmlleneanne@gmai...", situacao: "ATIVA", cidade: "SANTA HELENA DE GOIAS/GO" },
@@ -169,28 +168,45 @@ export default function LeadSearchPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                      <div className="space-y-3">
                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">ESTADO</label>
-                        <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val}))}>
+                        <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val, cidade: ""}))}>
                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
                               <SelectValue placeholder="Selecione o Estado" />
                            </SelectTrigger>
-                           <SelectContent className="bg-[#0A0A0A] border-white/10 text-white">
-                              {states.map(s => <SelectItem key={s.value} value={s.value} className="focus:bg-[#F97316]">{s.label}</SelectItem>)}
+                           <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[300px]">
+                              {brazilianStates.map(s => <SelectItem key={s.value} value={s.value} className="focus:bg-[#F97316]">{s.label}</SelectItem>)}
                            </SelectContent>
                         </Select>
                      </div>
 
                      <div className="space-y-3">
                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">CIDADE</label>
-                        <Select onValueChange={(val) => setSearchData(s => ({...s, cidade: val}))}>
-                           <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6 disabled:opacity-20">
-                              <SelectValue placeholder={searchData.estado ? "Selecione a Cidade" : "Selecione o estado primeiro"} />
-                           </SelectTrigger>
-                           <SelectContent className="bg-[#0A0A0A] border-white/10 text-white">
-                              <SelectItem value="Goiania" className="focus:bg-[#F97316]">Goiânia</SelectItem>
-                              <SelectItem value="Brasilia" className="focus:bg-[#F97316]">Brasília</SelectItem>
-                              <SelectItem value="Sao Paulo" className="focus:bg-[#F97316]">São Paulo</SelectItem>
-                           </SelectContent>
-                        </Select>
+                        <div className="flex gap-2">
+                           <Select onValueChange={(val) => {
+                              if (val === "custom") {
+                                 setSearchData(s => ({...s, cidade: ""}))
+                              } else {
+                                 setSearchData(s => ({...s, cidade: val}))
+                                 setCustomCity("")
+                              }
+                           }}>
+                              <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6 disabled:opacity-20 flex-1">
+                                 <SelectValue placeholder={searchData.estado ? "Selecione a Cidade" : "Aguardando Estado..."} />
+                              </SelectTrigger>
+                              <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[300px]">
+                                 {citiesForState.map(c => <SelectItem key={c} value={c} className="focus:bg-[#F97316]">{c}</SelectItem>)}
+                                 <SelectItem value="custom" className="focus:bg-[#F97316] text-[#F97316] font-black italic">+ OUTRA CIDADE</SelectItem>
+                              </SelectContent>
+                           </Select>
+                           
+                           {(!searchData.cidade || citiesForState.length === 0 || searchData.cidade === "custom") && searchData.estado && (
+                              <input 
+                                 placeholder="Digite a cidade..."
+                                 value={customCity}
+                                 onChange={(e) => setCustomCity(e.target.value)}
+                                 className="bg-[#0A0A0A]/60 border border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6 focus:outline-none focus:border-[#F97316]/50 transition-colors w-[200px]"
+                              />
+                           )}
+                        </div>
                      </div>
 
                      <div className="space-y-3">
@@ -199,11 +215,19 @@ export default function LeadSearchPage() {
                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
                               <SelectValue placeholder="Selecione o Nicho" />
                            </SelectTrigger>
-                           <SelectContent className="bg-[#0A0A0A] border-white/10 text-white">
-                              {niches.map(n => <SelectItem key={n.value} value={n.label} className="focus:bg-[#F97316]">{n.label}</SelectItem>)}
+                           <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[400px]">
+                              {businessNiches.map(n => (
+                                 <SelectItem key={n.value} value={n.label} className="focus:bg-[#F97316]">
+                                    <div className="flex flex-col">
+                                       <span className="font-black tracking-tighter">{n.label}</span>
+                                       <span className="text-[8px] opacity-40 uppercase tracking-widest">{n.category}</span>
+                                    </div>
+                                 </SelectItem>
+                              ))}
                            </SelectContent>
                         </Select>
                      </div>
+
                   </div>
 
                   <button 

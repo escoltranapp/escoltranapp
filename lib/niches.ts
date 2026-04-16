@@ -1,0 +1,23 @@
+export const businessNiches = [
+  { value: "alimentacao", label: "Alimentação (Restaurantes, Cafés, Bares)", category: "Varejo" },
+  { value: "agro", label: "Agronegócio", category: "Indústria" },
+  { value: "automotivo", label: "Automotivo (Oficinas, Venda de Carros)", category: "Serviços" },
+  { value: "beleza", label: "Beleza e Estética (Salões, Clínicas)", category: "Serviços" },
+  { value: "construcao", label: "Construção e Reformas", category: "Indústria" },
+  { value: "contabilidade", label: "Contabilidade e Escritórios", category: "B2B" },
+  { value: "educacao", label: "Educação (Escolas, Cursos)", category: "Serviços" },
+  { value: "engenharia", label: "Engenharia e Arquitetura", category: "B2B" },
+  { value: "farmacia", label: "Farmácias e Saúde", category: "Varejo" },
+  { value: "fitness", label: "Fitness (Academias, Studios)", category: "Serviços" },
+  { value: "imobiliario", label: "Imobiliário (Corretoras, Administração)", category: "B2B" },
+  { value: "industria", label: "Indústrias e Fábricas", category: "Indústria" },
+  { value: "juridico", label: "Jurídico (Advogados, Cartórios)", category: "B2B" },
+  { value: "logistica", label: "Logística e Transportadoras", category: "B2B" },
+  { value: "medicina", label: "Medicina (Consultórios, Clínicas)", category: "Saúde" },
+  { value: "moda", label: "Moda e Vestuário", category: "Varejo" },
+  { value: "petshop", label: "Pet Shops e Veterinárias", category: "Serviços" },
+  { value: "seguros", label: "Seguros e Corretoras", category: "B2B" },
+  { value: "supermercado", label: "Supermercados e Mercearias", category: "Varejo" },
+  { value: "tecnologia", label: "Tecnologia e Software", category: "B2B" },
+  { value: "turismo", label: "Turismo e Hotelaria", category: "Serviços" }
+];

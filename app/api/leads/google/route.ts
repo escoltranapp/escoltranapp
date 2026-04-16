@@ -28,7 +28,9 @@ export async function POST(req: Request) {
       select: { n8nWebhookUrl: true }
     })
 
-    const webhookUrl = user?.n8nWebhookUrl || "https://auto.devnetlife.com/webhook/buscar-google"
+    const webhookUrl = user?.n8nWebhookUrl || process.env.N8N_WEBHOOK_URL || "https://auto.devnetlife.com/webhook/buscar-google"
+    
+    console.log(`[LEAD_SEARCH_GOOGLE] Triggering: ${webhookUrl} for user: ${session.user.id}`)
 
     // 3. Trigger N8N
     const n8nResponse = await fetch(webhookUrl, {
