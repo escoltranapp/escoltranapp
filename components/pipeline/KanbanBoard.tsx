@@ -61,6 +61,8 @@ export function KanbanColumn({
 export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, onAddDeal }: KanbanBoardProps) {
   const [stages, setStages] = useState<Stage[]>(initialStages)
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
+  const [isAddingStage, setIsAddingStage] = useState(false)
+  const [newStageName, setNewStageName] = useState("")
   
   // DRAGGABLE SCROLL LOGIC
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -116,6 +118,31 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
 
   const handleDragEnd = (event: DragEndEvent) => {
      setActiveDeal(null)
+  }
+
+  const handleAddStage = async () => {
+    if (!newStageName.trim() || !initialStages[0]?.pipelineId) return
+    
+    try {
+      const res = await fetch("/api/pipeline/stages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          name: newStageName,
+          pipelineId: stages[0]?.pipelineId || (initialStages as any).pipelineId
+        })
+      })
+      if (res.ok) {
+        setNewStageName("")
+        setIsAddingStage(false)
+        // Refresh stages
+        // The parent component should ideally refetch, but we can optimistically add?
+        // Let's assume the parent refetches via invalidateQueries if we provide a callback
+        window.location.reload() // Quick fix to ensure full sync of order/ids
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   // MOUSE DRAG SCROLL HANDLERS
@@ -208,6 +235,53 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
             </div>
           )
         })}
+
+        {/* ADD STAGE COLUMN ESCOLTRAN STYLE */}
+        <div className="flex flex-col min-w-[320px] max-w-[320px]">
+           <div className="mb-6 h-[72px] flex items-center px-1">
+              {!isAddingStage ? (
+                 <button 
+                  onClick={() => setIsAddingStage(true)}
+                  className="w-full flex items-center gap-3 text-[#404040] hover:text-[#F97316] transition-all group py-2"
+                 >
+                    <div className="w-8 h-8 rounded-full border border-white/5 bg-[#1A1A1A] flex items-center justify-center group-hover:border-[#F97316]/50 group-hover:shadow-[0_0_15px_rgba(249,115,22,0.2)]">
+                       <span className="material-symbols-outlined text-[20px]">add</span>
+                    </div>
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">Nova Etapa do Fluxo</span>
+                 </button>
+              ) : (
+                 <div className="w-full space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <input 
+                       autoFocus
+                       placeholder="Título da Etapa..."
+                       value={newStageName}
+                       onChange={e => setNewStageName(e.target.value)}
+                       onKeyDown={e => e.key === 'Enter' && handleAddStage()}
+                       className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-4 py-2.5 text-[12px] text-white focus:border-[#F97316]/50 outline-none transition-all font-black"
+                    />
+                    <div className="flex gap-2">
+                       <button 
+                        onClick={() => setIsAddingStage(false)}
+                        className="flex-1 py-2 text-[9px] font-black uppercase tracking-widest text-[#404040] hover:text-[#F2F2F2]"
+                       >
+                          Abortar
+                       </button>
+                       <button 
+                        onClick={handleAddStage}
+                        className="flex-[2] py-2 bg-[#F97316] text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-[0_0_15px_rgba(249,115,22,0.3)]"
+                       >
+                          Confirmar
+                       </button>
+                    </div>
+                 </div>
+              )}
+           </div>
+           
+           <div className="flex-1 rounded-2xl border border-dashed border-white/[0.03] bg-transparent flex flex-col items-center justify-center p-8 opacity-20">
+              <span className="material-symbols-outlined text-[48px] mb-4">move_item</span>
+              <div className="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-center">Espaço Reservado para Dataset</div>
+           </div>
+        </div>
       </div>
 
       <DragOverlay>
