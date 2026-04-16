@@ -12,18 +12,42 @@ function KPICard({
   label: string; value: string | number; icon?: string; emoji?: string; color?: string
 }) {
   return (
-    <div className="bg-[#1A1A1A] border border-white/5 rounded-2xl p-6 hover:bg-[#262626] transition-all group overflow-hidden shadow-lg min-h-[140px] flex flex-col justify-center">
-      <div className="flex items-center justify-between mb-auto">
-        <div className="w-10 h-10 rounded-xl bg-[#F97316]/10 border border-[#F97316]/20 flex items-center justify-center">
-          {icon ? <span className="material-symbols-outlined text-[20px] text-[#F97316]">{icon}</span> : <span className="text-xl">{emoji}</span>}
+    <div className="relative group overflow-hidden">
+      <div className="absolute -inset-0.5 bg-gradient-to-br from-white/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity blur-sm" />
+      <div className="relative bg-[#1A1A1A]/40 backdrop-blur-2xl border border-white/[0.04] rounded-3xl p-8 hover:bg-[#1A1A1A]/60 transition-all shadow-2xl min-h-[160px] flex flex-col justify-between group/card">
+        {/* RADIAL GLOW */}
+        <div 
+          className="absolute -top-10 -right-10 w-32 h-32 blur-[60px] opacity-20 group-hover/card:opacity-40 transition-opacity rounded-full" 
+          style={{ backgroundColor: color }}
+        />
+
+        <div className="flex items-start justify-between">
+          <div 
+            className="w-14 h-14 rounded-2xl flex items-center justify-center border transition-all duration-500 shadow-xl"
+            style={{ 
+              backgroundColor: `${color}10`,
+              borderColor: `${color}30`,
+              boxShadow: `0 0 20px ${color}10`
+            }}
+          >
+            {icon ? (
+              <span className="material-symbols-outlined text-[28px]" style={{ color }}>{icon}</span>
+            ) : (
+              <span className="text-2xl">{emoji}</span>
+            )}
+          </div>
+          <div className="px-3 py-1 rounded-full text-[9px] font-black font-mono text-[#404040] bg-[#0A0A0A] border border-white/[0.03] uppercase tracking-[0.2em] group-hover/card:text-[#F97316] transition-colors">
+             IO: SYNCED
+          </div>
         </div>
-        <div className="px-2 py-0.5 rounded-full text-[9px] font-black font-mono text-[#F97316] bg-[#F97316]/5 border border-[#F97316]/10 uppercase tracking-widest">
-           Sincronizado
+
+        <div className="space-y-1 relative z-10">
+           <div className="text-[10px] font-mono text-[#404040] uppercase tracking-[0.4em] font-black italic group-hover/card:translate-x-1 transition-transform">{label}</div>
+           <div className="text-4xl font-black text-white tracking-widest font-mono flex items-baseline gap-2">
+              {value}
+              <span className="text-[10px] text-[#262626] font-black uppercase tracking-tighter">DATA_BITS</span>
+           </div>
         </div>
-      </div>
-      <div>
-         <div className="text-[10px] font-mono text-[#6B7280] uppercase tracking-[0.2em] font-black mb-1 italic">{label}</div>
-         <div className="text-2xl font-black text-white tracking-tighter font-mono">{value}</div>
       </div>
     </div>
   )
@@ -59,59 +83,78 @@ export default function ContactsPage() {
   const clientes = counts.clientes
 
   return (
-    <div className="animate-in fade-in duration-700 pb-24 px-1">
-      
-      {/* HEADER ESCOLTRAN STYLE */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div>
-          <h1 className="text-4xl font-black text-white tracking-tighter italic uppercase">CRM Contatos</h1>
-          <p className="text-[#6B7280] text-[15px] mt-2 font-bold tracking-tight">Diretório mestre de entidades processadas Escoltran</p>
-        </div>
+    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden transition-all duration-1000">
+      {/* IMMERSIVE AETHER BACKGROUND */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#F97316]/5 blur-[160px] rounded-full animate-pulse duration-[10s]" />
+         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#F97316]/5 blur-[160px] rounded-full animate-pulse duration-[8s]" />
+      </div>
+
+      <div className="relative z-10 p-12 space-y-12 max-w-[1600px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 px-1">
         
-        <button 
-          onClick={() => setIsNewContactOpen(true)}
-          className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-10 py-4 rounded-xl flex items-center gap-3 hover:scale-105 transition-all shadow-lg shadow-[#F97316]/20 text-[12px] uppercase tracking-[0.2em]"
-        >
-          <span className="material-symbols-outlined text-[20px] font-black">person_add</span>
-          <span>Novo</span>
-        </button>
-      </header>
+        {/* HIGH-FIDELITY HEADER */}
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+          <div className="space-y-4">
+            <div className="flex items-center gap-5">
+               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#F97316] to-[#FB923C] flex items-center justify-center shadow-[0_0_40px_rgba(249,115,22,0.4)] relative">
+                  <div className="absolute inset-0 bg-white/20 rounded-2xl animate-ping opacity-20" />
+                  <span className="material-symbols-outlined text-white text-3xl font-black relative z-10">groups</span>
+               </div>
+               <div>
+                  <h1 className="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
+                    Diretório <span className="text-[#F97316] drop-shadow-[0_0_15px_rgba(249,115,22,0.3)]">Mestre</span>
+                  </h1>
+                  <p className="text-[#404040] text-xs font-mono font-black uppercase tracking-[0.5em] mt-3 flex items-center gap-3">
+                     <span className="w-8 h-[1px] bg-[#262626]" />
+                     Escaneando Cluster: Escoltran Cloud Architecture
+                  </p>
+               </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-6">
+             <div className="relative group w-[400px]">
+                <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-[#404040] group-focus-within:text-[#F97316] transition-all text-[20px]">search</span>
+                <input
+                  placeholder="LOCALIZAR ENTIDADE NO DATASET GLOBAL..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="w-full bg-[#1A1A1A]/30 backdrop-blur-3xl border border-white/[0.03] h-14 pl-14 pr-6 rounded-2xl text-[11px] font-black text-[#F2F2F2] placeholder:text-[#262626] focus:outline-none focus:border-[#F97316]/30 transition-all tracking-[0.1em]"
+                />
+             </div>
+             <button 
+               onClick={() => setIsNewContactOpen(true)}
+               className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-12 py-5 rounded-2xl flex items-center gap-4 hover:scale-[1.05] active:scale-95 transition-all shadow-2xl shadow-[#F97316]/30 text-[11px] uppercase tracking-[0.3em] group"
+             >
+               <span className="material-symbols-outlined text-[22px] font-black group-hover:rotate-12 transition-transform">person_add</span>
+               Sincronizar Nova Entidade
+             </button>
+          </div>
+        </header>
 
-      {/* KPI GRID ESPECÍFICO - USANDO NOVA CLASSE GRID-STATS PARA EVITAR OVERLAP */}
-      <div className="grid-stats mb-12">
-         <KPICard label="Database" value={databaseSize} icon="corporate_fare" />
-         <KPICard label="Active Network" value={activeNetwork} emoji="⚡" />
-         <KPICard label="Flow Active" value="00" icon="dynamic_feed" />
-         <KPICard label="Converte" value={clientes} emoji="🛡️" />
-      </div>
+        {/* KPI INTELLIGENCE LAYER */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+           <KPICard label="Dataset Size" value={databaseSize} icon="storage" emoji="📡" />
+           <KPICard label="Network Load" value={activeNetwork} icon="radar" emoji="🔥" />
+           <KPICard label="Shield Nodes" value={clientes} icon="verified" emoji="🛡️" color="#22C55E" />
+           <KPICard label="Sync Heartbeat" value="0 ms" icon="monitor_heart" color="#A855F7" />
+        </div>
 
-      {/* BARRA DE BUSCA EM SURFACE CONFORMADA */}
-      <div className="bg-[#1A1A1A] border border-white/5 p-2 rounded-2xl mb-8 flex items-center gap-4 shadow-xl max-w-[800px]">
-         <div className="relative flex-1 group">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#404040] group-focus-within:text-[#F97316] transition-colors text-[18px]">search</span>
-            <input
-              placeholder="Filtro por empresa ou identificador de dataset..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full bg-[#0A0A0A] border border-[#262626] h-11 pl-12 pr-4 rounded-xl text-sm text-[#F2F2F2] placeholder:text-[#404040] focus:outline-none focus:border-[#F97316]/40 transition-all font-bold"
-            />
-         </div>
-      </div>
-
-      {/* TABELA ESCOLTRAN ESPECÍFICA */}
-      <div className="bg-[#1A1A1A] border border-white/5 rounded-3xl overflow-hidden shadow-2xl border-t-white/[0.03]">
-         <div className="overflow-x-auto scrollbar-hide">
-            <table className="w-full text-left border-collapse min-w-[800px]">
-                <thead>
-                  <tr className="bg-[#0A0A0A]">
-                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Contato</th>
-                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Email / Telefone</th>
-                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic text-center">Status</th>
-                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Canal</th>
-                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Última Atividade</th>
-                     <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Ações</th>
-                  </tr>
-               </thead>
+        {/* DATASET TABLE AREA */}
+        <div className="relative group">
+           <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[40px] blur-3xl opacity-20 group-hover:opacity-40 transition-opacity pointer-events-none" />
+           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[40px] overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)]">
+              <div className="overflow-x-auto scrollbar-hide">
+                <table className="w-full text-left border-collapse min-w-[1000px]">
+                  <thead>
+                    <tr className="bg-[#1A1A1A]/20">
+                      <th className="px-12 py-10 text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Entidade / Nó do Cluster</th>
+                      <th className="px-12 py-10 text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Status Operacional</th>
+                      <th className="px-12 py-10 text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Canal de Entrada</th>
+                      <th className="px-12 py-10 text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Audit Status</th>
+                      <th className="px-12 py-10 text-right text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Comandos</th>
+                    </tr>
+                  </thead>
                <tbody>
                   {filteredContacts.length === 0 ? (
                      <tr>
@@ -124,73 +167,75 @@ export default function ContactsPage() {
                      </tr>
                   ) : (
                       filteredContacts.map((contact: any) => (
-                        <tr key={contact.id} className="hover:bg-[#F97316]/5 transition-all group border-b border-[#262626]/50">
-                          {/* CONTATO */}
-                          <td className="px-8 py-6">
-                            <div className="flex items-center gap-4">
-                               <div className="w-10 h-10 rounded-full bg-[#0A0A0A] border border-white/[0.05] flex items-center justify-center text-[#F97316] font-black text-xs font-mono group-hover:bg-[#F97316] group-hover:text-black transition-all">
-                                  {contact.nome?.slice(0, 1).toUpperCase()}
-                               </div>
-                               <div>
-                                  <div className="font-black text-white text-[14px] tracking-tight uppercase italic">{contact.nome}</div>
-                                  <div className="text-[10px] text-[#404040] font-mono uppercase tracking-widest mt-0.5">{contact.empresa || "Pessoa Física"}</div>
-                               </div>
+                        <tr key={contact.id} className="group/row hover:bg-[#F97316]/[0.02] transition-colors border-b border-white/[0.03]">
+                          {/* IDENTIDADE */}
+                          <td className="px-12 py-10">
+                            <div className="flex items-center gap-6">
+                              <div className="relative">
+                                 <div className="absolute -inset-2 bg-[#F97316]/20 rounded-2xl blur-lg opacity-0 group-hover/row:opacity-100 transition-opacity" />
+                                 <div className="w-16 h-16 rounded-2xl bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-white font-black text-2xl group-hover/row:border-[#F97316]/40 group-hover/row:text-[#F97316] transition-all relative z-10 shadow-lg font-mono">
+                                   {contact.nome?.slice(0, 1).toUpperCase()}
+                                 </div>
+                              </div>
+                              <div className="space-y-1.5">
+                                <div className="text-[19px] font-black text-white italic tracking-tighter uppercase group-hover/row:text-[#F97316] transition-colors leading-none">{contact.nome}</div>
+                                <div className="flex items-center gap-3">
+                                   <span className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest leading-none">{contact.empresa || "Pessoa Física"}</span>
+                                   <span className="w-1 h-1 rounded-full bg-[#262626]" />
+                                   <span className="text-[10px] font-mono font-bold text-[#6B7280] lowercase tracking-tight leading-none">{contact.email}</span>
+                                </div>
+                              </div>
                             </div>
                           </td>
 
-                          {/* EMAIL / TELEFONE */}
-                          <td className="px-8 py-6">
-                             <div className="text-[12px] font-mono font-black text-[#A3A3A3] group-hover:text-[#F2F2F2] transition-colors">{contact.email || "—"}</div>
-                             <div className="text-[11px] font-mono font-bold text-[#404040] mt-1">{contact.telefone || "—"}</div>
-                          </td>
-
                           {/* STATUS */}
-                          <td className="px-8 py-6 text-center">
-                             <span className={cn(
-                               "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border",
-                               contact.status === "cliente" ? "bg-green-500/10 text-green-500 border-green-500/20" : 
-                               contact.status === "lead" ? "bg-[#F97316]/10 text-[#F97316] border-[#F97316]/20" : 
-                               "bg-[#262626] text-[#6B7280] border-white/5"
-                             )}>
-                               {contact.status || "Novo"}
-                             </span>
+                          <td className="px-12 py-10">
+                            <div className={cn(
+                              "inline-flex items-center gap-3 px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] shadow-xl",
+                              contact.status === "cliente" 
+                                ? "bg-green-500/10 text-green-500 border-green-500/30" 
+                                : "bg-[#F97316]/10 text-[#F97316] border-[#F97316]/30"
+                            )}>
+                              <div className={cn("w-2 h-2 rounded-full animate-pulse", contact.status === "cliente" ? "bg-green-500" : "bg-[#F97316]")} />
+                              {contact.status || "Novo Lead"}
+                            </div>
                           </td>
 
                           {/* CANAL */}
-                          <td className="px-8 py-6">
-                             <div className="flex items-center gap-2 text-[#404040] group-hover:text-[#A3A3A3] transition-colors">
-                                <span className="material-symbols-outlined text-[16px]">language</span>
-                                <span className="text-[10px] font-black uppercase tracking-widest">{contact.canalOrigem || "Direto"}</span>
+                          <td className="px-12 py-10">
+                             <div className="flex items-center gap-3">
+                                <span className="material-symbols-outlined text-[18px] text-[#404040] group-hover/row:text-[#F97316] transition-colors">hub</span>
+                                <div className="text-[12px] font-black text-white uppercase italic tracking-widest">{contact.canalOrigem || "Direto"}</div>
                              </div>
                           </td>
 
                           {/* ÚLTIMA ATIVIDADE */}
-                          <td className="px-8 py-6">
-                             <div className="text-[11px] font-bold text-[#404040] italic">
-                                {contact.updatedAt ? `Sincronizado em ${new Date(contact.updatedAt).toLocaleDateString()}` : "Sem atividade"}
+                          <td className="px-10 py-8">
+                             <div className="text-[11px] font-black text-[#404040] italic uppercase tracking-tighter">
+                                {contact.updatedAt ? `Sincronizado via Node em ${new Date(contact.updatedAt).toLocaleDateString()}` : "Dataset Inativo"}
                              </div>
                           </td>
 
                           {/* AÇÕES */}
-                          <td className="px-8 py-6 text-right">
-                             <div className="flex items-center justify-end gap-2">
+                          <td className="px-10 py-8 text-right">
+                             <div className="flex items-center justify-end gap-3 opacity-0 group-hover/row:opacity-100 transition-opacity">
                                 <button 
                                   onClick={() => {
                                      setSelectedContact(contact)
                                      setIsDetailOpen(true)
                                   }}
-                                  className="w-9 h-9 flex items-center justify-center border border-white/5 rounded-lg text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/10 transition-all focus:outline-none"
+                                  className="w-11 h-11 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-xl text-[#F2F2F2] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all focus:outline-none shadow-xl"
                                 >
-                                   <span className="material-symbols-outlined text-[18px]">visibility</span>
+                                   <span className="material-symbols-outlined text-[20px]">visibility</span>
                                 </button>
                                 <button 
                                   onClick={() => {
                                      setSelectedContact(contact)
                                      setIsEditOpen(true)
                                   }}
-                                  className="w-9 h-9 flex items-center justify-center border border-white/5 rounded-lg text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/10 transition-all focus:outline-none"
+                                  className="w-11 h-11 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-xl text-[#F2F2F2] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all focus:outline-none shadow-xl"
                                 >
-                                   <span className="material-symbols-outlined text-[18px]">edit</span>
+                                   <span className="material-symbols-outlined text-[20px]">edit</span>
                                 </button>
                              </div>
                           </td>

@@ -96,138 +96,164 @@ export function NewContactDialog({ open, onOpenChange, contact }: NewContactDial
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-[#0A0A0A] border border-white/[0.05] p-0 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-        <DialogHeader className="p-8 bg-gradient-to-br from-[#F97316]/10 to-transparent border-b border-white/[0.03]">
-          <div className="flex items-center gap-4 mb-2">
-             <div className="w-10 h-10 rounded-full bg-[#F97316]/20 flex items-center justify-center border border-[#F97316]/30">
-                <span className="material-symbols-outlined text-[#F97316] text-[22px]">{contact?.id ? "edit_note" : "person_add"}</span>
+      <DialogContent className="max-w-3xl bg-[#0A0A0A]/90 backdrop-blur-3xl border border-white/[0.06] p-0 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] rounded-[40px]">
+        {/* INTERNAL RADIAL GLOW */}
+        <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-[#F97316]/5 blur-[100px] pointer-events-none" />
+
+        <DialogHeader className="p-10 border-b border-white/[0.03] relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#F97316]/5 to-transparent pointer-events-none" />
+          <div className="flex items-center gap-6 relative z-10">
+             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#F97316] to-[#FB923C] flex items-center justify-center shadow-[0_0_30px_rgba(249,115,22,0.3)]">
+                <span className="material-symbols-outlined text-white text-[28px] font-black">{contact?.id ? "edit_note" : "person_add"}</span>
              </div>
              <div>
-                <DialogTitle className="text-2xl font-black text-white italic uppercase tracking-tighter">
-                   {contact?.id ? "Atualizar Entidade" : "Provisionar Nova Entidade"}
+                <DialogTitle className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none">
+                   {contact?.id ? "Módulo: Atualizar" : "Módulo: Provisionar"}
                 </DialogTitle>
-                <p className="text-[#6B7280] text-[11px] font-bold uppercase tracking-widest mt-0.5">
-                   {contact?.id ? "Ajuste de parâmetros no nó do cluster" : "Mapeamento de contato para o cluster Escoltran"}
-                </p>
+                <div className="flex items-center gap-3 mt-3">
+                   <div className="px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.05] text-[9px] font-black font-mono text-[#F97316] uppercase tracking-[0.2em]">
+                      STATUS: HANDSHAKE
+                   </div>
+                   <p className="text-[#404040] text-[10px] font-black uppercase tracking-[0.3em] font-mono whitespace-nowrap">
+                      // {contact?.id ? `EDITING_NODE_${contact.id.slice(0,8)}` : "GENERATE_NEW_IDENTITY_HASH"}
+                   </p>
+                </div>
              </div>
           </div>
         </DialogHeader>
 
-        <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-[#1A1A1A]">
-          <div className="grid grid-cols-2 gap-6">
-            {/* NOME */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">Nome Completo *</label>
-              <input 
-                value={formData.nome}
-                onChange={e => setFormData(prev => ({ ...prev, nome: e.target.value }))}
-                className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-4 py-3 text-white focus:border-[#F97316]/50 outline-none transition-all font-bold text-sm"
-                placeholder="Ex: João da Silva"
-              />
+        <div className="p-10 space-y-10 max-h-[65vh] overflow-y-auto scrollbar-hide relative z-10">
+          <div className="grid grid-cols-2 gap-10">
+            {/* INPUT FIELDS WRAPPED IN GLASS SURFACES */}
+            <div className="space-y-3">
+              <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.4em] pl-1">Identidade Nominal</label>
+              <div className="group/input relative">
+                 <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity blur-sm" />
+                 <input 
+                   value={formData.nome}
+                   onChange={e => setFormData(prev => ({ ...prev, nome: e.target.value }))}
+                   className="relative w-full bg-[#1A1A1A]/40 border border-white/[0.06] rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#F97316]/40 transition-all font-black text-[13px] tracking-tight placeholder:text-[#262626]"
+                   placeholder="NOME DA ENTIDADE..."
+                 />
+              </div>
             </div>
 
-            {/* EMPRESA */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">Organização / Empresa</label>
-              <input 
-                value={formData.empresa}
-                onChange={e => setFormData(prev => ({ ...prev, empresa: e.target.value }))}
-                className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-4 py-3 text-white focus:border-[#F97316]/50 outline-none transition-all font-bold text-sm"
-                placeholder="Ex: Escoltran Solutions"
-              />
+            <div className="space-y-3">
+              <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.4em] pl-1">Organização Base</label>
+              <div className="group/input relative">
+                 <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity blur-sm" />
+                 <input 
+                   value={formData.empresa}
+                   onChange={e => setFormData(prev => ({ ...prev, empresa: e.target.value }))}
+                   className="relative w-full bg-[#1A1A1A]/40 border border-white/[0.06] rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#F97316]/40 transition-all font-black text-[13px] tracking-tight placeholder:text-[#262626]"
+                   placeholder="EMPRESA / CLUSTER..."
+                 />
+              </div>
             </div>
 
-            {/* EMAIL */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">Email Digital</label>
-              <input 
-                type="email"
-                value={formData.email}
-                onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-4 py-3 text-white focus:border-[#F97316]/50 outline-none transition-all font-bold text-sm"
-                placeholder="nome@empresa.com"
-              />
+            <div className="space-y-3">
+              <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.4em] pl-1">Endereço de Sync (Email)</label>
+              <div className="group/input relative">
+                 <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity blur-sm" />
+                 <input 
+                   type="email"
+                   value={formData.email}
+                   onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                   className="relative w-full bg-[#1A1A1A]/40 border border-white/[0.06] rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#F97316]/40 transition-all font-black text-[13px] tracking-tight placeholder:text-[#262626]"
+                   placeholder="EMAIL_ADDR@DOMAIN.COM"
+                 />
+              </div>
             </div>
 
-            {/* TELEFONE */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">Telefone / WhatsApp</label>
-              <input 
-                value={formData.telefone}
-                onChange={e => setFormData(prev => ({ ...prev, telefone: e.target.value }))}
-                className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-4 py-3 text-white focus:border-[#F97316]/50 outline-none transition-all font-bold text-sm"
-                placeholder="(00) 00000-0000"
-              />
+            <div className="space-y-3">
+              <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.4em] pl-1">Canal de Comand (Telefone)</label>
+              <div className="group/input relative">
+                 <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity blur-sm" />
+                 <input 
+                   value={formData.telefone}
+                   onChange={e => setFormData(prev => ({ ...prev, telefone: e.target.value }))}
+                   className="relative w-full bg-[#1A1A1A]/40 border border-white/[0.06] rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#F97316]/40 transition-all font-black text-[13px] tracking-tight placeholder:text-[#262626]"
+                   placeholder="+55 (00) 00000-0000"
+                 />
+              </div>
             </div>
 
-            {/* CARGO */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">Cargo Decisório</label>
-              <input 
-                value={formData.cargo}
-                onChange={e => setFormData(prev => ({ ...prev, cargo: e.target.value }))}
-                className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-4 py-3 text-white focus:border-[#F97316]/50 outline-none transition-all font-bold text-sm"
-                placeholder="Ex: Diretor de Operações"
-              />
+            <div className="space-y-3">
+              <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.4em] pl-1">Nível Hierárquico (Cargo)</label>
+              <div className="group/input relative">
+                 <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity blur-sm" />
+                 <input 
+                   value={formData.cargo}
+                   onChange={e => setFormData(prev => ({ ...prev, cargo: e.target.value }))}
+                   className="relative w-full bg-[#1A1A1A]/40 border border-white/[0.06] rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#F97316]/40 transition-all font-black text-[13px] tracking-tight placeholder:text-[#262626]"
+                   placeholder="EX: CTO / DIRECTOR..."
+                 />
+              </div>
             </div>
 
-            {/* CANAL DE ORIGEM */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">Canal de Origem</label>
-              <select 
-                value={formData.canalOrigem}
-                onChange={e => setFormData(prev => ({ ...prev, canalOrigem: e.target.value }))}
-                className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-4 py-3 text-white focus:border-[#F97316]/50 outline-none transition-all font-bold text-sm h-[46px] appearance-none"
-              >
-                {originOptions.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
+            <div className="space-y-3">
+              <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.4em] pl-1">Origem do Tráfego</label>
+              <div className="group/input relative">
+                 <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity blur-sm" />
+                 <select 
+                   value={formData.canalOrigem}
+                   onChange={e => setFormData(prev => ({ ...prev, canalOrigem: e.target.value }))}
+                   className="relative w-full bg-[#1A1A1A]/40 border border-white/[0.06] rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#F97316]/40 transition-all font-black text-[13px] tracking-tight appearance-none cursor-pointer"
+                 >
+                   {originOptions.map(opt => (
+                     <option key={opt.value} value={opt.value} className="bg-[#0A0A0A]">{opt.label}</option>
+                   ))}
+                 </select>
+              </div>
             </div>
 
-            {/* TAGS */}
-            <div className="col-span-2 space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">Tags (separadas por vírgula)</label>
-              <input 
-                value={formData.tags}
-                onChange={e => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-                className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-4 py-3 text-white focus:border-[#F97316]/50 outline-none transition-all font-bold text-sm"
-                placeholder="VIP, Lead Frio, Tech, Decisor..."
-              />
+            <div className="col-span-2 space-y-3">
+              <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.4em] pl-1">Meta-Tags (Classificadores)</label>
+              <div className="group/input relative">
+                 <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity blur-sm" />
+                 <input 
+                   value={formData.tags}
+                   onChange={e => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+                   className="relative w-full bg-[#1A1A1A]/40 border border-white/[0.06] rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#F97316]/40 transition-all font-black text-[13px] tracking-tight placeholder:text-[#262626]"
+                   placeholder="TAG_1, TAG_2, TAG_3..."
+                 />
+              </div>
             </div>
 
-            {/* NOTAS */}
-            <div className="col-span-2 space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">Notas Suplementares</label>
-              <textarea 
-                value={formData.notas}
-                onChange={e => setFormData(prev => ({ ...prev, notas: e.target.value }))}
-                rows={4}
-                className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-4 py-3 text-white focus:border-[#F97316]/50 outline-none transition-all font-bold text-sm resize-none"
-                placeholder="Informações adicionais sobre o perfil ou contexto do contato..."
-              />
+            <div className="col-span-2 space-y-3">
+              <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.4em] pl-1">Logs Complementares (Notas)</label>
+              <div className="group/input relative">
+                 <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity blur-sm" />
+                 <textarea 
+                   value={formData.notas}
+                   onChange={e => setFormData(prev => ({ ...prev, notas: e.target.value }))}
+                   rows={3}
+                   className="relative w-full bg-[#1A1A1A]/40 border border-white/[0.06] rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#F97316]/40 transition-all font-black text-[13px] tracking-tight placeholder:text-[#262626] resize-none"
+                   placeholder="DESCASCAR LOGS ADICIONAIS AQUI..."
+                 />
+              </div>
             </div>
           </div>
         </div>
 
-         <div className="p-8 border-t border-white/[0.03] flex gap-4 bg-[#0A0A0A]">
+         <div className="p-10 border-t border-white/[0.03] flex gap-6 bg-[#0A0A0A]/80 backdrop-blur-3xl relative z-10">
             <button 
               onClick={() => onOpenChange(false)}
-              className="flex-1 px-8 py-4 bg-[#1A1A1A] text-[#404040] rounded-xl text-[11px] font-black uppercase tracking-widest hover:text-[#F2F2F2] transition-all"
+              className="px-10 py-5 bg-[#1A1A1A] text-[#404040] rounded-2xl text-[11px] font-black uppercase tracking-[0.4em] hover:text-[#F2F2F2] hover:bg-[#262626] transition-all border border-white/[0.03]"
             >
-               Abortar Operação
+               ABORT_SYNC
             </button>
             <button 
               onClick={() => saveContact.mutate(formData)}
               disabled={!formData.nome || saveContact.isPending}
-              className="flex-[2] px-8 py-4 bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-[#F97316]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-30 flex items-center justify-center gap-3"
+              className="flex-1 px-10 py-5 bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.4em] shadow-[0_10px_40px_rgba(249,115,22,0.3)] hover:scale-[1.03] active:scale-95 transition-all disabled:opacity-20 flex items-center justify-center gap-4 group"
             >
                {saveContact.isPending ? (
-                 <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                 <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                ) : (
                  <>
-                   <span className="material-symbols-outlined text-[18px]">{contact?.id ? "save" : "how_to_reg"}</span>
-                   {contact?.id ? "Salvar Alterações" : "Sincronizar no Diretório"}
+                   <span className="material-symbols-outlined text-[20px] font-black group-hover:rotate-12 transition-transform">{contact?.id ? "database" : "data_saver_on"}</span>
+                   {contact?.id ? "COMMIT_CHANGES" : "INITIALIZE_PROVISIONING"}
                  </>
                )}
             </button>

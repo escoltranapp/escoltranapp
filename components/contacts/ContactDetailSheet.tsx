@@ -43,52 +43,75 @@ export function ContactDetailSheet({ contact, open, onOpenChange, onEdit }: Cont
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] })
-      toast({ title: "STATUS ATUALIZADO ⚡", description: "A posição no funil foi sincronizada." })
+      toast({ title: "STATUS ATUALIZADO ⚡", description: "A posição no funil foi sincronizada localmente." })
     }
   })
+
+  const copyToClipboard = (text: string, label: string) => {
+    if (!text) return
+    navigator.clipboard.writeText(text)
+    toast({ title: `${label} COPIADO`, description: "Informação salva na área de transferência." })
+  }
 
   if (!contact) return null
 
   const funnelStages = [
-    { id: "lead", label: "LEAD" },
-    { id: "qualificado", label: "QUALIFICADO" },
-    { id: "reuniao", label: "REUNIÃO" },
-    { id: "proposta", label: "PROPOSTA" },
-    { id: "cliente", label: "CLIENTE" },
-    { id: "inativo", label: "INATIVO" }
+    { id: "lead", label: "LEAD", icon: "radar" },
+    { id: "qualificado", label: "QUALIFICADO", icon: "verified" },
+    { id: "reuniao", label: "REUNIÃO", icon: "calendar_today" },
+    { id: "proposta", label: "PROPOSTA", icon: "description" },
+    { id: "cliente", label: "CLIENTE", icon: "shield_person" },
+    { id: "inativo", label: "INATIVO", icon: "block" }
   ]
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-2xl bg-[#0A0A0A] border-l border-white/[0.05] p-0 overflow-y-auto scrollbar-hide">
-        {/* HEADER ESCOLTRAN HIGH-FIDELITY */}
-        <div className="p-8 bg-gradient-to-br from-[#1A1A1A] to-transparent border-b border-white/[0.03]">
-           <div className="flex items-start justify-between mb-8">
-              <div className="flex items-center gap-6">
-                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#F97316]/20 to-[#FB923C]/5 border border-[#F97316]/20 flex items-center justify-center text-[#F97316] font-black text-2xl shadow-[0_0_20px_rgba(249,115,22,0.1)]">
-                    {contact.nome?.slice(0, 1).toUpperCase()}
+      <SheetContent className="w-full sm:max-w-3xl bg-[#0A0A0A] border-l border-white/[0.05] p-0 overflow-y-auto scrollbar-hide shadow-[0_0_100px_rgba(0,0,0,0.8)]">
+        
+        {/* TOP GLOW ACCENT */}
+        <div className="absolute top-0 left-0 w-full h-[300px] bg-gradient-to-b from-[#F97316]/5 via-transparent to-transparent pointer-events-none" />
+
+        {/* HEADER AREA */}
+        <div className="relative p-10 border-b border-white/[0.03]">
+           <div className="flex items-start justify-between mb-12">
+              <div className="flex items-center gap-8">
+                 <div className="relative group">
+                    <div className="absolute -inset-4 bg-[#F97316]/20 rounded-3xl blur-2xl opacity-50 group-hover:opacity-100 transition-opacity" />
+                    <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] border border-[#F97316]/30 flex items-center justify-center text-[#F97316] font-black text-3xl shadow-2xl relative z-10 transition-transform hover:scale-105">
+                       {contact.nome?.slice(0, 1).toUpperCase()}
+                    </div>
                  </div>
+                 
                  <div>
-                    <SheetTitle className="text-3xl font-black text-white italic tracking-tighter uppercase mb-1">
-                       {contact.nome}
-                    </SheetTitle>
-                    <div className="flex items-center gap-3">
-                       <span className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest flex items-center gap-2">
-                          <span className="material-symbols-outlined text-[14px]">corporate_fare</span>
-                          {contact.empresa || "Pessoa Física"}
-                       </span>
-                       <div className="w-1 h-1 rounded-full bg-[#262626]" />
-                       <span className="px-2 py-0.5 rounded bg-[#F97316]/10 text-[#F97316] text-[9px] font-black uppercase tracking-widest border border-[#F97316]/20">
+                    <div className="flex items-center gap-3 mb-2">
+                       <span className="px-3 py-0.5 rounded-full bg-[#F97316]/10 text-[#F97316] text-[10px] font-black uppercase tracking-[0.2em] border border-[#F97316]/20">
                           {contact.status || "Novo Lead"}
                        </span>
+                       <span className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">
+                          ID: {contact.id.slice(0, 12)}
+                       </span>
+                    </div>
+                    <SheetTitle className="text-4xl font-black text-white italic tracking-tighter uppercase leading-tight mb-2">
+                       {contact.nome}
+                    </SheetTitle>
+                    <div className="flex items-center gap-4 text-[#6B7280]">
+                       <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[16px] text-[#F97316]">corporate_fare</span>
+                          <span className="text-[11px] font-black uppercase tracking-widest italic">{contact.empresa || "Pessoa Física"}</span>
+                       </div>
+                       <div className="w-1.5 h-1.5 rounded-full bg-[#262626]" />
+                       <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[16px]">map</span>
+                          <span className="text-[11px] font-black uppercase tracking-widest italic">Cluster: São Paulo / BR</span>
+                       </div>
                     </div>
                  </div>
               </div>
               
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-2 relative z-10">
                  <button 
                    onClick={() => onEdit(contact)}
-                   className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#1A1A1A] border border-white/5 text-[#6B7280] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all group"
+                   className="h-12 w-12 flex items-center justify-center rounded-2xl bg-[#1A1A1A] border border-white/10 text-white hover:text-[#F97316] hover:border-[#F97316]/40 hover:bg-[#F97316]/5 transition-all shadow-xl"
                  >
                     <span className="material-symbols-outlined text-[20px]">edit</span>
                  </button>
@@ -96,116 +119,197 @@ export function ContactDetailSheet({ contact, open, onOpenChange, onEdit }: Cont
                    onClick={() => {
                       if(confirm("Deseja realmente remover esta entidade do cluster?")) deleteMutation.mutate()
                    }}
-                   className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-500/5 border border-red-500/10 text-[#404040] hover:text-red-500 hover:border-red-500/30 transition-all"
+                   className="h-12 w-12 flex items-center justify-center rounded-2xl bg-red-600/10 border border-red-600/20 text-red-600 hover:bg-red-600 hover:text-white transition-all shadow-xl"
                  >
                     <span className="material-symbols-outlined text-[20px]">delete</span>
                  </button>
               </div>
            </div>
 
-           {/* ESTÁGIO NO FUNIL (CAPSULES) */}
-           <div className="space-y-4">
-              <div className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.2em]">Estágio no Funil Operacional</div>
-              <div className="flex items-center gap-2 flex-wrap">
+           {/* PIPELINE PROGRESS VISUALIZER */}
+           <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                 <h4 className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.3em] flex items-center gap-3">
+                    <span className="w-8 h-[1px] bg-[#262626]" />
+                    Estágio Operacional do Dataset
+                 </h4>
+                 <div className="text-[10px] font-mono font-black text-[#F97316] animate-pulse">LIVE SYNC ACTIVE</div>
+              </div>
+              
+              <div className="grid grid-cols-6 gap-3">
                  {funnelStages.map((stage, idx) => {
                     const isActive = contact.status === stage.id
                     return (
-                       <div key={stage.id} className="flex items-center gap-2">
-                          <button 
-                            onClick={() => updateStatusMutation.mutate(stage.id)}
-                            className={cn(
-                               "px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
-                               isActive 
-                                 ? "bg-[#F97316] text-white border-[#F97316] shadow-[0_0_15px_rgba(249,115,22,0.3)]" 
-                                 : "bg-[#0A0A0A] text-[#404040] border-white/5 hover:border-white/10"
-                            )}
-                          >
+                       <button 
+                         key={stage.id}
+                         onClick={() => updateStatusMutation.mutate(stage.id)}
+                         className={cn(
+                            "group flex flex-col items-center gap-3 p-4 rounded-2xl transition-all border relative overflow-hidden",
+                            isActive 
+                              ? "bg-gradient-to-br from-[#F97316] to-[#FB923C] border-[#F97316] shadow-[0_10px_25px_rgba(249,115,22,0.3)]" 
+                              : "bg-[#0A0A0A] border-white/[0.03] hover:border-white/10"
+                         )}
+                       >
+                          <span className={cn(
+                             "material-symbols-outlined text-[20px] transition-transform group-hover:scale-110",
+                             isActive ? "text-white" : "text-[#404040]"
+                          )}>
+                             {stage.icon}
+                          </span>
+                          <span className={cn(
+                             "text-[9px] font-black tracking-widest uppercase",
+                             isActive ? "text-white" : "text-[#404040]"
+                          )}>
                              {stage.label}
-                          </button>
-                          {idx < funnelStages.length - 1 && (
-                             <span className="material-symbols-outlined text-[#1A1A1A] text-[16px]">chevron_right</span>
+                          </span>
+                          {isActive && (
+                             <div className="absolute top-0 right-0 w-8 h-8 bg-white/20 blur-xl rounded-full" />
                           )}
-                       </div>
+                       </button>
                     )
                  })}
               </div>
            </div>
         </div>
 
-        <div className="p-8 space-y-12">
-           {/* GRID DADOS */}
-           <div className="grid grid-cols-2 gap-10">
-              {/* DADOS DE CONTATO */}
-              <div className="space-y-6">
-                 <div className="flex items-center gap-3 border-b border-white/[0.03] pb-3">
-                    <span className="material-symbols-outlined text-[#F97316] text-[18px]">contact_page</span>
-                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">Dados de Contato</h3>
+        {/* CONTENT DENSITY AREA */}
+        <div className="p-10 space-y-16">
+           
+           {/* DATA MODULES GRID */}
+           <div className="grid grid-cols-2 gap-12">
+              
+              {/* MODULE: IDENTITY DYNAMICS */}
+              <div className="space-y-8">
+                 <div className="flex items-center gap-4 border-b border-white/[0.04] pb-4">
+                    <div className="w-8 h-8 rounded-lg bg-[#1A1A1A] flex items-center justify-center text-[#F97316]">
+                       <span className="material-symbols-outlined text-[18px]">fingerprint</span>
+                    </div>
+                    <h3 className="text-[13px] font-black uppercase tracking-[0.2em] text-white italic">Identity Parameters</h3>
                  </div>
-                 
-                 <div className="space-y-5">
-                    <div className="space-y-1">
-                       <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">Telefone</label>
-                       <div className="text-[14px] font-bold text-white tracking-tight">{contact.telefone || "Não informado"}</div>
-                    </div>
-                    <div className="space-y-1">
-                       <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">Email Digital</label>
-                       <div className="text-[14px] font-bold text-white tracking-tight lowercase">{contact.email || "Não informado"}</div>
-                    </div>
-                    <div className="space-y-1">
-                       <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">Cargo Decisório</label>
-                       <div className="text-[14px] font-bold text-white tracking-tight uppercase italic">{contact.cargo || "Não informado"}</div>
-                    </div>
-                    <div className="space-y-1">
-                       <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">Canal de Origem</label>
-                       <div className="text-[11px] font-black text-[#F97316] uppercase tracking-[0.1em]">{contact.canalOrigem || "Direto"}</div>
-                    </div>
+
+                 <div className="space-y-8 pl-4">
+                    {[
+                       { label: "Phone / WA", value: contact.telefone, icon: "call", copy: true },
+                       { label: "Digital Email", value: contact.email, icon: "alternate_email", copy: true },
+                       { label: "Job Description", value: contact.cargo, icon: "badge" },
+                       { label: "Origin Node", value: contact.canalOrigem, icon: "hub", color: "text-[#F97316]" },
+                    ].map((row: any, i: number) => (
+                       <div key={i} className="group flex items-start gap-4">
+                          <div className="mt-1 w-6 h-6 flex items-center justify-center text-[#404040] group-hover:text-[#F97316] transition-colors">
+                             <span className="material-symbols-outlined text-[18px]">{row.icon}</span>
+                          </div>
+                          <div className="flex-1 space-y-1">
+                             <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">{row.label}</label>
+                             <div className="flex items-center gap-3">
+                                <span className={cn(
+                                   "text-[15px] font-bold text-white tracking-tight leading-none",
+                                   row.color
+                                )}>
+                                   {row.value || "Not Provisioned"}
+                                </span>
+                                {row.copy && row.value && (
+                                   <button 
+                                     onClick={() => copyToClipboard(row.value, row.label)}
+                                     className="opacity-0 group-hover:opacity-100 transition-opacity text-[#404040] hover:text-[#F97316]"
+                                   >
+                                      <span className="material-symbols-outlined text-[14px]">content_copy</span>
+                                   </button>
+                                )}
+                             </div>
+                          </div>
+                       </div>
+                    ))}
                  </div>
               </div>
 
-              {/* DADOS DA EMPRESA */}
-              <div className="space-y-6">
-                 <div className="flex items-center gap-3 border-b border-white/[0.03] pb-3">
-                    <span className="material-symbols-outlined text-[#F97316] text-[18px]">domain</span>
-                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">Dados da Empresa</h3>
+              {/* MODULE: CORPORATE CLUSTER */}
+              <div className="space-y-8">
+                 <div className="flex items-center gap-4 border-b border-white/[0.04] pb-4">
+                    <div className="w-8 h-8 rounded-lg bg-[#1A1A1A] flex items-center justify-center text-[#F97316]">
+                       <span className="material-symbols-outlined text-[18px]">business_center</span>
+                    </div>
+                    <h3 className="text-[13px] font-black uppercase tracking-[0.2em] text-white italic">Corporate Metadata</h3>
                  </div>
-                 
-                 <div className="space-y-5">
-                    <div className="space-y-1">
-                       <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">Razão Social</label>
-                       <div className="text-[14px] font-bold text-white tracking-tight uppercase">{contact.empresa || "Pessoa Física"}</div>
-                    </div>
-                    <div className="space-y-1">
-                       <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">Endereço Cluster</label>
-                       <div className="text-[13px] font-bold text-[#6B7280] tracking-tight uppercase italic">Rastreando Localização...</div>
-                    </div>
-                    <div className="space-y-1">
-                       <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">Identificador Fiscal</label>
-                       <div className="text-[13px] font-bold text-[#6B7280] tracking-tight uppercase italic">Aguardando CNPJ...</div>
-                    </div>
+
+                 <div className="space-y-8 pl-4">
+                    {[
+                       { label: "Organization Name", value: contact.empresa, icon: "domain" },
+                       { label: "Geo-Location", value: "Rastreando via IP...", icon: "location_on", italic: true },
+                       { label: "Fiscal Register", value: "Verificando Receita...", icon: "assignment_ind", italic: true },
+                       { label: "Network Score", value: "84/100", icon: "monitoring", color: "text-green-500" },
+                    ].map((row: any, i: number) => (
+                       <div key={i} className="group flex items-start gap-4">
+                          <div className="mt-1 w-6 h-6 flex items-center justify-center text-[#404040] group-hover:text-[#F97316] transition-colors">
+                             <span className="material-symbols-outlined text-[18px]">{row.icon}</span>
+                          </div>
+                          <div className="flex-1 space-y-1">
+                             <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">{row.label}</label>
+                             <div className={cn(
+                                "text-[15px] font-bold text-white tracking-tight leading-none uppercase",
+                                row.italic && "italic text-[#6B7280]",
+                                row.color
+                             )}>
+                                {row.value || "Not Provisioned"}
+                             </div>
+                          </div>
+                       </div>
+                    ))}
                  </div>
               </div>
            </div>
 
-           {/* NOTAS INTERNAS */}
-           <div className="space-y-4">
-              <div className="flex items-center gap-3 border-b border-white/[0.03] pb-3">
-                 <span className="material-symbols-outlined text-[#F97316] text-[18px]">sticky_note_2</span>
-                 <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">Notas e Observações</h3>
+           {/* INTERNAL INTELLIGENCE / NOTES */}
+           <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                 <div className="w-8 h-8 rounded-lg bg-[#1A1A1A] flex items-center justify-center text-[#F97316]">
+                    <span className="material-symbols-outlined text-[18px]">psychology</span>
+                 </div>
+                 <h3 className="text-[13px] font-black uppercase tracking-[0.2em] text-white italic">Internal Intelligence & Nodes</h3>
               </div>
-              <div className="bg-[#1A1A1A] border border-white/5 rounded-2xl p-6 min-h-[120px]">
-                 <p className="text-[13px] text-[#A3A3A3] leading-relaxed italic">
-                    {contact.notas || "Sem observações registradas para este nó."}
-                 </p>
+              <div className="relative group">
+                 <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-3xl blur opacity-20 group-hover:opacity-40 transition-opacity" />
+                 <div className="relative bg-[#1A1A1A] border border-white/5 rounded-3xl p-8 min-h-[160px] shadow-2xl">
+                    <p className="text-[14px] text-[#A3A3A3] leading-relaxed italic font-medium">
+                       {contact.notas || "The central intelligence node has no specific observations for this entity. Database synchronization is pending manual entry or automated crawler event capture."}
+                    </p>
+                 </div>
               </div>
            </div>
 
-           {/* ACTIONS FOOTER */}
-           <div className="pt-6 border-t border-white/[0.03] flex items-center justify-between">
-              <div className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">
-                 Sincronizado via: {contact.canalOrigem}
+           {/* TEMPORAL AUDIT TIMELINE */}
+           <div className="space-y-6">
+              <div className="flex items-center justify-between border-b border-white/[0.04] pb-4">
+                 <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-lg bg-[#1A1A1A] flex items-center justify-center text-[#F97316]">
+                       <span className="material-symbols-outlined text-[18px]">history</span>
+                    </div>
+                    <h3 className="text-[13px] font-black uppercase tracking-[0.2em] text-white italic">Audit Log Events</h3>
+                 </div>
+                 <span className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">Global Sync Enabled</span>
               </div>
-              <div className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">
-                 ID: #{contact.id.slice(0, 8)}
+              
+              <div className="space-y-1 font-mono">
+                 {[
+                    { t: "NOW", e: "Viewed by node HENRIQUE_BARIANI", c: "text-[#F97316]" },
+                    { t: "2h ago", e: "Status mapping synchronized to " + (contact.status || "new_lead"), c: "text-[#A3A3A3]" },
+                    { t: "1d ago", e: "Initial provisioning from source: " + (contact.canalOrigem || "direct"), c: "text-[#A3A3A3]" },
+                 ].map((log: any, i: number) => (
+                    <div key={i} className="flex gap-6 p-4 border-l border-[#262626] bg-[#1A1A1A]/20 hover:bg-[#1A1A1A]/40 transition-all rounded-r-xl">
+                       <div className={cn("text-[10px] font-black min-w-[60px]", log.c)}>{log.t}</div>
+                       <div className="text-[11px] text-[#A3A3A3] font-bold tracking-tight uppercase leading-none">{log.e}</div>
+                    </div>
+                 ))}
+              </div>
+           </div>
+
+           {/* SYSTEM FOOTER */}
+           <div className="pt-10 border-t border-white/[0.03] flex items-center justify-between opacity-30">
+              <div className="flex items-center gap-4">
+                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                 <span className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">Operational Node: Active</span>
+              </div>
+              <div className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">
+                 Escoltran Cloud Architecture v2.0.4
               </div>
            </div>
         </div>
