@@ -170,10 +170,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
       if (res.ok) {
         setNewStageName("")
         setIsAddingStage(false)
-        // Refresh stages
-        // The parent component should ideally refetch, but we can optimistically add?
-        // Let's assume the parent refetches via invalidateQueries if we provide a callback
-        window.location.reload() // Quick fix to ensure full sync of order/ids
+        window.location.reload()
       }
     } catch (e) {
       console.error(e)
@@ -216,150 +213,168 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
         onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
         className={cn(
-          "flex gap-8 h-full min-h-[calc(100vh-320px)] overflow-x-auto pb-12 transition-colors cursor-grab active:cursor-grabbing",
-          "scrollbar-thin scrollbar-track-[#0A0A0A] scrollbar-thumb-[#F97316]/20 hover:scrollbar-thumb-[#F97316]/40"
+          "flex gap-10 h-full min-h-[calc(100vh-320px)] overflow-x-auto pb-20 pt-4 transition-colors cursor-grab active:cursor-grabbing scrollbar-hide perspective-[2000px]",
         )}
-        style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: '#F9731633 #0A0A0A'
-        }}
       >
         {stages.map((stage) => {
           const totalValue = stage.deals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
 
           return (
-            <div key={stage.id} className="flex flex-col min-w-[320px] max-w-[320px] select-none">
-              {/* STAGE HEADER ESCOLTRAN STYLE */}
-              <div className="mb-6 px-1 group/header">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_10px_rgba(249,115,22,0.6)]" style={{ backgroundColor: stage.color || '#F97316' }} />
+            <div key={stage.id} className="flex flex-col min-w-[360px] max-w-[360px] select-none group/column transition-transform duration-500">
+              
+              {/* STAGE HEADER - ELITE AETHER STYLE */}
+              <div className="mb-8 px-4 relative">
+                {/* BACKGLOW FOR COLUMN */}
+                <div 
+                  className="absolute -top-10 -left-10 w-40 h-40 blur-[80px] opacity-10 group-hover/column:opacity-20 transition-opacity rounded-full pointer-events-none" 
+                  style={{ backgroundColor: stage.color || '#F97316' }}
+                />
+
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-4">
+                    <div className="w-3 h-3 rounded-full relative shadow-[0_0_15px_rgba(249,115,22,0.8)]" style={{ backgroundColor: stage.color || '#F97316' }}>
+                       <div className="absolute inset-0 rounded-full animate-ping opacity-30" style={{ backgroundColor: stage.color || '#F97316' }} />
+                    </div>
                     
                     {editingStageId === stage.id ? (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                          <input 
                             autoFocus
                             value={editStageName}
                             onChange={(e) => setEditStageName(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleUpdateStage(stage.id)}
-                            className="bg-[#1A1A1A] border border-[#F97316]/30 rounded-lg px-2 py-1 text-[13px] font-black text-white w-32 focus:border-[#F97316] outline-none"
+                            className="bg-[#1A1A1A] border border-[#F97316]/40 rounded-xl px-4 py-2 text-[14px] font-black text-white w-40 focus:border-[#F97316] outline-none shadow-2xl"
                          />
-                         <button onClick={() => handleUpdateStage(stage.id)} className="text-[#F97316]">
-                           <span className="material-symbols-outlined text-[18px]">check</span>
-                         </button>
-                         <button onClick={() => setEditingStageId(null)} className="text-[#404040]">
-                           <span className="material-symbols-outlined text-[18px]">close</span>
+                         <button onClick={() => handleUpdateStage(stage.id)} className="text-[#F97316] hover:scale-110 transition-transform">
+                           <span className="material-symbols-outlined text-[20px]">check_circle</span>
                          </button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 group/title">
-                        <h2 className="text-[13px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">
+                      <div className="flex items-center gap-4 group/title relative">
+                        <h2 className="text-[14px] font-black uppercase tracking-[0.4em] text-white italic drop-shadow-sm">
                           {stage.name}
                         </h2>
-                        <div className="flex opacity-0 group-hover/header:opacity-100 transition-opacity">
+                        <div className="flex opacity-0 group-hover/column:opacity-100 transition-all gap-2 translate-x-[-10px] group-hover/column:translate-x-0">
                             <button 
                                onClick={() => {
                                   setEditingStageId(stage.id)
                                   setEditStageName(stage.name)
                                }}
-                               className="p-1 hover:text-[#F97316] transition-colors"
+                               className="p-1 text-[#404040] hover:text-[#F97316] transition-colors"
                             >
-                               <span className="material-symbols-outlined text-[14px]">edit</span>
+                               <span className="material-symbols-outlined text-[16px]">draw</span>
                             </button>
                             <button 
                                onClick={() => handleDeleteStage(stage.id, stage.deals.length)}
-                               className="p-1 hover:text-red-500 transition-colors"
+                               className="p-1 text-[#404040] hover:text-red-500 transition-colors"
                             >
-                               <span className="material-symbols-outlined text-[14px]">delete</span>
+                               <span className="material-symbols-outlined text-[16px]">delete_sweep</span>
                             </button>
                         </div>
                       </div>
                     )}
                   </div>
-                  <span className="text-[10px] font-mono font-black text-[#F97316] bg-[#F97316]/10 px-2.5 py-0.5 rounded-lg border border-[#F97316]/20">
-                    {stage.deals.length}
-                  </span>
+                  <div className="flex flex-col items-end">
+                     <span className="text-[10px] font-mono font-black text-[#F97316] bg-[#F97316]/5 px-3 py-1 rounded-full border border-[#F97316]/10 shadow-lg">
+                       {stage.deals.length} DATA_UNITS
+                     </span>
+                  </div>
                 </div>
                 
-                <div className="text-[16px] font-mono font-black text-[#F2F2F2] tracking-widest pl-5">
-                   {totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
+                <div className="flex items-baseline gap-2 pl-7">
+                   <div className="text-3xl font-black text-white tracking-tighter italic font-mono flex items-baseline truncate">
+                      {totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
+                      <span className="text-[10px] text-[#404040] font-mono uppercase ml-2 tracking-widest">Est_Value</span>
+                   </div>
                 </div>
               </div>
 
-              {/* COLUMN BODY */}
+              {/* COLUMN BODY - GLASS COMPONENT */}
               <KanbanColumn id={stage.id} deals={stage.deals}>
-                <div className="flex flex-col gap-4 min-h-[200px] p-2.5 rounded-2xl bg-[#121212] border border-white/[0.04]">
-                  <SortableContext id={stage.id} items={stage.deals.map((d) => d.id)} strategy={verticalListSortingStrategy}>
-                    {stage.deals.map((deal) => (
-                      <DealCard key={deal.id} deal={deal} onClick={() => onDealClick?.(deal)} />
-                    ))}
-                  </SortableContext>
+                <div className="flex flex-col gap-5 min-h-[400px] p-4 rounded-[32px] bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.04] shadow-[0_30px_60px_rgba(0,0,0,0.5)] group-hover/column:border-white/[0.08] transition-all relative overflow-hidden">
+                  <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
                   
-                  {/* ADD CARD BUTTON LARANJA */}
-                  <button 
-                    onClick={() => onAddDeal?.(stage.id)}
-                    className="flex items-center justify-center gap-2 w-full py-5 border border-dashed border-white/5 rounded-2xl text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/5 transition-all group cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">add_circle</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest font-mono">Adicionar Card</span>
-                  </button>
+                  <div className="relative z-10 flex flex-col gap-5">
+                    <SortableContext id={stage.id} items={stage.deals.map((d) => d.id)} strategy={verticalListSortingStrategy}>
+                      {stage.deals.map((deal) => (
+                        <DealCard key={deal.id} deal={deal} onClick={() => onDealClick?.(deal)} />
+                      ))}
+                    </SortableContext>
+                    
+                    {/* ADD CARD BUTTON - HIGH CONTRAST */}
+                    <button 
+                      onClick={() => onAddDeal?.(stage.id)}
+                      className="flex items-center justify-center gap-4 w-full py-6 bg-[#1A1A1A]/20 border border-dashed border-white/5 rounded-2xl text-[#404040] hover:text-white hover:bg-[#F97316]/10 hover:border-[#F97316]/30 transition-all group/btn shadow-inner mt-4"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-[#0A0A0A] flex items-center justify-center border border-white/5 group-hover/btn:border-[#F97316]/40 transition-all shadow-xl">
+                        <span className="material-symbols-outlined text-[20px] group-hover/btn:rotate-90 transition-transform">add</span>
+                      </div>
+                      <span className="text-[11px] font-black uppercase tracking-[0.3em] font-mono italic">Novo Registro Operacional</span>
+                    </button>
+                  </div>
                 </div>
               </KanbanColumn>
             </div>
           )
         })}
 
-        {/* ADD STAGE COLUMN ESCOLTRAN STYLE */}
-        <div className="flex flex-col min-w-[320px] max-w-[320px]">
-           <div className="mb-6 h-[72px] flex items-center px-1">
+        {/* ADD STAGE COLUMN - ELITE AETHER STYLE */}
+        <div className="flex flex-col min-w-[360px] max-w-[360px]">
+           <div className="mb-8 min-h-[100px] flex items-center justify-center px-4">
               {!isAddingStage ? (
                  <button 
                   onClick={() => setIsAddingStage(true)}
-                  className="w-full flex items-center gap-3 text-[#404040] hover:text-[#F97316] transition-all group py-2"
+                  className="w-full h-24 flex items-center justify-center gap-6 text-[#404040] hover:text-[#F97316] bg-[#1A1A1A]/20 border border-dashed border-white/5 rounded-[32px] transition-all group"
                  >
-                    <div className="w-8 h-8 rounded-full border border-white/5 bg-[#1A1A1A] flex items-center justify-center group-hover:border-[#F97316]/50 group-hover:shadow-[0_0_15px_rgba(249,115,22,0.2)]">
-                       <span className="material-symbols-outlined text-[20px]">add</span>
+                    <div className="w-12 h-12 rounded-2xl border border-white/5 bg-[#0A0A0A] flex items-center justify-center group-hover:border-[#F97316]/50 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.3)] duration-700">
+                       <span className="material-symbols-outlined text-[28px] group-hover:rotate-180 transition-transform duration-700">add</span>
                     </div>
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">Nova Etapa do Fluxo</span>
+                    <span className="text-[13px] font-black uppercase tracking-[0.4em] italic font-mono">Expandir Cluster</span>
                  </button>
               ) : (
-                 <div className="w-full space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                 <div className="w-full p-8 bg-[#1A1A1A]/40 backdrop-blur-3xl border border-[#F97316]/20 rounded-[32px] space-y-6 animate-in zoom-in-95 duration-500 shadow-2xl">
+                    <div className="text-[10px] font-mono font-black text-[#F97316] uppercase tracking-[0.4em]">New_Node_Provisioning</div>
                     <input 
                        autoFocus
-                       placeholder="Título da Etapa..."
+                       placeholder="DEFINIR TÍTULO DA ETAPA..."
                        value={newStageName}
                        onChange={e => setNewStageName(e.target.value)}
                        onKeyDown={e => e.key === 'Enter' && handleAddStage()}
-                       className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-4 py-2.5 text-[12px] text-white focus:border-[#F97316]/50 outline-none transition-all font-black"
+                       className="w-full bg-[#0A0A0A] border border-white/5 rounded-2xl px-6 py-4 text-[13px] text-white focus:border-[#F97316]/50 outline-none transition-all font-black placeholder:text-[#262626] tracking-widest uppercase italic"
                     />
-                    <div className="flex gap-2">
+                    <div className="flex gap-4">
                        <button 
                         onClick={() => setIsAddingStage(false)}
-                        className="flex-1 py-2 text-[9px] font-black uppercase tracking-widest text-[#404040] hover:text-[#F2F2F2]"
+                        className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-[#404040] hover:text-[#F2F2F2] transition-colors"
                        >
                           Abortar
                        </button>
                        <button 
                         onClick={handleAddStage}
-                        className="flex-[2] py-2 bg-[#F97316] text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-[0_0_15px_rgba(249,115,22,0.3)]"
+                        className="flex-[2] py-4 bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-[0_15px_30px_rgba(249,115,22,0.3)] transition-all hover:scale-[1.05]"
                        >
-                          Confirmar
+                          Confirmar Node
                        </button>
                     </div>
                  </div>
               )}
            </div>
            
-           <div className="flex-1 rounded-2xl border border-dashed border-white/[0.03] bg-transparent flex flex-col items-center justify-center p-8 opacity-20">
-              <span className="material-symbols-outlined text-[48px] mb-4">move_item</span>
-              <div className="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-center">Espaço Reservado para Dataset</div>
+           <div className="flex-1 rounded-[40px] border border-dashed border-white/[0.04] bg-[#0A0A0A]/20 flex flex-col items-center justify-center p-12 opacity-10">
+              <div className="w-24 h-24 rounded-full border border-white/5 flex items-center justify-center mb-10">
+                 <span className="material-symbols-outlined text-[56px]">layers</span>
+              </div>
+              <div className="text-[12px] font-mono font-black uppercase tracking-[0.5em] text-center italic">Aguardando Expansão de Cluster</div>
            </div>
         </div>
       </div>
 
-      <DragOverlay>
+      <DragOverlay dropAnimation={{
+          duration: 400,
+          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+      }}>
         {activeDeal ? (
-          <div className="rotate-3 scale-105 shadow-2xl">
+          <div className="rotate-2 scale-[1.08] shadow-[0_50px_100px_rgba(0,0,0,0.9)] opacity-90 transition-transform">
             <DealCard deal={activeDeal} />
           </div>
         ) : null}

@@ -9,23 +9,40 @@ function KPICard({
   label: string; value: string | number; icon: string; trend?: string; color?: string 
 }) {
   return (
-    <div className="bg-[#1A1A1A] border border-white/5 rounded-2xl p-7 hover:bg-[#262626] transition-all group relative overflow-hidden flex flex-col justify-between h-full shadow-lg">
-      <div className="flex items-center justify-between mb-8">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#F97316]/20 to-transparent border border-[#F97316]/20 flex items-center justify-center shadow-[inset_0_0_10px_rgba(249,115,22,0.1)]">
-          <span className="material-symbols-outlined text-[24px]" style={{ color }}>{icon}</span>
+    <div className="relative group overflow-hidden h-full">
+      <div className="absolute -inset-0.5 bg-gradient-to-br from-white/10 to-transparent rounded-[32px] opacity-0 group-hover:opacity-100 transition-opacity blur-sm" />
+      <div className="relative bg-[#1A1A1A]/40 backdrop-blur-3xl border border-white/[0.04] rounded-[32px] p-8 hover:bg-[#1A1A1A]/60 transition-all shadow-2xl flex flex-col justify-between h-full group/card">
+        {/* RADIAL GLOW */}
+        <div 
+          className="absolute -top-10 -right-10 w-32 h-32 blur-[60px] opacity-20 group-hover/card:opacity-40 transition-opacity rounded-full" 
+          style={{ backgroundColor: color }}
+        />
+
+        <div className="flex items-start justify-between">
+          <div 
+            className="w-14 h-14 rounded-2xl flex items-center justify-center border transition-all duration-500 shadow-xl"
+            style={{ 
+              backgroundColor: `${color}10`,
+              borderColor: `${color}30`,
+              boxShadow: `0 0 20px ${color}10`
+            }}
+          >
+            <span className="material-symbols-outlined text-[28px]" style={{ color }}>{icon}</span>
+          </div>
+          {trend && (
+             <div className="px-4 py-1.5 rounded-full text-[10px] font-black font-mono tracking-widest text-white bg-white/[0.03] border border-white/[0.06] group-hover/card:bg-[#F97316]/20 group-hover/card:border-[#F97316]/30 transition-all uppercase">
+                {trend}
+             </div>
+          )}
         </div>
-        {trend && (
-           <div className="px-3 py-1 rounded-full text-[11px] font-black font-mono tracking-tighter text-[#F97316] bg-[#F97316]/10">
-              {trend}
+
+        <div className="space-y-2 relative z-10 pt-8">
+           <div className="text-[10px] font-mono text-[#404040] uppercase tracking-[0.4em] font-black italic group-hover/card:translate-x-1 transition-transform">{label}</div>
+           <div className="text-4xl font-black text-white tracking-tighter font-mono flex items-baseline gap-2">
+              {value}
            </div>
-        )}
+        </div>
       </div>
-      <div>
-         <div className="text-3xl font-black text-white tracking-tighter font-mono mb-1">{value}</div>
-         <div className="text-[10px] font-mono text-[#6B7280] uppercase tracking-[0.3em] font-black">{label}</div>
-      </div>
-      {/* BRAND GLOW */}
-      <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-[#F97316]/5 blur-3xl rounded-full" />
     </div>
   )
 }
@@ -41,82 +58,123 @@ export default function DashboardPage() {
   })
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 relative pb-24">
+    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-12 space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
       
+      {/* IMMERSIVE AETHER BACKGROUND */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+         <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#F97316]/5 blur-[160px] rounded-full animate-pulse duration-[10s]" />
+         <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#F97316]/5 blur-[160px] rounded-full animate-pulse duration-[8s]" />
+      </div>
+
       {/* HEADER ESCOLTRAN STYLE */}
-      <header className="mb-12">
-        <h1 className="text-4xl font-black text-white tracking-tighter italic uppercase">Overview</h1>
-        <p className="text-[#6B7280] text-[15px] mt-2 font-bold tracking-tight">Relatório operacional sincronizado com cluster Escoltran</p>
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-10 relative z-10">
+          <div className="space-y-4">
+            <div className="flex items-center gap-6">
+               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#F97316] to-[#FB923C] flex items-center justify-center shadow-[0_0_50px_rgba(249,115,22,0.4)] relative">
+                  <div className="absolute inset-0 bg-white/20 rounded-2xl animate-ping opacity-20" />
+                  <span className="material-symbols-outlined text-white text-3xl font-black relative z-10">monitoring</span>
+               </div>
+               <div>
+                  <h1 className="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
+                    Overview <span className="text-[#F97316] drop-shadow-[0_0_20px_rgba(249,115,22,0.4)]">Operacional</span>
+                  </h1>
+                  <p className="text-[#404040] text-xs font-mono font-black uppercase tracking-[0.5em] mt-3 flex items-center gap-3">
+                     <span className="w-8 h-[1px] bg-[#262626]" />
+                     RELATÓRIO SINCRONIZADO: ESCOLTRAN_CLUSTER_AETHER
+                  </p>
+               </div>
+            </div>
+          </div>
       </header>
 
-      {/* KPI GRID - USANDO GRID-STATS PARA EVITAR OVERLAP */}
-      <div className="grid-stats mb-12">
-        <KPICard label="Dataset Leads" value="1.284" icon="group" trend="+12.5%" />
-        <KPICard label="Volume Financeiro" value="R$ 452k" icon="payments" trend="+8.2%" />
-        <KPICard label="Taxa Conversão" value="18.5%" icon="query_stats" trend="Optimized" />
-        <KPICard label="Tickets Ativos" value="42" icon="confirmation_number" trend="-4%" />
+      {/* KPI GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+        <KPICard label="Dataset Leads" value="1.284" icon="groups" trend="+12.5% VOL" />
+        <KPICard label="Volume Financeiro" value="R$ 452k" icon="currency_exchange" trend="+8.2% REV" />
+        <KPICard label="Taxa Conversão" value="18.5%" icon="hub" trend="Optimized" color="#A855F7" />
+        <KPICard label="Nodes Ativos" value="42" icon="dns" trend="Stable" color="#22C55E" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 relative z-10">
         
-        {/* GRÁFICO REVENUE (LARANJA) */}
-        <div className="lg:col-span-8 bg-[#1A1A1A] border border-white/5 rounded-3xl p-10 flex flex-col shadow-xl">
-           <div className="flex items-center justify-between mb-16">
-              <h3 className="text-lg font-bold text-white tracking-tight uppercase italic">Evolução de Receita</h3>
-              <div className="flex items-center gap-2">
-                 <div className="w-2.5 h-2.5 rounded-full bg-[#F97316] shadow-[0_0_10px_rgba(249,115,22,0.5)]" />
-                 <span className="text-[11px] font-mono font-black text-[#6B7280] uppercase tracking-widest">Dataset: R$</span>
-              </div>
-           </div>
-           
-           <div className="flex-1 flex items-end justify-between px-4 relative min-h-[300px] mb-8">
-              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pr-8">
-                 {[...Array(6)].map((_, i) => <div key={i} className="w-full border-t border-white/[0.04]" />)}
+        {/* GRÁFICO REVENUE (GLASSMORPHIC) */}
+        <div className="lg:col-span-8 group relative">
+           <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[40px] blur-3xl opacity-20 transition-opacity group-hover:opacity-40" />
+           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[40px] p-12 flex flex-col shadow-2xl h-full">
+              <div className="flex items-center justify-between mb-20">
+                 <div className="space-y-1">
+                    <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">Evolução de Dataset</h3>
+                    <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em]">Historical_Revenue_Sinc</p>
+                 </div>
+                 <div className="flex items-center gap-4 bg-[#1A1A1A]/40 px-6 py-3 rounded-full border border-white/[0.04]">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#F97316] shadow-[0_0_15px_rgba(249,115,22,0.8)]" />
+                    <span className="text-[11px] font-mono font-black text-[#F2F2F2] uppercase tracking-widest">Global_Metric: BRL</span>
+                 </div>
               </div>
               
-              {[
-                { m: 'JAN', v: 45 }, { m: 'FEV', v: 65 }, { m: 'MAR', v: 55 }, 
-                { m: 'ABR', v: 85 }, { m: 'MAI', v: 75 }, { m: 'JUN', v: 100 }
-              ].map((b, i) => (
-                <div key={i} className="flex flex-col items-center gap-6 flex-1 group">
-                   <div className="w-4 bg-[#F97316] rounded-t-lg shadow-[0_0_15px_rgba(249,115,22,0.2)] transition-all duration-500 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.5)] group-hover:bg-[#FB923C] cursor-pointer" style={{ height: `${b.v}%` }} />
-                   <span className="text-[11px] font-mono font-black text-[#404040] group-hover:text-[#F2F2F2] transition-colors">{b.m}</span>
-                </div>
-              ))}
+              <div className="flex-1 flex items-end justify-between px-6 relative min-h-[350px] mb-8 gap-6">
+                 <div className="absolute inset-x-0 inset-y-0 flex flex-col justify-between pointer-events-none pr-8">
+                    {[...Array(6)].map((_, i) => <div key={i} className="w-full border-t border-white/[0.04]" />)}
+                 </div>
+                 
+                 {[
+                   { m: 'JAN', v: 45 }, { m: 'FEV', v: 65 }, { m: 'MAR', v: 55 }, 
+                   { m: 'ABR', v: 85 }, { m: 'MAI', v: 75 }, { m: 'JUN', v: 100 }
+                 ].map((b, i) => (
+                   <div key={i} className="flex flex-col items-center gap-8 flex-1 group/bar relative">
+                      <div className="w-full max-w-[40px] bg-gradient-to-t from-[#F97316]/20 to-[#F97316] rounded-t-2xl shadow-[0_0_30px_rgba(249,115,22,0.2)] transition-all duration-700 group-hover/bar:shadow-[0_0_50px_rgba(249,115,22,0.6)] group-hover/bar:brightness-125 cursor-pointer relative overflow-hidden" style={{ height: `${b.v}%` }}>
+                         <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/bar:opacity-100 transition-opacity" />
+                      </div>
+                      <span className="text-[11px] font-mono font-black text-[#404040] group-hover/bar:text-white transition-colors tracking-widest">{b.m}</span>
+                   </div>
+                 ))}
+              </div>
            </div>
         </div>
 
-        {/* FEED DE ATIVIDADES DE MARCA */}
-        <div className="lg:col-span-4 bg-[#1A1A1A] border border-white/5 rounded-3xl p-10 shadow-xl">
-           <h3 className="text-lg font-bold text-white tracking-tight uppercase italic mb-10">Histórico Recente</h3>
-           <div className="space-y-10 relative">
-              <div className="absolute left-[19px] top-2 bottom-2 w-px bg-white/[0.06] border-dashed border-l" />
-              
-              {[
-                { user: "R. Mendes", action: "moveu lead", target: "Logística Express", time: "10m", icon: "person" },
-                { user: "Sistema", action: "processou disparo", target: "Dataset Novos", time: "2h", icon: "campaign" },
-                { user: "P. Santos", action: "finalizou deal", target: "Tech Brasil", time: "5h", icon: "check_circle" },
-                { user: "AI Node", action: "identificou hot lead", target: "Alpha Log", time: "8h", icon: "auto_awesome" },
-              ].map((item, i) => (
-                <div key={i} className="flex gap-6 relative z-10 group">
-                   <div className="w-10 h-10 rounded-full border border-[#F97316]/20 bg-[#1A1A1A] flex items-center justify-center text-[#F97316] group-hover:bg-[#F97316] group-hover:text-black transition-all">
-                      <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
+        {/* FEED DE ATIVIDADES OPERACIONAIS */}
+        <div className="lg:col-span-4 group relative">
+           <div className="absolute -inset-1 bg-gradient-to-br from-white/5 to-transparent rounded-[40px] blur-3xl opacity-10 transition-opacity" />
+           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[40px] p-12 shadow-2xl h-full overflow-hidden">
+              <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic mb-12 flex items-center gap-4">
+                 <span className="material-symbols-outlined text-[#F97316]">history</span>
+                 Cluster Log
+              </h3>
+              <div className="space-y-12 relative">
+                 <div className="absolute left-[24px] top-4 bottom-4 w-[1px] bg-gradient-to-b from-[#F97316]/40 via-[#262626] to-transparent" />
+                 
+                 {[
+                   { user: "R. Mendes", action: "sincronizou lead", target: "Log express", time: "10m", icon: "sync_alt" },
+                   { user: "AI Node", action: "classificou entidade", target: "Dataset_7", time: "2h", icon: "auto_awesome" },
+                   { user: "P. Santos", action: "fechou operação", target: "Tech Brasil", time: "5h", icon: "verified" },
+                   { user: "Sys_Bot", action: "validou disparo", target: "Marketing_A", time: "8h", icon: "campaign" },
+                 ].map((item, i) => (
+                   <div key={i} className="flex gap-8 relative z-10 group/item">
+                      <div className="w-12 h-12 rounded-2xl border border-[#F97316]/30 bg-[#0A0A0A] flex items-center justify-center text-[#F97316] group-hover/item:bg-[#F97316] group-hover/item:text-black transition-all duration-500 shadow-xl relative overflow-hidden">
+                         <div className="absolute inset-0 bg-[#F97316]/10 opacity-0 group-hover/item:opacity-30 animate-pulse" />
+                         <span className="material-symbols-outlined text-[22px] relative z-10">{item.icon}</span>
+                      </div>
+                      <div className="flex-1 space-y-2">
+                         <p className="text-[14px] text-[#A3A3A3] leading-tight font-medium uppercase italic tracking-tighter">
+                            <span className="font-black text-white">{item.user}</span> {item.action} <span className="text-[#F97316] font-black">{item.target}</span>
+                         </p>
+                         <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">{item.time} ago</p>
+                      </div>
                    </div>
-                   <div className="flex-1 space-y-1">
-                      <p className="text-[13px] text-[#A3A3A3] leading-snug">
-                         <span className="font-bold text-white">{item.user}</span> {item.action} <span className="text-[#F97316] font-bold">{item.target}</span>
-                      </p>
-                      <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">{item.time} ago</p>
-                   </div>
-                </div>
-              ))}
+                 ))}
+              </div>
+
+              {/* FOOTER DO FEED */}
+              <div className="mt-16 pt-8 border-t border-white/[0.04] text-center">
+                 <button className="text-[10px] font-mono font-black text-[#262626] hover:text-[#F97316] transition-colors uppercase tracking-[0.4em]">Ver Logs Globais</button>
+              </div>
            </div>
         </div>
       </div>
 
-      {/* FAB LARANJA ESCOLTRAN */}
-      <button className="fixed bottom-12 right-12 w-16 h-16 bg-gradient-to-br from-[#F97316] to-[#FB923C] rounded-full shadow-[0_15px_30px_rgba(249,115,22,0.4)] flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all z-[60] group">
-         <span className="material-symbols-outlined text-[32px] font-black group-hover:rotate-90 transition-transform duration-300">add</span>
+      {/* FAB ESCOLTRAN (GLASSMORPHIC) */}
+      <button className="fixed bottom-12 right-12 w-20 h-20 bg-gradient-to-br from-[#F97316] to-[#FB923C] rounded-3xl shadow-[0_25px_50px_rgba(249,115,22,0.5)] flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all z-[100] group border border-white/20">
+         <span className="material-symbols-outlined text-[36px] font-black group-hover:rotate-180 transition-transform duration-700">add</span>
       </button>
 
     </div>
