@@ -65,7 +65,7 @@ export function NewContactDialog({ open, onOpenChange, contact }: NewContactDial
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
-          tags: data.tags.split(",").map(t => t.trim()).filter(t => t !== "")
+          tags: data.tags.split(",").map((t: string) => t.trim()).filter((t: string) => t !== "")
         }),
       })
       if (!res.ok) throw new Error("Falha ao salvar contato")
