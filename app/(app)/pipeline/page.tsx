@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
 import { KanbanBoard, type Stage } from "@/components/pipeline/KanbanBoard"
 import { DealDetailSheet } from "@/components/pipeline/DealDetailSheet"
+import { NewDealDialog } from "@/components/pipeline/NewDealDialog"
 import { type Deal } from "@/components/pipeline/DealCard"
 import { cn } from "@/lib/utils"
 
@@ -39,6 +40,7 @@ export default function PipelinePage() {
 
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
   const [pipelineSelection, setPipelineSelection] = useState("vendas-matriz")
+  const [isNewDealOpen, setIsNewDealOpen] = useState(false)
 
   const { data: boardData, isLoading, refetch } = useQuery({
     queryKey: ["pipeline-stages", pipelineSelection],
@@ -101,7 +103,10 @@ export default function PipelinePage() {
             <option value="retencao">Fluxo Retenção</option>
           </select>
 
-          <button className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition-all shadow-lg shadow-[#F97316]/20 text-[12px] uppercase tracking-widest">
+          <button 
+            onClick={() => setIsNewDealOpen(true)}
+            className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition-all shadow-lg shadow-[#F97316]/20 text-[12px] uppercase tracking-widest"
+          >
             <span className="material-symbols-outlined text-[20px] font-black">add_box</span>
             <span>Novo Registro</span>
           </button>
@@ -146,6 +151,13 @@ export default function PipelinePage() {
         deal={selectedDeal} 
         open={!!selectedDeal}
         onOpenChange={(open) => !open && setSelectedDeal(null)} 
+      />
+
+      <NewDealDialog 
+        open={isNewDealOpen}
+        onOpenChange={setIsNewDealOpen}
+        stages={stages}
+        pipelineId={pipelineSelection === "vendas-matriz" ? boardData?.id : pipelineSelection}
       />
     </div>
   )
