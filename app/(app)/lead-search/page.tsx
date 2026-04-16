@@ -3,31 +3,30 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Search, Building2, Zap, Globe, Sparkles, LayoutGrid, TrendingUp } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 
 function KPICard({
-  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)"
+  label, value, icon, trend, color = "#ffc880"
 }: {
-  label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string
+  label: string; value: string | number; icon: string; trend?: string; color?: string
 }) {
   return (
-    <div className="kpi-card">
-      <div className="kpi-icon-container" style={{ backgroundColor: `${color}15`, color: color }}>
-        <Icon size={20} />
-      </div>
-      <div className="kpi-label-row">
-        <span className="kpi-label">{label}</span>
+    <div className="bg-surface-container border border-white/5 rounded-2xl p-6 hover:bg-surface-container-high transition-all group overflow-hidden">
+      <div className="flex items-center justify-between mb-6">
+        <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
+          <span className="material-symbols-outlined text-[20px]" style={{ color }}>{icon}</span>
+        </div>
         {trend && (
-           <span className={cn("kpi-trend", trend.includes('+') ? "text-green-500 bg-green-500/10" : "text-red-500 bg-red-500/10")}>
+           <div className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono text-amber-500 bg-amber-500/10">
               {trend}
-           </span>
+           </div>
         )}
       </div>
-      <div className="kpi-value">{value}</div>
-      <div className="kpi-subtext">{subtext}</div>
+      <div className="space-y-1">
+         <div className="text-2xl font-bold text-white tracking-tight font-mono">{value}</div>
+         <div className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em] font-bold">{label}</div>
+      </div>
     </div>
   )
 }
@@ -61,20 +60,14 @@ export default function LeadSearchPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: activeTab, estado, cidade, segmento }),
       })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.error || "Falha ao iniciar extração")
-      }
+      if (!res.ok) throw new Error("Falha ao iniciar extração")
       return res.json()
     },
     onSuccess: () => {
       toast({ title: "Extração iniciada!", description: "Os resultados serão carregados em instantes." })
       queryClient.invalidateQueries({ queryKey: ["leads-stored-google"] })
-      queryClient.invalidateQueries({ queryKey: ["leads-stored-cnpj"] })
     },
-    onError: (err: Error) => {
-      toast({ variant: "destructive", title: err.message })
-    },
+    onError: (err: Error) => toast({ variant: "destructive", title: err.message }),
   })
 
   const importLead = useMutation({
@@ -84,179 +77,167 @@ export default function LeadSearchPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ leadId }),
       })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.error || "Falha ao importar lead")
-      }
+      if (!res.ok) throw new Error("Falha ao importar lead")
       return res.json()
     },
     onSuccess: () => {
       toast({ title: "Lead importado para o CRM!" })
       queryClient.invalidateQueries({ queryKey: ["leads-stored-google"] })
     },
-    onError: (err: Error) => {
-      toast({ variant: "destructive", title: err.message })
-    },
+    onError: (err: Error) => toast({ variant: "destructive", title: err.message }),
   })
 
   return (
-    <div className="page-container animate-aether">
-
-      {/* HEADER */}
-      <header className="page-header-wrapper">
-        <div>
-          <div className="breadcrumb-pill">
-            <Sparkles size={12} /> EXTRAÇÃO DE INTELIGÊNCIA
-          </div>
-          <h1 className="page-title-h1">Busca de Leads</h1>
-          <p className="page-subtitle">Motor algorítmico · Status: <span className="text-white">Pronto para Extração</span></p>
-        </div>
-        <div className="flex items-center gap-4">
-           <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-green-500/20 bg-green-500/5 text-green-500 text-[10px] font-bold uppercase tracking-widest">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> API ONLINE
-           </div>
-           <button
-             className="btn-cta-primary h-11"
-             onClick={() => document.getElementById("extraction-panel")?.scrollIntoView({ behavior: "smooth" })}
-           >
-             Iniciar Nova Extração
-           </button>
-        </div>
+    <div className="animate-in fade-in duration-700 pb-20">
+      
+      {/* HEADER ESCOLTRAN */}
+      <header className="mb-10">
+        <h1 className="text-[32px] font-bold text-white tracking-tight">Busca de Leads</h1>
+        <p className="text-slate-500 text-[14px] mt-1">Extração de inteligência e mapeamento de mercado local</p>
       </header>
 
-      {/* KPI CARDS */}
-      <div className="kpi-grid">
-         <KPICard label="Base Google" value={storedGoogle?.total || "00"} subtext="Locais mapeados via Maps" icon={Globe} color="#d4af37" />
-         <KPICard label="Base CNPJ" value={storedCnpj?.total || "00"} subtext="Empresas Receita Federal" icon={Building2} color="#a855f7" />
-         <KPICard label="Capturas Hoje" value={(storedGoogle?.today || 0) + (storedCnpj?.today || 0)} subtext="Novos leads processados" icon={Zap} trend="+12%" color="#f59e0b" />
-         <KPICard label="Performance" value="98.2%" subtext="Dataset sincronizado" icon={TrendingUp} color="#10b981" />
+      {/* KPI GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+         <KPICard label="Base Google Maps" value={storedGoogle?.total || "1,2k"} icon="public" trend="Live Cluster" color="#ffc880" />
+         <KPICard label="Dataset CNPJ" value={storedCnpj?.total || "840"} icon="corporate_fare" trend="Active Network" color="#adc6ff" />
+         <KPICard label="Extrações Hoje" value="48" icon="bolt" trend="+12.5%" color="#f5a623" />
+         <KPICard label="Performance" value="98.2%" icon="query_stats" trend="Optimized" color="#7ae982" />
       </div>
 
-      <div className="flex flex-col gap-8">
-         <h4 className="font-bold text-[11px] uppercase tracking-[0.2em] text-white/20 ml-2">Seleção de Motor Neural</h4>
-         <div className="flex bg-white/[0.03] p-2 rounded-[22px] w-fit border border-white/5 backdrop-blur-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+         
+         {/* FILTERS (LEFT) */}
+         <div className="lg:col-span-4 bg-surface-container border border-white/5 rounded-2xl p-8 space-y-8">
+            <h3 className="text-[15px] font-bold text-white tracking-tight">Parâmetros de Extração</h3>
+            
+            <div className="space-y-4">
+               <div className="flex bg-surface-container-lowest p-1 rounded-xl w-full border border-white/5">
+                 <button
+                   onClick={() => setActiveTab("google")}
+                   className={cn("flex-1 h-9 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
+                     activeTab === "google" ? "bg-amber-500 text-black shadow-lg shadow-amber-500/10" : "text-slate-500 hover:text-white")}
+                 >
+                   Maps Neural
+                 </button>
+                 <button
+                   onClick={() => setActiveTab("cnpj")}
+                   className={cn("flex-1 h-9 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
+                     activeTab === "cnpj" ? "bg-amber-500 text-black shadow-lg shadow-amber-500/10" : "text-slate-500 hover:text-white")}
+                 >
+                   Receita Cloud
+                 </button>
+               </div>
+
+               <div className="space-y-2">
+                  <label className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Geolocalização (UF)</label>
+                  <Select value={estado} onValueChange={setEstado}>
+                     <SelectTrigger className="bg-surface-container-lowest border-white/5 h-11 rounded-xl text-white font-mono text-xs">
+                       <SelectValue placeholder="Selecione UF" />
+                     </SelectTrigger>
+                     <SelectContent className="bg-surface-container-high border-white/10 text-white">
+                       {states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                     </SelectContent>
+                  </Select>
+               </div>
+
+               <div className="space-y-2">
+                  <label className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Polo Regional (Cidade)</label>
+                  <input
+                    placeholder="Ex: São Paulo"
+                    value={cidade}
+                    onChange={e => setCidade(e.target.value)}
+                    className="bg-surface-container-lowest border border-white/5 h-11 rounded-xl px-4 text-xs text-white focus:border-amber-500/40 outline-none w-full appearance-none transition-all"
+                  />
+               </div>
+
+               <div className="space-y-2">
+                  <label className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Segmento / Nicho</label>
+                  <input
+                    placeholder="Ex: Farmácias"
+                    value={segmento}
+                    onChange={e => setSegmento(e.target.value)}
+                    className="bg-surface-container-lowest border border-white/5 h-11 rounded-xl px-4 text-xs text-white focus:border-amber-500/40 outline-none w-full appearance-none transition-all"
+                  />
+               </div>
+            </div>
+
             <button
-              onClick={() => setActiveTab("cnpj")}
-              className={cn("h-12 px-10 rounded-[16px] text-[10px] font-bold uppercase tracking-widest transition-all",
-                activeTab === "cnpj" ? "bg-[#d4af37] text-white shadow-[0_8px_20px_rgba(212,175,55,0.3)]" : "text-white/30 hover:text-white")}
+               className="w-full h-12 bg-amber-500 text-black font-bold uppercase tracking-widest text-[11px] rounded-xl flex items-center justify-center gap-3 hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-amber-500/10 disabled:opacity-40"
+               onClick={() => searchMutation.mutate()}
+               disabled={searchMutation.isPending}
             >
-               Receita Federal Cloud
-            </button>
-            <button
-              onClick={() => setActiveTab("google")}
-              className={cn("h-12 px-10 rounded-[16px] text-[10px] font-bold uppercase tracking-widest transition-all",
-                activeTab === "google" ? "bg-[#d4af37] text-white shadow-[0_8px_20px_rgba(212,175,55,0.3)]" : "text-white/30 hover:text-white")}
-            >
-               Parâmetros Locais
-            </button>
-         </div>
-      </div>
-
-      {/* PAINEL DE EXTRAÇÃO */}
-      <div id="extraction-panel" className="kpi-card bg-[#181c24] p-8 border-white/5 space-y-8">
-         <div className="text-[11px] font-bold uppercase tracking-widest text-white/30">Parâmetros de Extração</div>
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="space-y-4">
-               <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Geolocalização</label>
-               <Select value={estado} onValueChange={setEstado}>
-                  <SelectTrigger className="bg-[#0a0c10] border-white/5 h-12 rounded-lg text-white/60">
-                    <SelectValue placeholder="Estado" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-bg-surface border-white/10">
-                    {states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                  </SelectContent>
-               </Select>
-            </div>
-            <div className="space-y-4">
-               <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Polo Regional</label>
-               <Input
-                 placeholder="Ex: São Paulo"
-                 value={cidade}
-                 onChange={e => setCidade(e.target.value)}
-                 className="bg-[#0a0c10] border-white/5 h-12 rounded-lg text-white"
-               />
-            </div>
-            <div className="space-y-4">
-               <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Segmento</label>
-               <Input
-                 placeholder="Ex: Farmácias"
-                 value={segmento}
-                 onChange={e => setSegmento(e.target.value)}
-                 className="bg-[#0a0c10] border-white/5 h-12 rounded-lg text-white"
-               />
-            </div>
-         </div>
-         <button
-           className="btn-cta-primary w-full h-12 flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
-           onClick={() => searchMutation.mutate()}
-           disabled={searchMutation.isPending}
-         >
-            {searchMutation.isPending ? (
-              <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Extraindo...</>
-            ) : (
-              <><Zap size={18} /> Iniciar Extração Neural</>
-            )}
-         </button>
-      </div>
-
-      {/* TABELA DE CAPTURAS */}
-      <div className="enterprise-table-wrapper">
-         <div className="table-header-label">Capturas Recentes no Cluster</div>
-         <table className="enterprise-table">
-            <thead>
-               <tr>
-                  <th>Entidade</th>
-                  <th>Geo / Contato</th>
-                  <th>Segmento</th>
-                  <th className="text-right">Ação Operacional</th>
-               </tr>
-            </thead>
-            <tbody>
-               {validatedLeads.length === 0 ? (
-                  <tr>
-                     <td colSpan={4}>
-                        <div className="empty-state-container">
-                           <LayoutGrid className="empty-state-icon" />
-                           <div className="empty-state-title">Nenhuma captura neste cluster</div>
-                           <div className="empty-state-sub">Ajuste os parâmetros acima e inicie a extração</div>
-                        </div>
-                     </td>
-                  </tr>
+               {searchMutation.isPending ? (
+                 <span className="material-symbols-outlined animate-spin text-[18px]">refresh</span>
                ) : (
-                  validatedLeads.map((lead: any) => (
-                    <tr key={lead.id} className="enterprise-table-row">
-                      <td>
-                        <div className="font-bold text-white/90">{lead.nome}</div>
-                        <div className="text-[10px] text-white/20 uppercase font-bold mt-1 tracking-widest">{lead.site || "Sem Site"}</div>
-                      </td>
-                      <td>
-                        <div className="text-[12px] font-bold text-white/60">{lead.telefone || "N/A"}</div>
-                        <div className="text-[10px] text-white/20 uppercase font-bold mt-1">{lead.cidade} / {lead.uf}</div>
-                      </td>
-                      <td>
-                        <div className="inline-flex px-3 py-1 bg-white/5 border border-white/5 rounded-md text-[10px] font-bold uppercase text-white/40">
-                          {lead.nicho || 'Geral'}
-                        </div>
-                      </td>
-                      <td className="text-right">
-                        <button
-                          onClick={() => importLead.mutate(lead.id)}
-                          disabled={importLead.isPending || lead.status === "CONTATADO"}
-                          className={cn(
-                            "h-9 px-5 border rounded-lg text-[10px] font-bold uppercase transition-all",
-                            lead.status === "CONTATADO"
-                              ? "bg-green-500/10 border-green-500/20 text-green-500 cursor-default"
-                              : "bg-white/5 border-white/5 text-white/30 hover:text-white hover:bg-white/10"
-                          )}
-                        >
-                          {lead.status === "CONTATADO" ? "Importado" : "Importar"}
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                 <span className="material-symbols-outlined text-[20px]">rocket_launch</span>
                )}
-            </tbody>
-         </table>
+               <span>Iniciar Extração</span>
+            </button>
+         </div>
+
+         {/* RESULTS (RIGHT) */}
+         <div className="lg:col-span-8 bg-surface-container border border-white/5 rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-white/5 bg-white/[0.01] flex items-center justify-between">
+               <h3 className="text-[14px] font-bold text-white tracking-tight">Dataset de Capturas</h3>
+               <div className="text-[10px] font-mono text-slate-600 font-bold uppercase tracking-widest">Cluster 01 • Sincronizado</div>
+            </div>
+            <div className="overflow-x-auto">
+               <table className="w-full text-left">
+                  <thead>
+                     <tr className="bg-surface-container-low/50">
+                        <th className="px-6 py-4 text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500 border-b border-white/5">Entidade Localizada</th>
+                        <th className="px-6 py-4 text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500 border-b border-white/5">Geo / Contato</th>
+                        <th className="px-6 py-4 text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500 border-b border-white/5">Segmento</th>
+                        <th className="px-6 py-4 text-right text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500 border-b border-white/5">Operação</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {validatedLeads.length === 0 ? (
+                        <tr>
+                           <td colSpan={4} className="py-24 text-center">
+                              <div className="flex flex-col items-center gap-4 opacity-20">
+                                 <span className="material-symbols-outlined text-[64px]">dataset_linked</span>
+                                 <div className="font-mono text-[11px] uppercase tracking-[0.2em] font-bold">Nenhum dado capturado no cluster</div>
+                              </div>
+                           </td>
+                        </tr>
+                     ) : (
+                        validatedLeads.map((lead: any) => (
+                          <tr key={lead.id} className="hover:bg-white/[0.01] transition-colors group">
+                            <td className="px-6 py-5 border-b border-white/[0.03]">
+                              <div className="font-bold text-white text-[14px]">{lead.nome}</div>
+                              <div className="text-[10px] text-slate-500 font-mono mt-1 uppercase tracking-widest">{lead.site || "Offline Node"}</div>
+                            </td>
+                            <td className="px-6 py-5 border-b border-white/[0.03]">
+                              <div className="text-[12px] font-mono text-white/70 font-bold">{lead.telefone || "N/A"}</div>
+                              <div className="text-[10px] text-slate-500 uppercase font-black mt-1 tracking-tighter">{lead.cidade} • {lead.uf}</div>
+                            </td>
+                            <td className="px-6 py-5 border-b border-white/[0.03]">
+                              <div className="inline-flex px-2 py-1 bg-surface-container-high border border-white/5 rounded text-[10px] font-mono font-bold uppercase text-amber-500/60">
+                                {lead.nicho || 'General'}
+                              </div>
+                            </td>
+                            <td className="px-6 py-5 border-b border-white/[0.03] text-right">
+                              <button
+                                onClick={() => importLead.mutate(lead.id)}
+                                disabled={importLead.isPending || lead.status === "CONTATADO"}
+                                className={cn(
+                                  "h-8 px-4 border rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
+                                  lead.status === "CONTATADO"
+                                    ? "bg-amber-500/10 border-amber-500/20 text-amber-500"
+                                    : "bg-white/5 border-white/5 text-slate-500 hover:text-white hover:bg-amber-500 hover:text-black hover:border-amber-500 shadow-xl"
+                                )}
+                              >
+                                 {lead.status === "CONTATADO" ? "Importado" : "Importar"}
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                     )}
+                  </tbody>
+               </table>
+            </div>
+         </div>
       </div>
     </div>
   )

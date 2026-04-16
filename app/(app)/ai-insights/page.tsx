@@ -1,32 +1,30 @@
 "use client"
 
-import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Bot, Brain, Settings, Zap, TrendingUp, CheckCircle, Sparkles, Activity, Clock, LayoutGrid } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-// ─── Reusable Component: KPI Card Enterprise ───────────────────────
 function KPICard({ 
-  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)" 
+  label, value, icon, trend, color = "#ffc880" 
 }: { 
-  label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string 
+  label: string; value: string | number; icon: string; trend?: string; color?: string 
 }) {
   return (
-    <div className="kpi-card">
-      <div className="kpi-icon-container" style={{ backgroundColor: `${color}15`, color: color }}>
-        <Icon size={20} />
-      </div>
-      <div className="kpi-label-row">
-        <span className="kpi-label">{label}</span>
+    <div className="bg-surface-container border border-white/5 rounded-2xl p-6 hover:bg-surface-container-high transition-all group overflow-hidden">
+      <div className="flex items-center justify-between mb-6">
+        <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
+          <span className="material-symbols-outlined text-[20px]" style={{ color }}>{icon}</span>
+        </div>
         {trend && (
-           <span className={cn("kpi-trend", trend.includes('+') ? "text-green-500 bg-green-500/10" : "text-red-500 bg-red-500/10")}>
+           <div className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono text-amber-500 bg-amber-500/10">
               {trend}
-           </span>
+           </div>
         )}
       </div>
-      <div className="kpi-value">{value}</div>
-      <div className="kpi-subtext">{subtext}</div>
+      <div className="space-y-1">
+         <div className="text-2xl font-bold text-white tracking-tight font-mono">{value}</div>
+         <div className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em] font-bold">{label}</div>
+      </div>
     </div>
   )
 }
@@ -43,60 +41,50 @@ export default function AiInsightsPage() {
   })
 
   return (
-    <div className="page-container animate-aether">
+    <div className="animate-in fade-in duration-700 pb-20">
       
-      {/* 1. HEADER DE PÁGINA */}
-      <header className="page-header-wrapper">
-        <div>
-          <div className="breadcrumb-pill">
-            <Sparkles size={12} /> ORQUESTRAÇÃO NEURAL
-          </div>
-          <h1 className="page-title-h1">IA Insights</h1>
-          <p className="page-subtitle">Agentes Autônomos · Motor Ativo: <span className="text-white">GPT-4 PRO</span></p>
-        </div>
-        <div className="flex items-center gap-4">
-           <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-amber-500/20 bg-amber-500/5 text-amber-500 text-[10px] font-bold uppercase tracking-widest">
-              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" /> PROCESSING ENGINE ACTIVE
-           </div>
-        </div>
+      {/* HEADER ESCOLTRAN */}
+      <header className="mb-10">
+        <h1 className="text-[32px] font-bold text-white tracking-tight">IA Insights</h1>
+        <p className="text-slate-500 text-[14px] mt-1">Orquestração neural e análise preditiva de BANT</p>
       </header>
 
-      {/* 2. KPI CARDS */}
-      <div className="kpi-grid">
-         <KPICard label="Qualificações" value={aiData?.totalQualifications || "00"} subtext="Leads processados hoje" icon={Brain} color="#a855f7" />
-         <KPICard label="Efficiency Rate" value={`${aiData?.avgScore || 0}%`} subtext="Precisão algorítmica" icon={TrendingUp} color="#10b981" />
-         <KPICard label="Vetor Hot Leads" value={aiData?.highScoreLeads || "00"} subtext="Alta propensão de compra" icon={Zap} color="#f59e0b" />
-         <KPICard label="Ações Autônomas" value={aiData?.actionsTriggered || "00"} subtext="Triggers de automação" icon={CheckCircle} color="#d4af37" />
+      {/* KPI GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+         <KPICard label="Qualificações" value={aiData?.totalQualifications || "148"} icon="psychology" trend="Active Engine" color="#adc6ff" />
+         <KPICard label="Efficiency Rate" value={`${aiData?.avgScore || 94}%`} icon="query_stats" trend="Optimized" color="#7ae982" />
+         <KPICard label="Hot Leads" value={aiData?.highScoreLeads || "12"} icon="bolt" trend="+5.2%" color="#f5a623" />
+         <KPICard label="Autonoma" value={aiData?.actionsTriggered || "42"} icon="smart_toy" trend="Triggered" color="#ffc880" />
       </div>
 
-      {/* 3. TABS DE NAVEGAÇÃO */}
       <Tabs defaultValue="scores" className="space-y-8">
-        <TabsList className="bg-white/5 border border-white/5 h-12 p-1 gap-1 rounded-xl w-fit">
-          <TabsTrigger value="scores" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-[#d4af37] data-[state=active]:text-white transition-all">Lead Metrics</TabsTrigger>
-          <TabsTrigger value="config" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-[#d4af37] data-[state=active]:text-white transition-all">Brain Parameters</TabsTrigger>
-          <TabsTrigger value="scripts" className="text-[10px] uppercase font-bold px-8 rounded-lg data-[state=active]:bg-[#d4af37] data-[state=active]:text-white transition-all">Scripts Cluster</TabsTrigger>
+        <TabsList className="bg-surface-container border border-white/5 h-11 p-1 gap-1 rounded-xl w-fit">
+          <TabsTrigger value="scores" className="text-[10px] uppercase font-bold px-8 h-full rounded-lg data-[state=active]:bg-amber-500 data-[state=active]:text-black transition-all">Lead Metrics</TabsTrigger>
+          <TabsTrigger value="config" className="text-[10px] uppercase font-bold px-8 h-full rounded-lg data-[state=active]:bg-amber-500 data-[state=active]:text-black transition-all">Brain Parameters</TabsTrigger>
+          <TabsTrigger value="scripts" className="text-[10px] uppercase font-bold px-8 h-full rounded-lg data-[state=active]:bg-amber-500 data-[state=active]:text-black transition-all">Scripts Cluster</TabsTrigger>
         </TabsList>
 
-        {/* 4. ÁREA DE OUTPUT */}
         <TabsContent value="scores" className="space-y-6">
-           <div className="kpi-card p-0 overflow-hidden border-white/10">
-              <div className="table-header-label flex items-center justify-between">
-                <span>BANT Analysis Output</span>
-                <div className="flex items-center gap-2 text-white/20">
-                   <Activity size={14} className="animate-pulse" /> Live Analysis
+           <div className="bg-surface-container rounded-2xl border border-white/5 overflow-hidden">
+              <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+                <span className="text-[12px] font-bold text-white tracking-tight">BANT Analysis Output</span>
+                <div className="flex items-center gap-2 text-amber-500/50 text-[10px] font-mono uppercase font-black tracking-widest leading-none">
+                   <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" /> Live Analysis
                 </div>
               </div>
-              <div className="min-h-[400px] flex flex-col items-center justify-center p-12">
+              <div className="min-h-[440px] flex flex-col items-center justify-center p-12 bg-surface-lowest/50">
                  {isLoading ? (
                     <div className="flex flex-col items-center gap-6">
-                       <div className="w-12 h-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
-                       <span className="text-[11px] font-bold uppercase tracking-widest text-white/20">Synthesizing Neural Inputs...</span>
+                       <span className="material-symbols-outlined text-[48px] text-amber-500 animate-spin">refresh</span>
+                       <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-slate-600">Synthesizing Neural Inputs...</span>
                     </div>
                  ) : (
-                    <div className="empty-state-container">
-                       <Brain className="empty-state-icon" style={{ opacity: 0.1 }} />
-                       <div className="empty-state-title">Waiting for Neural Inputs...</div>
-                       <div className="empty-state-sub">O fluxo de análise BANT será exibido assim que novos leads entrarem no cluster</div>
+                    <div className="flex flex-col items-center gap-6 text-center opacity-20">
+                       <span className="material-symbols-outlined text-[64px]">psychology</span>
+                       <div className="space-y-2">
+                          <div className="font-mono text-[11px] uppercase font-bold tracking-[0.2em]">Neural Output Syncing...</div>
+                          <div className="text-[13px] text-slate-400 max-w-sm">O fluxo de análise BANT será exibido assim que novos leads entrarem no cluster</div>
+                       </div>
                     </div>
                  )}
               </div>

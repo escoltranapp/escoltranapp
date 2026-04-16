@@ -2,30 +2,30 @@
 
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { Users, Search, Filter, Plus, Building2, Sparkles, ShieldCheck, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 
 function KPICard({
-  label, value, subtext, icon: Icon, trend, color = "var(--accent-primary)"
+  label, value, icon, trend, color = "#ffc880"
 }: {
-  label: string; value: string | number; subtext: string; icon: React.ElementType; trend?: string; color?: string
+  label: string; value: string | number; icon: string; trend?: string; color?: string
 }) {
   return (
-    <div className="kpi-card">
-      <div className="kpi-icon-container" style={{ backgroundColor: `${color}15`, color: color }}>
-        <Icon size={20} />
-      </div>
-      <div className="kpi-label-row">
-        <span className="kpi-label">{label}</span>
+    <div className="bg-surface-container border border-white/5 rounded-2xl p-6 hover:bg-surface-container-high transition-all group overflow-hidden">
+      <div className="flex items-center justify-between mb-6">
+        <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
+          <span className="material-symbols-outlined text-[20px]" style={{ color }}>{icon}</span>
+        </div>
         {trend && (
-           <span className={cn("kpi-trend", trend.includes('+') ? "text-green-500 bg-green-500/10" : "text-red-500 bg-red-500/10")}>
+           <div className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono text-amber-500 bg-amber-500/10">
               {trend}
-           </span>
+           </div>
         )}
       </div>
-      <div className="kpi-value">{value}</div>
-      <div className="kpi-subtext">{subtext}</div>
+      <div className="space-y-1">
+         <div className="text-2xl font-bold text-white tracking-tight font-mono">{value}</div>
+         <div className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em] font-bold">{label}</div>
+      </div>
     </div>
   )
 }
@@ -86,182 +86,185 @@ export default function ContactsPage() {
   })
 
   return (
-    <div className="page-container animate-aether">
-
-      {/* HEADER */}
-      <header className="page-header-wrapper">
+    <div className="animate-in fade-in duration-500">
+      
+      {/* HEADER ESCOLTRAN */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
-          <div className="breadcrumb-pill">
-            <Users size={12} /> GESTÃO DE RELACIONAMENTO
-          </div>
-          <h1 className="page-title-h1">CRM Contatos</h1>
-          <p className="page-subtitle">Diretório mestre de entidades e tomadores de decisão</p>
+          <h1 className="text-[32px] font-bold text-white tracking-tight">CRM Contatos</h1>
+          <p className="text-slate-500 text-[14px] mt-1">Diretório mestre de entidades e tomadores de decisão</p>
         </div>
-        <button className="btn-cta-primary flex items-center gap-2" onClick={() => setShowNew(true)}>
-          <Plus size={18} /> Novo Contato
+        
+        <button
+          onClick={() => setShowNew(true)}
+          className="bg-amber-500 text-black font-bold px-6 py-3 rounded-xl flex items-center gap-2 hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-amber-500/10 text-[12px] uppercase tracking-widest"
+        >
+          <span className="material-symbols-outlined text-[20px] font-bold">person_add</span>
+          <span>Novo Contato</span>
         </button>
       </header>
 
-      {/* KPI CARDS */}
-      <div className="kpi-grid">
-         <KPICard label="Total de Registros" value={contacts.length} subtext="Dataset mapeado no cluster" icon={Users} color="#d4af37" />
-         <KPICard label="Empresas" value={new Set(contacts.map(c => c.empresa).filter(Boolean)).size} subtext="Inbound e Outbound" icon={Building2} color="#a855f7" />
-         <KPICard label="Leads" value={contacts.filter(c => c.status === "lead").length} subtext="Aquisição contínua" icon={Sparkles} color="#f59e0b" />
-         <KPICard label="Clientes" value={contacts.filter(c => c.status === "cliente").length} subtext="Conversões efetivadas" icon={ShieldCheck} color="#10b981" />
+      {/* KPI GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+         <KPICard label="Total Registros" value={contacts.length} icon="groups" trend="Database" color="#adc6ff" />
+         <KPICard label="Empresas" value={new Set(contacts.map(c => c.empresa).filter(Boolean)).size} icon="corporate_fare" trend="Active Network" color="#ffc880" />
+         <KPICard label="Leads Ativos" value={contacts.filter(c => c.status === "lead").length} icon="bolt" trend="Flow Active" color="#f5a623" />
+         <KPICard label="Clientes" value={contacts.filter(c => c.status === "cliente").length} icon="verified_user" trend="Converted" color="#7ae982" />
       </div>
 
-      {/* BARRA DE COMANDOS */}
-      <div className="flex bg-[#111318] border border-white/5 p-2 rounded-xl gap-2">
-         <div className="relative flex-1 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20" />
+      {/* BARRA DE BUSCA EM SURFACE */}
+      <div className="bg-surface-container border border-white/5 p-2 rounded-2xl mb-8 flex items-center gap-4">
+         <div className="relative flex-1">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-[20px]">search</span>
             <input
-              placeholder="Filtrar diretório..."
+              placeholder="Filtrar diretório pelo nome, email ou empresa..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-transparent h-10 pl-9 pr-4 text-[13px] border-none focus:outline-none text-white"
+              className="w-full bg-surface-container-lowest h-11 pl-12 pr-4 rounded-lg text-sm text-white focus:border-amber-500/50 border border-transparent outline-none transition-all"
             />
          </div>
-         {search && (
-           <button
-             className="h-10 px-3 flex items-center text-white/30 hover:text-white transition-all"
-             onClick={() => setSearch("")}
-           >
-             <X size={14} />
-           </button>
-         )}
       </div>
 
-      {/* TABELA ENTERPRISE */}
-      <div className="enterprise-table-wrapper">
-         <div className="table-header-label">Master Directory ({filtered.length})</div>
-         <table className="enterprise-table">
-            <thead>
-               <tr>
-                  <th>Entidade / Cargo</th>
-                  <th>Contato Digital</th>
-                  <th>Empresa</th>
-                  <th className="text-right">Ação</th>
-               </tr>
-            </thead>
-            <tbody>
-               {isLoading ? (
-                  [...Array(6)].map((_, i) => <tr key={i} className="h-16 animate-pulse bg-white/5"><td colSpan={4} /></tr>)
-               ) : filtered.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="py-12 text-center text-white/20 text-sm">
-                      {search ? "Nenhum contato encontrado para a busca." : "Nenhum contato cadastrado ainda."}
-                    </td>
+      {/* TABELA ESCOLTRAN */}
+      <div className="bg-surface-container rounded-2xl border border-white/5 overflow-hidden">
+         <div className="p-6 border-b border-white/5 flex items-center justify-between">
+            <div className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-slate-500">Master Directory ({filtered.length})</div>
+         </div>
+         <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+               <thead>
+                  <tr className="bg-surface-container-low/50">
+                     <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 border-b border-white/5 font-mono">Entidade / Cargo</th>
+                     <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 border-b border-white/5 font-mono">Contato Digital</th>
+                     <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 border-b border-white/5 font-mono">Empresa</th>
+                     <th className="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-slate-500 border-b border-white/5 font-mono">Ação Operacional</th>
                   </tr>
-               ) : filtered.map((contact) => (
-                  <tr key={contact.id} className="enterprise-table-row">
-                     <td>
-                        <div className="font-bold text-white/90">{contact.nome}{contact.sobrenome ? ` ${contact.sobrenome}` : ""}</div>
-                        <div className="text-[10px] text-white/20 uppercase font-black mt-1">{contact.cargo || "Decision Maker"}</div>
-                     </td>
-                     <td>
-                        <div className="text-[12px] font-bold text-white/60">{contact.email}</div>
-                        <div className="text-[10px] text-white/20 uppercase font-bold mt-1">{contact.telefone}</div>
-                     </td>
-                     <td>
-                        <div className="inline-flex px-3 py-1 bg-white/5 border border-white/5 rounded-md text-[10px] font-bold uppercase text-white/40">
-                           {contact.empresa || 'Individual'}
-                        </div>
-                     </td>
-                     <td className="text-right">
-                        <button
-                          onClick={() => setSelected(contact)}
-                          className="h-9 px-5 bg-white/5 border border-white/5 rounded-lg text-[10px] font-bold uppercase text-white/30 hover:text-white hover:bg-white/10 transition-all"
-                        >
-                          Perfil
-                        </button>
-                     </td>
-                  </tr>
-               ))}
-            </tbody>
-         </table>
+               </thead>
+               <tbody>
+                  {isLoading ? (
+                     [...Array(6)].map((_, i) => <tr key={i} className="h-16 animate-pulse border-b border-white/5 opacity-50"><td colSpan={4} className="px-6 bg-surface-container-high/20" /></tr>)
+                  ) : filtered.length === 0 ? (
+                     <tr>
+                        <td colSpan={4} className="py-20 text-center text-slate-600 font-mono text-[11px] uppercase tracking-widest">
+                           Dataset Vazio ou Sem Resultados
+                        </td>
+                     </tr>
+                  ) : filtered.map((contact) => (
+                     <tr key={contact.id} className="hover:bg-white/[0.02] transition-colors group">
+                        <td className="px-6 py-4 border-b border-white/[0.03]">
+                           <div className="font-bold text-white text-[14px]">{contact.nome}{contact.sobrenome ? ` ${contact.sobrenome}` : ""}</div>
+                           <div className="text-[10px] text-slate-500 uppercase font-mono mt-1 tracking-widest">{contact.cargo || "Decision Maker"}</div>
+                        </td>
+                        <td className="px-6 py-4 border-b border-white/[0.03]">
+                           <div className="text-[13px] font-mono text-slate-300">{contact.email}</div>
+                           <div className="text-[11px] text-slate-500 font-mono mt-1">{contact.telefone}</div>
+                        </td>
+                        <td className="px-6 py-4 border-b border-white/[0.03]">
+                           <div className="inline-flex px-3 py-1 bg-surface-container-high border border-white/5 rounded text-[10px] font-bold uppercase text-amber-500/50">
+                              {contact.empresa || 'Individual'}
+                           </div>
+                        </td>
+                        <td className="px-6 py-4 border-b border-white/[0.03] text-right">
+                           <button
+                             onClick={() => setSelected(contact)}
+                             className="h-8 px-4 bg-white/5 border border-white/5 rounded-md text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-white hover:bg-amber-500 hover:text-black hover:border-amber-500"
+                           >
+                             Perfil
+                           </button>
+                        </td>
+                     </tr>
+                  ))}
+               </tbody>
+            </table>
+         </div>
       </div>
 
       {/* MODAL NOVO CONTATO */}
       {showNew && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowNew(false)}>
-          <div className="bg-[#111318] border border-white/10 rounded-2xl p-8 w-full max-w-lg shadow-2xl space-y-6" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between">
-              <h2 className="text-[14px] font-bold uppercase tracking-widest text-white">Novo Contato</h2>
-              <button onClick={() => setShowNew(false)} className="text-white/30 hover:text-white"><X size={18} /></button>
-            </div>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-sm" onClick={() => setShowNew(false)}>
+           <div className="bg-surface-container border border-white/10 rounded-2xl p-8 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-8">
+                 <h2 className="text-xl font-bold text-white tracking-tight">Criar Nova Entidade</h2>
+                 <button onClick={() => setShowNew(false)} className="text-slate-500 hover:text-white transition-colors">
+                    <span className="material-symbols-outlined">close</span>
+                 </button>
+              </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { key: "nome", label: "Nome *", placeholder: "João" },
-                { key: "sobrenome", label: "Sobrenome", placeholder: "Silva" },
-                { key: "email", label: "Email", placeholder: "joao@empresa.com" },
-                { key: "telefone", label: "Telefone", placeholder: "(11) 99999-9999" },
-                { key: "empresa", label: "Empresa", placeholder: "Acme Corp" },
-                { key: "cargo", label: "Cargo", placeholder: "Diretor Comercial" },
-              ].map(({ key, label, placeholder }) => (
-                <div key={key} className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-white/30">{label}</label>
-                  <input
-                    placeholder={placeholder}
-                    value={form[key as keyof typeof form]}
-                    onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
-                    className="w-full bg-[#0a0c10] border border-white/5 rounded-lg h-10 px-3 text-[13px] text-white focus:outline-none focus:border-[#d4af37]/50 transition-colors"
-                  />
-                </div>
-              ))}
-            </div>
+              <div className="grid grid-cols-2 gap-6">
+                 {[
+                   { key: "nome", label: "Prénome *", placeholder: "Ex: Henrique" },
+                   { key: "sobrenome", label: "Sobrenome", placeholder: "Ex: Bariani" },
+                   { key: "email", label: "Email Corporativo", placeholder: "ex@escoltran.com" },
+                   { key: "telefone", label: "Telefone / WhatsApp", placeholder: "(00) 00000-0000" },
+                   { key: "empresa", label: "Empresa Relacionada", placeholder: "Escoltran Inc" },
+                   { key: "cargo", label: "Cargo Operacional", placeholder: "Diretor" },
+                 ].map(({ key, label, placeholder }) => (
+                   <div key={key} className="space-y-2">
+                     <label className="text-[11px] font-mono font-bold uppercase tracking-widest text-slate-500">{label}</label>
+                     <input
+                       placeholder={placeholder}
+                       value={form[key as keyof typeof form]}
+                       onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
+                       className="w-full bg-surface-container-lowest border border-white/5 rounded-lg h-10 px-3 text-[13px] text-white focus:outline-none focus:border-amber-500/50 transition-colors"
+                     />
+                   </div>
+                 ))}
+              </div>
 
-            <div className="flex gap-3 justify-end pt-2">
-              <button onClick={() => setShowNew(false)} className="h-10 px-6 bg-white/5 border border-white/5 rounded-lg text-[11px] font-bold uppercase text-white/40 hover:text-white transition-all">
-                Cancelar
-              </button>
-              <button
-                onClick={() => createContact.mutate()}
-                disabled={createContact.isPending || !form.nome.trim()}
-                className="h-10 px-6 btn-cta-primary text-[11px] font-bold uppercase disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                {createContact.isPending ? "Criando..." : "Criar Contato"}
-              </button>
-            </div>
-          </div>
+              <div className="flex gap-4 mt-10">
+                 <button onClick={() => setShowNew(false)} className="flex-1 h-11 bg-slate-800 text-slate-400 font-bold py-3 rounded-lg text-[12px] uppercase tracking-widest">
+                    Cancelar
+                 </button>
+                 <button
+                   onClick={() => createContact.mutate()}
+                   disabled={createContact.isPending || !form.nome.trim()}
+                   className="flex-1 h-11 bg-amber-500 text-black font-bold py-3 rounded-lg text-[12px] uppercase tracking-widest shadow-lg shadow-amber-500/10 disabled:opacity-40"
+                 >
+                   {createContact.isPending ? "Processando..." : "Salvar Registro"}
+                 </button>
+              </div>
+           </div>
         </div>
       )}
 
-      {/* MODAL PERFIL DO CONTATO */}
+      {/* PERFIL DRAWER SIMULATION */}
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSelected(null)}>
-          <div className="bg-[#111318] border border-white/10 rounded-2xl p-8 w-full max-w-md shadow-2xl space-y-6" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between">
-              <h2 className="text-[14px] font-bold uppercase tracking-widest text-white">Perfil</h2>
-              <button onClick={() => setSelected(null)} className="text-white/30 hover:text-white"><X size={18} /></button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="h-14 w-14 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/20 flex items-center justify-center text-[#d4af37] font-bold text-lg">
-                  {selected.nome.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <p className="font-bold text-white text-[16px]">{selected.nome}{selected.sobrenome ? ` ${selected.sobrenome}` : ""}</p>
-                  <p className="text-white/30 text-[11px] uppercase font-bold">{selected.cargo || "Sem cargo"}</p>
-                </div>
+        <div className="fixed inset-0 z-[100] flex items-center justify-end bg-slate-950/40 backdrop-blur-sm" onClick={() => setSelected(null)}>
+           <div className="h-full w-full max-w-md bg-surface-container border-l border-white/10 p-10 shadow-2xl animate-in slide-in-from-right duration-300" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-12">
+                 <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-slate-500">Perfil Analítico</h2>
+                 <button onClick={() => setSelected(null)} className="text-slate-500 hover:text-white transition-colors">
+                    <span className="material-symbols-outlined">close</span>
+                 </button>
               </div>
 
-              <div className="space-y-3 pt-2">
-                {[
-                  { label: "Email", value: selected.email },
-                  { label: "Telefone", value: selected.telefone },
-                  { label: "Empresa", value: selected.empresa },
-                  { label: "Status", value: selected.status },
-                ].map(({ label, value }) => value ? (
-                  <div key={label} className="flex justify-between py-2 border-b border-white/5">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/20">{label}</span>
-                    <span className="text-[12px] text-white/60">{value}</span>
-                  </div>
-                ) : null)}
+              <div className="flex items-center gap-6 mb-12">
+                 <div className="h-20 w-20 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 font-bold text-3xl font-mono">
+                   {selected.nome.charAt(0).toUpperCase()}
+                 </div>
+                 <div>
+                    <h3 className="text-2xl font-bold text-white tracking-tight">{selected.nome} {selected.sobrenome}</h3>
+                    <p className="text-amber-500/60 text-[11px] uppercase font-mono font-bold tracking-widest">{selected.cargo || "Decision Maker"}</p>
+                 </div>
               </div>
-            </div>
-          </div>
+
+              <div className="space-y-6 pt-6 border-t border-white/5">
+                 {[
+                   { label: "Email", value: selected.email, icon: "mail" },
+                   { label: "Telefone", value: selected.telefone, icon: "call" },
+                   { label: "Empresa", value: selected.empresa, icon: "business" },
+                   { label: "Status", value: selected.status, icon: "verified" },
+                 ].map(({ label, value, icon }) => (
+                   <div key={label} className="bg-surface-container-lowest p-4 rounded-xl border border-white/5">
+                     <div className="flex items-center gap-3 text-slate-500 mb-2">
+                        <span className="material-symbols-outlined text-[18px]">{icon}</span>
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-widest">{label}</span>
+                     </div>
+                     <div className="text-[14px] text-white font-mono">{value || "Não informado"}</div>
+                   </div>
+                 ))}
+              </div>
+           </div>
         </div>
       )}
     </div>
