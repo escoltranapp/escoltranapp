@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { cn } from "@/lib/utils"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { formatCurrency, cn } from "@/lib/utils"
 import { NewContactDialog } from "@/components/contacts/NewContactDialog"
+import { useToast } from "@/hooks/use-toast"
 import {
   Select,
   SelectContent,
@@ -35,6 +36,9 @@ function KPICard({ label, value, icon, color = "#F97316" }: { label: string; val
 }
 
 export default function LeadSearchPage() {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+  
   const [activeMode, setActiveMode] = useState<"google" | "cnpj">("google")
   const [searchData, setSearchData] = useState({
     estado: "",
@@ -43,6 +47,37 @@ export default function LeadSearchPage() {
     cnpj: ""
   })
   const [isNewContactOpen, setIsNewContactOpen] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
+
+  const handleSearch = async () => {
+    if (!searchData.estado || !searchData.cidade || !searchData.nicho) {
+      toast({ title: "ERRO DE PARÂMETRO", description: "Preencha todos os campos para iniciar o crawler.", variant: "destructive" })
+      return
+    }
+
+    setIsSearching(true)
+    try {
+      const res = await fetch("/api/leads/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          estado: searchData.estado,
+          cidade: searchData.cidade,
+          nicho: searchData.nicho
+        })
+      })
+
+      if (res.ok) {
+        toast({ title: "CRAWLER INICIADO 🚀", description: "O agente de extração foi disparado. Os dados aparecerão em instantes." })
+      } else {
+        throw new Error()
+      }
+    } catch (e) {
+      toast({ title: "ERRO NA AUTOMAÇÃO", description: "Não foi possível conectar com o broker do N8N.", variant: "destructive" })
+    } finally {
+      setIsSearching(false)
+    }
+  }
 
   const states = [
     { value: "GO", label: "Goiás" },
@@ -146,33 +181,42 @@ export default function LeadSearchPage() {
 
                      <div className="space-y-3">
                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">CIDADE</label>
-                        <Select disabled={!searchData.estado}>
+                        <Select onValueChange={(val) => setSearchData(s => ({...s, cidade: val}))}>
                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6 disabled:opacity-20">
                               <SelectValue placeholder={searchData.estado ? "Selecione a Cidade" : "Selecione o estado primeiro"} />
                            </SelectTrigger>
                            <SelectContent className="bg-[#0A0A0A] border-white/10 text-white">
-                              <SelectItem value="goiania">Goiânia</SelectItem>
-                              <SelectItem value="aparecida">Aparecida de Goiânia</SelectItem>
+                              <SelectItem value="Goiania" className="focus:bg-[#F97316]">Goiânia</SelectItem>
+                              <SelectItem value="Brasilia" className="focus:bg-[#F97316]">Brasília</SelectItem>
+                              <SelectItem value="Sao Paulo" className="focus:bg-[#F97316]">São Paulo</SelectItem>
                            </SelectContent>
                         </Select>
                      </div>
 
                      <div className="space-y-3">
                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">NICHO DE MERCADO</label>
-                        <Select>
+                        <Select onValueChange={(val) => setSearchData(s => ({...s, nicho: val}))}>
                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
                               <SelectValue placeholder="Selecione o Nicho" />
                            </SelectTrigger>
                            <SelectContent className="bg-[#0A0A0A] border-white/10 text-white">
-                              {niches.map(n => <SelectItem key={n.value} value={n.value} className="focus:bg-[#F97316]">{n.label}</SelectItem>)}
+                              {niches.map(n => <SelectItem key={n.value} value={n.label} className="focus:bg-[#F97316]">{n.label}</SelectItem>)}
                            </SelectContent>
                         </Select>
                      </div>
                   </div>
 
-                  <button className="w-full bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white h-16 rounded-2xl text-[12px] font-black uppercase tracking-[0.4em] shadow-[0_15px_40px_rgba(249,115,22,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 group">
-                     <span className="material-symbols-outlined text-[24px] group-hover:rotate-90 transition-transform">search</span>
-                     BUSCAR LEADS NO GOOGLE
+                  <button 
+                    onClick={handleSearch}
+                    disabled={isSearching}
+                    className="w-full bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white h-16 rounded-2xl text-[12px] font-black uppercase tracking-[0.4em] shadow-[0_15px_40px_rgba(249,115,22,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 group disabled:opacity-50"
+                  >
+                     {isSearching ? (
+                        <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                     ) : (
+                        <span className="material-symbols-outlined text-[24px] group-hover:rotate-90 transition-transform">search</span>
+                     )}
+                     {isSearching ? "ORQUESTRANDO BUSCA..." : "BUSCAR LEADS NO GOOGLE"}
                   </button>
                </div>
             ) : (
