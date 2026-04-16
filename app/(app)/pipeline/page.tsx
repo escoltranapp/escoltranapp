@@ -157,7 +157,7 @@ export default function PipelinePage() {
         open={isNewDealOpen}
         onOpenChange={setIsNewDealOpen}
         stages={stages}
-        pipelineId={pipelineSelection === "vendas-matriz" ? boardData?.id : pipelineSelection}
+        pipelineId={boardData?.pipelineId}
       />
     </div>
   )

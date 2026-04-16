@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
@@ -25,6 +25,13 @@ export function NewDealDialog({ open, onOpenChange, stages, pipelineId }: NewDea
     prioridade: "MEDIA",
     descricao: ""
   })
+
+  // SYNC DEFAULT STAGE WHEN DATA LOADS
+  useEffect(() => {
+    if (stages.length > 0 && !formData.stageId) {
+      setFormData(prev => ({ ...prev, stageId: stages[0].id }))
+    }
+  }, [stages])
 
   // FETCH CONTACTS TO SELECT
   const { data: contactsData } = useQuery<any>({
