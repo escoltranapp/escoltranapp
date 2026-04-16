@@ -1,70 +1,59 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ESCOLTRAN CRM DESIGN SYSTEM — TAILWIND 4 TOKENS */
-  --color-surface: #0b141c;
-  --color-surface-container: #182028;
-  --color-surface-container-high: #222b33;
-  --color-surface-container-highest: #2d363e;
-  --color-surface-container-low: #141c24;
-  --color-surface-container-lowest: #060f16;
-  --color-surface-dim: #0b141c;
-  --color-surface-bright: #313a43;
+  --color-background: hsl(0 0% 4%);
+  --color-foreground: hsl(0 0% 95%);
 
-  --color-primary: #ffc880;
-  --color-primary-container: #f5a623;
-  --color-on-primary-container: #644000;
-  --color-on-primary-fixed: #291800;
-  --color-primary-fixed: #ffddb4;
-  --color-primary-fixed-dim: #ffb955;
+  --color-primary: hsl(25 95% 53%);
+  --color-primary-foreground: hsl(0 0% 100%);
 
-  --color-secondary: #adc6ff;
-  --color-secondary-container: #0566d9;
-  --color-on-secondary: #002e6a;
-  --color-on-secondary-container: #e6ecff;
+  --color-card: hsl(0 0% 10%);
+  --color-card-foreground: hsl(0 0% 95%);
 
-  --color-tertiary: #7ae982;
-  --color-tertiary-container: #5ecc69;
-  --color-on-tertiary-container: #005319;
+  --color-popover: hsl(0 0% 4%);
+  --color-popover-foreground: hsl(0 0% 95%);
 
-  --color-error: #ffb4ab;
-  --color-error-container: #93000a;
-  --color-on-error-container: #ffdad6;
+  --color-secondary: hsl(0 0% 15%);
+  --color-secondary-foreground: hsl(0 0% 95%);
 
-  --color-on-surface: #dae3ee;
-  --color-on-surface-variant: #d7c3ae;
-  --color-outline: #9f8e7a;
-  --color-outline-variant: #524534;
+  --color-muted: hsl(0 0% 15%);
+  --color-muted-foreground: hsl(0 0% 42%);
 
-  --color-inverse-surface: #dae3ee;
-  --color-inverse-on-surface: #29313a;
-  --color-inverse-primary: #835500;
+  --color-accent: hsl(25 95% 53%);
+  --color-accent-foreground: hsl(0 0% 100%);
 
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'Fira Code', monospace;
-  
+  --color-destructive: hsl(0 62.8% 30.6%);
+  --color-destructive-foreground: hsl(0 0% 95%);
+
+  --color-border: hsl(0 0% 15%);
+  --color-input: hsl(0 0% 15%);
+  --color-ring: hsl(25 95% 53%);
+
   --radius-xl: 12px;
+  --radius-2xl: 16px;
 }
 
 :root {
+  --background: 0 0% 4%;
+  --foreground: 0 0% 95%;
+  --card: 0 0% 10%;
+  --card-foreground: 0 0% 95%;
+  --popover: 0 0% 4%;
+  --popover-foreground: 0 0% 95%;
+  --primary: 25 95% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 95%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 42%;
+  --accent: 25 95% 53%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 95%;
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 25 95% 53%;
   color-scheme: dark;
-  --background: #060f16;
-  --foreground: #dae3ee;
-
-  /* SHADCN COMPATIBILITY */
-  --primary: #f5a623;
-  --primary-foreground: #644000;
-  --secondary: #182028;
-  --secondary-foreground: #dae3ee;
-  --muted: #141c24;
-  --muted-foreground: #9f8e7a;
-  --accent: #ffc880;
-  --accent-foreground: #291800;
-  --destructive: #ffb4ab;
-  --destructive-foreground: #93000a;
-  --border: #2d363e;
-  --input: #141c24;
-  --ring: #f5a623;
 }
 
 /* BASE RESET */
@@ -76,11 +65,21 @@
 }
 
 html, body {
-  background-color: #060f16;
-  color: #dae3ee;
+  background-color: #0A0A0A;
+  color: #F2F2F2;
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+}
+
+.escoltran-gradient-text {
+  background: linear-gradient(135deg, #F97316, #FB923C);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glow-primary {
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
 }
 
 .material-symbols-outlined {
@@ -99,7 +98,9 @@ html, body {
 }
 
 /* CUSTOM SCROLLBARS */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-thumb { background: #182028; border-radius: 10px; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0A0A0A; }
+::-webkit-scrollbar-thumb { background: #1A1A1A; border-radius: 10px; border: 1px solid #262626; }
+::-webkit-scrollbar-thumb:hover { background: #262626; }
 
 .scrollbar-hide::-webkit-scrollbar { display: none; }

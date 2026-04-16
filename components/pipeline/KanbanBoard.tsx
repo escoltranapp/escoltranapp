@@ -17,8 +17,10 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
+  useSortable
 } from "@dnd-kit/sortable"
-import { KanbanColumn } from "./KanbanColumn"
+import { CSS } from "@dnd-kit/utilities"
+import { cn } from "@/lib/utils"
 import { DealCard, Deal } from "./DealCard"
 
 export interface Stage {
@@ -35,13 +37,32 @@ interface KanbanBoardProps {
   onDealClick?: (deal: Deal) => void
 }
 
+export function KanbanColumn({ 
+  id, 
+  deals, 
+  children 
+}: { 
+  id: string; 
+  deals: Deal[]; 
+  children: React.ReactNode 
+}) {
+  const { setNodeRef } = useSortable({
+    id,
+    data: { type: "column", columnId: id }
+  })
+
+  return (
+    <div ref={setNodeRef} className="flex-1 min-h-[500px]">
+      {children}
+    </div>
+  )
+}
+
 export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, onAddDeal }: KanbanBoardProps) {
   const [stages, setStages] = useState<Stage[]>(initialStages)
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
 
-  useEffect(() => {
-    setStages(initialStages)
-  }, [initialStages])
+  useEffect(() => { setStages(initialStages) }, [initialStages])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -53,10 +74,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
     const dealId = active.id
     for (const stage of stages) {
       const deal = stage.deals.find((d) => d.id === dealId)
-      if (deal) {
-        setActiveDeal(deal)
-        break
-      }
+      if (deal) { setActiveDeal(deal); break }
     }
   }
 
@@ -82,12 +100,9 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
       const destStage = prev.find(s => s.id === destStageId)!
       const activeDeal = sourceStage.deals.find(d => d.id === activeId)!
 
-      const newSourceDeals = sourceStage.deals.filter(d => d.id !== activeId)
-      const newDestDeals = [...destStage.deals, { ...activeDeal, stageId: destStageId }]
-
       return prev.map(s => {
-        if (s.id === sourceStageId) return { ...s, deals: newSourceDeals }
-        if (s.id === destStageId) return { ...s, deals: newDestDeals }
+        if (s.id === sourceStageId) return { ...s, deals: s.deals.filter(d => d.id !== activeId) }
+        if (s.id === destStageId) return { ...s, deals: [...s.deals, { ...activeDeal, stageId: destStageId }] }
         return s
       })
     })
@@ -105,57 +120,47 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-8 h-full min-h-[calc(100vh-280px)] overflow-x-auto pb-8 scrollbar-hide">
+      <div className="flex gap-8 h-full min-h-[calc(100vh-320px)] overflow-x-auto pb-8 scrollbar-hide">
         {stages.map((stage) => {
           const totalValue = stage.deals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
 
           return (
-            <div key={stage.id} className="flex flex-col min-w-[280px] max-w-[280px]">
-              {/* STAGE HEADER ESCOLTRAN */}
+            <div key={stage.id} className="flex flex-col min-w-[320px] max-w-[320px]">
+              {/* STAGE HEADER ESCOLTRAN STYLE */}
               <div className="mb-6 px-1">
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    <h2 className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-slate-500">
+                    <div className="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(249,115,22,0.6)]" style={{ backgroundColor: stage.color || '#F97316' }} />
+                    <h2 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">
                       {stage.name}
                     </h2>
                   </div>
-                  <span className="text-[10px] font-mono font-bold text-slate-600 bg-white/5 px-2 py-0.5 rounded border border-white/5">
+                  <span className="text-[10px] font-mono font-black text-[#F97316] bg-[#F97316]/10 px-2 py-0.5 rounded-lg border border-[#F97316]/20">
                     {stage.deals.length}
                   </span>
                 </div>
                 
-                <div className="flex items-baseline gap-2">
-                   <span className="text-[14px] font-mono font-bold text-white tracking-tight">
-                      {totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
-                   </span>
+                <div className="text-[15px] font-mono font-black text-[#F2F2F2] tracking-widest pl-5">
+                   {totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
                 </div>
               </div>
 
               {/* COLUMN BODY */}
               <KanbanColumn id={stage.id} deals={stage.deals}>
-                <div className="flex flex-col gap-4 min-h-[200px]">
-                  <SortableContext
-                    id={stage.id}
-                    items={stage.deals.map((d) => d.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
+                <div className="flex flex-col gap-4 min-h-[200px] p-2 rounded-2xl bg-[#121212] border border-white/[0.03]">
+                  <SortableContext id={stage.id} items={stage.deals.map((d) => d.id)} strategy={verticalListSortingStrategy}>
                     {stage.deals.map((deal) => (
-                      <DealCard 
-                        key={deal.id} 
-                        deal={deal} 
-                        onClick={() => onDealClick?.(deal)}
-                      />
+                      <DealCard key={deal.id} deal={deal} onClick={() => onDealClick?.(deal)} />
                     ))}
                   </SortableContext>
                   
-                  {/* ADD CARD BUTTON ESCOLTRAN */}
+                  {/* ADD CARD BUTTON LARANJA */}
                   <button 
                     onClick={() => onAddDeal?.(stage.id)}
-                    className="flex items-center justify-center gap-2 w-full py-4 border border-dashed border-white/5 rounded-xl text-slate-600 hover:text-amber-500/50 hover:bg-white/[0.02] transition-all cursor-pointer group"
+                    className="flex items-center justify-center gap-2 w-full py-5 border border-dashed border-white/5 rounded-2xl text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/5 transition-all group cursor-pointer"
                   >
-                    <span className="material-symbols-outlined text-[18px]">add</span>
-                    <span className="text-[11px] font-bold uppercase tracking-widest font-mono">Novo Card</span>
+                    <span className="material-symbols-outlined text-[18px]">add_circle</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest font-mono">Expandir Dataset</span>
                   </button>
                 </div>
               </KanbanColumn>
@@ -166,7 +171,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
 
       <DragOverlay>
         {activeDeal ? (
-          <div className="opacity-80 rotate-2 scale-105">
+          <div className="rotate-3 scale-105 shadow-2xl">
             <DealCard deal={activeDeal} />
           </div>
         ) : null}

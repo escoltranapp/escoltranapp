@@ -9,25 +9,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-surface selection:bg-amber-500/20">
-      {/* Sidebar Fixa (240px) */}
+    <div className="min-h-screen bg-[#0A0A0A] text-[#F2F2F2] selection:bg-[#F97316]/20">
+      {/* Sidebar Fixa (256px) */}
       <div className="hidden md:block">
         <AppSidebar />
       </div>
 
-      {/* TopBar Fixa (Offset de 240px) */}
+      {/* TopBar Fixa (Offset de 256px) */}
       <TopBar onMenuClick={() => setMobileOpen(true)} />
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer (256px) */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent side="left" className="p-0 w-[240px] border-r-0">
+        <SheetContent side="left" className="p-0 w-[256px] border-r-0 bg-[#0A0A0A]">
           <AppSidebar onClose={() => setMobileOpen(false)} />
         </SheetContent>
       </Sheet>
 
       {/* Área Principal com Offsets Rigorosos */}
-      <main className="md:pl-[240px] pt-16 min-h-screen bg-surface-lowest">
-        <div className="p-6 md:p-10 w-full">
+      <main className="md:pl-[256px] pt-16 min-h-screen">
+        <div className="p-8 w-full max-w-[1600px] mx-auto">
           {children}
         </div>
       </main>
