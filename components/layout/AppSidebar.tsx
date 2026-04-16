@@ -3,23 +3,39 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
-import {
-  LayoutGrid,
-  List,
-  User,
-  CalendarDays,
-  Search,
-  Phone,
-  Activity,
-  Clock,
-  Settings,
-  X,
-  LogOut,
-  UserPlus,
-  Sparkles
-} from "lucide-react"
+import { cn } from "@/lib/utils"
 
-import "./sidebar.css"
+const NAV_GROUPS = [
+  {
+    label: "Dashboard",
+    items: [
+      { label: "Overview", path: "/dashboard", icon: "dashboard" }
+    ]
+  },
+  {
+    label: "Comercial",
+    items: [
+      { label: "Pipeline", path: "/pipeline", icon: "view_kanban" },
+      { label: "Contatos", path: "/contacts", icon: "person" },
+      { label: "Atividades", path: "/activities", icon: "calendar_today" }
+    ]
+  },
+  {
+    label: "Marketing",
+    items: [
+      { label: "Busca de Leads", path: "/lead-search", icon: "manage_search" },
+      { label: "Disparo em Massa", path: "/listas-disparo", icon: "send_to_mobile" },
+      { label: "Analytics", path: "/utm-analytics", icon: "monitoring" },
+      { label: "Insights", path: "/ai-insights", icon: "auto_awesome" }
+    ]
+  },
+  {
+    label: "Sistema",
+    items: [
+      { label: "Configurações", path: "/settings", icon: "settings" }
+    ]
+  }
+]
 
 interface AppSidebarProps {
   onClose?: () => void;
@@ -29,97 +45,66 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
   
-  const userName = session?.user?.name || "Usuário";
-  const initials = userName
-    .split(" ")
-    .slice(0, 2)
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
-
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
   return (
-    <aside className="sidebar">
-      {/* Brand */}
-      <div className="brand">
-        <div className="brand-icon">E</div>
-        <div className="brand-name">Escoltran</div>
+    <aside className="fixed left-0 top-0 h-full w-[200px] z-50 bg-slate-900 border-r border-white/5 flex flex-col py-8 overflow-hidden">
+      {/* BRAND */}
+      <div className="px-6 mb-10">
+        <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+           <span className="material-symbols-outlined text-amber-500 text-[28px]">rocket_launch</span>
+           <span>Escoltran</span>
+        </h2>
+        <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">CRM System</p>
       </div>
 
-      {/* Navegação */}
-      <div className="nav-container grow">
-        
-        {/* DASHBOARD */}
-        <div className="nav-section">
-          <div className="nav-label">Dashboard</div>
-          <Link href="/dashboard" onClick={onClose} className={`nav-item ${isActive("/dashboard") ? "active" : ""}`}>
-            <LayoutGrid className="nav-item-icon" />
-            <span>Overview</span>
-          </Link>
-        </div>
+      {/* NAVIGATION */}
+      <nav className="flex-1 space-y-8 overflow-y-auto scrollbar-hide">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.label} className="space-y-1">
+            <div className="px-6 mb-2 text-[10px] font-mono uppercase tracking-[0.2em] text-slate-500 font-bold">
+              {group.label}
+            </div>
+            {group.items.map((item) => (
+              <Link
+                key={item.path}
+                href={item.path}
+                onClick={onClose}
+                className={cn(
+                  "flex items-center gap-3 px-6 py-2.5 transition-all duration-200 text-[13px] font-medium tracking-wide border-l-2",
+                  isActive(item.path)
+                    ? "bg-amber-500/10 text-amber-500 border-amber-500"
+                    : "text-slate-400 border-transparent hover:bg-slate-800/50 hover:text-slate-200"
+                )}
+              >
+                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        ))}
+      </nav>
 
-        {/* COMERCIAL */}
-        <div className="nav-section">
-          <div className="nav-label">Comercial</div>
-          <Link href="/pipeline" onClick={onClose} className={`nav-item ${isActive("/pipeline") ? "active" : ""}`}>
-            <List className="nav-item-icon" />
-            <span>Pipeline</span>
-          </Link>
-          <Link href="/contacts" onClick={onClose} className={`nav-item ${isActive("/contacts") ? "active" : ""}`}>
-            <User className="nav-item-icon" />
-            <span>Contatos</span>
-          </Link>
-          <Link href="/activities" onClick={onClose} className={`nav-item ${isActive("/activities") ? "active" : ""}`}>
-            <CalendarDays className="nav-item-icon" />
-            <span>Atividades</span>
-          </Link>
-        </div>
-
-        {/* MARKETING */}
-        <div className="nav-section">
-          <div className="nav-label">Marketing</div>
-          <Link href="/lead-search" onClick={onClose} className={`nav-item ${isActive("/lead-search") ? "active" : ""}`}>
-            <Search className="nav-item-icon" />
-            <span>Busca de Leads</span>
-          </Link>
-          <Link href="/listas-disparo" onClick={onClose} className={`nav-item ${isActive("/listas-disparo") ? "active" : ""}`}>
-            <Phone className="nav-item-icon" />
-            <span>Disparo em Massa</span>
-          </Link>
-          <Link href="/utm-analytics" onClick={onClose} className={`nav-item ${isActive("/utm-analytics") ? "active" : ""}`}>
-            <Activity className="nav-item-icon" />
-            <span>Analytics</span>
-          </Link>
-          <Link href="/ai-insights" onClick={onClose} className={`nav-item ${isActive("/ai-insights") ? "active" : ""}`}>
-            <Clock className="nav-item-icon" />
-            <span>Insights</span>
-          </Link>
-        </div>
-
-        {/* CONFIG */}
-        <div className="nav-section">
-          <div className="nav-label">Sistema</div>
-          <Link href="/settings" onClick={onClose} className={`nav-item ${isActive("/settings") ? "active" : ""}`}>
-            <Settings className="nav-item-icon" />
-            <span>Configurações</span>
-          </Link>
-        </div>
-
-      </div>
-
-      {/* BOTTOM SECTION (Regra 6 & 8) */}
-      <div className="logout-section mt-auto">
-        <div className="user-badge mb-4">
-           <div className="user-avatar">{initials}</div>
-           <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-bold text-white truncate">{userName}</p>
-              <p className="text-[10px] text-white/40 uppercase font-black">Plan: Scale</p>
-           </div>
-           <button onClick={() => signOut()} className="p-1 px-2 text-white/20 hover:text-red-500 transition-colors">
-              <LogOut size={16} />
-           </button>
-        </div>
+      {/* FOOTER / USER */}
+      <div className="px-6 pt-6 border-t border-white/5 space-y-4">
+         <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-surface-container-highest border border-white/10 flex items-center justify-center text-[11px] font-bold text-amber-500 font-mono uppercase">
+               {session?.user?.name?.slice(0, 2).toUpperCase() || "US"}
+            </div>
+            <div className="flex-1 min-w-0">
+               <div className="text-[12px] font-bold text-slate-200 truncate uppercase tracking-tight">
+                  {session?.user?.name?.split(" ")[0] || "Usuário"}
+               </div>
+               <div className="text-[9px] font-mono text-slate-500 uppercase font-bold">Plan: Scale</div>
+            </div>
+         </div>
+         <button 
+           onClick={() => signOut()}
+           className="w-full flex items-center gap-2 text-slate-500 hover:text-error transition-colors text-[11px] font-bold uppercase tracking-widest"
+          >
+           <span className="material-symbols-outlined text-[18px]">logout</span>
+           <span>Sair</span>
+         </button>
       </div>
     </aside>
   )

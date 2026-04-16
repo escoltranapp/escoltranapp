@@ -1,21 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { signOut, useSession } from "next-auth/react"
-import { useTheme } from "next-themes"
-import { Menu, Search, Bell, Sun, Moon, LogOut, Settings, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { GlobalSearch } from "./GlobalSearch"
-import { getInitials } from "@/lib/utils"
+import { useSession } from "next-auth/react"
 import { cn } from "@/lib/utils"
 
 interface TopBarProps {
@@ -24,116 +9,52 @@ interface TopBarProps {
 
 export function TopBar({ onMenuClick }: TopBarProps) {
   const { data: session } = useSession()
-  const { theme, setTheme } = useTheme()
-  const [searchOpen, setSearchOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-    window.addEventListener("scroll", handleScroll)
-    
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault()
-        setSearchOpen(true)
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown)
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
-      window.removeEventListener("keydown", handleKeyDown)
-    }
-  }, [])
 
   return (
-    <>
-      <header className={cn(
-        "h-16 flex items-center justify-between px-8 sticky top-0 z-40 transition-all duration-300",
-        scrolled 
-          ? "bg-black/60 backdrop-blur-xl border-b border-white/[0.05] shadow-2xl" 
-          : "bg-transparent border-b border-transparent"
-      )}>
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onMenuClick}
-            className="md:hidden text-white/40 hover:text-white"
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-          
-          
+    <header className="fixed top-0 left-0 md:left-[200px] right-0 h-16 bg-slate-950/80 backdrop-blur-xl border-b border-white/5 z-40 flex items-center justify-between px-8">
+      <div className="flex items-center gap-4">
+        <button
+          onClick={onMenuClick}
+          className="md:hidden text-slate-400 hover:text-white"
+        >
+          <span className="material-symbols-outlined text-[24px]">menu</span>
+        </button>
+        
+        {/* BUSCA RÁPIDA (OPCIONAL) */}
+        <div className="hidden lg:flex items-center gap-3 bg-white/5 border border-white/5 px-4 py-1.5 rounded-lg">
+           <span className="material-symbols-outlined text-[18px] text-slate-500">search</span>
+           <span className="text-xs text-slate-500 font-medium">Buscar no Escoltran...</span>
+           <span className="text-[10px] font-mono bg-white/5 px-1.5 py-0.5 rounded border border-white/10 text-slate-500 ml-4">⌘K</span>
         </div>
+      </div>
 
-        <div className="flex items-center gap-2">
-          {/* Notifications */}
-          <Button variant="ghost" size="icon" className="text-white/20 hover:text-white relative hover:bg-white/5 transition-all">
-            <Bell className="h-4 w-4" />
-            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_#d4af37]" />
-          </Button>
+      <div className="flex items-center gap-6">
+        {/* NOTIFICAÇÕES */}
+        <button className="relative text-slate-400 hover:text-white transition-colors">
+          <span className="material-symbols-outlined text-[22px]">notifications</span>
+          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-500 rounded-full border-2 border-slate-950" />
+        </button>
 
-          {/* Theme Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-text-secondary hover:text-accent"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            {theme === "dark" ? (
-              <Sun className="h-4 w-4" />
-            ) : (
-              <Moon className="h-4 w-4" />
-            )}
-          </Button>
-
-          <div className="w-[1px] h-6 bg-border-subtle mx-1" />
-
-          {/* User Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0 border-2 border-transparent hover:border-accent/40 transition-all overflow-hidden">
-                <Avatar className="h-full w-full">
-                  <AvatarImage src={session?.user?.image || ""} />
-                  <AvatarFallback className="bg-accent/10 text-accent text-[10px] font-black">
-                    {getInitials(session?.user?.name || session?.user?.email || "U")}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-surface-overlay border-border-strong" align="end">
-              <DropdownMenuLabel>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-black font-sans uppercase tracking-tight">{session?.user?.name || "Usuário"}</p>
-                  <p className="text-[11px] font-mono text-text-muted italic">{session?.user?.email}</p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-border-default" />
-              <DropdownMenuItem className="focus:bg-surface-elevated cursor-pointer">
-                <User className="mr-2 h-4 w-4 text-text-muted" />
-                <span className="text-[13px]">Perfil</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="focus:bg-surface-elevated cursor-pointer">
-                <Settings className="mr-2 h-4 w-4 text-text-muted" />
-                <span className="text-[13px]">Configurações</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-border-default" />
-              <DropdownMenuItem
-                onClick={() => signOut({ callbackUrl: "/auth" })}
-                className="text-danger focus:bg-danger/10 focus:text-danger cursor-pointer"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                <span className="text-[13px] font-bold">Encerrar Sessão</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {/* PERFIL */}
+        <div className="flex items-center gap-4 pl-6 border-l border-white/5">
+           <div className="text-right hidden sm:block">
+              <div className="text-[12px] font-bold text-slate-200 tracking-tight leading-none uppercase">
+                 {session?.user?.name || "Usuário"}
+              </div>
+              <div className="text-[9px] font-mono text-slate-500 font-bold mt-1">Sessão Ativa</div>
+           </div>
+           
+           <div className="w-9 h-9 rounded-full bg-surface-container-highest border border-white/10 p-0.5">
+              <div className="w-full h-full rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold text-amber-500 uppercase overflow-hidden">
+                 {session?.user?.image ? (
+                    <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
+                 ) : (
+                    session?.user?.name?.slice(0, 2).toUpperCase() || "US"
+                 )}
+              </div>
+           </div>
         </div>
-      </header>
-
-      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
-    </>
+      </div>
+    </header>
   )
 }

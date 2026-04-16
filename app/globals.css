@@ -1,116 +1,72 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Geist+Mono:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Fira+Code:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
 @theme inline {
-  /* ESCALA DE CORES SAAS PREMIUM */
-  --color-background: var(--bg-base);
-  --color-surface: var(--bg-surface);
-  --color-surface-elevated: var(--bg-elevated);
-  --color-surface-overlay: var(--bg-overlay);
+  /* ESCOLTRAN CRM DESIGN SYSTEM — TAILWIND 4 TOKENS */
+  --color-surface: #0b141c;
+  --color-surface-container: #182028;
+  --color-surface-container-high: #222b33;
+  --color-surface-container-highest: #2d363e;
+  --color-surface-container-low: #141c24;
+  --color-surface-container-lowest: #060f16;
+  --color-surface-dim: #0b141c;
+  --color-surface-bright: #313a43;
 
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-primary: #ffc880;
+  --color-primary-container: #f5a623;
+  --color-on-primary-container: #644000;
+  --color-on-primary-fixed: #291800;
+  --color-primary-fixed: #ffddb4;
+  --color-primary-fixed-dim: #ffb955;
 
-  --color-border-subtle: var(--border-subtle);
-  --color-border: var(--border-default);
-  --color-border-strong: var(--border-strong);
+  --color-secondary: #adc6ff;
+  --color-secondary-container: #0566d9;
+  --color-on-secondary: #002e6a;
+  --color-on-secondary-container: #e6ecff;
 
-  /* SEMÂNTICA */
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --color-info: #3b82f6;
-  --color-muted: #6b7380;
+  --color-tertiary: #7ae982;
+  --color-tertiary-container: #5ecc69;
+  --color-on-tertiary-container: #005319;
 
-  /* TEXTO */
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
 
-  /* FONTES */
-  --font-sans: var(--font-sans);
-  --font-display: var(--font-display);
-  --font-mono: var(--font-mono);
+  --color-on-surface: #dae3ee;
+  --color-on-surface-variant: #d7c3ae;
+  --color-outline: #9f8e7a;
+  --color-outline-variant: #524534;
 
-  /* RAIOS */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-full: 9999px;
+  --color-inverse-surface: #dae3ee;
+  --color-inverse-on-surface: #29313a;
+  --color-inverse-primary: #835500;
 
-  /* ANIMAÇÕES */
-  --animate-entrance: cinematic-entrance 0.8s ease-out forwards;
-  --animate-slide-up: slide-up 0.6s ease-out forwards;
-  --animate-stagger: entrance-stagger 0.5s ease-out forwards;
-  --animate-gold-pulse: gold-pulse 2s ease-in-out infinite;
-
-  @keyframes cinematic-entrance {
-    from { opacity: 0; transform: scale(1.05); }
-    to   { opacity: 1; transform: scale(1.0); }
-  }
-  @keyframes slide-up {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes entrance-stagger {
-    from { opacity: 0; transform: translateX(-10px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-  @keyframes gold-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(224, 176, 80, 0); }
-    50%       { box-shadow: 0 0 15px 2px rgba(224, 176, 80, 0.2); }
-  }
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  
+  --radius-xl: 12px;
 }
 
 :root {
-  /* === BACKGROUND SCALE === */
-  --bg-base:           #0A0A0A;
-  --bg-surface:        #111111;
-  --bg-elevated:       #1A1A1A;
-  --bg-overlay:        #222222;
+  color-scheme: dark;
+  --background: #060f16;
+  --foreground: #dae3ee;
 
-  /* === BORDER SCALE === */
-  --border-subtle:     #1F1F1F;
-  --border-default:    #2A2A2A;
-  --border-strong:     #3A3A3A;
-
-  /* === TEXT COLORS === */
-  --text-primary:      #F5F5F7;
-  --text-secondary:    #A1A1AA;
-  --text-muted:        #71717A;
-
-  /* === BRAND ACCENT (GOLD) === */
-  --accent:            #E0B050;
-  --accent-hover:      #D0A040;
-  --accent-foreground: #000000;
-
-  /* === FONTES === */
-  --font-sans:    'Outfit', sans-serif;
-  --font-display: 'Lora', serif;
-  --font-mono:    'Geist Mono', monospace;
-
-  /* INTEROPERABILIDADE SHADCN */
-  --background: var(--bg-base);
-  --foreground: var(--text-primary);
-  --card: var(--bg-surface);
-  --card-foreground: var(--text-primary);
-  --popover: var(--bg-elevated);
-  --popover-foreground: var(--text-primary);
-  --primary: var(--accent);
-  --primary-foreground: var(--accent-foreground);
-  --secondary: var(--bg-elevated);
-  --secondary-foreground: var(--text-primary);
-  --muted: var(--bg-surface);
-  --muted-foreground: var(--text-muted);
-  --accent-ui: var(--bg-elevated);
-  --accent-foreground-ui: var(--text-primary);
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: var(--border-default);
-  --input: var(--border-default);
-  --ring: var(--accent);
+  /* SHADCN COMPATIBILITY */
+  --primary: #f5a623;
+  --primary-foreground: #644000;
+  --secondary: #182028;
+  --secondary-foreground: #dae3ee;
+  --muted: #141c24;
+  --muted-foreground: #9f8e7a;
+  --accent: #ffc880;
+  --accent-foreground: #291800;
+  --destructive: #ffb4ab;
+  --destructive-foreground: #93000a;
+  --border: #2d363e;
+  --input: #141c24;
+  --ring: #f5a623;
 }
 
 /* BASE RESET */
@@ -118,62 +74,28 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  border-color: var(--border-default);
+  border-color: rgba(255, 255, 255, 0.05);
 }
 
 html {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
+  background-color: #060f16;
+  color: #dae3ee;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-size: 16px; /* Base */
+  scrollbar-color: #182028 transparent;
 }
 
 body {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
+  background-color: #060f16;
   min-height: 100vh;
 }
 
-/* SCROLLBAR - VERCEL/LINEAR STYLE */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: var(--bg-base); }
-::-webkit-scrollbar-thumb { 
-  background: var(--border-strong); 
-  border-radius: 10px; 
-}
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-
-/* UTILITÁRIAS SAAS */
-.glass {
-  background: rgba(10, 10, 10, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-subtle);
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-.surface-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px; /* lg */
-  transition: all 0.2s ease;
-}
-
-.surface-card:hover {
-  border-color: var(--border-strong);
-}
-
-/* TYPOGRAPHY HELPERS */
-.text-xxs { font-size: 11px; }
-.text-xs { font-size: 12px; }
-.text-sm { font-size: 13px; }
-.text-base { font-size: 14px; }
-.text-lg { font-size: 16px; }
-.text-xl { font-size: 20px; }
-.text-2xl { font-size: 24px; }
-.text-3xl { font-size: 32px; }
-
-.font-display { font-family: var(--font-display); }
-.font-mono { font-family: var(--font-mono); }
-
+/* CUSTOM SCROLLBARS */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #182028; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #2d363e; }
