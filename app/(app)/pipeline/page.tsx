@@ -113,27 +113,27 @@ export default function PipelinePage() {
         
         <div className="flex items-center gap-3 animate-slide-up" style={{ animationDelay: '100ms' }}>
           {/* PIPELINE SELECTOR */}
-          <button className="flex items-center gap-3 px-4 py-2.5 rounded-[12px] bg-[#111118] border border-white/[0.05] hover:border-white/10 transition-all group">
-            <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
-            <span className="text-[13px] font-bold text-blue-400">Pipeline Principal</span>
-            <Plus size={14} className="text-white/20 group-hover:text-white/40 rotate-45 transition-transform" />
+          <button className="flex items-center gap-3 px-5 py-3 rounded-[12px] bg-[#111118] border border-white/[0.08] hover:border-white/20 transition-all group">
+            <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" />
+            <span className="text-[13px] font-bold text-white/70">Pipeline Principal</span>
+            <Plus size={14} className="text-white/20 group-hover:text-white/40 rotate-45 transition-transform ml-1" />
           </button>
 
           {/* NOVA COLUNA (PRIMARY GLOW) */}
-          <button className="relative flex items-center gap-2 px-5 py-2.5 rounded-[12px] bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]">
+          <button className="relative flex items-center gap-2 px-6 py-3 rounded-[12px] bg-[#2563eb] hover:bg-[#3b82f6] text-white transition-all shadow-[0_8px_20px_-8px_rgba(37,99,235,0.5)]">
             <Plus size={16} strokeWidth={3} />
             <span className="text-[13px] font-black tracking-tight">Nova Coluna</span>
           </button>
 
           {/* NOVO BOARD */}
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-[12px] bg-white/[0.02] border border-white/[0.05] hover:border-white/10 hover:bg-white/[0.04] text-white/40 hover:text-white/60 transition-all">
+          <button className="flex items-center gap-2 px-5 py-3 rounded-[12px] bg-white/[0.03] border border-white/[0.08] hover:border-white/20 hover:bg-white/[0.06] text-white/40 hover:text-white transition-all">
             <Plus size={16} />
-            <span className="text-[13px] font-bold">Novo Board</span>
+            <span className="text-[14px] font-bold">Novo Board</span>
           </button>
           
           <button 
             onClick={() => refetch()}
-            className="p-2.5 rounded-[12px] border border-white/5 bg-white/5 hover:bg-white/10 transition-all text-white/20 hover:text-white"
+            className="p-3 rounded-[12px] border border-white/[0.08] bg-white/5 hover:bg-white/10 transition-all text-white/20 hover:text-white"
             title="Atualizar"
           >
             <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
