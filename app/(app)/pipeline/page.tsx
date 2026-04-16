@@ -18,15 +18,17 @@ function KPICard({
   label: string; value: string | number; subtext: string; icon: React.ElementType; color?: string
 }) {
   return (
-    <div className="kpi-card">
-      <div className="kpi-icon-container" style={{ backgroundColor: `${color}15`, color: color }}>
-        <Icon size={20} />
+    <div className="kpi-card group">
+      <div className="kpi-icon-container" style={{ backgroundColor: `${color}08`, color: color }}>
+        <Icon size={18} strokeWidth={2.5} />
       </div>
-      <div className="kpi-label-row">
-        <span className="kpi-label">{label}</span>
+      <div>
+        <div className="kpi-label mb-1">{label}</div>
+        <div className="flex items-baseline gap-2">
+          <div className="kpi-value !text-2xl" style={{ color: color }}>{value}</div>
+          <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{subtext}</div>
+        </div>
       </div>
-      <div className="kpi-value">{value}</div>
-      <div className="kpi-subtext">{subtext}</div>
     </div>
   )
 }
@@ -65,7 +67,7 @@ export default function PipelinePage() {
 
   const allOpen = stages.flatMap(s => s.deals.filter(d => d.status === "OPEN"))
   const totalValue = allOpen.reduce((a, d) => a + (d.valorEstimado || 0), 0)
-  const overdueValue = allOpen.filter(d => Date.now() - new Date(d.createdAt).getTime() > 30 * 86400_000).length
+  const overdueValue = allOpen.filter(d => d.prioridade === "ALTA").length
 
   const moveDeal = useMutation({
     mutationFn: async ({ dealId, stageId }: { dealId: string; stageId: string }) => {
@@ -85,7 +87,7 @@ export default function PipelinePage() {
 
   if (error) {
     return (
-      <div className="page-container flex items-center justify-center min-h-[400px]">
+      <div className="page-container flex items-center justify-center min-h-[400px] bg-black">
         <div className="text-center">
           <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4 opacity-50" />
           <h2 className="text-xl font-bold mb-2">Ops! Algo deu errado.</h2>
@@ -97,11 +99,19 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="page-container animate-aether">
+    <div className="page-container animate-aether !bg-[#050505]">
       
       {/* ─── HEADER (REFINED SAAS DESIGN) ─────────────────────── */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div className="animate-slide-up">
+          {/* REFERENCE PILL */}
+          <div className="flex items-center gap-2 mb-4">
+             <div className="px-2 py-0.5 rounded-[4px] bg-white/5 border border-white/10 text-[9px] font-black text-white/40 uppercase tracking-widest">
+                PI
+             </div>
+             <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">Pipeline Comercial</span>
+          </div>
+
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-none mb-3">
             Pipeline
           </h1>
@@ -118,8 +128,8 @@ export default function PipelinePage() {
             <button 
               onClick={() => setIsPipelineMenuOpen(!isPipelineMenuOpen)}
               className={cn(
-                "flex items-center gap-3 px-6 py-3 rounded-[12px] bg-[#111118] border transition-all group whitespace-nowrap",
-                isPipelineMenuOpen ? "border-blue-500/50 bg-[#151520]" : "border-white/[0.08] hover:border-white/20"
+                "flex items-center gap-3 px-6 py-3 rounded-[12px] bg-[#0d0d0d] border transition-all group whitespace-nowrap",
+                isPipelineMenuOpen ? "border-blue-500/50 bg-[#121212]" : "border-white/[0.08] hover:border-white/20"
               )}
             >
               <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" />

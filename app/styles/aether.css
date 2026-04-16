@@ -1,16 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Geist+Mono:wght@100..900&display=swap');
 
 :root {
-  /* GLOBAL TOKENS — REFINED NAVY THEME */
-  --bg-page: #090b11;
-  --bg-surface: #111522;
-  --bg-card: #161b2a;
-  --bg-card-hover: #1c223c;
+  /* GLOBAL TOKENS — TRUE NEUTRAL DARK (NO BLUE) */
+  --bg-page: #050505;
+  --bg-surface: #0d0d0d;
+  --bg-card: #121212;
+  --bg-card-hover: #181818;
   --border-sutil: rgba(255, 255, 255, 0.05);
-  --border-hover: rgba(255, 255, 255, 0.12);
-  --text-primary: #e6edf3;
-  --text-secondary: rgba(255, 255, 255, 0.60);
-  --text-muted: rgba(255, 255, 255, 0.40);
+  --border-hover: rgba(255, 255, 255, 0.10);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.70);
+  --text-muted: rgba(255, 255, 255, 0.35);
   
   --pipeline-blue: #3b82f6;
   --pipeline-purple: #8b5cf6;
@@ -336,13 +336,14 @@ body {
 }
 
 .kpi-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  background-color: #0c0c0e;
+  border: 1px solid var(--border-sutil);
   border-radius: var(--radius-lg);
-  padding: var(--card-padding);
+  padding: 24px;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -355,10 +356,11 @@ body {
 .kpi-icon-container {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .kpi-label-row {
