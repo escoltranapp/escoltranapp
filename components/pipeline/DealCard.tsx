@@ -44,8 +44,8 @@ export function DealCard({ deal, onClick }: DealCardProps) {
 
   const priorityConfig = {
     ALTA: { color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20", label: "PRIORITY_CRITICAL", animation: "animate-pulse" },
-    MEDIA: { color: "text-[#F97316]", bg: "bg-[#F97316]/10", border: "border-[#F97316]/20", label: "PRIORITY_ACTIVE" },
-    BAIXA: { color: "text-[#404040]", bg: "bg-white/[0.02]", border: "border-white/[0.04]", label: "PRIORITY_STABLE" },
+    MEDIA: { color: "text-[#F97316]", bg: "bg-[#F97316]/10", border: "border-[#F97316]/20", label: "PRIORITY_ACTIVE", animation: "" },
+    BAIXA: { color: "text-[#404040]", bg: "bg-white/[0.02]", border: "border-white/[0.04]", label: "PRIORITY_STABLE", animation: "" },
   }
   
   const p = priorityConfig[deal.prioridade]
