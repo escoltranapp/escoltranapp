@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { cn } from "@/lib/utils"
 import { NewContactDialog } from "@/components/contacts/NewContactDialog"
+import { ContactDetailSheet } from "@/components/contacts/ContactDetailSheet"
 
 function KPICard({
   label, value, icon, emoji, color = "#F97316"
@@ -31,6 +32,9 @@ function KPICard({
 export default function ContactsPage() {
   const [search, setSearch] = useState("")
   const [isNewContactOpen, setIsNewContactOpen] = useState(false)
+  const [selectedContact, setSelectedContact] = useState<any>(null)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
 
   const { data: contactsData, isLoading } = useQuery<any>({
     queryKey: ["contacts"],
@@ -162,20 +166,31 @@ export default function ContactsPage() {
 
                           {/* ÚLTIMA ATIVIDADE */}
                           <td className="px-8 py-6">
-                             <div className="text-[11px] font-bold text-[#404040] italic">Sincronizado há 1 dia</div>
+                             <div className="text-[11px] font-bold text-[#404040] italic">
+                                {contact.updatedAt ? `Sincronizado em ${new Date(contact.updatedAt).toLocaleDateString()}` : "Sem atividade"}
+                             </div>
                           </td>
 
                           {/* AÇÕES */}
                           <td className="px-8 py-6 text-right">
                              <div className="flex items-center justify-end gap-2">
-                                <button className="w-9 h-9 flex items-center justify-center border border-white/5 rounded-lg text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/10 transition-all">
+                                <button 
+                                  onClick={() => {
+                                     setSelectedContact(contact)
+                                     setIsDetailOpen(true)
+                                  }}
+                                  className="w-9 h-9 flex items-center justify-center border border-white/5 rounded-lg text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/10 transition-all focus:outline-none"
+                                >
                                    <span className="material-symbols-outlined text-[18px]">visibility</span>
                                 </button>
-                                <button className="w-9 h-9 flex items-center justify-center border border-white/5 rounded-lg text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/10 transition-all">
+                                <button 
+                                  onClick={() => {
+                                     setSelectedContact(contact)
+                                     setIsEditOpen(true)
+                                  }}
+                                  className="w-9 h-9 flex items-center justify-center border border-white/5 rounded-lg text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/10 transition-all focus:outline-none"
+                                >
                                    <span className="material-symbols-outlined text-[18px]">edit</span>
-                                </button>
-                                <button className="w-9 h-9 flex items-center justify-center border border-white/5 rounded-lg text-[#404040] hover:text-red-500 hover:bg-red-500/10 transition-all">
-                                   <span className="material-symbols-outlined text-[18px]">delete</span>
                                 </button>
                              </div>
                           </td>
@@ -190,6 +205,29 @@ export default function ContactsPage() {
       <NewContactDialog 
         open={isNewContactOpen}
         onOpenChange={setIsNewContactOpen}
+      />
+
+      <NewContactDialog 
+        open={isEditOpen}
+        onOpenChange={(open) => {
+           setIsEditOpen(open)
+           if (!open) setSelectedContact(null)
+        }}
+        contact={selectedContact}
+      />
+
+      <ContactDetailSheet 
+        contact={selectedContact}
+        open={isDetailOpen}
+        onOpenChange={(open) => {
+           setIsDetailOpen(open)
+           if (!open) setSelectedContact(null)
+        }}
+        onEdit={(contact) => {
+           setIsDetailOpen(false)
+           setSelectedContact(contact)
+           setIsEditOpen(true)
+        }}
       />
     </div>
   )

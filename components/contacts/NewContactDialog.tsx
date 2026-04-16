@@ -4,26 +4,46 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
+import { useEffect } from "react"
 
 interface NewContactDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  contact?: any // Para edição
 }
 
-export function NewContactDialog({ open, onOpenChange }: NewContactDialogProps) {
+export function NewContactDialog({ open, onOpenChange, contact }: NewContactDialogProps) {
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
   const [formData, setFormData] = useState({
-    nome: "",
-    empresa: "",
-    email: "",
-    telefone: "",
-    cargo: "",
-    canalOrigem: "Indicação",
-    tags: "",
-    notas: ""
+    nome: contact?.nome || "",
+    empresa: contact?.empresa || "",
+    email: contact?.email || "",
+    telefone: contact?.telefone || "",
+    cargo: contact?.cargo || "",
+    canalOrigem: contact?.canalOrigem || "Indicação",
+    tags: contact?.tags?.join(", ") || "",
+    notas: contact?.notas || "",
+    status: contact?.status || "lead"
   })
+
+  // Sincronizar campos quando o contato mudar (ao abrir para edição)
+  useEffect(() => {
+    if (contact) {
+      setFormData({
+        nome: contact.nome || "",
+        empresa: contact.empresa || "",
+        email: contact.email || "",
+        telefone: contact.telefone || "",
+        cargo: contact.cargo || "",
+        canalOrigem: contact.canalOrigem || "Indicação",
+        tags: Array.isArray(contact.tags) ? contact.tags.join(", ") : "",
+        notas: contact.notas || "",
+        status: contact.status || "lead"
+      })
+    }
+  }, [contact])
 
   const originOptions = [
     { value: "Indicação", label: "INDICAÇÃO" },
@@ -35,35 +55,40 @@ export function NewContactDialog({ open, onOpenChange }: NewContactDialogProps) 
     { value: "Outro", label: "OUTRO" }
   ]
 
-  const createContact = useMutation({
+  const saveContact = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const res = await fetch("/api/contacts", {
-        method: "POST",
+      const url = contact?.id ? `/api/contacts/${contact.id}` : "/api/contacts"
+      const method = contact?.id ? "PATCH" : "POST"
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
           tags: data.tags.split(",").map(t => t.trim()).filter(t => t !== "")
         }),
       })
-      if (!res.ok) throw new Error("Falha ao criar contato")
+      if (!res.ok) throw new Error("Falha ao salvar contato")
       return res.json()
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] })
       toast({ 
-        title: "ENTIDADE SINCRONIZADA 🛡️", 
-        description: "Novo nó de contato adicionado ao diretório mestre." 
+        title: contact?.id ? "ENTIDADE ATUALIZADA 🛡️" : "ENTIDADE SINCRONIZADA 🛡️", 
+        description: contact?.id ? "As alterações foram replicadas no diretório Escoltran." : "Novo nó de contato adicionado ao diretório mestre." 
       })
       onOpenChange(false)
-      setFormData({ 
-        nome: "", empresa: "", email: "", telefone: "", 
-        cargo: "", canalOrigem: "Indicação", tags: "", notas: "" 
-      })
+      if (!contact) {
+         setFormData({ 
+           nome: "", empresa: "", email: "", telefone: "", 
+           cargo: "", canalOrigem: "Indicação", tags: "", notas: "", status: "lead" 
+         })
+      }
     },
     onError: () => {
       toast({ 
         title: "ERRO DE SINCRONIZAÇÃO", 
-        description: "Não foi possível registrar a entidade no dataset.", 
+        description: "Não foi possível processar a operação no dataset.", 
         variant: "destructive" 
       })
     }
@@ -75,11 +100,15 @@ export function NewContactDialog({ open, onOpenChange }: NewContactDialogProps) 
         <DialogHeader className="p-8 bg-gradient-to-br from-[#F97316]/10 to-transparent border-b border-white/[0.03]">
           <div className="flex items-center gap-4 mb-2">
              <div className="w-10 h-10 rounded-full bg-[#F97316]/20 flex items-center justify-center border border-[#F97316]/30">
-                <span className="material-symbols-outlined text-[#F97316] text-[22px]">person_add</span>
+                <span className="material-symbols-outlined text-[#F97316] text-[22px]">{contact?.id ? "edit_note" : "person_add"}</span>
              </div>
              <div>
-                <DialogTitle className="text-2xl font-black text-white italic uppercase tracking-tighter">Provisionar Nova Entidade</DialogTitle>
-                <p className="text-[#6B7280] text-[11px] font-bold uppercase tracking-widest mt-0.5">Mapeamento de contato para o cluster Escoltran</p>
+                <DialogTitle className="text-2xl font-black text-white italic uppercase tracking-tighter">
+                   {contact?.id ? "Atualizar Entidade" : "Provisionar Nova Entidade"}
+                </DialogTitle>
+                <p className="text-[#6B7280] text-[11px] font-bold uppercase tracking-widest mt-0.5">
+                   {contact?.id ? "Ajuste de parâmetros no nó do cluster" : "Mapeamento de contato para o cluster Escoltran"}
+                </p>
              </div>
           </div>
         </DialogHeader>
@@ -181,28 +210,28 @@ export function NewContactDialog({ open, onOpenChange }: NewContactDialogProps) 
           </div>
         </div>
 
-        <div className="p-8 border-t border-white/[0.03] flex gap-4 bg-[#0A0A0A]">
-           <button 
-             onClick={() => onOpenChange(false)}
-             className="flex-1 px-8 py-4 bg-[#1A1A1A] text-[#404040] rounded-xl text-[11px] font-black uppercase tracking-widest hover:text-[#F2F2F2] transition-all"
-           >
-              Abortar Registro
-           </button>
-           <button 
-             onClick={() => createContact.mutate(formData)}
-             disabled={!formData.nome || createContact.isPending}
-             className="flex-[2] px-8 py-4 bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-[#F97316]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-30 flex items-center justify-center gap-3"
-           >
-              {createContact.isPending ? (
-                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span className="material-symbols-outlined text-[18px]">how_to_reg</span>
-                  Sincronizar no Diretório
-                </>
-              )}
-           </button>
-        </div>
+         <div className="p-8 border-t border-white/[0.03] flex gap-4 bg-[#0A0A0A]">
+            <button 
+              onClick={() => onOpenChange(false)}
+              className="flex-1 px-8 py-4 bg-[#1A1A1A] text-[#404040] rounded-xl text-[11px] font-black uppercase tracking-widest hover:text-[#F2F2F2] transition-all"
+            >
+               Abortar Operação
+            </button>
+            <button 
+              onClick={() => saveContact.mutate(formData)}
+              disabled={!formData.nome || saveContact.isPending}
+              className="flex-[2] px-8 py-4 bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-[#F97316]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-30 flex items-center justify-center gap-3"
+            >
+               {saveContact.isPending ? (
+                 <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+               ) : (
+                 <>
+                   <span className="material-symbols-outlined text-[18px]">{contact?.id ? "save" : "how_to_reg"}</span>
+                   {contact?.id ? "Salvar Alterações" : "Sincronizar no Diretório"}
+                 </>
+               )}
+            </button>
+         </div>
       </DialogContent>
     </Dialog>
   )
