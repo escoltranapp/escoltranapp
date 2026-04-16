@@ -116,172 +116,112 @@ export default function PipelinePage() {
       {/* ─── MODAL: NOVA COLUNA (REFERENCE MATCH) ────────────────── */}
       {showNewColumnModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div 
-            className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-300" 
-            onClick={() => setShowNewColumnModal(false)}
-          />
-          <div className="relative w-full max-w-[440px] bg-[#0c0c0e] border border-white/10 rounded-[28px] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.8)] animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between mb-8">
-               <h2 className="text-sm font-black text-white uppercase tracking-[0.2em]">Nova Coluna</h2>
-               <button 
-                 onClick={() => setShowNewColumnModal(false)}
-                 className="w-8 h-8 rounded-lg flex items-center justify-center border border-white/5 hover:bg-white/5 transition-colors"
-                >
-                 <Plus size={18} className="rotate-45 text-white/40" />
-               </button>
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowNewColumnModal(false)} />
+          <div className="relative w-full max-w-md bg-[#111114] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-white/5 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-white uppercase tracking-wider">Nova Coluna</h2>
+              <button onClick={() => setShowNewColumnModal(false)} className="text-white/20 hover:text-white transition-colors">
+                <Plus size={24} className="rotate-45" />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Nome da Coluna</label>
+                <input 
+                  type="text" 
+                  value={newColumnName}
+                  onChange={(e) => setNewColumnName(e.target.value)}
+                  placeholder="Ex: Em Negociação"
+                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-blue-500/50 outline-none transition-all"
+                  autoFocus
+                />
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Cor</label>
+                <div className="flex flex-wrap gap-3">
+                  {stageColors.map(color => (
+                    <button
+                      key={color}
+                      onClick={() => setSelectedColor(color)}
+                      className={cn(
+                        "w-8 h-8 rounded-full transition-all relative",
+                        selectedColor === color ? "ring-2 ring-white/40 ring-offset-2 ring-offset-[#111114]" : "hover:scale-110"
+                      )}
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-6">
-               <div>
-                  <label className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-3 block">Nome da Coluna</label>
-                  <input 
-                    autoFocus
-                    value={newColumnName}
-                    onChange={(e) => setNewColumnName(e.target.value)}
-                    placeholder="Ex: Em Negociação"
-                    className="w-full bg-[#111115] border border-white/5 rounded-xl px-5 py-3.5 text-sm text-white placeholder:text-white/10 focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/20 transition-all outline-none"
-                  />
-               </div>
-
-               <div>
-                  <label className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-3 block">Cor</label>
-                  <div className="flex flex-wrap gap-3">
-                    {colors.map(color => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        className={cn(
-                          "w-8 h-8 rounded-full transition-all duration-300 relative",
-                          selectedColor === color ? "scale-110 ring-2 ring-white/20 ring-offset-2 ring-offset-[#0c0c0e]" : "hover:scale-105"
-                        )}
-                        style={{ backgroundColor: color }}
-                      >
-                         {selectedColor === color && (
-                            <div className="absolute inset-0 rounded-full shadow-[0_0_15px_currentColor]" style={{ color }} />
-                         )}
-                      </button>
-                    ))}
-                  </div>
-               </div>
-            </div>
-
-            <div className="flex items-center gap-3 mt-10">
-               <button 
-                 onClick={() => setShowNewColumnModal(false)}
-                 className="flex-1 py-3.5 rounded-xl border border-white/5 text-xs font-black text-white/40 hover:bg-white/5 hover:text-white transition-all"
-                >
-                 Cancelar
-               </button>
-               <button 
-                 className="flex-1 py-3.5 rounded-xl bg-blue-600 text-xs font-black text-white shadow-[0_8px_20px_-8px_rgba(37,99,235,0.6)] hover:bg-blue-500 transition-all"
-                 onClick={() => {
-                   setShowNewColumnModal(false)
-                   setNewColumnName("")
-                 }}
-                >
-                 Criar Coluna
-               </button>
+            <div className="p-6 bg-black/20 flex gap-3">
+              <button 
+                onClick={() => setShowNewColumnModal(false)}
+                className="flex-1 py-3 px-4 rounded-xl border border-white/5 text-xs font-bold text-white/40 hover:bg-white/5 transition-all"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={() => { setShowNewColumnModal(false); setNewColumnName(""); }}
+                className="flex-1 py-3 px-4 rounded-xl bg-blue-600 text-xs font-bold text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20"
+              >
+                Criar Coluna
+              </button>
             </div>
           </div>
         </div>
       )}
       
-      {/* ─── HEADER (REFACTORED) ─────────────────────────────── */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-        <div className="animate-slide-up">
-          <h1 className="text-[30px] font-bold text-white tracking-tight mb-1">
-            Pipeline
-          </h1>
-          <div className="text-[11px] font-medium tracking-[0.08em] text-[#8A8FA3] uppercase">
-            Gestão de Oportunidades • Visão Kanban
-          </div>
+      {/* ─── HEADER (REFACTORED SPACING) ─────────────────────── */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pt-2">
+        <div>
+          <h1 className="text-[32px] font-bold text-white tracking-tight mb-0.5">Pipeline</h1>
+          <div className="text-[11px] font-medium tracking-[0.1em] text-white/30 uppercase">Gestão de Oportunidades • Visão Kanban</div>
         </div>
         
-        <div className="flex items-center gap-3 animate-slide-up" style={{ animationDelay: '100ms' }}>
-          {/* PIPELINE SELECTOR */}
+        <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
             <button 
               onClick={() => setIsPipelineMenuOpen(!isPipelineMenuOpen)}
-              className={cn(
-                "flex items-center gap-3 px-6 py-3 rounded-[12px] bg-[#0d0d0d] border transition-all group whitespace-nowrap",
-                isPipelineMenuOpen ? "border-blue-500/50 bg-[#121212]" : "border-white/[0.08] hover:border-white/20"
-              )}
+              className="flex items-center gap-3 px-4 py-2 rounded-lg bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all"
             >
-              <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" />
-              <span className="text-[13px] font-bold text-white/70">Pipeline Principal</span>
-              <Plus 
-                size={14} 
-                className={cn(
-                  "text-white/20 group-hover:text-white/40 transition-transform ml-1",
-                  isPipelineMenuOpen ? "rotate-[225deg]" : "rotate-45"
-                )} 
-              />
+              <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
+              <span className="text-[13px] font-medium text-white/80">Pipeline Principal</span>
+              <Plus size={14} className={cn("text-white/20 transition-transform", isPipelineMenuOpen && "rotate-45")} />
             </button>
-
-            {/* DROPDOWN MENU */}
-            {isPipelineMenuOpen && (
-              <>
-                <div 
-                  className="fixed inset-0 z-40" 
-                  onClick={() => setIsPipelineMenuOpen(false)} 
-                />
-                <div className="absolute top-full left-0 mt-2 w-full min-w-[220px] bg-[#0d0d12] border border-white/[0.1] rounded-[12px] shadow-[0_10px_40px_rgba(0,0,0,0.6)] z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="p-1">
-                    <button className="flex items-center gap-3 w-full px-4 py-3 rounded-[8px] bg-blue-500/10 text-blue-400 border border-blue-500/20 transition-all">
-                      <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
-                      <span className="text-[13px] font-black">Pipeline Principal</span>
-                    </button>
-                    <button className="flex items-center gap-3 w-full px-4 py-3 rounded-[8px] hover:bg-white/5 text-white/40 hover:text-white transition-all">
-                      <div className="w-2 h-2 rounded-full bg-white/10" />
-                      <span className="text-[13px] font-bold">Vendas Internas</span>
-                    </button>
-                    <button className="flex items-center gap-3 w-full px-4 py-3 rounded-[8px] hover:bg-white/5 text-white/40 hover:text-white transition-all">
-                      <div className="w-2 h-2 rounded-full bg-white/10" />
-                      <span className="text-[13px] font-bold">Pós-Venda</span>
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
           </div>
 
-          {/* NOVA COLUNA */}
-          <button 
-            onClick={() => setShowNewColumnModal(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-[8px] bg-[#2563EB] text-white hover:bg-blue-600 transition-all duration-150 cursor-pointer shadow-none"
-          >
-            <Plus size={16} strokeWidth={2.5} />
-            <span className="text-[13px] font-medium">Nova Coluna</span>
+          <button onClick={() => setShowNewColumnModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition-all font-medium text-[13px]">
+            <Plus size={16} />
+            <span>Nova Coluna</span>
           </button>
 
-          {/* NOVO BOARD */}
-          <button className="flex items-center gap-2 px-4 py-2 rounded-[8px] bg-transparent border border-white/15 text-white/80 hover:border-white/30 hover:bg-white/[0.02] transition-all duration-150 cursor-pointer text-[13px] font-medium">
+          <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 text-white/80 hover:bg-white/5 transition-all text-[13px]">
             <Plus size={16} />
             <span>Novo Board</span>
           </button>
           
-          <button 
-            onClick={() => refetch()}
-            className="p-2 rounded-[8px] border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-white/40 hover:text-white"
-            title="Atualizar"
-          >
-            <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
+          <button onClick={() => refetch()} className="p-2 rounded-lg border border-white/10 hover:bg-white/5 transition-all text-white/40">
+            <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
           </button>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      {/* ─── METRICS (CLEAN NOIR) ───────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         <KPICard 
           label="Total Leads"
           value={isLoading ? "..." : allOpen.length}
           icon={Layers}
-          color="#3B8FE8"
+          color="#3B82F6"
         />
         <KPICard 
           label="Volume Total"
           value={isLoading ? "..." : totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
           icon={TrendingUp}
-          color="#3BE87A"
+          color="#10B981"
         />
         <KPICard 
           label="Tickets Abertos"

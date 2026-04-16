@@ -1,26 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Geist+Mono:wght@100..900&display=swap');
 
 :root {
-  /* GLOBAL TOKENS — TRUE NEUTRAL DARK (NO BLUE) */
+  /* GLOBAL TOKENS — NEUTRAL NOIR */
   --bg-page: #0A0A0A;
-  --bg-surface: #141928;
-  --bg-card: #141928;
-  --bg-card-hover: #1b2035;
-  --border-sutil: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.15);
+  --bg-surface: #0D0D10;
+  --bg-card: #111114;
+  --bg-card-hover: #16161A;
+  --border-sutil: rgba(255, 255, 255, 0.05);
+  --border-hover: rgba(255, 255, 255, 0.10);
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.70);
   --text-muted: rgba(255, 255, 255, 0.35);
-  
-  --pipeline-blue: #3B8FE8;
+
+  --pipeline-blue: #3B82F6;
   --pipeline-purple: #8B5CF6;
-  --pipeline-amber: #E8A93B;
-  --pipeline-green: #3BE87A;
-  --pipeline-red: #E85959;
-  --pipeline-green-dark: #10B981;
-  --accent-blue: #2563EB;
-  --text-grey-faint: #8A8FA3;
-  --text-grey-dark: #6B7080;
+  --pipeline-amber: #F59E0B;
+  --pipeline-green: #10B981;
+  --pipeline-red: #EF4444;
+  --pipeline-green-dark: #059669;
+  --accent-blue: #3B82F6;
+  --text-grey-faint: #9CA3AF;
+  --text-grey-dark: #6B7280;
 
   /* TIPOGRAFIA */
   --font-page-title: 32px;

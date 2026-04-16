@@ -40,11 +40,10 @@ export function DealCard({ deal, onClick }: DealCardProps) {
     zIndex: isDragging ? 50 : 1,
   }
 
-  // Priority Styles tuned for high-fidelity SaaS look
   const priorityStyles = {
-    ALTA: { color: "#E85959", bg: "rgba(232, 89, 89, 0.1)", label: "Alta" },
-    MEDIA: { color: "#E8A93B", bg: "rgba(232, 169, 59, 0.1)", label: "Média" },
-    BAIXA: { color: "#3BE87A", bg: "rgba(59, 232, 122, 0.1)", label: "Baixa" },
+    ALTA: { color: "#EF4444", label: "Alta" },
+    MEDIA: { color: "#F59E0B", label: "Média" },
+    BAIXA: { color: "#10B981", label: "Baixa" },
   }
   
   const p = priorityStyles[deal.prioridade]
@@ -57,57 +56,46 @@ export function DealCard({ deal, onClick }: DealCardProps) {
       {...listeners}
       onClick={onClick}
       className={cn(
-        "bg-[#141928] border border-white/[0.08] rounded-[10px] p-[14px_16px] cursor-grab active:cursor-grabbing transition-all duration-150 shadow-[0_2px_8px_rgba(0,0,0,0.25)] hover:border-white/[0.15] hover:-translate-y-0.5 group relative",
-        isDragging && "z-50 ring-2 ring-blue-500/30"
+        "bg-[#111114] border border-white/[0.05] rounded-xl p-4 cursor-grab active:cursor-grabbing transition-all duration-150 shadow-sm hover:border-white/10 hover:-translate-y-0.5 group relative",
+        isDragging && "z-50 ring-1 ring-blue-500/20"
       )}
     >
-      {/* 1. TOP LINE: NAME + STATUS */}
-      <div className="flex items-start justify-between mb-2.5">
-        <h3 className="text-[14.5px] font-medium text-white tracking-tight leading-tight group-hover:text-[#3B8FE8] transition-colors">
+      <div className="flex items-start justify-between mb-3">
+        <h3 className="text-[14px] font-medium text-white/90 tracking-tight group-hover:text-blue-400 transition-colors">
           {deal.titulo}
         </h3>
-        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white/[0.03] text-white/30 border border-white/[0.05] uppercase">
+        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white/[0.03] text-white/20 border border-white/5 uppercase">
            {deal.status === 'OPEN' ? 'Aberto' : deal.status === 'WON' ? 'Ganho' : 'Perdido'}
         </span>
       </div>
 
-      {/* 2. PRIORITY BADGE */}
-      <div className="mb-3">
-         <div 
-           className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold"
-           style={{ color: p.color, backgroundColor: p.bg }}
-         >
-            {p.label}
+      <div className="flex items-center gap-3 mb-4">
+         <div className="flex items-center gap-1">
+            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: p.color }} />
+            <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{p.label}</span>
          </div>
-      </div>
-
-      {/* 3. MONETARY VALUE */}
-      <div className="flex items-center gap-1.5 mb-4">
-         <div className="w-5 h-5 rounded-md bg-[#3B8FE8]/10 flex items-center justify-center">
-            <DollarSign size={12} className="text-[#3B8FE8]" />
-         </div>
-         <div className="flex items-baseline gap-1">
-            <span className="text-[11px] font-medium text-[#3B8FE8]/60">R$</span>
-            <span className="text-[13px] font-medium text-[#3B8FE8] tracking-tight">
+         <div className="w-px h-3 bg-white/5" />
+         <div className="flex items-center gap-1 text-blue-500/80">
+            <DollarSign size={10} />
+            <span className="text-[12px] font-semibold tracking-tight">
               {(deal.valorEstimado || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </span>
          </div>
       </div>
 
-      {/* 4. FOOTER: AVATAR + DATE */}
-      <div className="flex items-center justify-between pt-3 border-t border-white/[0.04]">
+      <div className="flex items-center justify-between pt-3 border-t border-white/[0.03]">
         <div className="flex items-center gap-2">
-           <div className="w-[22px] h-[22px] rounded-full bg-white/[0.05] flex items-center justify-center text-[10px] font-bold text-white/40 border border-white/[0.05]">
+           <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center text-[9px] font-bold text-white/30 border border-white/5">
               {deal.contact ? (deal.contact.nome[0] + (deal.contact.sobrenome?.[0] || '')).toUpperCase() : 'SR'}
            </div>
-           <span className="text-[12px] font-normal text-[#6B7080]">
-              {deal.contact ? `${deal.contact.nome}` : 'S/ Resp'}
+           <span className="text-[11px] text-white/40">
+              {deal.contact ? deal.contact.nome : 'Sem Resp.'}
            </span>
         </div>
         
-        <div className="flex items-center gap-1.5 text-[#6B7080]">
-           <Calendar size={12} strokeWidth={2} />
-           <span className="text-[12px] font-normal tracking-tight">
+        <div className="flex items-center gap-1.5 text-white/20">
+           <Calendar size={11} />
+           <span className="text-[11px]">
               {deal.dataPrevista ? new Date(deal.dataPrevista).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '').toLowerCase() : '---'}
            </span>
         </div>

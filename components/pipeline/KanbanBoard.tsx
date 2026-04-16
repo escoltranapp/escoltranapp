@@ -160,26 +160,26 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
           const stageColor = getStageHeaderInfo(stage.name)
 
           return (
-            <div key={stage.id} className="flex flex-col min-w-[310px] max-w-[310px]">
-              {/* STAGE HEADER (REFACTORED) */}
+            <div key={stage.id} className="flex flex-col min-w-[280px] max-w-[280px]">
+              {/* STAGE HEADER (CLEAN NOIR) */}
               <div className="mb-4 px-1">
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2">
                     <div 
-                      className="w-2 h-2 rounded-full"
+                      className="w-1.5 h-1.5 rounded-full"
                       style={{ backgroundColor: stageColor }}
                     />
-                    <h2 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+                    <h2 className="text-[11px] font-bold uppercase tracking-[0.1em] text-white/90">
                       {stage.name}
                     </h2>
-                    <span className="text-[10px] font-bold text-[#6B7080] bg-[#141928] px-2 py-0.5 rounded-full border border-white/[0.05]">
+                    <span className="text-[10px] font-bold text-white/20 bg-white/[0.03] px-2 py-0.5 rounded border border-white/5">
                       {stage.deals.length}
                     </span>
                   </div>
                 </div>
                 
                 <div className="px-0.5">
-                   <span className="text-[13px] font-medium text-[#3B8FE8]">
+                   <span className="text-[12px] font-medium text-white/40">
                       R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                    </span>
                 </div>
@@ -202,13 +202,13 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
                     ))}
                   </SortableContext>
                   
-                  {/* ADD CARD BUTTON (REFACTORED) */}
+                  {/* ADD CARD BUTTON (MINIMAL) */}
                   <button 
                     onClick={() => onAddDeal?.(stage.id)}
-                    className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-white/10 rounded-lg text-[#6B7080] hover:text-white/60 hover:border-white/20 hover:bg-white/[0.02] transition-all duration-150 cursor-pointer group"
+                    className="flex items-center justify-center gap-2 w-full py-3 border border-dashed border-white/5 rounded-xl text-white/10 hover:text-white/30 hover:bg-white/[0.02] transition-all cursor-pointer group"
                   >
                     <Plus size={14} className="opacity-40 group-hover:opacity-100 transition-opacity" />
-                    <span className="text-[12px] font-medium tracking-tight">Adicionar Card</span>
+                    <span className="text-[11px] font-bold uppercase tracking-widest">Novo Item</span>
                   </button>
                 </div>
               </KanbanColumn>
