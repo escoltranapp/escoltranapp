@@ -38,6 +38,7 @@ export default function PipelinePage() {
   const [showNewDeal, setShowNewDeal] = useState(false)
   const [newDealStageId, setNewDealStageId] = useState<string | null>(null)
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
+  const [isPipelineMenuOpen, setIsPipelineMenuOpen] = useState(false)
 
   const { data: boardData, isLoading, error, refetch } = useQuery({
     queryKey: ["pipeline-stages"],
@@ -113,11 +114,51 @@ export default function PipelinePage() {
         
         <div className="flex items-center gap-3 animate-slide-up" style={{ animationDelay: '100ms' }}>
           {/* PIPELINE SELECTOR */}
-          <button className="flex items-center gap-3 px-6 py-3 rounded-[12px] bg-[#111118] border border-white/[0.08] hover:border-white/20 transition-all group whitespace-nowrap">
-            <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" />
-            <span className="text-[13px] font-bold text-white/70">Pipeline Principal</span>
-            <Plus size={14} className="text-white/20 group-hover:text-white/40 rotate-45 transition-transform ml-1" />
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setIsPipelineMenuOpen(!isPipelineMenuOpen)}
+              className={cn(
+                "flex items-center gap-3 px-6 py-3 rounded-[12px] bg-[#111118] border transition-all group whitespace-nowrap",
+                isPipelineMenuOpen ? "border-blue-500/50 bg-[#151520]" : "border-white/[0.08] hover:border-white/20"
+              )}
+            >
+              <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" />
+              <span className="text-[13px] font-bold text-white/70">Pipeline Principal</span>
+              <Plus 
+                size={14} 
+                className={cn(
+                  "text-white/20 group-hover:text-white/40 transition-transform ml-1",
+                  isPipelineMenuOpen ? "rotate-[225deg]" : "rotate-45"
+                )} 
+              />
+            </button>
+
+            {/* DROPDOWN MENU */}
+            {isPipelineMenuOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setIsPipelineMenuOpen(false)} 
+                />
+                <div className="absolute top-full left-0 mt-2 w-full min-w-[220px] bg-[#0d0d12] border border-white/[0.1] rounded-[12px] shadow-[0_10px_40px_rgba(0,0,0,0.6)] z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="p-1">
+                    <button className="flex items-center gap-3 w-full px-4 py-3 rounded-[8px] bg-blue-500/10 text-blue-400 border border-blue-500/20 transition-all">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
+                      <span className="text-[13px] font-black">Pipeline Principal</span>
+                    </button>
+                    <button className="flex items-center gap-3 w-full px-4 py-3 rounded-[8px] hover:bg-white/5 text-white/40 hover:text-white transition-all">
+                      <div className="w-2 h-2 rounded-full bg-white/10" />
+                      <span className="text-[13px] font-bold">Vendas Internas</span>
+                    </button>
+                    <button className="flex items-center gap-3 w-full px-4 py-3 rounded-[8px] hover:bg-white/5 text-white/40 hover:text-white transition-all">
+                      <div className="w-2 h-2 rounded-full bg-white/10" />
+                      <span className="text-[13px] font-bold">Pós-Venda</span>
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
 
           {/* NOVA COLUNA (PRIMARY GLOW) */}
           <button className="relative flex items-center gap-3 px-8 py-3 rounded-[12px] bg-[#2563eb] hover:bg-[#3b82f6] text-white transition-all shadow-[0_8px_20px_-8px_rgba(37,99,235,0.5)] whitespace-nowrap">
