@@ -41,16 +41,18 @@ export default function ContactsPage() {
     },
   })
 
-  // DEFENSIVE DATA EXTRACTION
-  const contacts = Array.isArray(contactsData) ? contactsData : []
-  const filteredContacts = contacts.filter(c => 
+  // DEFENSIVE DATA EXTRACTION - FIXING API STRUCTURE DISCREPANCY
+  const contacts = Array.isArray(contactsData?.contacts) ? contactsData.contacts : []
+  const counts = contactsData?.counts || { all: 0, leads: 0, clientes: 0, inativos: 0 }
+
+  const filteredContacts = contacts.filter((c: any) => 
     c.nome?.toLowerCase().includes(search.toLowerCase()) || 
     c.empresa?.toLowerCase().includes(search.toLowerCase())
   )
 
-  const databaseSize = contacts.length
-  const activeNetwork = contacts.filter(c => c.status === "lead").length
-  const clientes = contacts.filter(c => c.status === "cliente").length
+  const databaseSize = counts.all
+  const activeNetwork = counts.leads
+  const clientes = counts.clientes
 
   return (
     <div className="animate-in fade-in duration-700 pb-24 px-1">
@@ -96,17 +98,20 @@ export default function ContactsPage() {
       <div className="bg-[#1A1A1A] border border-white/5 rounded-3xl overflow-hidden shadow-2xl border-t-white/[0.03]">
          <div className="overflow-x-auto scrollbar-hide">
             <table className="w-full text-left border-collapse min-w-[800px]">
-               <thead>
+                <thead>
                   <tr className="bg-[#0A0A0A]">
-                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Contato Digital</th>
-                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Empresa / Entidade</th>
-                     <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Ação Operacional</th>
+                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Contato</th>
+                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Email / Telefone</th>
+                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic text-center">Status</th>
+                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Canal</th>
+                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Última Atividade</th>
+                     <th className="px-8 py-5 text-right text-[10px] font-black uppercase tracking-widest text-[#404040] border-b border-[#262626] font-mono italic">Ações</th>
                   </tr>
                </thead>
                <tbody>
                   {filteredContacts.length === 0 ? (
                      <tr>
-                        <td colSpan={3} className="py-40 text-center text-[#404040]">
+                        <td colSpan={6} className="py-40 text-center text-[#404040]">
                            <div className="flex flex-col items-center gap-6 italic opacity-20">
                               <span className="material-symbols-outlined text-[80px]">dataset</span>
                               <div className="font-black text-[16px] tracking-[0.3em] uppercase">DATASET VAZIO OU SEM RESULTADOS</div>
@@ -114,32 +119,68 @@ export default function ContactsPage() {
                         </td>
                      </tr>
                   ) : (
-                     filteredContacts.map((contact) => (
-                       <tr key={contact.id} className="hover:bg-[#F97316]/5 transition-all group border-b border-[#262626]/50">
-                         <td className="px-8 py-6">
-                           <div className="flex items-center gap-5">
-                              <div className="w-10 h-10 rounded-full bg-[#0A0A0A] border border-white/[0.05] flex items-center justify-center text-[#F97316] font-black text-xs font-mono group-hover:bg-[#F97316] group-hover:text-black group-hover:shadow-[0_0_15px_#F97316] transition-all">
-                                 {contact.nome?.slice(0, 1).toUpperCase()}
-                              </div>
-                              <div>
-                                 <div className="font-black text-white text-[15px] tracking-tight uppercase italic">{contact.nome}</div>
-                                 <div className="text-[10px] text-[#404040] font-mono uppercase tracking-widest mt-0.5">{contact.email || "Sem ID Digital"}</div>
-                              </div>
-                           </div>
-                         </td>
-                         <td className="px-8 py-6">
-                            <div className="text-[14px] font-black text-[#A3A3A3] group-hover:text-white transition-colors uppercase italic">{contact.empresa || "—"}</div>
-                            <div className="flex items-center gap-2 mt-2">
-                               <span className="px-2 py-0.5 bg-[#0A0A0A] text-[#6B7280] text-[9px] font-black rounded border border-white/5 uppercase tracking-widest">Cluster: Default</span>
+                      filteredContacts.map((contact: any) => (
+                        <tr key={contact.id} className="hover:bg-[#F97316]/5 transition-all group border-b border-[#262626]/50">
+                          {/* CONTATO */}
+                          <td className="px-8 py-6">
+                            <div className="flex items-center gap-4">
+                               <div className="w-10 h-10 rounded-full bg-[#0A0A0A] border border-white/[0.05] flex items-center justify-center text-[#F97316] font-black text-xs font-mono group-hover:bg-[#F97316] group-hover:text-black transition-all">
+                                  {contact.nome?.slice(0, 1).toUpperCase()}
+                               </div>
+                               <div>
+                                  <div className="font-black text-white text-[14px] tracking-tight uppercase italic">{contact.nome}</div>
+                                  <div className="text-[10px] text-[#404040] font-mono uppercase tracking-widest mt-0.5">{contact.empresa || "Pessoa Física"}</div>
+                               </div>
                             </div>
-                         </td>
-                         <td className="px-8 py-6 text-right">
-                           <button className="h-10 px-6 bg-[#0A0A0A] border border-white/10 text-[#6B7280] rounded-xl text-[10px] font-black uppercase tracking-widest hover:border-[#F97316] hover:text-[#F97316] hover:shadow-[0_0_15px_rgba(249,115,22,0.2)] transition-all">
-                             Analisar
-                           </button>
-                         </td>
-                       </tr>
-                     ))
+                          </td>
+
+                          {/* EMAIL / TELEFONE */}
+                          <td className="px-8 py-6">
+                             <div className="text-[12px] font-mono font-black text-[#A3A3A3] group-hover:text-[#F2F2F2] transition-colors">{contact.email || "—"}</div>
+                             <div className="text-[11px] font-mono font-bold text-[#404040] mt-1">{contact.telefone || "—"}</div>
+                          </td>
+
+                          {/* STATUS */}
+                          <td className="px-8 py-6 text-center">
+                             <span className={cn(
+                               "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border",
+                               contact.status === "cliente" ? "bg-green-500/10 text-green-500 border-green-500/20" : 
+                               contact.status === "lead" ? "bg-[#F97316]/10 text-[#F97316] border-[#F97316]/20" : 
+                               "bg-[#262626] text-[#6B7280] border-white/5"
+                             )}>
+                               {contact.status || "Novo"}
+                             </span>
+                          </td>
+
+                          {/* CANAL */}
+                          <td className="px-8 py-6">
+                             <div className="flex items-center gap-2 text-[#404040] group-hover:text-[#A3A3A3] transition-colors">
+                                <span className="material-symbols-outlined text-[16px]">language</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest">{contact.canalOrigem || "Direto"}</span>
+                             </div>
+                          </td>
+
+                          {/* ÚLTIMA ATIVIDADE */}
+                          <td className="px-8 py-6">
+                             <div className="text-[11px] font-bold text-[#404040] italic">Sincronizado há 1 dia</div>
+                          </td>
+
+                          {/* AÇÕES */}
+                          <td className="px-8 py-6 text-right">
+                             <div className="flex items-center justify-end gap-2">
+                                <button className="w-9 h-9 flex items-center justify-center border border-white/5 rounded-lg text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/10 transition-all">
+                                   <span className="material-symbols-outlined text-[18px]">visibility</span>
+                                </button>
+                                <button className="w-9 h-9 flex items-center justify-center border border-white/5 rounded-lg text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/10 transition-all">
+                                   <span className="material-symbols-outlined text-[18px]">edit</span>
+                                </button>
+                                <button className="w-9 h-9 flex items-center justify-center border border-white/5 rounded-lg text-[#404040] hover:text-red-500 hover:bg-red-500/10 transition-all">
+                                   <span className="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                             </div>
+                          </td>
+                        </tr>
+                      ))
                   )}
                </tbody>
             </table>
