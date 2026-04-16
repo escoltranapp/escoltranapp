@@ -19,6 +19,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
+import { Plus } from "lucide-react"
 import { KanbanColumn } from "./KanbanColumn"
 import { DealCard, Deal } from "./DealCard"
 
@@ -37,7 +38,7 @@ interface KanbanBoardProps {
   onDealClick?: (deal: Deal) => void
 }
 
-export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick }: KanbanBoardProps) {
+export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, onAddDeal }: KanbanBoardProps) {
   const [stages, setStages] = useState<Stage[]>(initialStages)
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
 
@@ -75,7 +76,6 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick }: 
     const activeId = active.id as string
     const overId = over.id as string
 
-    // Find source and destination stages
     let sourceStageId = ""
     let destStageId = ""
 
@@ -112,10 +112,8 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick }: 
     const activeId = active.id as string
     const overId = over.id as string
 
-    // Find destination stage
     let destStageId = overId
     if (!stages.find(s => s.id === overId)) {
-        // If "over" is a card, find its stage
         for (const stage of stages) {
             if (stage.deals.find(d => d.id === overId)) {
                 destStageId = stage.id
@@ -124,7 +122,6 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick }: 
         }
     }
 
-    // Call the callback to update the database
     const startStageId = initialStages.find(s => s.deals.some(d => d.id === activeId))?.id
     if (startStageId && destStageId !== startStageId) {
       onDealMove(activeId, startStageId, destStageId)
@@ -185,7 +182,6 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick }: 
                   </div>
                 </div>
                 
-                {/* SUB-HEADER: Total Value */}
                 <div className="px-1 mt-2 flex justify-between items-center opacity-40">
                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Total</span>
                    <span className="text-[11px] font-black text-white/80">
@@ -201,7 +197,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick }: 
                   items={stage.deals.map((d) => d.id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  <div className="flex flex-col gap-3 min-h-[150px]">
+                  <div className="flex flex-col gap-3">
                     {stage.deals.map((deal) => (
                       <DealCard 
                         key={deal.id} 
@@ -209,6 +205,15 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick }: 
                         onClick={() => onDealClick?.(deal)}
                       />
                     ))}
+                    
+                    {/* ADD CARD BUTTON (GHOST STYLE) */}
+                    <button 
+                      onClick={() => onAddDeal?.(stage.id)}
+                      className="flex items-center justify-center gap-2 w-full py-4 border-2 border-dashed border-white/[0.05] rounded-[10px] text-white/10 hover:text-white/30 hover:border-white/10 hover:bg-white/[0.01] transition-all group mt-1"
+                    >
+                      <Plus size={16} className="group-hover:scale-110 transition-transform" />
+                      <span className="text-[13px] font-medium">Adicionar card</span>
+                    </button>
                   </div>
                 </SortableContext>
               </KanbanColumn>
