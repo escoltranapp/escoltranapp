@@ -98,27 +98,45 @@ export default function PipelinePage() {
   return (
     <div className="page-container animate-aether">
       
-      {/* ─── HEADER (AETHER STANDARD) ─────────────────────────── */}
-      <header className="page-header-wrapper">
+      {/* ─── HEADER (REFINED SAAS DESIGN) ─────────────────────── */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div className="animate-slide-up">
-          <div className="breadcrumb-pill">
-            <Layout size={12} /> GESTÃO COMERCIAL
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-none mb-3">
+            Pipeline
+          </h1>
+          <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-white/30 uppercase">
+            <span>GESTÃO DE OPORTUNIDADES</span>
+            <span className="w-1 h-1 rounded-full bg-white/20" />
+            <span>VISÃO KANBAN</span>
           </div>
-          <h1 className="page-title-h1">Pipeline de Vendas</h1>
-          <p className="page-subtitle">Visualize e gerencie suas oportunidades em tempo real</p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 animate-slide-up" style={{ animationDelay: '100ms' }}>
+          {/* PIPELINE SELECTOR */}
+          <button className="flex items-center gap-3 px-4 py-2.5 rounded-[12px] bg-[#111118] border border-white/[0.05] hover:border-white/10 transition-all group">
+            <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
+            <span className="text-[13px] font-bold text-blue-400">Pipeline Principal</span>
+            <Plus size={14} className="text-white/20 group-hover:text-white/40 rotate-45 transition-transform" />
+          </button>
+
+          {/* NOVA COLUNA (PRIMARY GLOW) */}
+          <button className="relative flex items-center gap-2 px-5 py-2.5 rounded-[12px] bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]">
+            <Plus size={16} strokeWidth={3} />
+            <span className="text-[13px] font-black tracking-tight">Nova Coluna</span>
+          </button>
+
+          {/* NOVO BOARD */}
+          <button className="flex items-center gap-2 px-4 py-2.5 rounded-[12px] bg-white/[0.02] border border-white/[0.05] hover:border-white/10 hover:bg-white/[0.04] text-white/40 hover:text-white/60 transition-all">
+            <Plus size={16} />
+            <span className="text-[13px] font-bold">Novo Board</span>
+          </button>
+          
           <button 
             onClick={() => refetch()}
-            className="p-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 transition-all text-white/40 hover:text-white"
+            className="p-2.5 rounded-[12px] border border-white/5 bg-white/5 hover:bg-white/10 transition-all text-white/20 hover:text-white"
             title="Atualizar"
           >
             <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
-          </button>
-          
-          <button className="btn-cta-primary flex items-center gap-2" onClick={() => setShowNewDeal(true)}>
-            <Plus size={16} /> Novo Deal
           </button>
         </div>
       </header>
