@@ -18,7 +18,7 @@ function KPICard({
   label: string; value: string | number; icon: React.ElementType; color?: string
 }) {
   return (
-    <div className="bg-[#1B2035] border border-white/[0.06] rounded-[12px] p-[20px_24px] flex flex-col gap-4 group">
+    <div className="bg-[#111114] border border-white/[0.06] rounded-[12px] p-[20px_24px] flex flex-col gap-4 group">
       <div className="flex items-center justify-between">
         <div style={{ color: color }} className="opacity-80">
           <Icon size={24} strokeWidth={2} />
@@ -141,7 +141,7 @@ export default function PipelinePage() {
               <div className="space-y-3">
                 <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Cor</label>
                 <div className="flex flex-wrap gap-3">
-                  {stageColors.map(color => (
+                  {colors.map(color => (
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
