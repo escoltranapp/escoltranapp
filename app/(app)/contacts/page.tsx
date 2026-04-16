@@ -183,7 +183,7 @@ export default function ContactsPage() {
                                    <span className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest leading-none">{contact.empresa || "Pessoa Física"}</span>
                                    <span className="w-1 h-1 rounded-full bg-[#262626]" />
                                    <span className="text-[10px] font-mono font-bold text-[#6B7280] lowercase tracking-tight leading-none">{contact.email}</span>
-                                </div>
+                                 </div>
                               </div>
                             </div>
                           </td>
@@ -246,6 +246,7 @@ export default function ContactsPage() {
             </table>
          </div>
       </div>
+    </div>
 
       <NewContactDialog 
         open={isNewContactOpen}
@@ -275,5 +276,6 @@ export default function ContactsPage() {
         }}
       />
     </div>
+  </div>
   )
 }
