@@ -130,17 +130,20 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
     setActiveDeal(null)
   }
 
-  const getHeaderStyle = (nome: string) => {
-    const colors: Record<string, { text: string; bg: string; border: string; dot: string }> = {
-      default: { text: "#6366f1", bg: "#1a1a2e", border: "#6366f130", dot: "#6366f1" },
-      "PROSPECÇÃO": { text: "#4f46e5", bg: "#11111e", border: "#4f46e550", dot: "#4f46e5" },
-      "QUALIFICAÇÃO": { text: "#f59e0b", bg: "#1e1611", border: "#f59e0b50", dot: "#f59e0b" },
-      "PROPOSTA": { text: "#8b5cf6", bg: "#1a111e", border: "#8b5cf650", dot: "#8b5cf6" },
-      "NEGOCIAÇÃO": { text: "#06b6d4", bg: "#111e1e", border: "#06b6d450", dot: "#06b6d4" },
-      "FECHAMENTO": { text: "#10b981", bg: "#111e15", border: "#10b98150", dot: "#10b981" },
+
+  const getStageHeaderInfo = (name: string) => {
+    const n = name.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    const map: Record<string, string> = {
+      "NOVO LEAD": "#3B8FE8",
+      "PROSPECCAO": "#3B8FE8",
+      "QUALIFICACAO": "#8B5CF6",
+      "REUNIAO MARCADA": "#E8A93B",
+      "REUNIAO": "#E8A93B",
+      "PROPOSTA": "#3BE87A",
+      "NEGOCIACAO": "#E85959",
+      "FECHAMENTO": "#10B981",
     }
-    const key = nome.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    return colors[key] || colors.default
+    return map[n] || "#3B8FE8"
   }
 
   return (
@@ -151,40 +154,32 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-6 h-full min-h-[calc(100vh-250px)] overflow-x-auto pb-2 kanban-scrollbar">
+      <div className="flex gap-4 h-full min-h-[calc(100vh-250px)] overflow-x-auto pb-6 kanban-scrollbar">
         {stages.map((stage) => {
-          const style = getHeaderStyle(stage.name)
           const totalValue = stage.deals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
+          const stageColor = getStageHeaderInfo(stage.name)
 
           return (
-            <div key={stage.id} className="flex flex-col min-w-[320px] max-w-[320px]">
-              {/* STAGE HEADER BLOCK (RECTANGULAR) */}
+            <div key={stage.id} className="flex flex-col min-w-[310px] max-w-[310px]">
+              {/* STAGE HEADER (REFACTORED) */}
               <div className="mb-4 px-1">
-                <div 
-                  className="flex items-center justify-between px-5 py-3 rounded-[12px] border transition-all duration-300"
-                  style={{ 
-                    backgroundColor: style.bg, 
-                    borderColor: style.border,
-                    color: style.text 
-                  }}
-                >
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
                     <div 
-                      className="w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]"
-                      style={{ backgroundColor: style.dot }}
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: stageColor }}
                     />
-                    <h2 className="text-[12px] font-bold uppercase tracking-[0.1em]">
+                    <h2 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
                       {stage.name}
                     </h2>
-                  </div>
-                  <div className="w-[24px] h-[24px] flex items-center justify-center rounded-full bg-black/40 text-[10px] font-black text-white/40 border border-white/[0.05]">
-                    {stage.deals.length}
+                    <span className="text-[10px] font-bold text-[#6B7080] bg-[#141928] px-2 py-0.5 rounded-full border border-white/[0.05]">
+                      {stage.deals.length}
+                    </span>
                   </div>
                 </div>
                 
-                <div className="px-2 mt-2.5 flex justify-between items-center opacity-30">
-                   <span className="text-[9px] font-bold uppercase tracking-widest text-white/60">Total</span>
-                   <span className="text-[11px] font-black text-white/80">
+                <div className="px-0.5">
+                   <span className="text-[13px] font-medium text-[#3B8FE8]">
                       R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                    </span>
                 </div>
@@ -192,12 +187,12 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
 
               {/* COLUMN BODY */}
               <KanbanColumn id={stage.id} deals={stage.deals}>
-                <SortableContext
-                  id={stage.id}
-                  items={stage.deals.map((d) => d.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 min-h-[150px]">
+                  <SortableContext
+                    id={stage.id}
+                    items={stage.deals.map((d) => d.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
                     {stage.deals.map((deal) => (
                       <DealCard 
                         key={deal.id} 
@@ -205,16 +200,17 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
                         onClick={() => onDealClick?.(deal)}
                       />
                     ))}
-                    
-                    <button 
-                      onClick={() => onAddDeal?.(stage.id)}
-                      className="flex items-center justify-center gap-2 w-full py-4 border border-dashed border-white/[0.05] rounded-[8px] text-[#444] hover:text-[#777] hover:border-white/10 hover:bg-white/[0.01] transition-all group mt-1"
-                    >
-                      <Plus size={14} className="opacity-40 group-hover:opacity-100 transition-opacity" />
-                      <span className="text-[13px] font-medium tracking-tight">Adicionar card</span>
-                    </button>
-                  </div>
-                </SortableContext>
+                  </SortableContext>
+                  
+                  {/* ADD CARD BUTTON (REFACTORED) */}
+                  <button 
+                    onClick={() => onAddDeal?.(stage.id)}
+                    className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-white/10 rounded-lg text-[#6B7080] hover:text-white/60 hover:border-white/20 hover:bg-white/[0.02] transition-all duration-150 cursor-pointer group"
+                  >
+                    <Plus size={14} className="opacity-40 group-hover:opacity-100 transition-opacity" />
+                    <span className="text-[12px] font-medium tracking-tight">Adicionar Card</span>
+                  </button>
+                </div>
               </KanbanColumn>
             </div>
           )
@@ -231,17 +227,17 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
 
       <style jsx global>{`
         .kanban-scrollbar::-webkit-scrollbar {
-          height: 5px;
+          height: 6px;
         }
         .kanban-scrollbar::-webkit-scrollbar-track {
           background: transparent;
         }
         .kanban-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.08);
-          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 10px;
         }
         .kanban-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.15);
+          background: rgba(255, 255, 255, 0.1);
         }
       `}</style>
     </DndContext>

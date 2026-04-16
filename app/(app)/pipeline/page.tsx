@@ -13,21 +13,20 @@ import { cn } from "@/lib/utils"
    KPI CARD — Standardized with Aether Design System
    ═══════════════════════════════════════════════════════ */
 function KPICard({
-  label, value, subtext, icon: Icon, color = "#d4af37"
+  label, value, icon: Icon, color = "#3B8FE8"
 }: {
-  label: string; value: string | number; subtext: string; icon: React.ElementType; color?: string
+  label: string; value: string | number; icon: React.ElementType; color?: string
 }) {
   return (
-    <div className="kpi-card group">
-      <div className="kpi-icon-container" style={{ backgroundColor: `${color}08`, color: color }}>
-        <Icon size={18} strokeWidth={2.5} />
+    <div className="bg-[#1B2035] border border-white/[0.06] rounded-[12px] p-[20px_24px] flex flex-col gap-4 group">
+      <div className="flex items-center justify-between">
+        <div style={{ color: color }} className="opacity-80">
+          <Icon size={24} strokeWidth={2} />
+        </div>
       </div>
       <div>
-        <div className="kpi-label mb-1">{label}</div>
-        <div className="flex items-baseline gap-2">
-          <div className="kpi-value !text-2xl" style={{ color: color }}>{value}</div>
-          <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{subtext}</div>
-        </div>
+        <div className="text-[11px] font-bold text-[#8A8FA3] uppercase tracking-[0.05em] mb-1">{label}</div>
+        <div className="text-[24px] font-semibold text-white tracking-tight">{value}</div>
       </div>
     </div>
   )
@@ -112,7 +111,7 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="page-container animate-aether !bg-[#050505]">
+    <div className="page-container animate-aether !bg-[#0A0A0A]">
       
       {/* ─── MODAL: NOVA COLUNA (REFERENCE MATCH) ────────────────── */}
       {showNewColumnModal && (
@@ -188,23 +187,12 @@ export default function PipelinePage() {
       )}
       
       {/* ─── HEADER (REFINED SAAS DESIGN) ─────────────────────── */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div className="animate-slide-up">
-          {/* REFERENCE PILL */}
-          <div className="flex items-center gap-2 mb-4">
-             <div className="px-2 py-0.5 rounded-[4px] bg-white/5 border border-white/10 text-[9px] font-black text-white/40 uppercase tracking-widest">
-                PI
-             </div>
-             <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">Pipeline Comercial</span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-none mb-3">
+          <h1 className="text-[30px] font-bold text-white tracking-tight mb-1">
             Pipeline
           </h1>
-          <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-white/30 uppercase">
-            <span>GESTÃO DE OPORTUNIDADES</span>
-            <span className="w-1 h-1 rounded-full bg-white/20" />
-            <span>VISÃO KANBAN</span>
+          <div className="text-[11px] font-medium tracking-[0.08em] text-[#8A8FA3] uppercase">
+            Gestão de Oportunidades • Visão Kanban
           </div>
         </div>
         
@@ -256,24 +244,25 @@ export default function PipelinePage() {
             )}
           </div>
 
-          {/* NOVA COLUNA (PRIMARY GLOW) */}
+        <div className="flex items-center gap-3 animate-slide-up" style={{ animationDelay: '100ms' }}>
+          {/* NOVA COLUNA */}
           <button 
             onClick={() => setShowNewColumnModal(true)}
-            className="relative flex items-center gap-3 px-8 py-3 rounded-[12px] bg-[#2563eb] hover:bg-[#3b82f6] text-white transition-all shadow-[0_8px_20px_-8px_rgba(37,99,235,0.5)] whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2 rounded-[8px] bg-[#2563EB] text-white hover:bg-blue-600 transition-all duration-150 cursor-pointer shadow-none"
           >
-            <Plus size={16} strokeWidth={3} />
-            <span className="text-[13px] font-black tracking-tight">Nova Coluna</span>
+            <Plus size={16} strokeWidth={2.5} />
+            <span className="text-[13px] font-medium">Nova Coluna</span>
           </button>
 
           {/* NOVO BOARD */}
-          <button className="flex items-center gap-3 px-6 py-3 rounded-[12px] bg-white/[0.03] border border-white/[0.08] hover:border-white/20 hover:bg-white/[0.06] text-white/40 hover:text-white transition-all whitespace-nowrap">
+          <button className="flex items-center gap-2 px-4 py-2 rounded-[8px] bg-transparent border border-white/15 text-white/80 hover:border-white/30 hover:bg-white/[0.02] transition-all duration-150 cursor-pointer text-[13px] font-medium">
             <Plus size={16} />
-            <span className="text-[14px] font-bold">Novo Board</span>
+            <span>Novo Board</span>
           </button>
           
           <button 
             onClick={() => refetch()}
-            className="p-3 rounded-[12px] border border-white/[0.08] bg-white/5 hover:bg-white/10 transition-all text-white/20 hover:text-white"
+            className="p-2 rounded-[8px] border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-white/40 hover:text-white"
             title="Atualizar"
           >
             <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
@@ -281,35 +270,25 @@ export default function PipelinePage() {
         </div>
       </header>
 
-      {/* ─── KPI GRID ─────────────────────────────────────────── */}
-      <div className="kpi-grid">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <KPICard 
           label="Total Leads"
           value={isLoading ? "..." : allOpen.length}
-          subtext="oportunidades ativas"
           icon={Layers}
-          color="#3b82f6"
+          color="#3B8FE8"
         />
         <KPICard 
           label="Volume Total"
           value={isLoading ? "..." : totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
-          subtext="valor em negociação"
           icon={TrendingUp}
-          color="#10b981"
+          color="#3BE87A"
         />
         <KPICard 
           label="Tickets Abertos"
           value={isLoading ? "..." : overdueValue}
-          subtext="revisão necessária"
           icon={AlertTriangle}
-          color="#f59e0b"
+          color="#E85959"
         />
-        <div className="flex items-center justify-center border border-dashed border-white/10 rounded-[14px] bg-white/[0.01] hover:bg-white/[0.03] transition-all cursor-pointer group">
-           <div className="text-center">
-              <Plus size={20} className="mx-auto mb-1 text-white/10 group-hover:text-white/40 transition-colors" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-white/10 group-hover:text-white/40 transition-colors">Nova Métrica</span>
-           </div>
-        </div>
       </div>
 
       {/* ─── PIPELINE BOARD ───────────────────────────────────── */}
