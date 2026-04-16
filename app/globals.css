@@ -1,106 +1,74 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: hsl(0 0% 4%);
-  --color-foreground: hsl(0 0% 95%);
-
-  --color-primary: hsl(25 95% 53%);
-  --color-primary-foreground: hsl(0 0% 100%);
-
-  --color-card: hsl(0 0% 10%);
-  --color-card-foreground: hsl(0 0% 95%);
-
-  --color-popover: hsl(0 0% 4%);
-  --color-popover-foreground: hsl(0 0% 95%);
-
-  --color-secondary: hsl(0 0% 15%);
-  --color-secondary-foreground: hsl(0 0% 95%);
-
-  --color-muted: hsl(0 0% 15%);
-  --color-muted-foreground: hsl(0 0% 42%);
-
-  --color-accent: hsl(25 95% 53%);
-  --color-accent-foreground: hsl(0 0% 100%);
-
-  --color-destructive: hsl(0 62.8% 30.6%);
-  --color-destructive-foreground: hsl(0 0% 95%);
-
-  --color-border: hsl(0 0% 15%);
-  --color-input: hsl(0 0% 15%);
-  --color-ring: hsl(25 95% 53%);
-
-  --radius-xl: 12px;
-  --radius-2xl: 16px;
+  --color-primary: #F97316;
+  --color-background: #0A0A0A;
+  --color-surface-container: #1A1A1A;
+  --color-surface-container-high: #262626;
+  --font-inter: "Inter", sans-serif;
+  --font-mono: "Fira Code", monospace;
 }
 
-:root {
-  --background: 0 0% 4%;
-  --foreground: 0 0% 95%;
-  --card: 0 0% 10%;
-  --card-foreground: 0 0% 95%;
-  --popover: 0 0% 4%;
-  --popover-foreground: 0 0% 95%;
-  --primary: 25 95% 53%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 15%;
-  --secondary-foreground: 0 0% 95%;
-  --muted: 0 0% 15%;
-  --muted-foreground: 0 0% 42%;
-  --accent: 25 95% 53%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 95%;
-  --border: 0 0% 15%;
-  --input: 0 0% 15%;
-  --ring: 25 95% 53%;
-  color-scheme: dark;
+@layer base {
+  * {
+    @apply border-white/5;
+  }
+  
+  body {
+    @apply bg-[#0A0A0A] text-white antialiased selection:bg-[#F97316]/30 selection:text-[#F97316];
+    font-family: var(--font-inter);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tighter italic uppercase font-black;
+  }
 }
 
-/* BASE RESET */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  border-color: rgba(255, 255, 255, 0.05);
+@layer components {
+  .escoltran-gradient-text {
+    @apply bg-gradient-to-br from-[#F97316] to-[#FB923C] bg-clip-text text-transparent;
+  }
+
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 24px;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'liga';
+  }
+
+  /* FIX OVERLAPPING CARDS */
+  .grid-stats {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .grid-stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .grid-stats {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
 }
 
-html, body {
-  background-color: #0A0A0A;
-  color: #F2F2F2;
-  font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
-
-.escoltran-gradient-text {
-  background: linear-gradient(135deg, #F97316, #FB923C);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
-
-.glow-primary {
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
-}
-
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined' !important;
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-/* CUSTOM SCROLLBARS */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0A0A0A; }
-::-webkit-scrollbar-thumb { background: #1A1A1A; border-radius: 10px; border: 1px solid #262626; }
-::-webkit-scrollbar-thumb:hover { background: #262626; }
-
-.scrollbar-hide::-webkit-scrollbar { display: none; }

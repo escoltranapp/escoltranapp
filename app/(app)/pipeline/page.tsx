@@ -115,8 +115,8 @@ export default function PipelinePage() {
         </div>
       </header>
 
-      {/* METRIC GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+      {/* METRIC GRID - USANDO GRID-STATS PARA EVITAR OVERLAP */}
+      <div className="grid-stats mb-12">
         <KPICard label="Dataset Aberto" value={allOpen.length} icon="dataset" trend="Active" />
         <KPICard label="Volume em Fluxo" value={totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })} icon="payments" trend="+8.2%" />
         <KPICard label="Network Active" value={boardData?.totalDeals || 0} icon="hub" trend="Live Sync" />

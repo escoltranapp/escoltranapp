@@ -49,8 +49,8 @@ export default function DashboardPage() {
         <p className="text-[#6B7280] text-[15px] mt-2 font-bold tracking-tight">Relatório operacional sincronizado com cluster Escoltran</p>
       </header>
 
-      {/* KPI GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+      {/* KPI GRID - USANDO GRID-STATS PARA EVITAR OVERLAP */}
+      <div className="grid-stats mb-12">
         <KPICard label="Dataset Leads" value="1.284" icon="group" trend="+12.5%" />
         <KPICard label="Volume Financeiro" value="R$ 452k" icon="payments" trend="+8.2%" />
         <KPICard label="Taxa Conversão" value="18.5%" icon="query_stats" trend="Optimized" />
