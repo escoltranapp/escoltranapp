@@ -186,7 +186,8 @@ export default function PipelinePage() {
         </div>
       )}
       
-      {/* ─── HEADER (REFINED SAAS DESIGN) ─────────────────────── */}
+      {/* ─── HEADER (REFACTORED) ─────────────────────────────── */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div className="animate-slide-up">
           <h1 className="text-[30px] font-bold text-white tracking-tight mb-1">
             Pipeline
@@ -244,7 +245,6 @@ export default function PipelinePage() {
             )}
           </div>
 
-        <div className="flex items-center gap-3 animate-slide-up" style={{ animationDelay: '100ms' }}>
           {/* NOVA COLUNA */}
           <button 
             onClick={() => setShowNewColumnModal(true)}
