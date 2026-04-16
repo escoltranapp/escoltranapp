@@ -133,11 +133,11 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
   const getHeaderStyle = (nome: string) => {
     const colors: Record<string, { text: string; bg: string; border: string; dot: string }> = {
       default: { text: "#6366f1", bg: "#1a1a2e", border: "#6366f130", dot: "#6366f1" },
-      "PROSPECÇÃO": { text: "#4f46e5", bg: "#11111e", border: "#4f46e540", dot: "#4f46e5" },
-      "QUALIFICAÇÃO": { text: "#f59e0b", bg: "#1e1611", border: "#f59e0b40", dot: "#f59e0b" },
-      "PROPOSTA": { text: "#8b5cf6", bg: "#1a111e", border: "#8b5cf640", dot: "#8b5cf6" },
-      "NEGOCIAÇÃO": { text: "#06b6d4", bg: "#111e1e", border: "#06b6d440", dot: "#06b6d4" },
-      "FECHAMENTO": { text: "#10b981", bg: "#111e15", border: "#10b98140", dot: "#10b981" },
+      "PROSPECÇÃO": { text: "#4f46e5", bg: "#11111e", border: "#4f46e550", dot: "#4f46e5" },
+      "QUALIFICAÇÃO": { text: "#f59e0b", bg: "#1e1611", border: "#f59e0b50", dot: "#f59e0b" },
+      "PROPOSTA": { text: "#8b5cf6", bg: "#1a111e", border: "#8b5cf650", dot: "#8b5cf6" },
+      "NEGOCIAÇÃO": { text: "#06b6d4", bg: "#111e1e", border: "#06b6d450", dot: "#06b6d4" },
+      "FECHAMENTO": { text: "#10b981", bg: "#111e15", border: "#10b98150", dot: "#10b981" },
     }
     const key = nome.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     return colors[key] || colors.default
@@ -158,32 +158,32 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
 
           return (
             <div key={stage.id} className="flex flex-col min-w-[320px] max-w-[320px]">
-              {/* STAGE HEADER BLOCK */}
-              <div className="mb-4">
+              {/* STAGE HEADER BLOCK (RECTANGULAR) */}
+              <div className="mb-4 px-1">
                 <div 
-                  className="flex items-center justify-between px-4 py-2.5 rounded-[12px] border transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.1)]"
+                  className="flex items-center justify-between px-5 py-3 rounded-[12px] border transition-all duration-300"
                   style={{ 
                     backgroundColor: style.bg, 
                     borderColor: style.border,
                     color: style.text 
                   }}
                 >
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-3">
                     <div 
                       className="w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]"
                       style={{ backgroundColor: style.dot }}
                     />
-                    <h2 className="text-[11px] font-black uppercase tracking-[0.15em]">
+                    <h2 className="text-[12px] font-bold uppercase tracking-[0.1em]">
                       {stage.name}
                     </h2>
                   </div>
-                  <div className="bg-black/40 px-2.5 py-1 rounded-full text-[10px] font-bold text-white/40 border border-white/[0.05]">
+                  <div className="w-[24px] h-[24px] flex items-center justify-center rounded-full bg-black/40 text-[10px] font-black text-white/40 border border-white/[0.05]">
                     {stage.deals.length}
                   </div>
                 </div>
                 
-                <div className="px-1 mt-2 flex justify-between items-center opacity-40">
-                   <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Total</span>
+                <div className="px-2 mt-2.5 flex justify-between items-center opacity-30">
+                   <span className="text-[9px] font-bold uppercase tracking-widest text-white/60">Total</span>
                    <span className="text-[11px] font-black text-white/80">
                       R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                    </span>
@@ -206,7 +206,6 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
                       />
                     ))}
                     
-                    {/* ADD CARD BUTTON (RECTANGULAR STYLE) */}
                     <button 
                       onClick={() => onAddDeal?.(stage.id)}
                       className="flex items-center justify-center gap-2 w-full py-4 border border-dashed border-white/[0.05] rounded-[8px] text-[#444] hover:text-[#777] hover:border-white/10 hover:bg-white/[0.01] transition-all group mt-1"
