@@ -31,7 +31,6 @@ export default function PipelinePage() {
 
   const [showNewColumnModal, setShowNewColumnModal] = useState(false)
   const [newColumnName, setNewColumnName] = useState("")
-  const [selectedColor, setSelectedColor] = useState("#f5a623")
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
 
   const { data: boardData, isLoading, refetch } = useQuery({
@@ -41,6 +40,26 @@ export default function PipelinePage() {
       if (!res.ok) throw new Error("Falha ao carregar pipeline")
       return res.json()
     },
+  })
+
+  const updateDealMutation = useMutation({
+    mutationFn: async ({ dealId, newStageId }: { dealId: string; newStageId: string }) => {
+      const res = await fetch(`/api/deals/${dealId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stageId: newStageId }),
+      })
+      if (!res.ok) throw new Error("Falha ao mover card")
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
+      toast({ title: "Card movido", description: "O fluxo foi atualizado com sucesso." })
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
+      toast({ title: "Erro ao mover", description: "Não foi possível sincronizar o card.", variant: "destructive" })
+    }
   })
 
   const stages: Stage[] = (boardData?.stages || []).map((s: any) => ({
@@ -108,6 +127,7 @@ export default function PipelinePage() {
         ) : (
           <KanbanBoard 
             stages={stages} 
+            onDealMove={(dealId, _, newStageId) => updateDealMutation.mutate({ dealId, newStageId })}
             onDealClick={(deal) => setSelectedDeal(deal)}
             onAddDeal={(stageId) => {}}
           />
