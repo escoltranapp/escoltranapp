@@ -134,12 +134,11 @@ export default function PipelinePage() {
         )}
       </div>
 
-      {selectedDeal && (
-        <DealDetailSheet 
-          deal={selectedDeal} 
-          onClose={() => setSelectedDeal(null)} 
-        />
-      )}
+      <DealDetailSheet 
+        deal={selectedDeal} 
+        open={!!selectedDeal}
+        onOpenChange={(open) => !open && setSelectedDeal(null)} 
+      />
 
       {/* MODAL NOVA COLUNA */}
       {showNewColumnModal && (
