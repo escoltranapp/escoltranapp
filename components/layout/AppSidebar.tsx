@@ -28,12 +28,12 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-[200px] z-50 bg-surface-dim border-r border-white/5 flex flex-col py-8 overflow-hidden">
+    <aside className="fixed left-0 top-0 h-full w-[240px] z-50 bg-surface border-r border-white/5 flex flex-col py-8 overflow-hidden shadow-2xl shadow-black/50">
       {/* BRAND */}
-      <div className="px-6 mb-12">
-        <h2 className="text-xl font-bold text-white tracking-tight flex flex-col bg-clip-text">
+      <div className="px-8 mb-12">
+        <h2 className="text-2xl font-bold text-white tracking-tighter flex flex-col">
            <span className="text-white">Escoltran</span>
-           <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">CRM SYSTEM</span>
+           <span className="text-[10px] text-amber-500/40 uppercase tracking-[0.3em] font-black mt-1">CRM SYSTEM</span>
         </h2>
       </div>
 
@@ -45,44 +45,44 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             href={item.path}
             onClick={onClose}
             className={cn(
-              "flex items-center gap-3 px-6 py-3 transition-all duration-200 text-[12px] font-medium tracking-wide relative group",
+              "flex items-center gap-4 px-8 py-3.5 transition-all duration-300 text-[13px] font-bold tracking-tight relative group",
               isActive(item.path)
                 ? "bg-amber-500/5 text-amber-500"
-                : "text-slate-400 hover:text-slate-200"
+                : "text-slate-500 hover:text-slate-200"
             )}
           >
             {isActive(item.path) && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-amber-500 rounded-r-full shadow-[0_0_10px_rgba(245,166,35,0.5)]" />
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[4px] h-6 bg-amber-500 rounded-r-full shadow-[0_0_15px_rgba(245,166,35,0.6)]" />
             )}
             <span className={cn(
-               "material-symbols-outlined text-[20px] transition-colors",
-               isActive(item.path) ? "text-amber-500" : "text-slate-500 group-hover:text-slate-400"
+               "material-symbols-outlined text-[22px] transition-transform duration-300 group-hover:scale-110",
+               isActive(item.path) ? "text-amber-500" : "text-slate-600 group-hover:text-slate-400"
             )}>{item.icon}</span>
             <span className="truncate">{item.label}</span>
           </Link>
         ))}
       </nav>
 
-      {/* FOOTER USER CONTEXT */}
-      <div className="px-4 pt-6 border-t border-white/5 mx-2">
-         <div className="p-3 rounded-xl bg-surface-container-high/50 border border-white/5 space-y-3">
+      {/* FOOTER USER AREA */}
+      <div className="px-6 pt-6 border-t border-white/5 mx-2 bg-gradient-to-t from-black/20 to-transparent">
+         <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4">
             <div className="flex items-center gap-3">
-               <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center text-[11px] font-bold text-black font-mono">
-                  {session?.user?.name?.slice(0, 2).toUpperCase() || "OP"}
+               <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-[13px] font-black text-black font-mono shadow-lg shadow-amber-500/10">
+                  {session?.user?.name?.slice(0, 2).toUpperCase() || "US"}
                </div>
                <div className="flex-1 min-w-0">
-                  <div className="text-[11px] font-bold text-slate-200 truncate uppercase tracking-tight leading-none">
-                     {session?.user?.name?.split(" ")[0] || "Operador"}
+                  <div className="text-[12px] font-bold text-slate-200 truncate uppercase tracking-tight">
+                     {session?.user?.name?.split(" ")[0] || "Usuário"}
                   </div>
-                  <div className="text-[8px] font-mono text-amber-500/60 uppercase font-black mt-1">Status: Active</div>
+                  <div className="text-[9px] font-mono text-amber-500/40 uppercase font-bold mt-1">Status: Online</div>
                </div>
             </div>
             <button 
               onClick={() => signOut()}
-              className="w-full flex items-center justify-center gap-2 text-slate-500 hover:text-amber-500 transition-colors py-1.5 border border-white/5 rounded-lg text-[9px] font-black uppercase tracking-[0.2em]"
+              className="w-full flex items-center justify-center gap-2 text-slate-600 hover:text-white transition-all py-2.5 border border-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/5"
              >
-              <span className="material-symbols-outlined text-[14px]">logout</span>
-              <span>Sair do Terminal</span>
+              <span className="material-symbols-outlined text-[16px]">logout</span>
+              <span>Sair do Sistema</span>
             </button>
          </div>
       </div>
