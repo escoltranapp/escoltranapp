@@ -301,7 +301,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
                     className="flex items-center justify-center gap-2 w-full py-5 border border-dashed border-white/5 rounded-2xl text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/5 transition-all group cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-[18px]">add_circle</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest font-mono">Expandir Dataset</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest font-mono">Adicionar Card</span>
                   </button>
                 </div>
               </KanbanColumn>

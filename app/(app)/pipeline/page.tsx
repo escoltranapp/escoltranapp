@@ -41,6 +41,7 @@ export default function PipelinePage() {
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
   const [pipelineSelection, setPipelineSelection] = useState("vendas-matriz")
   const [isNewDealOpen, setIsNewDealOpen] = useState(false)
+  const [preselectedStageId, setPreselectedStageId] = useState<string | undefined>(undefined)
 
   const { data: boardData, isLoading, refetch } = useQuery({
     queryKey: ["pipeline-stages", pipelineSelection],
@@ -143,7 +144,10 @@ export default function PipelinePage() {
             stages={stages} 
             onDealMove={(dealId, oldStage, newStage) => updateDealMutation.mutate({ dealId, newStageId: newStage })}
             onDealClick={(deal) => setSelectedDeal(deal)}
-            onAddDeal={(stageId) => {}}
+            onAddDeal={(stageId) => {
+               setPreselectedStageId(stageId)
+               setIsNewDealOpen(true)
+            }}
           />
         )}
       </div>
@@ -156,9 +160,13 @@ export default function PipelinePage() {
 
       <NewDealDialog 
         open={isNewDealOpen}
-        onOpenChange={setIsNewDealOpen}
+        onOpenChange={(open) => {
+           setIsNewDealOpen(open)
+           if (!open) setPreselectedStageId(undefined)
+        }}
         stages={stages}
         pipelineId={boardData?.pipelineId}
+        defaultStageId={preselectedStageId}
       />
     </div>
   )

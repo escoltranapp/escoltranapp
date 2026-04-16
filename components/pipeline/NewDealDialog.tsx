@@ -11,9 +11,10 @@ interface NewDealDialogProps {
   onOpenChange: (open: boolean) => void
   stages: { id: string, name: string }[]
   pipelineId?: string
+  defaultStageId?: string
 }
 
-export function NewDealDialog({ open, onOpenChange, stages, pipelineId }: NewDealDialogProps) {
+export function NewDealDialog({ open, onOpenChange, stages, pipelineId, defaultStageId }: NewDealDialogProps) {
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
@@ -21,17 +22,20 @@ export function NewDealDialog({ open, onOpenChange, stages, pipelineId }: NewDea
     titulo: "",
     valorEstimado: "",
     contactId: "",
-    stageId: stages[0]?.id || "",
+    stageId: defaultStageId || stages[0]?.id || "",
     prioridade: "MEDIA",
     descricao: ""
   })
 
-  // SYNC DEFAULT STAGE WHEN DATA LOADS
+  // SYNC DEFAULT STAGE WHEN DATA LOADS OR PROP CHANGES
   useEffect(() => {
-    if (stages.length > 0 && !formData.stageId) {
-      setFormData(prev => ({ ...prev, stageId: stages[0].id }))
+    if (open) {
+      setFormData(prev => ({ 
+        ...prev, 
+        stageId: defaultStageId || stages[0]?.id || "" 
+      }))
     }
-  }, [stages])
+  }, [open, defaultStageId, stages])
 
   // FETCH CONTACTS TO SELECT
   const { data: contactsData } = useQuery<any>({
@@ -60,7 +64,14 @@ export function NewDealDialog({ open, onOpenChange, stages, pipelineId }: NewDea
       queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
       toast({ title: "DEAL SINCRONIZADO 🛡️", description: "Nova oportunidade adicionada ao cluster." })
       onOpenChange(false)
-      setFormData({ titulo: "", valorEstimado: "", contactId: "", stageId: stages[0]?.id || "", prioridade: "MEDIA", descricao: "" })
+      setFormData({ 
+        titulo: "", 
+        valorEstimado: "", 
+        contactId: "", 
+        stageId: defaultStageId || stages[0]?.id || "", 
+        prioridade: "MEDIA", 
+        descricao: "" 
+      })
     },
     onError: () => {
       toast({ title: "ERRO DE SINCRONIZAÇÃO", description: "Não foi possível registrar o deal.", variant: "destructive" })
