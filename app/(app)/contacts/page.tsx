@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { cn } from "@/lib/utils"
+import { NewContactDialog } from "@/components/contacts/NewContactDialog"
 
 function KPICard({
   label, value, icon, emoji, color = "#F97316"
@@ -29,6 +30,7 @@ function KPICard({
 
 export default function ContactsPage() {
   const [search, setSearch] = useState("")
+  const [isNewContactOpen, setIsNewContactOpen] = useState(false)
 
   const { data: contactsData, isLoading } = useQuery<any>({
     queryKey: ["contacts"],
@@ -60,9 +62,12 @@ export default function ContactsPage() {
           <p className="text-[#6B7280] text-[15px] mt-2 font-bold tracking-tight">Diretório mestre de entidades processadas Escoltran</p>
         </div>
         
-        <button className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-6 py-4 rounded-xl flex items-center gap-2 hover:scale-105 transition-all shadow-lg shadow-[#F97316]/20 text-[11px] uppercase tracking-widest">
+        <button 
+          onClick={() => setIsNewContactOpen(true)}
+          className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-10 py-4 rounded-xl flex items-center gap-3 hover:scale-105 transition-all shadow-lg shadow-[#F97316]/20 text-[12px] uppercase tracking-[0.2em]"
+        >
           <span className="material-symbols-outlined text-[20px] font-black">person_add</span>
-          <span>Sincronizar Dataset</span>
+          <span>Novo</span>
         </button>
       </header>
 
@@ -140,6 +145,11 @@ export default function ContactsPage() {
             </table>
          </div>
       </div>
+
+      <NewContactDialog 
+        open={isNewContactOpen}
+        onOpenChange={setIsNewContactOpen}
+      />
     </div>
   )
 }

@@ -275,6 +275,7 @@ model Contact {
   dataNascimento DateTime?
   endereco      Json?
   tags          String[]
+  notas         String?
   camposCustom  Json?
   lgpdConsent   Boolean  @default(false)
 

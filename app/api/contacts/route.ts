@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     const {
       nome, sobrenome, email, telefone, empresa, cargo,
       status = "lead", canalOrigem, etapaFunil = "Lead",
-      documento, tags = [], lgpdConsent = false,
+      documento, tags = [], notas, lgpdConsent = false,
     } = body
 
     if (!nome) {
@@ -93,6 +93,7 @@ export async function POST(req: NextRequest) {
         etapaFunil,
         documento,
         tags,
+        notas,
         lgpdConsent,
         userId: session.user.id,
       },
