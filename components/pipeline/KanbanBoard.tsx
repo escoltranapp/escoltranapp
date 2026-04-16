@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
   DndContext,
   DragOverlay,
@@ -61,6 +61,12 @@ export function KanbanColumn({
 export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, onAddDeal }: KanbanBoardProps) {
   const [stages, setStages] = useState<Stage[]>(initialStages)
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
+  
+  // DRAGGABLE SCROLL LOGIC
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [isDraggingScroll, setIsDraggingScroll] = useState(false)
+  const [startX, setStartX] = useState(0)
+  const [scrollLeft, setScrollLeft] = useState(0)
 
   useEffect(() => { setStages(initialStages) }, [initialStages])
 
@@ -112,6 +118,27 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
      setActiveDeal(null)
   }
 
+  // MOUSE DRAG SCROLL HANDLERS
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (activeDeal) return // Don't scroll if dragging a card
+    setIsDraggingScroll(true)
+    setStartX(e.pageX - (scrollContainerRef.current?.offsetLeft || 0))
+    setScrollLeft(scrollContainerRef.current?.scrollLeft || 0)
+  }
+
+  const onMouseLeave = () => { setIsDraggingScroll(false) }
+  const onMouseUp = () => { setIsDraggingScroll(false) }
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingScroll || activeDeal) return
+    e.preventDefault()
+    const x = e.pageX - (scrollContainerRef.current?.offsetLeft || 0)
+    const walk = (x - startX) * 2 // Scroll speed multiplier
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = scrollLeft - walk
+    }
+  }
+
   return (
     <DndContext
       sensors={sensors}
@@ -120,34 +147,48 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-8 h-full min-h-[calc(100vh-320px)] overflow-x-auto pb-8 scrollbar-hide">
+      <div 
+        ref={scrollContainerRef}
+        onMouseDown={onMouseDown}
+        onMouseLeave={onMouseLeave}
+        onMouseUp={onMouseUp}
+        onMouseMove={onMouseMove}
+        className={cn(
+          "flex gap-8 h-full min-h-[calc(100vh-320px)] overflow-x-auto pb-12 transition-colors cursor-grab active:cursor-grabbing",
+          "scrollbar-thin scrollbar-track-[#0A0A0A] scrollbar-thumb-[#F97316]/20 hover:scrollbar-thumb-[#F97316]/40"
+        )}
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#F9731633 #0A0A0A'
+        }}
+      >
         {stages.map((stage) => {
           const totalValue = stage.deals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
 
           return (
-            <div key={stage.id} className="flex flex-col min-w-[320px] max-w-[320px]">
+            <div key={stage.id} className="flex flex-col min-w-[320px] max-w-[320px] select-none">
               {/* STAGE HEADER ESCOLTRAN STYLE */}
               <div className="mb-6 px-1">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(249,115,22,0.6)]" style={{ backgroundColor: stage.color || '#F97316' }} />
-                    <h2 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">
+                    <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_10px_rgba(249,115,22,0.6)]" style={{ backgroundColor: stage.color || '#F97316' }} />
+                    <h2 className="text-[13px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">
                       {stage.name}
                     </h2>
                   </div>
-                  <span className="text-[10px] font-mono font-black text-[#F97316] bg-[#F97316]/10 px-2 py-0.5 rounded-lg border border-[#F97316]/20">
+                  <span className="text-[10px] font-mono font-black text-[#F97316] bg-[#F97316]/10 px-2.5 py-0.5 rounded-lg border border-[#F97316]/20">
                     {stage.deals.length}
                   </span>
                 </div>
                 
-                <div className="text-[15px] font-mono font-black text-[#F2F2F2] tracking-widest pl-5">
+                <div className="text-[16px] font-mono font-black text-[#F2F2F2] tracking-widest pl-5">
                    {totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
                 </div>
               </div>
 
               {/* COLUMN BODY */}
               <KanbanColumn id={stage.id} deals={stage.deals}>
-                <div className="flex flex-col gap-4 min-h-[200px] p-2 rounded-2xl bg-[#121212] border border-white/[0.03]">
+                <div className="flex flex-col gap-4 min-h-[200px] p-2.5 rounded-2xl bg-[#121212] border border-white/[0.04]">
                   <SortableContext id={stage.id} items={stage.deals.map((d) => d.id)} strategy={verticalListSortingStrategy}>
                     {stage.deals.map((deal) => (
                       <DealCard key={deal.id} deal={deal} onClick={() => onDealClick?.(deal)} />

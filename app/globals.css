@@ -72,3 +72,34 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* PREMIUM SCROLLBAR SYSTEM */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 10px;
+  border: 2px solid #0A0A0A;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #F97316;
+}
+
+/* HORIZONTAL KANBAN SCROLLBAR */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(249, 115, 22, 0.2);
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(249, 115, 22, 0.6);
+}
