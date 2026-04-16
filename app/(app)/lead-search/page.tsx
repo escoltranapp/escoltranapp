@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { cn } from "@/lib/utils"
+import { NewContactDialog } from "@/components/contacts/NewContactDialog"
 
 function KPICard({ label, value, icon }: { label: string; value: string | number; icon: string }) {
   return (
@@ -19,11 +20,23 @@ function KPICard({ label, value, icon }: { label: string; value: string | number
 }
 
 export default function LeadSearchPage() {
+  const [isNewContactOpen, setIsNewContactOpen] = useState(false)
+
   return (
     <div className="animate-in fade-in duration-700 pb-24">
-      <header className="mb-12">
-        <h1 className="text-4xl font-black text-white tracking-tighter italic uppercase">Busca de Leads</h1>
-        <p className="text-[#6B7280] text-[15px] mt-2 font-bold tracking-tight">Crawler de alta performance e mineração de dados B2B</p>
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div>
+          <h1 className="text-4xl font-black text-white tracking-tighter italic uppercase">Busca de Leads</h1>
+          <p className="text-[#6B7280] text-[15px] mt-2 font-bold tracking-tight">Crawler de alta performance e mineração de dados B2B</p>
+        </div>
+
+        <button 
+          onClick={() => setIsNewContactOpen(true)}
+          className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-10 py-4 rounded-xl flex items-center gap-3 hover:scale-105 transition-all shadow-lg shadow-[#F97316]/20 text-[12px] uppercase tracking-[0.2em]"
+        >
+          <span className="material-symbols-outlined text-[20px] font-black">person_add</span>
+          <span>Novo</span>
+        </button>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
@@ -38,6 +51,11 @@ export default function LeadSearchPage() {
          <div className="text-[14px] font-black text-[#404040] tracking-widest uppercase mt-6 italic">Inicie uma nova orquestração de busca</div>
          <button className="mt-8 bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-8 py-3 rounded-xl uppercase tracking-widest text-[12px] shadow-lg shadow-[#F97316]/20">Iniciar Crawler</button>
       </div>
+
+      <NewContactDialog 
+        open={isNewContactOpen}
+        onOpenChange={setIsNewContactOpen}
+      />
     </div>
   )
 }
