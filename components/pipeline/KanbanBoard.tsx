@@ -2,159 +2,219 @@
 
 import { useState } from "react"
 import {
-  DndContext, DragEndEvent, DragOverlay,
-  PointerSensor, useSensor, useSensors, closestCorners, useDroppable,
+  DndContext,
+  DragOverlay,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragStartEvent,
+  DragOverEvent,
+  DragEndEvent,
 } from "@dnd-kit/core"
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
-import { DealCard, type Deal } from "./DealCard"
-import { DealDetailSheet } from "./DealDetailSheet"
-import { Plus, MoreHorizontal } from "lucide-react"
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { KanbanColumn } from "./KanbanColumn"
+import { DealCard, Deal } from "./DealCard"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { updateDealStage } from "@/app/(app)/pipeline/actions"
 
-export interface Stage {
+interface Stage {
   id: string
-  name: string
-  color: string
-  order: number
-  deals: Deal[]
+  nome: string
+  ordem: number
+  cor: string
 }
 
 interface KanbanBoardProps {
   stages: Stage[]
-  onDealMove?: (dealId: string, fromStageId: string, toStageId: string) => void
-  onAddDeal?: (stageId: string) => void
-  onAddStage?: () => void
-  onDealClick?: (deal: Deal) => void
+  initialDeals: Deal[]
 }
 
-function DroppableColumn({ stage, children }: { stage: Stage; children: React.ReactNode }) {
-  const { setNodeRef, isOver } = useDroppable({ id: stage.id })
-  return (
-    <div
-      ref={setNodeRef}
-      className={`flex flex-col gap-4 min-h-[150px] transition-all duration-300 rounded-xl p-1 ${isOver ? 'bg-white/[0.03] ring-1 ring-white/10' : ''}`}
-    >
-      {children}
-    </div>
+export function KanbanBoard({ stages, initialDeals }: KanbanBoardProps) {
+  const [deals, setDeals] = useState<Deal[]>(initialDeals)
+  const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
+  const queryClient = useQueryClient()
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   )
-}
 
-export function KanbanBoard({
-  stages: initial, onDealMove, onAddDeal, onAddStage, onDealClick,
-}: KanbanBoardProps) {
-  const [stages, setStages] = useState(initial)
-  const [activeId, setActiveId] = useState<string | null>(null)
-  const [selected, setSelected] = useState<Deal | null>(null)
+  const mutation = useMutation({
+    mutationFn: ({ id, stageId }: { id: string; stageId: string }) =>
+      updateDealStage(id, stageId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deals"] })
+    },
+  })
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }))
-  const stageOf = (dealId: string) => stages.find(s => s.deals.some(d => d.id === dealId))
-
-  const handleDragEnd = (e: DragEndEvent) => {
-    setActiveId(null)
-    const { active, over } = e
-    if (!over) return
-    const from = stageOf(active.id as string)
-    const to = stages.find(s => s.id === over.id) ?? stageOf(over.id as string)
-    if (!from || !to || from.id === to.id) return
-    const deal = from.deals.find(d => d.id === active.id)
-    if (!deal) return
-    setStages(prev => prev.map(s => {
-      if (s.id === from.id) return { ...s, deals: s.deals.filter(d => d.id !== deal.id) }
-      if (s.id === to.id)   return { ...s, deals: [...s.deals, { ...deal, stageId: to.id }] }
-      return s
-    }))
-    onDealMove?.(deal.id, from.id, to.id)
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event
+    const deal = deals.find((d) => d.id === active.id)
+    if (deal) setActiveDeal(deal)
   }
 
-  const activeDeal = activeId ? stages.flatMap(s => s.deals).find(d => d.id === activeId) : null
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event
+    if (!over) return
+
+    const activeId = active.id
+    const overId = over.id
+
+    if (activeId === overId) return
+
+    const activeIndex = deals.findIndex((d) => d.id === activeId)
+    const overIndex = deals.findIndex((d) => d.id === overId)
+
+    const isOverAColumn = stages.some((s) => s.id === overId)
+
+    setDeals((prevDeals) => {
+      const newDeals = [...prevDeals]
+      const activeDeal = newDeals[activeIndex]
+
+      if (isOverAColumn) {
+        activeDeal.stageId = overId as string
+        return arrayMove(newDeals, activeIndex, activeIndex)
+      }
+
+      const overDeal = newDeals[overIndex]
+      if (activeDeal.stageId !== overDeal.stageId) {
+        activeDeal.stageId = overDeal.stageId
+        return arrayMove(newDeals, activeIndex, overIndex)
+      }
+
+      return arrayMove(newDeals, activeIndex, overIndex)
+    })
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over) {
+      setActiveDeal(null)
+      return
+    }
+
+    const deal = deals.find((d) => d.id === active.id)
+    if (deal && deal.stageId !== activeDeal?.stageId) {
+      mutation.mutate({ id: deal.id, stageId: deal.stageId! })
+    }
+
+    setActiveDeal(null)
+  }
+
+  // Predefined colors from the image (Blue, Orange, Purple, Cyan, Green)
+  const getHeaderStyle = (cor: string) => {
+    // Basic mapping for the reference colors
+    const colors: Record<string, { text: string; bg: string; border: string; dot: string }> = {
+      default: { text: "#6366f1", bg: "#1a1a2e", border: "#6366f130", dot: "#6366f1" },
+      PROSPECÇÃO: { text: "#4f46e5", bg: "#11111e", border: "#4f46e540", dot: "#4f46e5" },
+      QUALIFICAÇÃO: { text: "#f59e0b", bg: "#1e1611", border: "#f59e0b40", dot: "#f59e0b" },
+      PROPOSTA: { text: "#8b5cf6", bg: "#1a111e", border: "#8b5cf640", dot: "#8b5cf6" },
+      NEGOCIAÇÃO: { text: "#06b6d4", bg: "#111e1e", border: "#06b6d440", dot: "#06b6d4" },
+      FECHAMENTO: { text: "#10b981", bg: "#111e15", border: "#10b98140", dot: "#10b981" },
+    }
+    return colors[cor.toUpperCase()] || colors.default
+  }
 
   return (
-    <>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={e => setActiveId(e.active.id as string)}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="flex gap-6 items-start pb-8 overflow-x-auto kanban-scrollbar">
-          {stages.map(stage => {
-            const open = stage.deals.filter(d => d.status === "OPEN")
-            const total = open.reduce((s, d) => s + (d.valorEstimado || 0), 0)
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCorners}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="flex gap-6 h-full min-h-[calc(100vh-250px)] overflow-x-auto pb-4 kanban-scrollbar">
+        {stages.map((stage) => {
+          const style = getHeaderStyle(stage.nome)
+          const columnDeals = deals.filter((d) => d.stageId === stage.id)
+          const totalValue = columnDeals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
 
-            return (
-              <div key={stage.id} className="w-[300px] shrink-0 flex flex-col gap-4">
-                {/* COLUMN HEADER */}
-                <div className="kanban-col-header">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="stage-dot" style={{ backgroundColor: stage.color }}></div>
-                      <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/90">
-                        {stage.name}
-                      </span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/5 text-white/40">
-                        {open.length}
-                      </span>
-                    </div>
-                    <button className="text-white/20 hover:text-white transition-colors">
-                      <MoreHorizontal size={14} />
-                    </button>
+          return (
+            <div key={stage.id} className="flex flex-col min-w-[320px] max-w-[320px]">
+              {/* STAGE HEADER BLOCK */}
+              <div className="mb-4">
+                <div 
+                  className="flex items-center justify-between px-4 py-2.5 rounded-[12px] border transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.1)]"
+                  style={{ 
+                    backgroundColor: style.bg, 
+                    borderColor: style.border,
+                    color: style.text 
+                  }}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div 
+                      className="w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]"
+                      style={{ backgroundColor: style.dot }}
+                    />
+                    <h2 className="text-[11px] font-black uppercase tracking-[0.15em]">
+                      {stage.nome}
+                    </h2>
                   </div>
-                  <div className="text-[11px] font-medium text-white/20">
-                     Total: {total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
+                  <div className="bg-black/40 px-2.5 py-1 rounded-full text-[10px] font-bold text-white/40 border border-white/[0.05]">
+                    {columnDeals.length}
                   </div>
                 </div>
-
-                {/* CARDS AREA */}
-                <SortableContext items={open.map(d => d.id)} strategy={verticalListSortingStrategy}>
-                  <DroppableColumn stage={stage}>
-                    {open.map(deal => (
-                      <DealCard
-                        key={deal.id}
-                        deal={deal}
-                        onClick={() => onDealClick ? onDealClick(deal) : setSelected(deal)}
-                      />
-                    ))}
-                    
-                    {/* ADD BUTTON */}
-                    <button
-                      onClick={() => onAddDeal?.(stage.id)}
-                      className="w-full h-[44px] flex items-center justify-center gap-2 rounded-xl border border-dashed border-white/5 bg-transparent text-white/20 hover:text-white/40 hover:bg-white/[0.02] hover:border-white/10 transition-all text-xs font-semibold"
-                    >
-                      <Plus size={14} /> Adicionar Deal
-                    </button>
-                  </DroppableColumn>
-                </SortableContext>
+                
+                {/* SUB-HEADER: Total Value */}
+                <div className="px-1 mt-2 flex justify-between items-center opacity-40">
+                   <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Total</span>
+                   <span className="text-[11px] font-black text-white/80">
+                      R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                   </span>
+                </div>
               </div>
-            )
-          })}
-          
-          {/* NEW COLUMN ACTION */}
-          <button
-            onClick={onAddStage}
-            className="w-[300px] h-[100px] shrink-0 flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/5 bg-white/[0.01] text-white/10 hover:text-white/30 hover:bg-white/[0.03] transition-all group"
-          >
-             <div className="w-10 h-10 rounded-full border border-dashed border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Plus size={18} />
-             </div>
-             <span className="text-[10px] font-bold uppercase tracking-widest">Nova Etapa</span>
-          </button>
-        </div>
 
-        <DragOverlay>
-          {activeId && activeDeal && (
-            <div className="w-[300px] opacity-80 cursor-grabbing">
-              <DealCard deal={activeDeal} />
+              {/* COLUMN BODY */}
+              <KanbanColumn id={stage.id} deals={columnDeals}>
+                <SortableContext
+                  id={stage.id}
+                  items={columnDeals.map((d) => d.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="flex flex-col gap-3 min-h-[150px]">
+                    {columnDeals.map((deal) => (
+                      <DealCard key={deal.id} deal={deal} />
+                    ))}
+                  </div>
+                </SortableContext>
+              </KanbanColumn>
             </div>
-          )}
-        </DragOverlay>
-      </DndContext>
+          )
+        })}
+      </div>
 
-      {!onDealClick && (
-        <DealDetailSheet
-          deal={selected}
-          open={!!selected}
-          onOpenChange={o => !o && setSelected(null)}
-        />
-      )}
-    </>
+      <DragOverlay>
+        {activeDeal ? <DealCard deal={activeDeal} /> : null}
+      </DragOverlay>
+
+      <style jsx global>{`
+        .kanban-scrollbar::-webkit-scrollbar {
+          height: 6px;
+        }
+        .kanban-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .kanban-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 10px;
+        }
+        .kanban-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+      `}</style>
+    </DndContext>
   )
 }
