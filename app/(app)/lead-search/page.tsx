@@ -148,7 +148,7 @@ export default function LeadSearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-12 space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
+    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-8 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
       
       {/* IMMERSIVE AETHER BACKGROUND */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F97316]/5 blur-[120px] rounded-full pointer-events-none" />
@@ -161,7 +161,7 @@ export default function LeadSearchPage() {
            </h1>
            <div className="flex items-center gap-4">
               <div className="h-px w-20 bg-gradient-to-r from-[#F97316] to-transparent" />
-              <p className="text-[#404040] font-mono font-black text-[10px] uppercase tracking-[0.5em]">
+              <p className="text-[#404040] font-mono font-black text-[11px] uppercase tracking-[0.3em]">
                 Encontre leads para alavancar seu negócio
               </p>
            </div>
@@ -184,16 +184,16 @@ export default function LeadSearchPage() {
         </div>
       </header>
 
-      <section className="relative z-10 space-y-12">
+      <section className="relative z-10 space-y-10">
         {/* BUSCA FORM */}
-        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-[48px] p-10 md:p-14 shadow-2xl relative group overflow-hidden">
+        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-[32px] p-8 md:p-10 shadow-2xl relative group overflow-hidden">
              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#F97316]/30 to-transparent" />
              
              <div className="flex items-center gap-6 mb-12">
                 <span className="material-symbols-outlined text-[#F97316] text-[24px] animate-pulse">
                    {activeMode === "google" ? "public" : "database"}
                 </span>
-                <h3 className="text-[14px] font-mono font-black uppercase tracking-[0.4em] text-white">
+                <h3 className="text-[12px] font-mono font-black uppercase tracking-[0.2em] text-white">
                   {activeMode === "google" ? "BUSCAR LEADS NO GOOGLE MAPS" : "BUSCAR EMPRESAS POR CNPJ"}
                 </h3>
              </div>
@@ -202,7 +202,7 @@ export default function LeadSearchPage() {
                 <div className="space-y-10">
                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                       <div className="space-y-3">
-                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">ESTADO</label>
+                         <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">ESTADO</label>
                          <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val, cidade: ""}))}>
                             <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
                                <SelectValue placeholder="Selecione o Estado" />
@@ -214,7 +214,7 @@ export default function LeadSearchPage() {
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">CIDADE</label>
+                        <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">CIDADE</label>
                         <div className="flex gap-2">
                            <Select 
                               disabled={!searchData.estado}
@@ -272,7 +272,7 @@ export default function LeadSearchPage() {
                      </div>
 
                       <div className="space-y-3">
-                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">NICHO DE MERCADO</label>
+                         <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">NICHO DE MERCADO</label>
                          <Select onValueChange={(val) => setSearchData(s => ({...s, nicho: val}))}>
                             <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
                                <SelectValue placeholder="Selecione o Nicho" />
@@ -310,7 +310,7 @@ export default function LeadSearchPage() {
                 <div className="space-y-10">
                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                       <div className="space-y-3">
-                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">ESTADO</label>
+                         <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">ESTADO</label>
                          <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val}))}>
                             <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
                                <SelectValue placeholder="UF" />
@@ -322,7 +322,7 @@ export default function LeadSearchPage() {
                       </div>
 
                       <div className="md:col-span-3 space-y-3">
-                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">CÓDIGO CNAE OU NOME DO SETOR</label>
+                         <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">CÓDIGO CNAE OU NOME DO SETOR</label>
                          <input 
                            type="text" 
                            placeholder="EX: 4711302 OU COMÉRCIO VAREJISTA..."
@@ -347,20 +347,20 @@ export default function LeadSearchPage() {
              { label: "Conversões", value: "158", icon: "trending_up", color: "#A855F7" },
              { label: "Na Semana", value: "78", icon: "event", color: "#3B82F6" }
            ].map((stat, i) => (
-              <div key={i} className="bg-[#0D0D0D] border border-white/[0.03] p-10 rounded-[40px] flex flex-col items-center justify-center gap-6 group hover:border-[#F97316]/20 transition-all">
+              <div key={i} className="bg-[#0D0D0D] border border-white/[0.03] p-8 rounded-[32px] flex flex-col items-center justify-center gap-6 group hover:border-[#F97316]/20 transition-all">
                  <div className="h-14 w-14 rounded-2xl bg-[#1A1A1A] border border-white/5 flex items-center justify-center group-hover:bg-[#F97316]/10 transition-all">
                     <span className="material-symbols-outlined text-[24px]" style={{ color: stat.color }}>{stat.icon}</span>
                  </div>
                  <div className="text-center space-y-1">
                     <div className="text-4xl font-black text-white italic tracking-tighter">{stat.value}</div>
-                    <div className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">{stat.label}</div>
+                    <div className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">{stat.label}</div>
                  </div>
               </div>
            ))}
         </div>
 
         {/* RECENT LEADS - AETHER STYLE */}
-        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-[56px] p-12 space-y-12">
+        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-[32px] p-10 space-y-10">
            <div className="flex items-center justify-between">
               <div className="flex items-center gap-6">
                  <div className="h-10 w-10 rounded-xl bg-[#F97316]/10 border border-[#F97316]/20 flex items-center justify-center">

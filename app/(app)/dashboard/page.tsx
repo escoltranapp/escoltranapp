@@ -37,7 +37,7 @@ function KPICard({
         </div>
 
         <div className="space-y-2 relative z-10 pt-8">
-           <div className="text-[10px] font-mono text-[#404040] uppercase tracking-[0.4em] font-black italic group-hover/card:translate-x-1 transition-transform">{label}</div>
+           <div className="text-[11px] font-mono text-[#404040] uppercase tracking-[0.3em] font-black italic group-hover/card:translate-x-1 transition-transform">{label}</div>
            <div className="text-4xl font-black text-white tracking-tighter font-mono flex items-baseline gap-2">
               {value}
            </div>
@@ -58,7 +58,7 @@ export default function DashboardPage() {
   })
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-12 space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
+    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-8 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
       
       {/* IMMERSIVE AETHER BACKGROUND */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
@@ -78,7 +78,7 @@ export default function DashboardPage() {
                   <h1 className="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
                     Overview <span className="text-[#F97316] drop-shadow-[0_0_20px_rgba(249,115,22,0.4)]">Operacional</span>
                   </h1>
-                  <p className="text-[#404040] text-xs font-mono font-black uppercase tracking-[0.5em] mt-3 flex items-center gap-3">
+                  <p className="text-[#404040] text-[11px] font-mono font-black uppercase tracking-[0.3em] mt-3 flex items-center gap-3">
                      <span className="w-8 h-[1px] bg-[#262626]" />
                      RELATÓRIO SINCRONIZADO: ESCOLTRAN_CLUSTER_AETHER
                   </p>
@@ -99,12 +99,12 @@ export default function DashboardPage() {
         
         {/* GRÁFICO REVENUE (GLASSMORPHIC) */}
         <div className="lg:col-span-8 group relative">
-           <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[40px] blur-3xl opacity-20 transition-opacity group-hover:opacity-40" />
-           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[40px] p-12 flex flex-col shadow-2xl h-full">
+           <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[32px] blur-3xl opacity-20 transition-opacity group-hover:opacity-40" />
+           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] p-12 flex flex-col shadow-2xl h-full">
               <div className="flex items-center justify-between mb-20">
                  <div className="space-y-1">
                     <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">Evolução de Dataset</h3>
-                    <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em]">Historical_Revenue_Sinc</p>
+                    <p className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">Historical_Revenue_Sinc</p>
                  </div>
                  <div className="flex items-center gap-4 bg-[#1A1A1A]/40 px-6 py-3 rounded-full border border-white/[0.04]">
                     <div className="w-2.5 h-2.5 rounded-full bg-[#F97316] shadow-[0_0_15px_rgba(249,115,22,0.8)]" />
@@ -134,8 +134,8 @@ export default function DashboardPage() {
 
         {/* FEED DE ATIVIDADES OPERACIONAIS */}
         <div className="lg:col-span-4 group relative">
-           <div className="absolute -inset-1 bg-gradient-to-br from-white/5 to-transparent rounded-[40px] blur-3xl opacity-10 transition-opacity" />
-           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[40px] p-12 shadow-2xl h-full overflow-hidden">
+           <div className="absolute -inset-1 bg-gradient-to-br from-white/5 to-transparent rounded-[32px] blur-3xl opacity-10 transition-opacity" />
+           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] p-12 shadow-2xl h-full overflow-hidden">
               <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic mb-12 flex items-center gap-4">
                  <span className="material-symbols-outlined text-[#F97316]">history</span>
                  Cluster Log
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                          <p className="text-[14px] text-[#A3A3A3] leading-tight font-medium uppercase italic tracking-tighter">
                             <span className="font-black text-white">{item.user}</span> {item.action} <span className="text-[#F97316] font-black">{item.target}</span>
                          </p>
-                         <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">{item.time} ago</p>
+                         <p className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em]">{item.time} ago</p>
                       </div>
                    </div>
                  ))}
@@ -166,7 +166,7 @@ export default function DashboardPage() {
 
               {/* FOOTER DO FEED */}
               <div className="mt-16 pt-8 border-t border-white/[0.04] text-center">
-                 <button className="text-[10px] font-mono font-black text-[#262626] hover:text-[#F97316] transition-colors uppercase tracking-[0.4em]">Ver Logs Globais</button>
+                 <button className="text-[11px] font-mono font-black text-[#262626] hover:text-[#F97316] transition-colors uppercase tracking-[0.3em]">Ver Logs Globais</button>
               </div>
            </div>
         </div>
