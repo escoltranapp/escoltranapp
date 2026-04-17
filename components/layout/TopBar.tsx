@@ -1,8 +1,4 @@
-"use client"
-
-import { useSession } from "next-auth/react"
 import { cn } from "@/lib/utils"
-import { ThemeToggle } from "./ThemeToggle"
 
 interface TopBarProps {
   onMenuClick: () => void
@@ -23,10 +19,8 @@ export function TopBar({ onMenuClick }: TopBarProps) {
           <span className="material-symbols-outlined text-[24px]">menu</span>
         </button>
 
-        {/* TOPBAR UTILITIES */}
-        <div className="flex-1 flex justify-end items-center">
-            <ThemeToggle />
-        </div>
+        {/* TOPBAR UTILITIES AREA - MINIMALIST */}
+        <div className="flex-1 flex justify-end items-center" />
       </div>
     </header>
   )
