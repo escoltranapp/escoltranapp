@@ -102,7 +102,7 @@ export default function ContactsPage() {
                </div>
                <div>
                   <h1 className="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
-                    Diretório <span className="text-[#F97316] drop-shadow-[0_0_15px_rgba(249,115,22,0.3)]">Mestre</span>
+                    CRM
                   </h1>
                   <p className="text-[#404040] text-xs font-mono font-black uppercase tracking-[0.5em] mt-3 flex items-center gap-3">
                      <span className="w-8 h-[1px] bg-[#262626]" />
