@@ -11,7 +11,8 @@ import {
   isSameMonth, 
   isSameDay, 
   addMonths, 
-  subMonths 
+  subMonths,
+  startOfDay
 } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { cn } from "@/lib/utils"
@@ -38,7 +39,13 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
     setMounted(true)
   }, [])
 
-  if (!mounted) return <div className="h-[600px] bg-surface/50 animate-pulse rounded-[32px] overflow-hidden" />
+  if (!mounted) {
+    return (
+      <div className="h-[600px] bg-surface/50 animate-pulse rounded-[32px] overflow-hidden flex items-center justify-center border border-border">
+         <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      </div>
+    )
+  }
 
   const firstDayOfMonth = startOfMonth(currentDate)
   const lastDayOfMonth = endOfMonth(currentDate)
@@ -89,13 +96,14 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
 
       {/* CALENDAR GRID */}
       <div className="grid grid-cols-7 border-collapse">
-        {days.map((day, idx) => {
+        {days.map((day) => {
           const safeActivities = Array.isArray(activities) ? activities : []
           const dayActivities = safeActivities.filter(a => {
-            if (!a.dueAt) return false
+            if (!a?.dueAt) return false
             const d = new Date(a.dueAt)
             return !isNaN(d.getTime()) && isSameDay(d, day)
           })
+          
           const isTodayDate = isSameDay(day, new Date())
           const isCurrentMonth = isSameMonth(day, currentDate)
 
@@ -132,12 +140,12 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
                       act.status === "DONE" ? "opacity-40 grayscale" : "opacity-100"
                     )}
                     style={{ 
-                      backgroundColor: `${TYPE_COLORS[act.tipo]}10`, 
-                      borderColor: `${TYPE_COLORS[act.tipo]}30`,
-                      color: TYPE_COLORS[act.tipo]
+                      backgroundColor: `${TYPE_COLORS[act.tipo] || '#6B7280'}10`, 
+                      borderColor: `${TYPE_COLORS[act.tipo] || '#6B7280'}30`,
+                      color: TYPE_COLORS[act.tipo] || '#6B7280'
                     }}
                   >
-                    {act.titulo}
+                    {act.titulo || "Sem título"}
                   </button>
                 ))}
                 {dayActivities.length > 3 && (

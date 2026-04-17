@@ -41,26 +41,39 @@ export function ActivityDialog({ open, onOpenChange, activity }: ActivityDialogP
   const [dealId, setDealId] = useState("")
 
   // Fetch contacts and deals for selection
-  const { data: contacts } = useQuery({
+  const { data: contactsRaw } = useQuery({
     queryKey: ["contacts"],
     queryFn: () => fetch("/api/contacts").then(res => res.json())
   })
 
-  const { data: deals } = useQuery({
+  const { data: dealsRaw } = useQuery({
     queryKey: ["deals"],
     queryFn: () => fetch("/api/deals").then(res => res.json())
   })
+
+  const contacts = Array.isArray(contactsRaw) ? contactsRaw : []
+  const deals = Array.isArray(dealsRaw) ? dealsRaw : []
 
   useEffect(() => {
     if (activity) {
       setTipo(activity.tipo)
       setTitulo(activity.titulo)
       setDescricao(activity.descricao || "")
-      setDueAt(activity.dueAt ? new Date(activity.dueAt).toISOString().slice(0, 16) : "")
+      
+      let safeDateStr = ""
+      if (activity.dueAt) {
+        try {
+          const d = new Date(activity.dueAt)
+          if (!isNaN(d.getTime())) {
+            safeDateStr = d.toISOString().slice(0, 16)
+          }
+        } catch (e) {}
+      }
+      setDueAt(safeDateStr)
+      
       setContactId(activity.contactId || "")
       setDealId(activity.dealId || "")
     } else {
-      // Pre-fill from query params
       const qContactId = searchParams.get("contact_id")
       const qDealId = searchParams.get("deal_id")
       if (qContactId) setContactId(qContactId)

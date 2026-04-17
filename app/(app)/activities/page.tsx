@@ -19,35 +19,43 @@ function ActivitiesContent() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingActivity, setEditingActivity] = useState<any>(null)
   
-  // Filters
-  const [statusFilter, setStatusFilter] = useState<string>("ALL")
-  const [typeFilter, setTypeFilter] = useState<string>("ALL")
+  const [statusFilter, setStatusFilter] = useState("OPEN")
+  const [typeFilter, setTypeFilter] = useState("ALL")
 
-  // Check query params to open dialog
   useEffect(() => {
-    if (searchParams.get("new") === "true" || searchParams.get("contact_id") || searchParams.get("deal_id")) {
-      setIsDialogOpen(true)
+    if (searchParams) {
+      const s = searchParams.get("status")
+      const t = searchParams.get("type")
+      if (s) setStatusFilter(s)
+      if (t) setTypeFilter(t)
+      
+      if (searchParams.get("new") === "true") {
+        setIsDialogOpen(true)
+      }
     }
   }, [searchParams])
 
-  const { data: activities = [], isLoading, refetch } = useQuery({
+  const { data: activitiesData, isLoading, refetch } = useQuery({
     queryKey: ["activities", statusFilter, typeFilter],
     queryFn: async () => {
       let url = "/api/activities"
       const params = new URLSearchParams()
-      if (statusFilter !== "ALL") params.append("status", statusFilter)
+      if (statusFilter && statusFilter !== "ALL") params.append("status", statusFilter)
+      
       const res = await fetch(`${url}${params.toString() ? `?${params.toString()}` : ''}`)
-      if (!res.ok) throw new Error("Erro ao carregar atividades")
-      let data = await res.json()
+      if (!res.ok) return []
+      const data = await res.json()
       
       if (!Array.isArray(data)) return []
 
-      if (typeFilter !== "ALL") {
-        data = data.filter((a: any) => a.tipo === typeFilter)
+      if (typeFilter && typeFilter !== "ALL") {
+        return data.filter((a: any) => a?.tipo === typeFilter)
       }
       return data
     }
   })
+
+  const activities = Array.isArray(activitiesData) ? activitiesData : []
 
   const openNew = () => {
     setEditingActivity(null)
@@ -60,79 +68,60 @@ function ActivitiesContent() {
   }
 
   return (
-    <div className="animate-in fade-in duration-700 pb-24">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+    <div className="flex flex-col h-screen bg-[#0A0A0A] text-white overflow-hidden">
+      {/* HEADER */}
+      <div className="p-8 border-b border-white/5 flex items-center justify-between bg-[#0D0D0D]">
         <div>
-          <h1 className="text-4xl font-black text-foreground tracking-tighter italic uppercase underline decoration-primary/30">Painel de Atividades Operacionais</h1>
-          <p className="text-secondary text-[15px] mt-2 font-bold tracking-tight">Timeline Escoltran: Gestão de compromissos e produtividade</p>
+          <h1 className="text-4xl font-black italic tracking-tighter uppercase mb-1">
+             <span className="text-primary underline decoration-primary/30">Módulo</span> Atividades
+          </h1>
+          <p className="text-[10px] font-mono text-secondary uppercase tracking-[0.4em] font-black">Operacional CRM & Follow-ups</p>
         </div>
         
-        <div className="flex items-center gap-3">
-          <div className="bg-surface border border-border p-1 rounded-xl flex gap-1">
-            <button 
-              onClick={() => setViewMode('list')}
-              className={cn(
-                "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
-                viewMode === 'list' ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-secondary hover:text-foreground"
-              )}
-            >
-              <span className="material-symbols-outlined text-[20px]">format_list_bulleted</span>
-            </button>
-            <button 
-              onClick={() => setViewMode('calendar')}
-              className={cn(
-                "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
-                viewMode === 'calendar' ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-secondary hover:text-foreground"
-              )}
-            >
-              <span className="material-symbols-outlined text-[20px]">calendar_month</span>
-            </button>
+        <div className="flex items-center gap-4">
+          <div className="flex p-1 bg-background border border-border rounded-xl">
+             <button 
+               onClick={() => setViewMode('list')}
+               className={cn("px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all", viewMode === 'list' ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-secondary hover:text-foreground")}
+             >Lista</button>
+             <button 
+               onClick={() => setViewMode('calendar')}
+               className={cn("px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all", viewMode === 'calendar' ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-secondary hover:text-foreground")}
+             >Calendário</button>
           </div>
 
           <button 
             onClick={openNew}
-            className="bg-gradient-to-br from-primary to-orange-400 text-white font-black px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition-all shadow-lg shadow-primary/20 text-[11px] uppercase tracking-[0.2em]"
+            className="bg-primary text-white px-6 py-3 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-lg shadow-primary/10 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
           >
-            <span className="material-symbols-outlined text-[20px]">add_task</span>
-            <span>Novo Registro</span>
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            Nova Atividade
           </button>
         </div>
-      </header>
+      </div>
 
-      <ActivityKPIs activities={activities} />
-
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
-        <div className="flex-1 flex gap-2">
-           <select 
-             value={statusFilter}
-             onChange={(e) => setStatusFilter(e.target.value)}
-             className="bg-surface border border-border rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest outline-none focus:border-primary/50 text-foreground appearance-none min-w-[150px]"
-           >
-              <option value="ALL">Todos os Estados</option>
-              <option value="OPEN">Pendentes</option>
-              <option value="DONE">Concluídas</option>
-           </select>
-
-           <select 
-             value={typeFilter}
-             onChange={(e) => setTypeFilter(e.target.value)}
-             className="bg-surface border border-border rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest outline-none focus:border-primary/50 text-foreground appearance-none min-w-[150px]"
-           >
-              <option value="ALL">Todos os Tipos</option>
-              <option value="CALL">Ligações</option>
-              <option value="MEETING">Reuniões</option>
-              <option value="TASK">Tarefas</option>
-              <option value="NOTE">Notas</option>
-              <option value="WHATSAPP">WhatsApp</option>
-              <option value="EMAIL">Emails</option>
-           </select>
+      {/* FILTERS TABS */}
+      <div className="px-8 py-4 border-b border-white/5 flex items-center justify-between bg-surface/30">
+        <div className="flex items-center gap-4">
+           {['OPEN', 'DONE', 'ALL'].map((s) => (
+             <button
+               key={s}
+               onClick={() => setStatusFilter(s)}
+               className={cn(
+                 "text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full transition-all border",
+                 statusFilter === s ? "bg-white text-black border-white" : "text-secondary border-white/5 hover:border-white/20"
+               )}
+             >
+               {s === 'OPEN' ? 'Pendentes' : s === 'DONE' ? 'Concluídas' : 'Todas'}
+             </button>
+           ))}
         </div>
-
-        <button 
-          onClick={() => refetch()}
-          className="px-4 py-2 rounded-xl border border-border bg-surface text-secondary hover:text-primary transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest"
+        
+        <select 
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+          className="bg-background border border-border rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest text-secondary outline-none focus:border-primary transition-all"
         >
-          <span className={cn("material-symbols-outlined text-[18px]", isLoading && "animate-spin")}>sync</span>
           Sincronizar
         </button>
       </div>

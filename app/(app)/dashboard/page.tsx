@@ -186,8 +186,8 @@ export default function DashboardPage() {
                            </span>
                         </div>
                         <div className="flex-1 space-y-1">
-                           <p className="text-[13px] text-white leading-tight font-black uppercase italic tracking-tighter">
-                              {item.titulo}
+                           <p className="text-[13px] font-bold text-foreground truncate italic">
+                              {item?.titulo || "Sem título"}
                            </p>
                            <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.2em]">
                               {(() => {

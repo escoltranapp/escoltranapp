@@ -170,13 +170,13 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                     {item.contact && (
                       <div className="flex items-center gap-1 text-[10px] text-primary font-black uppercase tracking-tighter">
                         <span className="material-symbols-outlined text-[14px]">person</span>
-                        {item.contact.nome}
+                        {item.contact?.nome}
                       </div>
                     )}
                     {item.deal && (
                       <div className="flex items-center gap-1 text-[10px] text-[#A855F7] font-black uppercase tracking-tighter">
                         <span className="material-symbols-outlined text-[14px]">attach_money</span>
-                        {item.deal.titulo}
+                        {item.deal?.titulo}
                       </div>
                     )}
                   </div>
