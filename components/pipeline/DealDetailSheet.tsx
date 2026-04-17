@@ -53,9 +53,17 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
-      toast({ title: variables.status === "WON" ? "DEAL VENCIDO" : "DEAL PERDIDO", description: "O dataset foi atualizado." })
+      toast({ 
+        title: variables.status === "WON" ? "DEAL VENCIDO" : "DEAL PERDIDO", 
+        description: variables.status === "WON" ? "Redirecionando para atividades..." : "O dataset foi atualizado." 
+      })
       onOpenChange(false)
       setLossReasonOpen(false)
+
+      if (variables.status === "WON") {
+        // Redireciona para atividades para facilitar o follow-up do novo cliente
+        router.push("/activities")
+      }
     },
   })
 

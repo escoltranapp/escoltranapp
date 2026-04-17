@@ -53,45 +53,45 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
 
   // 2. Trava de 'mounted' condicional APENAS no retorno do JSX
   if (!mounted) return (
-    <div className="bg-[#0D0D0D] border border-white/5 rounded-[40px] h-[600px] animate-pulse p-8">
-       <div className="w-1/3 h-10 bg-white/5 rounded-2xl mb-12" />
-       <div className="grid grid-cols-7 gap-4">
-          {[1,2,3,4,5,6,7,8,9,10,11,12,13,14].map(i => <div key={i} className="h-32 bg-white/[0.03] rounded-3xl" />)}
+    <div className="bg-[#0D0D0D] border border-white/5 rounded-[32px] h-[500px] animate-pulse p-6">
+       <div className="w-1/4 h-8 bg-white/5 rounded-xl mb-10" />
+       <div className="grid grid-cols-7 gap-3">
+          {[1,2,3,4,5,6,7].map(i => <div key={i} className="h-20 bg-white/[0.03] rounded-2xl" />)}
        </div>
     </div>
   )
 
   return (
-    <div className="bg-[#0D0D0D] border border-white/5 rounded-[40px] overflow-hidden shadow-2xl animate-in fade-in duration-700">
+    <div className="bg-[#0D0D0D] border border-white/5 rounded-[32px] overflow-hidden shadow-2xl animate-in fade-in duration-700">
       {/* CALENDAR HEADER */}
-      <div className="p-10 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+      <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
         <div>
-          <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter">
+          <h3 className="text-xl font-black text-white italic uppercase tracking-tighter">
             {format(currentDate, "MMMM yyyy", { locale: ptBR })}
           </h3>
-          <p className="text-[10px] font-mono text-secondary uppercase tracking-[0.4em] mt-1 font-black underline decoration-primary/30">
+          <p className="text-[9px] font-mono text-secondary uppercase tracking-[0.3em] mt-1 font-black">
             Timeline de Engajamento
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={goToday}
-            className="px-6 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:border-primary/50 transition-all mr-2"
+            className="px-4 py-2 rounded-lg border border-white/10 text-[9px] font-black uppercase tracking-widest hover:bg-primary/10 transition-all"
           >
             Hoje
           </button>
           <button
             onClick={prevMonth}
-            className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all text-white"
+            className="w-10 h-10 rounded-lg border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all text-white"
           >
-            <span className="material-symbols-outlined text-[24px]">chevron_left</span>
+            <span className="material-symbols-outlined text-[20px]">chevron_left</span>
           </button>
           <button
             onClick={nextMonth}
-            className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all text-white"
+            className="w-10 h-10 rounded-lg border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all text-white"
           >
-            <span className="material-symbols-outlined text-[24px]">chevron_right</span>
+            <span className="material-symbols-outlined text-[20px]">chevron_right</span>
           </button>
         </div>
       </div>
@@ -101,7 +101,7 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
         {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((day) => (
           <div
             key={day}
-            className="py-6 text-center text-[11px] font-black uppercase tracking-[0.3em] text-secondary italic border-r border-white/5 last:border-r-0 bg-white/[0.02]"
+            className="py-3 text-center text-[9px] font-black uppercase tracking-[0.2em] text-secondary italic border-r border-white/5 last:border-r-0 bg-white/[0.02]"
           >
             {day}
           </div>
@@ -124,24 +124,24 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
             <div
               key={day.toISOString()}
               className={cn(
-                "min-h-[160px] p-4 border-r border-b border-white/5 group transition-all relative overflow-hidden",
+                "min-h-[100px] p-3 border-r border-b border-white/5 group transition-all relative overflow-hidden",
                 !isCurrentMonth && "bg-black/40 opacity-20",
                 isTodayDate && "bg-primary/[0.03]"
               )}
             >
-              <div className="flex justify-between items-start mb-4">
+              <div className="flex justify-between items-start mb-2">
                 <span
                   className={cn(
-                    "text-[14px] font-black font-mono tracking-tighter w-8 h-8 flex items-center justify-center rounded-xl transition-all",
+                    "text-[11px] font-black font-mono tracking-tighter w-6 h-6 flex items-center justify-center rounded-lg transition-all",
                     isTodayDate
-                      ? "bg-primary text-black shadow-lg shadow-primary/30 scale-110"
+                      ? "bg-primary text-black shadow-lg shadow-primary/30"
                       : "text-secondary group-hover:text-white"
                   )}
                 >
                   {format(day, "d")}
                 </span>
                 {dayActivities.length > 0 && (
-                  <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_#F97316]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                 )}
               </div>
 
