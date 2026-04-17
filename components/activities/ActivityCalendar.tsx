@@ -1,18 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { 
-  format, 
-  startOfMonth, 
-  endOfMonth, 
-  startOfWeek, 
-  endOfWeek, 
-  eachDayOfInterval, 
-  isSameMonth, 
-  isSameDay, 
-  addMonths, 
+import { useState } from "react"
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  isSameMonth,
+  isSameDay,
+  addMonths,
   subMonths,
-  startOfDay
 } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { cn } from "@/lib/utils"
@@ -23,29 +22,16 @@ interface ActivityCalendarProps {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  CALL: '#3B82F6',
-  MEETING: '#8B5CF6',
-  TASK: '#F59E0B',
-  NOTE: '#6B7280',
-  WHATSAPP: '#22C55E',
-  EMAIL: '#EC4899',
+  CALL: "#3B82F6",
+  MEETING: "#8B5CF6",
+  TASK: "#F59E0B",
+  NOTE: "#6B7280",
+  WHATSAPP: "#22C55E",
+  EMAIL: "#EC4899",
 }
 
 export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) {
-  const [mounted, setMounted] = useState(false)
-  const [currentDate, setCurrentDate] = useState(new Date())
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return (
-      <div className="h-[600px] bg-surface/50 animate-pulse rounded-[32px] overflow-hidden flex items-center justify-center border border-border">
-         <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-      </div>
-    )
-  }
+  const [currentDate, setCurrentDate] = useState(() => new Date())
 
   const firstDayOfMonth = startOfMonth(currentDate)
   const lastDayOfMonth = endOfMonth(currentDate)
@@ -54,9 +40,11 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
 
   const days = eachDayOfInterval({ start: startDate, end: endDate })
 
-  const nextMonth = () => setCurrentDate(addMonths(currentDate, 1))
-  const prevMonth = () => setCurrentDate(subMonths(currentDate, 1))
+  const nextMonth = () => setCurrentDate((d) => addMonths(d, 1))
+  const prevMonth = () => setCurrentDate((d) => subMonths(d, 1))
   const goToday = () => setCurrentDate(new Date())
+
+  const safeActivities = Array.isArray(activities) ? activities : []
 
   return (
     <div className="bg-surface border border-border rounded-[32px] overflow-hidden shadow-2xl animate-in fade-in duration-500">
@@ -66,20 +54,28 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
           <h3 className="text-2xl font-black text-foreground italic uppercase tracking-tighter">
             {format(currentDate, "MMMM yyyy", { locale: ptBR })}
           </h3>
-          <p className="text-[10px] font-mono text-secondary uppercase tracking-[0.3em] mt-1">Timeline Operacional</p>
+          <p className="text-[10px] font-mono text-secondary uppercase tracking-[0.3em] mt-1">
+            Timeline Operacional
+          </p>
         </div>
-        
+
         <div className="flex items-center gap-2">
-          <button 
+          <button
             onClick={goToday}
             className="px-4 py-2 rounded-xl border border-border text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:border-primary/50 transition-all mr-2"
           >
             Hoje
           </button>
-          <button onClick={prevMonth} className="w-10 h-10 rounded-xl border border-border flex items-center justify-center hover:bg-foreground/[0.05] transition-all">
+          <button
+            onClick={prevMonth}
+            className="w-10 h-10 rounded-xl border border-border flex items-center justify-center hover:bg-foreground/[0.05] transition-all"
+          >
             <span className="material-symbols-outlined text-[20px]">chevron_left</span>
           </button>
-          <button onClick={nextMonth} className="w-10 h-10 rounded-xl border border-border flex items-center justify-center hover:bg-foreground/[0.05] transition-all">
+          <button
+            onClick={nextMonth}
+            className="w-10 h-10 rounded-xl border border-border flex items-center justify-center hover:bg-foreground/[0.05] transition-all"
+          >
             <span className="material-symbols-outlined text-[20px]">chevron_right</span>
           </button>
         </div>
@@ -87,8 +83,11 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
 
       {/* DAYS OF WEEK */}
       <div className="grid grid-cols-7 border-b border-border">
-        {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
-          <div key={day} className="py-4 text-center text-[10px] font-black uppercase tracking-[0.2em] text-secondary italic border-r border-border last:border-r-0 bg-foreground/[0.02]">
+        {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((day) => (
+          <div
+            key={day}
+            className="py-4 text-center text-[10px] font-black uppercase tracking-[0.2em] text-secondary italic border-r border-border last:border-r-0 bg-foreground/[0.02]"
+          >
             {day}
           </div>
         ))}
@@ -97,39 +96,40 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
       {/* CALENDAR GRID */}
       <div className="grid grid-cols-7 border-collapse">
         {days.map((day) => {
-          const safeActivities = Array.isArray(activities) ? activities : []
-          const dayActivities = safeActivities.filter(a => {
+          const dayActivities = safeActivities.filter((a) => {
             if (!a?.dueAt) return false
             const d = new Date(a.dueAt)
             return !isNaN(d.getTime()) && isSameDay(d, day)
           })
-          
+
           const isTodayDate = isSameDay(day, new Date())
           const isCurrentMonth = isSameMonth(day, currentDate)
 
           return (
-            <div 
-              key={day.toString()} 
+            <div
+              key={day.toISOString()}
               className={cn(
                 "min-h-[140px] p-3 border-r border-b border-border group transition-all relative overflow-hidden",
                 !isCurrentMonth && "bg-foreground/[0.01] opacity-20",
                 isTodayDate && "bg-primary/[0.02]"
               )}
             >
-              {/* DATE NUMBER */}
               <div className="flex justify-between items-start mb-2">
-                <span className={cn(
-                  "text-[12px] font-black font-mono tracking-tighter w-7 h-7 flex items-center justify-center rounded-lg transition-all",
-                  isTodayDate ? "bg-primary text-white shadow-lg shadow-primary/30" : "text-secondary group-hover:text-foreground"
-                )}>
+                <span
+                  className={cn(
+                    "text-[12px] font-black font-mono tracking-tighter w-7 h-7 flex items-center justify-center rounded-lg transition-all",
+                    isTodayDate
+                      ? "bg-primary text-white shadow-lg shadow-primary/30"
+                      : "text-secondary group-hover:text-foreground"
+                  )}
+                >
                   {format(day, "d")}
                 </span>
                 {dayActivities.length > 0 && (
-                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                 )}
               </div>
 
-              {/* ACTIVITY BLOCKS */}
               <div className="space-y-1">
                 {dayActivities.slice(0, 3).map((act) => (
                   <button
@@ -139,10 +139,10 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
                       "w-full text-left px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-tighter truncate border transition-all hover:scale-105 active:scale-95",
                       act.status === "DONE" ? "opacity-40 grayscale" : "opacity-100"
                     )}
-                    style={{ 
-                      backgroundColor: `${TYPE_COLORS[act.tipo] || '#6B7280'}10`, 
-                      borderColor: `${TYPE_COLORS[act.tipo] || '#6B7280'}30`,
-                      color: TYPE_COLORS[act.tipo] || '#6B7280'
+                    style={{
+                      backgroundColor: `${TYPE_COLORS[act.tipo] ?? "#6B7280"}10`,
+                      borderColor: `${TYPE_COLORS[act.tipo] ?? "#6B7280"}30`,
+                      color: TYPE_COLORS[act.tipo] ?? "#6B7280",
                     }}
                   >
                     {act.titulo || "Sem título"}
@@ -154,9 +154,10 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
                   </div>
                 )}
               </div>
-              
-              {/* CURRENT DAY ACCENT */}
-              {isTodayDate && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary" />}
+
+              {isTodayDate && (
+                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary" />
+              )}
             </div>
           )
         })}

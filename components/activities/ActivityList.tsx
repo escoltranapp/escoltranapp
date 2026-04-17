@@ -3,7 +3,6 @@
 import { format, isToday, isTomorrow, isBefore, isAfter, startOfDay } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { cn } from "@/lib/utils"
-import { useState, useEffect } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
 
@@ -13,31 +12,29 @@ interface ActivityListProps {
 }
 
 const TYPE_ICONS: Record<string, string> = {
-  CALL: 'call',
-  MEETING: 'groups',
-  TASK: 'task_alt',
-  NOTE: 'description',
-  WHATSAPP: 'chat',
-  EMAIL: 'mail',
+  CALL: "call",
+  MEETING: "groups",
+  TASK: "task_alt",
+  NOTE: "description",
+  WHATSAPP: "chat",
+  EMAIL: "mail",
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  CALL: '#3B82F6',
-  MEETING: '#8B5CF6',
-  TASK: '#F59E0B',
-  NOTE: '#6B7280',
-  WHATSAPP: '#22C55E',
-  EMAIL: '#EC4899',
+  CALL: "#3B82F6",
+  MEETING: "#8B5CF6",
+  TASK: "#F59E0B",
+  NOTE: "#6B7280",
+  WHATSAPP: "#22C55E",
+  EMAIL: "#EC4899",
 }
 
 export function ActivityList({ activities, onEdit }: ActivityListProps) {
-  const [mounted, setMounted] = useState(false)
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
-  // All hooks must be declared before any conditional returns (Rules of Hooks)
   const toggleMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string, status: string }) => {
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const res = await fetch(`/api/activities/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -48,7 +45,7 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["activities"] })
-    }
+    },
   })
 
   const deleteMutation = useMutation({
@@ -60,17 +57,11 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["activities"] })
       toast({ title: "Atividade excluída" })
-    }
+    },
   })
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return <div className="h-96 bg-surface/50 animate-pulse rounded-[32px] overflow-hidden" />
-
   const now = startOfDay(new Date())
-  
+
   const safeDate = (dateStr: any) => {
     if (!dateStr) return null
     const d = new Date(dateStr)
@@ -78,31 +69,63 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
   }
 
   const groups = [
-    { title: 'Atrasadas', items: activities.filter(a => {
-      const d = safeDate(a.dueAt)
-      return a.status === "OPEN" && d && isBefore(d, now)
-    }), color: '#EF4444' },
-    { title: 'Para Hoje', items: activities.filter(a => {
-      const d = safeDate(a.dueAt)
-      return a.status === "OPEN" && d && isToday(d)
-    }), color: '#3B82F6' },
-    { title: 'Amanhã', items: activities.filter(a => {
-      const d = safeDate(a.dueAt)
-      return a.status === "OPEN" && d && isTomorrow(d)
-    }), color: '#F59E0B' },
-    { title: 'Próximas', items: activities.filter(a => {
-      const d = safeDate(a.dueAt)
-      return a.status === "OPEN" && d && isAfter(startOfDay(d), startOfDay(new Date(now.getTime() + 86400000)))
-    }), color: '#8B5CF6' },
-    { title: 'Sem Data', items: activities.filter(a => a.status === "OPEN" && !safeDate(a.dueAt)), color: '#6B7280' },
-    { title: 'Concluídas', items: activities.filter(a => a.status === "DONE"), color: '#22C55E' },
-  ].filter(g => g.items.length > 0)
+    {
+      title: "Atrasadas",
+      items: activities.filter((a) => {
+        const d = safeDate(a.dueAt)
+        return a.status === "OPEN" && d && isBefore(d, now)
+      }),
+      color: "#EF4444",
+    },
+    {
+      title: "Para Hoje",
+      items: activities.filter((a) => {
+        const d = safeDate(a.dueAt)
+        return a.status === "OPEN" && d && isToday(d)
+      }),
+      color: "#3B82F6",
+    },
+    {
+      title: "Amanhã",
+      items: activities.filter((a) => {
+        const d = safeDate(a.dueAt)
+        return a.status === "OPEN" && d && isTomorrow(d)
+      }),
+      color: "#F59E0B",
+    },
+    {
+      title: "Próximas",
+      items: activities.filter((a) => {
+        const d = safeDate(a.dueAt)
+        return (
+          a.status === "OPEN" &&
+          d &&
+          isAfter(startOfDay(d), startOfDay(new Date(now.getTime() + 86400000)))
+        )
+      }),
+      color: "#8B5CF6",
+    },
+    {
+      title: "Sem Data",
+      items: activities.filter((a) => a.status === "OPEN" && !safeDate(a.dueAt)),
+      color: "#6B7280",
+    },
+    {
+      title: "Concluídas",
+      items: activities.filter((a) => a.status === "DONE"),
+      color: "#22C55E",
+    },
+  ].filter((g) => g.items.length > 0)
 
   if (activities.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 bg-surface border border-border rounded-[32px] border-dashed">
-         <span className="material-symbols-outlined text-[48px] text-secondary mb-4 opacity-20">inventory_2</span>
-         <p className="text-secondary font-black uppercase tracking-widest text-[11px]">Nenhuma atividade registrada</p>
+        <span className="material-symbols-outlined text-[48px] text-secondary mb-4 opacity-20">
+          inventory_2
+        </span>
+        <p className="text-secondary font-black uppercase tracking-widest text-[11px]">
+          Nenhuma atividade registrada
+        </p>
       </div>
     )
   }
@@ -113,14 +136,18 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
         <div key={group.title} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex items-center gap-4 mb-6 ml-2">
             <div className="w-1.5 h-4 rounded-full" style={{ backgroundColor: group.color }} />
-            <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-foreground italic">{group.title}</h3>
-            <span className="text-[10px] font-mono text-secondary px-2 border border-border rounded-full">{group.items.length}</span>
+            <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-foreground italic">
+              {group.title}
+            </h3>
+            <span className="text-[10px] font-mono text-secondary px-2 border border-border rounded-full">
+              {group.items.length}
+            </span>
           </div>
 
           <div className="bg-surface border border-border rounded-[28px] overflow-hidden shadow-2xl">
             {group.items.map((item, i) => (
-              <div 
-                key={item.id} 
+              <div
+                key={item.id}
                 className={cn(
                   "flex items-center gap-6 p-6 border-b border-border hover:bg-foreground/[0.02] transition-all group",
                   i === group.items.length - 1 && "border-b-0",
@@ -128,39 +155,62 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                 )}
               >
                 {/* STATUS CHECKBOX */}
-                <button 
-                  onClick={() => toggleMutation.mutate({ id: item.id, status: item.status === "OPEN" ? "DONE" : "OPEN" })}
+                <button
+                  onClick={() =>
+                    toggleMutation.mutate({
+                      id: item.id,
+                      status: item.status === "OPEN" ? "DONE" : "OPEN",
+                    })
+                  }
                   className={cn(
                     "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all",
-                    item.status === "DONE" 
-                      ? "bg-primary border-primary text-white" 
+                    item.status === "DONE"
+                      ? "bg-primary border-primary text-white"
                       : "border-border hover:border-primary/50"
                   )}
                 >
-                  {item.status === "DONE" && <span className="material-symbols-outlined text-[16px] font-black">check</span>}
+                  {item.status === "DONE" && (
+                    <span className="material-symbols-outlined text-[16px] font-black">check</span>
+                  )}
                 </button>
 
                 {/* ICON */}
-                <div 
+                <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110"
-                  style={{ backgroundColor: `${TYPE_COLORS[item.tipo]}15`, border: `1px solid ${TYPE_COLORS[item.tipo]}30` }}
+                  style={{
+                    backgroundColor: `${TYPE_COLORS[item.tipo] ?? "#6B7280"}15`,
+                    border: `1px solid ${TYPE_COLORS[item.tipo] ?? "#6B7280"}30`,
+                  }}
                 >
-                  <span className="material-symbols-outlined text-[20px]" style={{ color: TYPE_COLORS[item.tipo] }}>
-                    {TYPE_ICONS[item.tipo]}
+                  <span
+                    className="material-symbols-outlined text-[20px]"
+                    style={{ color: TYPE_COLORS[item.tipo] ?? "#6B7280" }}
+                  >
+                    {TYPE_ICONS[item.tipo] ?? "event_note"}
                   </span>
                 </div>
 
                 {/* CONTENT */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1">
-                    <h4 className={cn(
-                      "text-[14px] font-bold text-foreground truncate italic",
-                      item.status === "DONE" && "line-through"
-                    )}>{item.titulo}</h4>
+                    <h4
+                      className={cn(
+                        "text-[14px] font-bold text-foreground truncate italic",
+                        item.status === "DONE" && "line-through"
+                      )}
+                    >
+                      {item.titulo}
+                    </h4>
                     {(() => {
                       const d = safeDate(item.dueAt)
-                      return d && isBefore(d, now) && item.status === "OPEN" && (
-                        <span className="px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 text-[8px] font-black font-mono uppercase tracking-widest border border-red-500/20">Atrasado</span>
+                      return (
+                        d &&
+                        isBefore(d, now) &&
+                        item.status === "OPEN" && (
+                          <span className="px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 text-[8px] font-black font-mono uppercase tracking-widest border border-red-500/20">
+                            Atrasado
+                          </span>
+                        )
                       )
                     })()}
                   </div>
@@ -185,37 +235,38 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
 
                 {/* ACTIONS */}
                 <div className="flex items-center gap-2">
-                   <div className="text-right mr-4 hidden md:block">
-                      <div className="text-[10px] font-mono font-black text-foreground uppercase tracking-widest">
-                        {(() => {
-                           const d = safeDate(item.dueAt)
-                           return d ? format(d, "HH:mm") : '--:--'
-                        })()}
-                      </div>
-                      <div className="text-[9px] font-bold text-secondary uppercase tracking-tighter">
-                        {(() => {
-                           const d = safeDate(item.dueAt)
-                           return d ? format(d, "dd MMM", { locale: ptBR }) : 'Sem data'
-                        })()}
-                      </div>
-                   </div>
-                   
-                   <div className="flex items-center gap-1 opacity-10 group-hover:opacity-100 transition-opacity">
-                      <button 
-                        onClick={() => onEdit(item)}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center bg-background border border-border hover:border-primary/50 text-secondary hover:text-primary transition-all"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">edit</span>
-                      </button>
-                      <button 
-                        onClick={() => {
-                          if (confirm("Deseja excluir esta atividade?")) deleteMutation.mutate(item.id)
-                        }}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center bg-background border border-border hover:border-red-500/50 text-secondary hover:text-red-500 transition-all"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">delete</span>
-                      </button>
-                   </div>
+                  <div className="text-right mr-4 hidden md:block">
+                    <div className="text-[10px] font-mono font-black text-foreground uppercase tracking-widest">
+                      {(() => {
+                        const d = safeDate(item.dueAt)
+                        return d ? format(d, "HH:mm") : "--:--"
+                      })()}
+                    </div>
+                    <div className="text-[9px] font-bold text-secondary uppercase tracking-tighter">
+                      {(() => {
+                        const d = safeDate(item.dueAt)
+                        return d ? format(d, "dd MMM", { locale: ptBR }) : "Sem data"
+                      })()}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1 opacity-10 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => onEdit(item)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center bg-background border border-border hover:border-primary/50 text-secondary hover:text-primary transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">edit</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (confirm("Deseja excluir esta atividade?"))
+                          deleteMutation.mutate(item.id)
+                      }}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center bg-background border border-border hover:border-red-500/50 text-secondary hover:text-red-500 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
