@@ -43,7 +43,7 @@ export function AppSidebar({ isOpen = true, onClose }: AppSidebarProps) {
         
         {/* 1. FIXED HEADER */}
         <div className="p-8 pb-10">
-          <div className="flex items-center gap-4 group">
+          <Link href="/dashboard" className="flex items-center gap-4 group cursor-pointer active:scale-95 transition-transform">
             <div className="w-12 h-12 bg-gradient-to-br from-[#F97316] to-[#FB923C] rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(249,115,22,0.3)] group-hover:rotate-12 transition-transform duration-500">
               <span className="text-2xl font-black text-white italic">E</span>
             </div>
@@ -54,7 +54,7 @@ export function AppSidebar({ isOpen = true, onClose }: AppSidebarProps) {
                  <span className="text-[9px] font-mono font-black text-secondary uppercase tracking-[0.3em]">CRM System</span>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* 2. SCROLLABLE NAVIGATION */}
