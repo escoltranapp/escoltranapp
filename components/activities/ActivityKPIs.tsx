@@ -12,12 +12,18 @@ export function ActivityKPIs({ activities }: ActivityKPIsProps) {
   const tomorrow = new Date(now)
   tomorrow.setDate(tomorrow.getDate() + 1)
   
-  const pending = activities.filter(a => a.status === "OPEN")
-  const overdue = pending.filter(a => a.dueAt && new Date(a.dueAt) < now)
+  const safeActivities = Array.isArray(activities) ? activities : []
+  
+  const pending = safeActivities.filter(a => a.status === "OPEN")
+  const overdue = pending.filter(a => {
+    if (!a.dueAt) return false
+    const d = new Date(a.dueAt)
+    return !isNaN(d.getTime()) && d < now
+  })
   const today = pending.filter(a => {
     if (!a.dueAt) return false
     const d = new Date(a.dueAt)
-    return d >= now && d < tomorrow
+    return !isNaN(d.getTime()) && d >= now && d < tomorrow
   })
 
   const stats = [

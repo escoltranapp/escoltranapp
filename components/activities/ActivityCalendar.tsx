@@ -83,7 +83,12 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
       {/* CALENDAR GRID */}
       <div className="grid grid-cols-7 border-collapse">
         {days.map((day, idx) => {
-          const dayActivities = activities.filter(a => a.dueAt && isSameDay(new Date(a.dueAt), day))
+          const safeActivities = Array.isArray(activities) ? activities : []
+          const dayActivities = safeActivities.filter(a => {
+            if (!a.dueAt) return false
+            const d = new Date(a.dueAt)
+            return !isNaN(d.getTime()) && isSameDay(d, day)
+          })
           const isTodayDate = isSameDay(day, new Date())
           const isCurrentMonth = isSameMonth(day, currentDate)
 
