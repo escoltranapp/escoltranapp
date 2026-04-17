@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { formatCurrency, cn } from "@/lib/utils"
@@ -7,44 +5,40 @@ import { useTodayActivities } from "@/hooks/useTodayActivities"
 import { format } from "date-fns"
 
 function KPICard({ 
-  label, value, icon, trend, color = "#F97316" 
+  label, value, icon, subtext, trend, color = "#F97316" 
 }: { 
-  label: string; value: string | number; icon: string; trend?: string; color?: string 
+  label: string; value: string | number; icon: string; subtext?: string; trend?: string; color?: string 
 }) {
   return (
-    <div className="relative group overflow-hidden h-full">
-      <div className="absolute -inset-0.5 bg-gradient-to-br from-white/10 to-transparent rounded-[32px] opacity-0 group-hover:opacity-100 transition-opacity blur-sm" />
-      <div className="relative bg-[#1A1A1A]/40 backdrop-blur-3xl border border-white/[0.04] rounded-[32px] p-8 hover:bg-[#1A1A1A]/60 transition-all shadow-2xl flex flex-col justify-between h-full group/card">
-        {/* RADIAL GLOW */}
-        <div 
-          className="absolute -top-10 -right-10 w-32 h-32 blur-[60px] opacity-20 group-hover/card:opacity-40 transition-opacity rounded-full" 
-          style={{ backgroundColor: color }}
-        />
-
-        <div className="flex items-start justify-between">
-          <div 
-            className="w-12 h-12 rounded-xl flex items-center justify-center border transition-all duration-500 shadow-xl"
-            style={{ 
-              backgroundColor: `${color}10`,
-              borderColor: `${color}30`,
-              boxShadow: `0 0 15px ${color}10`
-            }}
-          >
-            <span className="material-symbols-outlined text-[24px]" style={{ color }}>{icon}</span>
-          </div>
-          {trend && (
-             <div className="px-4 py-1.5 rounded-full text-[10px] font-black font-mono tracking-widest text-white bg-white/[0.03] border border-white/[0.06] group-hover/card:bg-[#F97316]/20 group-hover/card:border-[#F97316]/30 transition-all uppercase">
-                {trend}
-             </div>
+    <div className="relative bg-[#0A0A0A]/60 backdrop-blur-xl border border-white/[0.04] rounded-[24px] p-6 flex flex-col justify-between group hover:bg-[#0A0A0A]/80 transition-all">
+      <div className="flex items-start justify-between">
+        <div className="space-y-1">
+          <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">{label}</p>
+          <h3 className="text-2xl font-black text-white tracking-tighter">{value}</h3>
+          {(subtext || trend) && (
+            <p className="text-[10px] font-mono font-black flex items-center gap-1.5 mt-2">
+              <span className={cn(trend?.startsWith('+') ? "text-emerald-500" : "text-[#404040]")}>{trend}</span>
+              <span className="text-[#404040] uppercase">{subtext}</span>
+            </p>
           )}
         </div>
-
-        <div className="space-y-2 relative z-10 pt-8">
-           <div className="text-[11px] font-mono text-[#404040] uppercase tracking-[0.3em] font-black italic group-hover/card:translate-x-1 transition-transform">{label}</div>
-           <div className="text-3xl font-black text-white tracking-tighter font-mono flex items-baseline gap-2">
-              {value}
-           </div>
+        <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center">
+          <span className="material-symbols-outlined text-[20px] opacity-40 group-hover:opacity-100 transition-opacity" style={{ color }}>{icon}</span>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function SectionCard({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-[#0A0A0A]/40 border border-white/[0.04] rounded-[24px] p-6 flex flex-col h-full min-h-[400px]">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-[12px] font-black text-white uppercase tracking-widest italic">{title}</h3>
+        <span className="material-symbols-outlined text-[18px] text-[#404040]">{icon}</span>
+      </div>
+      <div className="flex-1">
+        {children}
       </div>
     </div>
   )
@@ -57,7 +51,7 @@ export default function DashboardPage() {
     setMounted(true)
   }, [])
 
-  const { data: stats } = useQuery({
+  const { data: metrics, isLoading: isMetricsLoading } = useQuery({
     queryKey: ["dashboard-metrics"],
     queryFn: async () => {
       const res = await fetch("/api/dashboard/metrics")
@@ -68,9 +62,7 @@ export default function DashboardPage() {
 
   const { data: todayActivities = [], isLoading: isActivitiesLoading } = useTodayActivities()
 
-  if (!mounted) return <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-    <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-  </div>
+  if (!mounted) return null
 
   const TYPE_ICONS: Record<string, string> = {
     CALL: 'call',
@@ -82,139 +74,161 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-8 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
+    <div className="p-8 space-y-8 animate-in fade-in duration-1000">
       
-      {/* IMMERSIVE AETHER BACKGROUND */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-         <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#F97316]/5 blur-[160px] rounded-full animate-pulse duration-[10s]" />
-         <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#F97316]/5 blur-[160px] rounded-full animate-pulse duration-[8s]" />
-      </div>
-
-      {/* HEADER ESCOLTRAN STYLE */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-10 relative z-10">
-          <div className="space-y-4">
-            <div className="flex items-center gap-6">
-               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#F97316] to-[#FB923C] flex items-center justify-center shadow-[0_0_50px_rgba(249,115,22,0.4)] relative">
-                  <div className="absolute inset-0 bg-white/20 rounded-2xl animate-ping opacity-20" />
-                  <span className="material-symbols-outlined text-white text-3xl font-black relative z-10">monitoring</span>
-               </div>
-               <div>
-                  <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
-                    Overview <span className="text-[#F97316] drop-shadow-[0_0_20px_rgba(249,115,22,0.4)]">Operacional</span>
-                  </h1>
-                  <p className="text-[#404040] text-[10px] font-mono font-black uppercase tracking-[0.3em] mt-3 flex items-center gap-3">
-                     <span className="w-8 h-[1px] bg-[#262626]" />
-                     RELATÓRIO SINCRONIZADO: ESCOLTRAN_CLUSTER_AETHER
-                  </p>
-               </div>
-            </div>
-          </div>
+      <header className="space-y-1">
+        <h1 className="text-3xl font-black text-white italic tracking-tighter uppercase">Dashboard</h1>
+        <p className="text-[#404040] text-[11px] font-mono font-black uppercase tracking-widest">Visão geral do seu CRM</p>
       </header>
 
-      {/* KPI GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
-        <KPICard label="Dataset Leads" value="1.284" icon="groups" trend="+12.5% VOL" />
-        <KPICard label="Volume Financeiro" value="R$ 452k" icon="currency_exchange" trend="+8.2% REV" />
-        <KPICard label="Taxa Conversão" value="18.5%" icon="hub" trend="Optimized" color="#A855F7" />
-        <KPICard label="Nodes Ativos" value="42" icon="dns" trend="Stable" color="#22C55E" />
+      {/* 4 TOP CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KPICard 
+          label="Total de Contatos" 
+          value={metrics?.contacts?.total || 0} 
+          icon="person" 
+          trend={metrics?.contacts?.trend} 
+          subtext="vs mês anterior"
+        />
+        <KPICard 
+          label="Deals Abertos" 
+          value={metrics?.deals?.total || 0} 
+          icon="adjust"
+          subtext={`R$ ${metrics?.deals?.value?.toLocaleString('pt-BR')} em pipeline`}
+          color="#3B82F6"
+        />
+        <KPICard 
+          label="Taxa de Conversão" 
+          value={`${metrics?.conversion?.rate || 0}%`} 
+          icon="show_chart"
+          subtext={`${metrics?.conversion?.won || 0} ganhos / ${metrics?.conversion?.lost || 0} perdidos`}
+          color="#3B82F6"
+        />
+        <KPICard 
+          label="Receita Fechada" 
+          value={formatCurrency(metrics?.revenue?.total || 0)} 
+          icon="payments" 
+          trend={metrics?.revenue?.trend} 
+          subtext="vs mês anterior"
+          color="#22C55E"
+        />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 relative z-10">
+      {/* CONTENT GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* GRÁFICO REVENUE (GLASSMORPHIC) */}
-        <div className="lg:col-span-8 group relative">
-           <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[32px] blur-3xl opacity-20 transition-opacity group-hover:opacity-40" />
-           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] p-8 flex flex-col shadow-2xl h-full">
-              <div className="flex items-center justify-between mb-20">
-                 <div className="space-y-1">
-                    <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">Evolução de Dataset</h3>
-                    <p className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">Historical_Revenue_Sinc</p>
-                 </div>
-                 <div className="flex items-center gap-4 bg-[#1A1A1A]/40 px-6 py-3 rounded-full border border-white/[0.04]">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#F97316] shadow-[0_0_15px_rgba(249,115,22,0.8)]" />
-                    <span className="text-[11px] font-mono font-black text-[#F2F2F2] uppercase tracking-widest">Global_Metric: BRL</span>
-                 </div>
-              </div>
-              
-              <div className="flex-1 flex items-end justify-between px-6 relative min-h-[350px] mb-8 gap-6">
-                 <div className="absolute inset-x-0 inset-y-0 flex flex-col justify-between pointer-events-none pr-8">
-                    {[...Array(6)].map((_, i) => <div key={i} className="w-full border-t border-white/[0.04]" />)}
-                 </div>
-                 
-                 {[
-                   { m: 'JAN', v: 45 }, { m: 'FEV', v: 65 }, { m: 'MAR', v: 55 }, 
-                   { m: 'ABR', v: 85 }, { m: 'MAI', v: 75 }, { m: 'JUN', v: 100 }
-                 ].map((b, i) => (
-                   <div key={i} className="flex flex-col items-center gap-8 flex-1 group/bar relative">
-                      <div className="w-full max-w-[40px] bg-gradient-to-t from-[#F97316]/20 to-[#F97316] rounded-t-2xl shadow-[0_0_30px_rgba(249,115,22,0.2)] transition-all duration-700 group-hover/bar:shadow-[0_0_50px_rgba(249,115,22,0.6)] group-hover/bar:brightness-125 cursor-pointer relative overflow-hidden" style={{ height: `${b.v}%` }}>
-                         <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/bar:opacity-100 transition-opacity" />
-                      </div>
-                      <span className="text-[11px] font-mono font-black text-[#404040] group-hover/bar:text-white transition-colors tracking-widest">{b.m}</span>
-                   </div>
-                 ))}
-              </div>
-           </div>
-        </div>
-
-        {/* FEED DE ATIVIDADES OPERACIONAIS */}
-        <div className="lg:col-span-4 group relative">
-           <div className="absolute -inset-1 bg-gradient-to-br from-white/5 to-transparent rounded-[32px] blur-3xl opacity-10 transition-opacity" />
-           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] p-10 shadow-2xl h-full overflow-hidden">
-              <h3 className="text-xl font-black text-white tracking-tighter uppercase italic mb-8 flex items-center gap-4">
-                 <span className="material-symbols-outlined text-[#F97316]">history</span>
-                 Timeline Operacional
-              </h3>
-              
-              {isActivitiesLoading ? (
-                 <div className="flex items-center justify-center py-12">
-                    <div className="w-8 h-8 border-2 border-[#F97316]/20 border-t-[#F97316] rounded-full animate-spin" />
-                 </div>
-              ) : todayActivities.length === 0 ? (
-                 <div className="text-center py-12 bg-white/[0.02] border border-dashed border-white/5 rounded-2xl">
-                    <span className="material-symbols-outlined text-[#404040] text-3xl mb-2">event_available</span>
-                    <p className="text-[10px] text-[#404040] font-black uppercase tracking-widest">Zero Atividades Hoje</p>
-                 </div>
-              ) : (
-                <div className="space-y-8 relative">
-                   <div className="absolute left-[24px] top-4 bottom-4 w-[1px] bg-gradient-to-b from-[#F97316]/40 via-[#262626] to-transparent" />
-                   
-                   {todayActivities.slice(0, 5).map((item: any, i: number) => (
-                     <div key={i} className="flex gap-6 relative z-10 group/item">
-                        <div className="w-12 h-12 rounded-2xl border border-[#F97316]/30 bg-[#0A0A0A] flex items-center justify-center text-[#F97316] group-hover/item:bg-[#F97316] group-hover/item:text-black transition-all duration-500 shadow-xl relative overflow-hidden">
-                           <span className="material-symbols-outlined text-[20px] relative z-10">
-                              {TYPE_ICONS[item.tipo] || 'event'}
-                           </span>
-                        </div>
-                        <div className="flex-1 space-y-1">
-                           <p className="text-[13px] font-bold text-foreground truncate italic">
-                              {item?.titulo || "Sem título"}
-                           </p>
-                           <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.2em]">
-                              {(() => {
-                                 if (!item.dueAt) return 'Sem hora'
-                                 const d = new Date(item.dueAt)
-                                 return isNaN(d.getTime()) ? 'Hora Inválida' : format(d, "HH:mm")
-                              })()}
-                           </p>
-                        </div>
-                     </div>
-                   ))}
+        {/* COL 1: ATIVIDADES */}
+        <SectionCard title="Atividades de Hoje" icon="calendar_today">
+          {isActivitiesLoading ? (
+            <div className="h-full flex items-center justify-center opacity-20">
+              <span className="material-symbols-outlined animate-spin">sync</span>
+            </div>
+          ) : todayActivities.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center opacity-20 space-y-2">
+              <span className="material-symbols-outlined text-[48px]">calendar_month</span>
+              <p className="text-[10px] font-black uppercase tracking-widest">Nenhuma atividade para hoje</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {todayActivities.map((act: any, i: number) => (
+                <div key={i} className="flex items-center gap-4 bg-white/[0.02] border border-white/[0.04] p-4 rounded-2xl hover:bg-white/[0.05] transition-all">
+                  <span className="material-symbols-outlined text-[16px] text-[#F97316]">
+                    {TYPE_ICONS[act.tipo] || 'event'}
+                  </span>
+                  <div className="flex-1 overflow-hidden">
+                    <p className="text-[12px] font-bold text-white truncate">{act.titulo}</p>
+                    <p className="text-[9px] font-mono text-[#404040] uppercase">{act.contact?.nome || 'Lead s/ nome'}</p>
+                  </div>
+                  <span className="text-[10px] font-mono font-black text-white/40">
+                    {act.dueAt ? format(new Date(act.dueAt), "HH:mm") : '--:--'}
+                  </span>
                 </div>
-              )}
+              ))}
+            </div>
+          )}
+        </SectionCard>
 
-              {/* FOOTER DO FEED */}
-              <div className="mt-12 pt-8 border-t border-white/[0.04] text-center">
-                 <button 
-                  onClick={() => window.location.href = '/activities'}
-                  className="text-[11px] font-mono font-black text-[#404040] hover:text-[#F97316] transition-colors uppercase tracking-[0.3em]"
-                >
-                  Abrir Central de Atividades
-                </button>
+        {/* COL 2: DEALS RECENTES */}
+        <SectionCard title="Deals Recentes" icon="shutter_speed">
+           {metrics?.recentDeals?.length === 0 ? (
+             <div className="h-full flex flex-col items-center justify-center opacity-20 space-y-2">
+               <span className="material-symbols-outlined text-[48px]">shopping_bag</span>
+               <p className="text-[10px] font-black uppercase tracking-widest">Nenhum negócio recente</p>
+             </div>
+           ) : (
+             <div className="space-y-2">
+                {metrics?.recentDeals?.map((deal: any, i: number) => (
+                  <div key={i} className="flex items-center justify-between p-4 hover:bg-white/[0.03] rounded-2xl transition-all">
+                    <div className="overflow-hidden">
+                      <p className="text-[12px] font-bold text-white truncate">{deal.titulo}</p>
+                      <p className="text-[9px] font-mono text-[#404040] uppercase">{deal.contact?.nome}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-[11px] font-black text-[#3B82F6]">{formatCurrency(deal.valor)}</p>
+                      <span className="text-[8px] px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 font-mono font-black uppercase">media</span>
+                    </div>
+                  </div>
+                ))}
+             </div>
+           )}
+        </SectionCard>
+
+        {/* COL 3: PERFORMANCE UTM */}
+        <SectionCard title="Performance UTM" icon="trending_up">
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/[0.02] border border-white/[0.04] p-4 rounded-2xl">
+                <p className="text-[8px] font-black text-[#404040] uppercase tracking-widest flex items-center gap-2 mb-1">
+                  <span className="material-symbols-outlined text-[12px]">radar</span> Leads Rastreados
+                </p>
+                <p className="text-xl font-black text-white italic">{metrics?.utmPerformance?.leadsRastreados}</p>
               </div>
-           </div>
-        </div>
-      </div>
+              <div className="bg-white/[0.02] border border-white/[0.04] p-4 rounded-2xl">
+                <p className="text-[8px] font-black text-[#404040] uppercase tracking-widest flex items-center gap-2 mb-1">
+                  <span className="material-symbols-outlined text-[12px]">hub</span> Deals Atribuídos
+                </p>
+                <p className="text-xl font-black text-white italic">{metrics?.utmPerformance?.dealsAtribuidos}</p>
+              </div>
+              <div className="bg-white/[0.02] border border-white/[0.04] p-4 rounded-2xl">
+                <p className="text-[8px] font-black text-[#404040] uppercase tracking-widest flex items-center gap-2 mb-1">
+                  <span className="material-symbols-outlined text-[12px]">query_stats</span> Conversão
+                </p>
+                <p className="text-xl font-black text-white italic">{metrics?.utmPerformance?.conversao}</p>
+              </div>
+              <div className="bg-white/[0.02] border border-white/[0.04] p-4 rounded-2xl">
+                <p className="text-[8px] font-black text-[#404040] uppercase tracking-widest flex items-center gap-2 mb-1">
+                  <span className="material-symbols-outlined text-[12px]">monetization_on</span> Receita
+                </p>
+                <p className="text-xl font-black text-white italic">R$ {Math.round((metrics?.utmPerformance?.receita || 0) / 1000)}k</p>
+              </div>
+            </div>
 
+            <div className="space-y-4 pt-4">
+              <p className="text-[9px] font-black text-[#404040] uppercase tracking-widest">Top Campanhas</p>
+              <div className="space-y-3">
+                {metrics?.utmPerformance?.topCampanhas?.map((camp: any, i: number) => (
+                  <div key={i} className="flex items-center justify-between group">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-black text-[#404040] group-hover:text-white transition-colors">{i+1}</span>
+                      <p className="text-[11px] font-bold text-white/80 group-hover:text-white transition-colors uppercase">{camp.nome}</p>
+                    </div>
+                    <span className="text-[10px] font-mono font-black text-[#3B82F6]">{formatCurrency(camp.valor)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button className="w-full mt-6 py-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-[10px] font-black uppercase tracking-widest text-white/40 hover:bg-white/[0.05] hover:text-white transition-all flex items-center justify-center gap-3 group">
+               Ver Analytics Completo
+               <span className="material-symbols-outlined text-[14px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
+          </div>
+        </SectionCard>
+
+      </div>
     </div>
+  )
+}
+
   )
 }
