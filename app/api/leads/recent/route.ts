@@ -1,8 +1,11 @@
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const limit = parseInt(searchParams.get('limit') || '10')
+
     const data = await prisma.contact.findMany({
       where: {
         canalOrigem: "Google"
@@ -10,7 +13,7 @@ export async function GET() {
       orderBy: {
         updatedAt: 'desc'
       },
-      take: 10
+      take: limit
     })
 
     return NextResponse.json(data)

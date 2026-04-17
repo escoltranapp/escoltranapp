@@ -53,6 +53,7 @@ export default function LeadSearchPage() {
   const [isSearching, setIsSearching] = useState(false)
   const [customCity, setCustomCity] = useState("")
   const [citySearchTerm, setCitySearchTerm] = useState("")
+  const [displayLimit, setDisplayLimit] = useState(10)
 
   const { data: allCities = [], isLoading: isLoadingCities } = useQuery({
     queryKey: ["cities", searchData.estado],
@@ -110,13 +111,13 @@ export default function LeadSearchPage() {
   }
 
   const { data: recentLeads = [], isLoading: isLoadingRecent } = useQuery({
-    queryKey: ["recent-google-leads"],
+    queryKey: ["recent-google-leads", displayLimit],
     queryFn: async () => {
-      const res = await fetch("/api/leads/recent")
+      const res = await fetch(`/api/leads/recent?limit=${displayLimit}`)
       if (!res.ok) throw new Error("Falha ao buscar leads")
       return res.json()
     },
-    refetchInterval: 5000 // Atualiza a cada 5 segundos para ver os novos leads chegando
+    refetchInterval: 5000 
   })
 
   const cnpjLeads = [
@@ -137,68 +138,61 @@ export default function LeadSearchPage() {
            <h1 className="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
              Busca de <span className="text-[#F97316]">Leads</span>
            </h1>
-           <p className="text-[#404040] text-xs font-mono font-black uppercase tracking-[0.5em] mt-3 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-[#262626]" />
-              ENCONTRE LEADS PARA ALAVANCAR SEU NEGÓCIO
-           </p>
+           <div className="flex items-center gap-4">
+              <div className="h-px w-20 bg-gradient-to-r from-[#F97316] to-transparent" />
+              <p className="text-[#404040] font-mono font-black text-[10px] uppercase tracking-[0.5em]">
+                Encontre leads para alavancar seu negócio
+              </p>
+           </div>
         </div>
 
-        <div className="flex bg-[#1A1A1A]/40 backdrop-blur-3xl border border-white/[0.04] p-2 rounded-2xl shadow-2xl">
-          <button 
-            onClick={() => setActiveMode("google")}
-            className={cn(
-              "px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all",
-              activeMode === "google" 
-                ? "bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white shadow-[0_10px_20px_rgba(249,115,22,0.2)]" 
-                : "text-[#404040] hover:text-white"
-            )}
-          >
-            Busca Google
-          </button>
-          <button 
-            onClick={() => setActiveMode("cnpj")}
-            className={cn(
-              "px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all",
-              activeMode === "cnpj" 
-                ? "bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white shadow-[0_10px_20px_rgba(249,115,22,0.2)]" 
-                : "text-[#404040] hover:text-white"
-            )}
-          >
-            Busca CNPJ
-          </button>
+        <div className="flex bg-[#0A0A0A] p-2 rounded-[24px] border border-white/5 relative group">
+           <div className={`absolute inset-y-2 w-[140px] bg-[#F97316] rounded-2xl transition-all duration-500 shadow-[0_0_30px_rgba(249,115,22,0.3)] ${activeMode === 'cnpj' ? 'translate-x-[150px]' : 'translate-x-0'}`} />
+           <button 
+              onClick={() => setActiveMode("google")}
+              className={`relative z-10 px-8 py-4 text-[11px] font-black uppercase tracking-widest transition-colors duration-300 w-[140px] ${activeMode === 'google' ? 'text-white' : 'text-[#404040]'}`}
+           >
+              Busca Google
+           </button>
+           <button 
+              onClick={() => setActiveMode("cnpj")}
+              className={`relative z-10 px-8 py-4 text-[11px] font-black uppercase tracking-widest transition-colors duration-300 w-[140px] ${activeMode === 'cnpj' ? 'text-white' : 'text-[#404040]'}`}
+           >
+              Busca CNPJ
+           </button>
         </div>
       </header>
 
-      {/* SEARCH PANEL */}
-      <div className="relative group z-10">
-         <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[40px] blur-3xl opacity-20 transition-opacity" />
-         <div className="relative bg-[#1A1A1A]/40 backdrop-blur-3xl rounded-[40px] border border-white/[0.06] p-10 shadow-[0_0_80px_rgba(0,0,0,0.5)]">
-            
-            <div className="flex items-center gap-4 mb-10 border-b border-white/[0.03] pb-6">
-               <span className="material-symbols-outlined text-[#F97316] text-[24px]">
-                 {activeMode === "google" ? "public" : "badge"}
-               </span>
-               <h3 className="text-[14px] font-mono font-black uppercase tracking-[0.4em] text-white">
-                 {activeMode === "google" ? "BUSCAR LEADS NO GOOGLE MAPS" : "BUSCAR EMPRESAS POR CNPJ"}
-               </h3>
-            </div>
+      <section className="relative z-10 space-y-12">
+        {/* BUSCA FORM */}
+        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-[48px] p-10 md:p-14 shadow-2xl relative group overflow-hidden">
+             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#F97316]/30 to-transparent" />
+             
+             <div className="flex items-center gap-6 mb-12">
+                <span className="material-symbols-outlined text-[#F97316] text-[24px] animate-pulse">
+                   {activeMode === "google" ? "public" : "database"}
+                </span>
+                <h3 className="text-[14px] font-mono font-black uppercase tracking-[0.4em] text-white">
+                  {activeMode === "google" ? "BUSCAR LEADS NO GOOGLE MAPS" : "BUSCAR EMPRESAS POR CNPJ"}
+                </h3>
+             </div>
 
-            {activeMode === "google" ? (
-               <div className="space-y-10">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                     <div className="space-y-3">
-                        <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">ESTADO</label>
-                        <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val, cidade: ""}))}>
-                           <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
-                              <SelectValue placeholder="Selecione o Estado" />
-                           </SelectTrigger>
-                           <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[300px]">
-                              {brazilianStates.map(s => <SelectItem key={s.value} value={s.value} className="focus:bg-[#F97316]">{s.label}</SelectItem>)}
-                           </SelectContent>
-                        </Select>
-                     </div>
+             {activeMode === "google" ? (
+                <div className="space-y-10">
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      <div className="space-y-3">
+                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">ESTADO</label>
+                         <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val, cidade: ""}))}>
+                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
+                               <SelectValue placeholder="Selecione o Estado" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[300px]">
+                               {brazilianStates.map(s => <SelectItem key={s.value} value={s.value} className="focus:bg-[#F97316]">{s.label}</SelectItem>)}
+                            </SelectContent>
+                         </Select>
+                      </div>
 
-                     <div className="space-y-3">
+                      <div className="space-y-3">
                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">CIDADE</label>
                         <div className="flex gap-2">
                            <Select 
@@ -256,98 +250,112 @@ export default function LeadSearchPage() {
                         </div>
                      </div>
 
-                     <div className="space-y-3">
-                        <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">NICHO DE MERCADO</label>
-                        <Select onValueChange={(val) => setSearchData(s => ({...s, nicho: val}))}>
-                           <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
-                              <SelectValue placeholder="Selecione o Nicho" />
-                           </SelectTrigger>
-                           <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[400px]">
-                              {businessNiches.map(n => (
-                                 <SelectItem key={n.value} value={n.label} className="focus:bg-[#F97316]">
-                                    <div className="flex flex-col">
-                                       <span className="font-black tracking-tighter">{n.label}</span>
-                                       <span className="text-[8px] opacity-40 uppercase tracking-widest">{n.category}</span>
-                                    </div>
-                                 </SelectItem>
-                              ))}
-                           </SelectContent>
-                        </Select>
-                     </div>
+                      <div className="space-y-3">
+                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">NICHO DE MERCADO</label>
+                         <Select onValueChange={(val) => setSearchData(s => ({...s, nicho: val}))}>
+                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
+                               <SelectValue placeholder="Selecione o Nicho" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[400px]">
+                               {businessNiches.map(n => (
+                                  <SelectItem key={n.value} value={n.label} className="focus:bg-[#F97316]">
+                                     <span className="font-black tracking-tighter uppercase">{n.label}</span>
+                                  </SelectItem>
+                               ))}
+                            </SelectContent>
+                         </Select>
+                      </div>
+                   </div>
 
-                  </div>
-
-                  <button 
-                    onClick={handleSearch}
-                    disabled={isSearching}
-                    className="w-full bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white h-16 rounded-2xl text-[12px] font-black uppercase tracking-[0.4em] shadow-[0_15px_40px_rgba(249,115,22,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 group disabled:opacity-50"
-                  >
+                   <button 
+                     onClick={handleSearch}
+                     disabled={isSearching}
+                     className="w-full h-20 bg-[#F97316] text-white rounded-[24px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-4 hover:bg-[#F97316]/90 transition-all hover:scale-[1.01] hover:shadow-[0_20px_40px_rgba(249,115,22,0.2)] disabled:opacity-50 disabled:scale-100"
+                   >
                      {isSearching ? (
-                        <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        <>
+                          <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <span>Minerando dados...</span>
+                        </>
                      ) : (
-                        <span className="material-symbols-outlined text-[24px] group-hover:rotate-90 transition-transform">search</span>
+                        <>
+                          <span className="material-symbols-outlined">search</span>
+                          <span>Buscar Leads no Google</span>
+                        </>
                      )}
-                     {isSearching ? "ORQUESTRANDO BUSCA..." : "BUSCAR LEADS NO GOOGLE"}
-                  </button>
-               </div>
-            ) : (
-               <div className="flex gap-6">
-                  <div className="group/input relative flex-1">
-                     <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity blur-sm" />
-                     <div className="relative">
-                        <span className="absolute left-6 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#262626]">search</span>
-                        <input 
-                           placeholder="00.000.000/0000-00"
-                           className="w-full bg-[#0A0A0A]/60 border border-white/[0.06] rounded-2xl pl-16 pr-6 h-16 text-white font-black tracking-[0.2em] focus:outline-none focus:border-[#F97316]/50 transition-all placeholder:text-[#262626]"
-                        />
-                     </div>
-                  </div>
-                  <button className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white px-12 h-16 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-[0_15px_30px_rgba(249,115,22,0.3)] hover:scale-[1.05] transition-all flex items-center gap-4 group">
-                     <span className="material-symbols-outlined text-[20px] group-hover:scale-125 transition-transform">rocket_launch</span>
-                     INICIAR BUSCA DE CNPJ
-                  </button>
-               </div>
-            )}
-         </div>
-      </div>
-
-      {/* KPI STATS - BASED ON IMAGE */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
-        <KPICard label="TOTAL GOOGLE" value="4.950" icon="public" />
-        <KPICard label="LEADS HOJE" value="12" icon="today" color="#22C55E" />
-        <KPICard label="CONVERSÕES" value="158" icon="trending_up" color="#A855F7" />
-        <KPICard label="NA SEMANA" value="78" icon="calendar_month" color="#3B82F6" />
-      </div>
-
-      {/* RESULTS LIST / TABLE */}
-      <div className="relative group z-10 transition-all duration-1000">
-         <div className="absolute -inset-1 bg-gradient-to-br from-white/5 to-transparent rounded-[40px] blur-3xl opacity-10 transition-opacity" />
-         <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[40px] p-12 shadow-2xl space-y-10">
-            <div className="flex items-center justify-between border-b border-white/[0.03] pb-8">
-               <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#F97316]/10 flex items-center justify-center text-[#F97316]">
-                    <span className="material-symbols-outlined text-[22px]">history</span>
-                  </div>
-                  <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">
-                    {activeMode === "google" ? "Últimos Leads Extraídos" : "Cluster de Dados CNPJ"}
-                  </h3>
-                  {activeMode === "cnpj" && (
-                    <span className="bg-[#F97316]/10 text-[#F97316] px-3 py-1 rounded-full text-[10px] font-mono font-black border border-[#F97316]/20 ml-4 italic">
-                      {cnpjLeads.length} ENTIDADES
-                    </span>
-                  )}
-               </div>
-
-               <div className="flex items-center gap-4">
-                   <button className="p-3 bg-white/[0.03] rounded-xl border border-white/5 text-[#404040] hover:text-white transition-all">
-                      <span className="material-symbols-outlined">filter_list</span>
                    </button>
-               </div>
-            </div>
+                </div>
+             ) : (
+                <div className="space-y-10">
+                   <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                      <div className="space-y-3">
+                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">ESTADO</label>
+                         <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val}))}>
+                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
+                               <SelectValue placeholder="UF" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-[#0A0A0A] border-white/10 text-white">
+                               {brazilianStates.map(s => <SelectItem key={s.value} value={s.value} className="focus:bg-[#F97316]">{s.value}</SelectItem>)}
+                            </SelectContent>
+                         </Select>
+                      </div>
 
+                      <div className="md:col-span-3 space-y-3">
+                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">CÓDIGO CNAE OU NOME DO SETOR</label>
+                         <input 
+                           type="text" 
+                           placeholder="EX: 4711302 OU COMÉRCIO VAREJISTA..."
+                           className="w-full h-14 bg-[#0A0A0A]/60 border border-white/[0.06] rounded-xl text-white font-black tracking-widest px-8 focus:outline-none focus:border-[#F97316]/50 transition-colors uppercase"
+                         />
+                      </div>
+                   </div>
+
+                   <button className="w-full h-20 bg-white text-black rounded-[24px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-4 hover:bg-white/90 transition-all hover:scale-[1.01] hover:shadow-[0_20px_40px_rgba(255,255,255,0.1)]">
+                      <span className="material-symbols-outlined">analytics</span>
+                      <span>Consultar Base Receita</span>
+                   </button>
+                </div>
+             )}
+        </div>
+
+        {/* STATS PREVIEW */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+           {[
+             { label: "Total Google", value: "4.950", icon: "public", color: "#F97316" },
+             { label: "Leads Hoje", value: "12", icon: "calendar_today", color: "#22C55E" },
+             { label: "Conversões", value: "158", icon: "trending_up", color: "#A855F7" },
+             { label: "Na Semana", value: "78", icon: "event", color: "#3B82F6" }
+           ].map((stat, i) => (
+              <div key={i} className="bg-[#0D0D0D] border border-white/[0.03] p-10 rounded-[40px] flex flex-col items-center justify-center gap-6 group hover:border-[#F97316]/20 transition-all">
+                 <div className="h-14 w-14 rounded-2xl bg-[#1A1A1A] border border-white/5 flex items-center justify-center group-hover:bg-[#F97316]/10 transition-all">
+                    <span className="material-symbols-outlined text-[24px]" style={{ color: stat.color }}>{stat.icon}</span>
+                 </div>
+                 <div className="text-center space-y-1">
+                    <div className="text-4xl font-black text-white italic tracking-tighter">{stat.value}</div>
+                    <div className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">{stat.label}</div>
+                 </div>
+              </div>
+           ))}
+        </div>
+
+        {/* RECENT LEADS - AETHER STYLE */}
+        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-[56px] p-12 space-y-12">
+           <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                 <div className="h-10 w-10 rounded-xl bg-[#F97316]/10 border border-[#F97316]/20 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[#F97316] text-[20px]">history</span>
+                 </div>
+                 <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase">Últimos Leads Extraídos</h2>
+              </div>
+              <button className="h-14 w-14 rounded-2xl bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-[#404040] hover:text-[#F97316] transition-all group">
+                 <span className="material-symbols-outlined group-hover:scale-110 transition-transform">filter_list</span>
+              </button>
+           </div>
+
+           <div className="space-y-6">
             {activeMode === "google" ? (
                <div className="space-y-4">
-                  {isLoadingRecent ? (
+                  {isLoadingRecent && displayLimit === 10 ? (
                      <div className="flex flex-col items-center justify-center py-20 space-y-4">
                         <div className="w-12 h-12 border-2 border-[#F97316]/20 border-t-[#F97316] rounded-full animate-spin" />
                         <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.5em]">Sincronizando com o Broker...</p>
@@ -360,21 +368,27 @@ export default function LeadSearchPage() {
                   ) : (
                      recentLeads.map((lead: any) => (
                         <div key={lead.id} className="group flex flex-col md:flex-row md:items-center justify-between p-8 bg-[#1A1A1A]/20 border border-white/[0.03] rounded-[32px] hover:bg-[#1A1A1A]/40 transition-all hover:translate-x-2 gap-6">
-                           <div className="flex items-center gap-8">
-                              <div className="h-12 w-12 rounded-2xl bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-[#404040] group-hover:text-[#F97316] group-hover:border-[#F97316]/30 transition-all">
+                           <div className="flex items-center gap-8 flex-1 min-w-0">
+                              <div className="h-12 w-12 rounded-2xl bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-[#404040] group-hover:text-[#F97316] group-hover:border-[#F97316]/30 transition-all flex-shrink-0">
                                  <span className="material-symbols-outlined">business</span>
                               </div>
-                              <div className="space-y-2">
-                                 <h4 className="text-[17px] font-black text-white uppercase italic tracking-tighter leading-none group-hover:text-[#F97316] transition-colors">
+                              <div className="space-y-2 flex-1 min-w-0">
+                                 <h4 className="text-[17px] font-black text-white uppercase italic tracking-tighter leading-none group-hover:text-[#F97316] transition-colors truncate">
                                     {lead.empresa || lead.nome}
                                  </h4>
-                                 <p className="text-[#F97316] font-mono font-black text-[12px] tracking-widest">
-                                    {lead.telefone || "SEM TELEFONE"}
-                                 </p>
+                                 <div className="flex flex-wrap gap-4 items-center">
+                                    <p className="text-[#F97316] font-mono font-black text-[12px] tracking-widest leading-none">
+                                       {lead.telefone || "SEM TELEFONE"}
+                                    </p>
+                                    <span className="text-[#404040]">•</span>
+                                    <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.1em] truncate max-w-[400px]">
+                                       {typeof lead.endereco === 'string' ? lead.endereco : JSON.stringify(lead.endereco)}
+                                    </p>
+                                 </div>
                               </div>
                            </div>
                            
-                           <div className="flex items-center justify-between md:justify-end gap-12">
+                           <div className="flex items-center justify-between md:justify-end gap-12 flex-shrink-0">
                               <div className="text-left md:text-right space-y-1">
                                  <div className="text-[10px] font-mono font-black text-[#F97316] uppercase tracking-widest">{lead.etapaFunil}</div>
                                  <div className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">
@@ -393,25 +407,43 @@ export default function LeadSearchPage() {
                <div className="overflow-x-auto">
                   <table className="w-full">
                      <thead>
-                        <tr className="border-b border-white/[0.03]">
-                           {["CNPJ", "EMPRESA", "TELEFONE", "E-MAIL", "SITUAÇÃO", "CIDADE/ESTADO"].map((h) => (
-                              <th key={h} className="text-left py-6 px-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">{h}</th>
-                           ))}
+                        <tr className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/5">
+                           <th className="pb-6 text-left pl-4">CNPJ</th>
+                           <th className="pb-6 text-left">EMPRESA</th>
+                           <th className="pb-6 text-left">TELEFONE / E-MAIL</th>
+                           <th className="pb-6 text-left">SITUAÇÃO / CIDADE</th>
+                           <th className="pb-6 text-right pr-4">AÇÕES</th>
                         </tr>
                      </thead>
                      <tbody className="divide-y divide-white/[0.02]">
                         {cnpjLeads.map((lead, i) => (
                            <tr key={i} className="group hover:bg-white/[0.01] transition-colors">
-                              <td className="py-6 px-4 text-[11px] font-mono font-black text-[#F97316] tracking-widest">{lead.cnpj}</td>
-                              <td className="py-6 px-4 text-[13px] font-black text-white uppercase italic tracking-tighter">{lead.empresa}</td>
-                              <td className="py-6 px-4 text-[11px] font-mono font-black text-[#A3A3A3]">{lead.telefone}</td>
-                              <td className="py-6 px-4 text-[11px] font-mono font-black text-[#404040] italic group-hover:text-[#A3A3A3] transition-colors">{lead.email}</td>
-                              <td className="py-6 px-4">
-                                 <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20 text-[9px] font-black tracking-widest uppercase">
-                                    {lead.situacao}
-                                 </span>
+                              <td className="py-8 pl-4">
+                                 <div className="text-[12px] font-mono font-black text-[#F97316]">{lead.cnpj}</div>
                               </td>
-                              <td className="py-6 px-4 text-[11px] font-black text-[#404040] uppercase tracking-tight">{lead.cidade}</td>
+                              <td className="py-8">
+                                 <div className="text-[14px] font-black text-white uppercase italic tracking-tighter">{lead.empresa}</div>
+                              </td>
+                              <td className="py-8">
+                                 <div className="space-y-1">
+                                    <div className="text-[12px] font-mono font-black text-white">{lead.telefone}</div>
+                                    <div className="text-[10px] font-mono text-[#404040]">{lead.email}</div>
+                                 </div>
+                              </td>
+                              <td className="py-8">
+                                 <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                       <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                                       <div className="text-[10px] font-mono font-black text-emerald-500 uppercase">{lead.situacao}</div>
+                                    </div>
+                                    <div className="text-[10px] font-mono text-[#404040] uppercase">{lead.cidade}</div>
+                                 </div>
+                              </td>
+                              <td className="py-8 pr-4 text-right">
+                                 <button className="h-10 px-6 bg-[#1A1A1A] border border-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-[#404040] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all">
+                                    Extrair Sócios
+                                 </button>
+                              </td>
                            </tr>
                         ))}
                      </tbody>
