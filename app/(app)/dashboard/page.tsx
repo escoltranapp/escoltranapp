@@ -2,6 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { formatCurrency, cn } from "@/lib/utils"
+import { useTodayActivities } from "@/hooks/useTodayActivities"
+import { format } from "date-fns"
 
 function KPICard({ 
   label, value, icon, trend, color = "#F97316" 
@@ -135,38 +137,53 @@ export default function DashboardPage() {
         {/* FEED DE ATIVIDADES OPERACIONAIS */}
         <div className="lg:col-span-4 group relative">
            <div className="absolute -inset-1 bg-gradient-to-br from-white/5 to-transparent rounded-[32px] blur-3xl opacity-10 transition-opacity" />
-           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] p-12 shadow-2xl h-full overflow-hidden">
+           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] p-10 shadow-2xl h-full overflow-hidden">
               <h3 className="text-xl font-black text-white tracking-tighter uppercase italic mb-8 flex items-center gap-4">
                  <span className="material-symbols-outlined text-[#F97316]">history</span>
-                 Cluster Log
+                 Timeline Operacional
               </h3>
-              <div className="space-y-12 relative">
-                 <div className="absolute left-[24px] top-4 bottom-4 w-[1px] bg-gradient-to-b from-[#F97316]/40 via-[#262626] to-transparent" />
-                 
-                 {[
-                   { user: "R. Mendes", action: "sincronizou lead", target: "Log express", time: "10m", icon: "sync_alt" },
-                   { user: "AI Node", action: "classificou entidade", target: "Dataset_7", time: "2h", icon: "auto_awesome" },
-                   { user: "P. Santos", action: "fechou operação", target: "Tech Brasil", time: "5h", icon: "verified" },
-                   { user: "Sys_Bot", action: "validou disparo", target: "Marketing_A", time: "8h", icon: "campaign" },
-                 ].map((item, i) => (
-                   <div key={i} className="flex gap-8 relative z-10 group/item">
-                      <div className="w-12 h-12 rounded-2xl border border-[#F97316]/30 bg-[#0A0A0A] flex items-center justify-center text-[#F97316] group-hover/item:bg-[#F97316] group-hover/item:text-black transition-all duration-500 shadow-xl relative overflow-hidden">
-                         <div className="absolute inset-0 bg-[#F97316]/10 opacity-0 group-hover/item:opacity-30 animate-pulse" />
-                         <span className="material-symbols-outlined text-[22px] relative z-10">{item.icon}</span>
-                      </div>
-                      <div className="flex-1 space-y-2">
-                         <p className="text-[14px] text-[#A3A3A3] leading-tight font-medium uppercase italic tracking-tighter">
-                            <span className="font-black text-white">{item.user}</span> {item.action} <span className="text-[#F97316] font-black">{item.target}</span>
-                         </p>
-                         <p className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em]">{item.time} ago</p>
-                      </div>
-                   </div>
-                 ))}
-              </div>
+              
+              {isActivitiesLoading ? (
+                 <div className="flex items-center justify-center py-12">
+                    <div className="w-8 h-8 border-2 border-[#F97316]/20 border-t-[#F97316] rounded-full animate-spin" />
+                 </div>
+              ) : todayActivities.length === 0 ? (
+                 <div className="text-center py-12 bg-white/[0.02] border border-dashed border-white/5 rounded-2xl">
+                    <span className="material-symbols-outlined text-[#404040] text-3xl mb-2">event_available</span>
+                    <p className="text-[10px] text-[#404040] font-black uppercase tracking-widest">Zero Atividades Hoje</p>
+                 </div>
+              ) : (
+                <div className="space-y-8 relative">
+                   <div className="absolute left-[24px] top-4 bottom-4 w-[1px] bg-gradient-to-b from-[#F97316]/40 via-[#262626] to-transparent" />
+                   
+                   {todayActivities.slice(0, 5).map((item: any, i: number) => (
+                     <div key={i} className="flex gap-6 relative z-10 group/item">
+                        <div className="w-12 h-12 rounded-2xl border border-[#F97316]/30 bg-[#0A0A0A] flex items-center justify-center text-[#F97316] group-hover/item:bg-[#F97316] group-hover/item:text-black transition-all duration-500 shadow-xl relative overflow-hidden">
+                           <span className="material-symbols-outlined text-[20px] relative z-10">
+                              {TYPE_ICONS[item.tipo] || 'event'}
+                           </span>
+                        </div>
+                        <div className="flex-1 space-y-1">
+                           <p className="text-[13px] text-white leading-tight font-black uppercase italic tracking-tighter">
+                              {item.titulo}
+                           </p>
+                           <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.2em]">
+                              {item.dueAt ? format(new Date(item.dueAt), "HH:mm") : 'Sem hora'}
+                           </p>
+                        </div>
+                     </div>
+                   ))}
+                </div>
+              )}
 
               {/* FOOTER DO FEED */}
-              <div className="mt-16 pt-8 border-t border-white/[0.04] text-center">
-                 <button className="text-[11px] font-mono font-black text-[#262626] hover:text-[#F97316] transition-colors uppercase tracking-[0.3em]">Ver Logs Globais</button>
+              <div className="mt-12 pt-8 border-t border-white/[0.04] text-center">
+                 <button 
+                  onClick={() => window.location.href = '/activities'}
+                  className="text-[11px] font-mono font-black text-[#404040] hover:text-[#F97316] transition-colors uppercase tracking-[0.3em]"
+                >
+                  Abrir Central de Atividades
+                </button>
               </div>
            </div>
         </div>

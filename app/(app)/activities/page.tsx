@@ -40,7 +40,6 @@ function ActivitiesContent() {
       if (!res.ok) throw new Error("Erro ao carregar atividades")
       let data = await res.json()
       
-      // Client-side filtering for type for simplicity/performance if API doesn't support it yet
       if (typeFilter !== "ALL") {
         data = data.filter((a: any) => a.tipo === typeFilter)
       }
@@ -60,15 +59,13 @@ function ActivitiesContent() {
 
   return (
     <div className="animate-in fade-in duration-700 pb-24">
-      {/* HEADER SECTION */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
-          <h1 className="text-4xl font-black text-foreground tracking-tighter italic uppercase">Gerenciador de Atividades</h1>
-          <p className="text-secondary text-[15px] mt-2 font-bold tracking-tight">Timeline operacional e planejamento de produtividade Escoltran</p>
+          <h1 className="text-4xl font-black text-foreground tracking-tighter italic uppercase underline decoration-primary/30">Painel de Atividades Operacionais</h1>
+          <p className="text-secondary text-[15px] mt-2 font-bold tracking-tight">Timeline Escoltran: Gestão de compromissos e produtividade</p>
         </div>
         
         <div className="flex items-center gap-3">
-          {/* VIEW TOGGLE */}
           <div className="bg-surface border border-border p-1 rounded-xl flex gap-1">
             <button 
               onClick={() => setViewMode('list')}
@@ -100,10 +97,8 @@ function ActivitiesContent() {
         </div>
       </header>
 
-      {/* KPI SECTION */}
       <ActivityKPIs activities={activities} />
 
-      {/* FILTERS TOOLBAR */}
       <div className="flex flex-col md:flex-row gap-4 mb-8">
         <div className="flex-1 flex gap-2">
            <select 
@@ -140,7 +135,6 @@ function ActivitiesContent() {
         </button>
       </div>
 
-      {/* MAIN CONTENT AREA */}
       {isLoading ? (
         <div className="h-[400px] flex items-center justify-center">
            <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
@@ -155,14 +149,12 @@ function ActivitiesContent() {
         </>
       )}
 
-      {/* MODALS */}
       <ActivityDialog 
         open={isDialogOpen} 
         onOpenChange={(open) => {
           setIsDialogOpen(open)
           if (!open) {
             setEditingActivity(null)
-            // Clear specific query params if they existed to prevent re-opening on refresh
             if (searchParams.get("new") || searchParams.get("contact_id") || searchParams.get("deal_id")) {
                 router.replace('/activities')
             }
