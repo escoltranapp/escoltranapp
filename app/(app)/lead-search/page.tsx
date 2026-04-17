@@ -458,7 +458,8 @@ export default function LeadSearchPage() {
               {isLoadingRecent && displayLimit > 10 ? "CARREGANDO..." : "CARREGAR MAIS REGISTROS DO DIRETÓRIO"}
            </button>
         </div>
-      </section>
+      </div>
+    </section>
 
       <NewContactDialog 
         open={isNewContactOpen}
