@@ -215,11 +215,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* FAB ESCOLTRAN (GLASSMORPHIC) */}
-      <button className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-br from-[#F97316] to-[#FB923C] rounded-2xl shadow-[0_20px_40px_rgba(249,115,22,0.4)] flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all z-[100] group border border-white/20">
-         <span className="material-symbols-outlined text-[28px] font-black group-hover:rotate-180 transition-transform duration-700">add</span>
-      </button>
-
     </div>
   )
 }
