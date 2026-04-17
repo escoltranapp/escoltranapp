@@ -100,8 +100,11 @@ export function AppSidebar({ isOpen = true, onClose }: AppSidebarProps) {
                        </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                       <div className="text-[13px] font-black text-white truncate uppercase tracking-tight italic">
-                          {session?.user?.name?.split(" ")[0] || "Operador"}
+                       <div className="text-[12px] font-black text-white truncate uppercase tracking-tight italic">
+                          {(() => {
+                            const names = (session?.user?.name || "Operador").trim().split(/\s+/);
+                            return names.length > 1 ? `${names[0]} ${names[1]}` : names[0];
+                          })()}
                        </div>
                     </div>
                  </div>
