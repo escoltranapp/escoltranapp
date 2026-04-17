@@ -90,12 +90,20 @@ export default function LeadSearchPage() {
     }
   }
 
-  const citiesForState = searchData.estado ? mainCitiesByState[searchData.estado] || [] : []
+  const { data: recentLeads = [], isLoading: isLoadingRecent } = useQuery({
+    queryKey: ["recent-google-leads"],
+    queryFn: async () => {
+      const res = await fetch("/api/leads/recent")
+      if (!res.ok) throw new Error("Falha ao buscar leads")
+      return res.json()
+    },
+    refetchInterval: 5000 // Atualiza a cada 5 segundos para ver os novos leads chegando
+  })
 
-  const recentLeads = [
-    { id: 1, empresa: "ServiAgro", telefone: "(64) 99627-4427", time: "16/04/26 às 16:46", type: "LEAD" },
-    { id: 2, empresa: "CEAG - Centro Empresarial", telefone: "(64) 3623-1645", time: "16/04/26 às 16:46", type: "LEAD" },
-    { id: 3, empresa: "Onofre agronegocio", telefone: "(64) 99658-1667", time: "16/04/26 às 16:46", type: "LEAD" }
+  const cnpjLeads = [
+    { cnpj: "46.403.379/0001-81", empresa: "SHEGO LENE E ANN...", telefone: "(64) 9320-3707", email: "xmlleneanne@gmai...", situacao: "ATIVA", cidade: "SANTA HELENA DE GOIAS/GO" },
+    { cnpj: "13.590.585/0001-99", empresa: "NETFLIX ENTRETE...", telefone: "(11) 4228-6851", email: "corporatebrazil@net...", situacao: "ATIVA", cidade: "SAO PAULO/SP" },
+    { cnpj: "33.683.111/0001-07", empresa: "SERVIÇO FEDERAL ...", telefone: "(61) 2021-8000", email: "secretaria.diretoria@...", situacao: "ATIVA", cidade: "BRASILIA/DF" }
   ]
 
 
@@ -300,29 +308,47 @@ export default function LeadSearchPage() {
 
             {activeMode === "google" ? (
                <div className="space-y-4">
-                  {recentLeads.map((lead) => (
-                     <div key={lead.id} className="group flex items-center justify-between p-8 bg-[#1A1A1A]/20 border border-white/[0.03] rounded-[32px] hover:bg-[#1A1A1A]/40 transition-all hover:translate-x-2">
-                        <div className="flex items-center gap-8">
-                           <div className="h-12 w-12 rounded-2xl bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-[#404040] group-hover:text-[#F97316] group-hover:border-[#F97316]/30 transition-all">
-                              <span className="material-symbols-outlined">business</span>
-                           </div>
-                           <div className="space-y-2">
-                              <h4 className="text-[17px] font-black text-white uppercase italic tracking-tighter leading-none group-hover:text-[#F97316] transition-colors">{lead.empresa}</h4>
-                              <p className="text-[#F97316] font-mono font-black text-[12px] tracking-widest">{lead.telefone}</p>
-                           </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-12">
-                           <div className="text-right space-y-1">
-                              <div className="text-[10px] font-mono font-black text-[#F97316] uppercase tracking-widest">{lead.type}</div>
-                              <div className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">{lead.time}</div>
-                           </div>
-                           <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#0A0A0A] border border-white/5 text-[#404040] hover:text-[#F97316] transition-all">
-                              <span className="material-symbols-outlined text-[18px]">visibility</span>
-                           </button>
-                        </div>
+                  {isLoadingRecent ? (
+                     <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                        <div className="w-12 h-12 border-2 border-[#F97316]/20 border-t-[#F97316] rounded-full animate-spin" />
+                        <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.5em]">Sincronizando com o Broker...</p>
                      </div>
-                  ))}
+                  ) : recentLeads.length === 0 ? (
+                     <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+                        <span className="material-symbols-outlined text-[40px] text-[#262626]">database_off</span>
+                        <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.5em]">Nenhum lead minerado ainda</p>
+                     </div>
+                  ) : (
+                     recentLeads.map((lead: any) => (
+                        <div key={lead.id} className="group flex flex-col md:flex-row md:items-center justify-between p-8 bg-[#1A1A1A]/20 border border-white/[0.03] rounded-[32px] hover:bg-[#1A1A1A]/40 transition-all hover:translate-x-2 gap-6">
+                           <div className="flex items-center gap-8">
+                              <div className="h-12 w-12 rounded-2xl bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-[#404040] group-hover:text-[#F97316] group-hover:border-[#F97316]/30 transition-all">
+                                 <span className="material-symbols-outlined">business</span>
+                              </div>
+                              <div className="space-y-2">
+                                 <h4 className="text-[17px] font-black text-white uppercase italic tracking-tighter leading-none group-hover:text-[#F97316] transition-colors">
+                                    {lead.empresa || lead.nome}
+                                 </h4>
+                                 <p className="text-[#F97316] font-mono font-black text-[12px] tracking-widest">
+                                    {lead.telefone || "SEM TELEFONE"}
+                                 </p>
+                              </div>
+                           </div>
+                           
+                           <div className="flex items-center justify-between md:justify-end gap-12">
+                              <div className="text-left md:text-right space-y-1">
+                                 <div className="text-[10px] font-mono font-black text-[#F97316] uppercase tracking-widest">{lead.etapaFunil}</div>
+                                 <div className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">
+                                    {new Date(lead.updatedAt).toLocaleDateString('pt-BR')} às {new Date(lead.updatedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                 </div>
+                              </div>
+                              <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#0A0A0A] border border-white/5 text-[#404040] hover:text-[#F97316] transition-all">
+                                 <span className="material-symbols-outlined text-[18px]">visibility</span>
+                              </button>
+                           </div>
+                        </div>
+                     ))
+                  )}
                </div>
             ) : (
                <div className="overflow-x-auto">
