@@ -98,24 +98,24 @@ function ActivitiesContent() {
   return (
     <div className="flex flex-col h-screen bg-[#0A0A0A] text-white overflow-hidden">
       {/* HEADER */}
-      <div className="p-8 border-b border-white/5 flex items-center justify-between bg-[#0D0D0D]">
+      <div className="px-8 py-5 border-b border-white/5 flex items-center justify-between bg-[#0D0D0D]">
         <div>
-          <h1 className="text-4xl font-black italic tracking-tighter uppercase mb-1">
+          <h1 className="text-2xl font-black italic tracking-tighter uppercase leading-none">
             <span className="text-primary underline decoration-primary/30">Módulo</span> Atividades
           </h1>
-          <p className="text-[10px] font-mono text-secondary uppercase tracking-[0.4em] font-black">
-            Operacional CRM &amp; Follow-ups
+          <p className="text-[9px] font-mono text-secondary uppercase tracking-[0.4em] font-black mt-2">
+            CRM &amp; Follow-ups
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <div className="flex p-1 bg-background border border-border rounded-xl">
             <button
               onClick={() => setViewMode("list")}
               className={cn(
-                "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
                 viewMode === "list"
-                  ? "bg-primary text-white shadow-lg shadow-primary/20"
+                  ? "bg-primary text-white shadow-lg shadow-primary/10"
                   : "text-secondary hover:text-foreground"
               )}
             >
@@ -124,9 +124,9 @@ function ActivitiesContent() {
             <button
               onClick={() => setViewMode("calendar")}
               className={cn(
-                "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
                 viewMode === "calendar"
-                  ? "bg-primary text-white shadow-lg shadow-primary/20"
+                  ? "bg-primary text-white shadow-lg shadow-primary/10"
                   : "text-secondary hover:text-foreground"
               )}
             >
@@ -136,23 +136,23 @@ function ActivitiesContent() {
 
           <button
             onClick={openNew}
-            className="bg-primary text-white px-6 py-3 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-lg shadow-primary/10 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+            className="bg-primary text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-primary/5 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
           >
-            <span className="material-symbols-outlined text-[18px]">add</span>
+            <span className="material-symbols-outlined text-[16px]">add</span>
             Nova Atividade
           </button>
         </div>
       </div>
 
       {/* FILTERS */}
-      <div className="px-8 py-4 border-b border-white/5 flex items-center justify-between bg-surface/30">
-        <div className="flex items-center gap-4">
+      <div className="px-8 py-2 border-b border-white/5 flex items-center justify-between bg-surface/30">
+        <div className="flex items-center gap-3">
           {(["OPEN", "DONE", "ALL"] as const).map((s) => (
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
               className={cn(
-                "text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full transition-all border",
+                "text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full transition-all border",
                 statusFilter === s
                   ? "bg-white text-black border-white"
                   : "text-secondary border-white/5 hover:border-white/20"
@@ -166,7 +166,7 @@ function ActivitiesContent() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="bg-background border border-border rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest text-secondary outline-none focus:border-primary transition-all"
+          className="bg-background border border-border rounded-xl px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-secondary outline-none focus:border-primary transition-all"
         >
           <option value="ALL">Todos os Tipos</option>
           <option value="CALL">Ligações</option>
@@ -179,7 +179,7 @@ function ActivitiesContent() {
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 overflow-y-auto p-12 custom-scrollbar space-y-12">
+      <div className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-8">
         <ActivityKPIs activities={activities} />
 
         {isLoading ? (

@@ -90,148 +90,136 @@ export default function ContactsPage() {
          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#F97316]/5 blur-[160px] rounded-full animate-pulse duration-[8s]" />
       </div>
 
-      <div className="relative z-10 p-12 space-y-12 max-w-[1600px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 px-1">
+      <div className="relative z-10 p-8 space-y-8 max-w-[1600px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000">
         
         {/* HIGH-FIDELITY HEADER */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-4">
-            <div className="flex items-center gap-5">
-               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#F97316] to-[#FB923C] flex items-center justify-center shadow-[0_0_40px_rgba(249,115,22,0.4)] relative">
-                  <div className="absolute inset-0 bg-white/20 rounded-2xl animate-ping opacity-20" />
-                  <span className="material-symbols-outlined text-white text-3xl font-black relative z-10">groups</span>
+            <div className="flex items-center gap-4">
+               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#F97316] to-[#FB923C] flex items-center justify-center shadow-[0_0_30px_rgba(249,115,22,0.3)] relative">
+                  <span className="material-symbols-outlined text-white text-2xl font-black relative z-10">groups</span>
                </div>
                <div>
-                  <h1 className="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
+                  <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
                     CRM
                   </h1>
                </div>
             </div>
           </div>
           
-          <div className="flex items-center gap-6">
-             <div className="relative group w-[400px]">
-                <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-[#404040] group-focus-within:text-[#F97316] transition-all text-[20px]">search</span>
+          <div className="flex items-center gap-4">
+             <div className="relative group w-[350px]">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#404040] group-focus-within:text-[#F97316] transition-all text-[18px]">search</span>
                 <input
-                  placeholder="LOCALIZAR ENTIDADE NO DATASET GLOBAL..."
+                  placeholder="LOCALIZAR ENTIDADE..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="w-full bg-[#1A1A1A]/30 backdrop-blur-3xl border border-white/[0.03] h-14 pl-14 pr-6 rounded-2xl text-[11px] font-black text-[#F2F2F2] placeholder:text-[#262626] focus:outline-none focus:border-[#F97316]/30 transition-all tracking-[0.1em]"
+                  className="w-full bg-[#1A1A1A]/30 backdrop-blur-3xl border border-white/[0.03] h-12 pl-12 pr-6 rounded-xl text-[10px] font-black text-[#F2F2F2] placeholder:text-[#262626] focus:outline-none focus:border-[#F97316]/30 transition-all tracking-[0.1em]"
                 />
              </div>
              <button 
                onClick={() => setIsNewContactOpen(true)}
-               className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-12 py-5 rounded-2xl flex items-center gap-4 hover:scale-[1.05] active:scale-95 transition-all shadow-2xl shadow-[#F97316]/30 text-[11px] uppercase tracking-[0.3em] group"
+               className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-8 py-4 rounded-xl flex items-center gap-3 hover:scale-[1.05] active:scale-95 transition-all shadow-2xl shadow-[#F97316]/30 text-[10px] uppercase tracking-[0.2em] group"
              >
-               <span className="material-symbols-outlined text-[22px] font-black group-hover:rotate-12 transition-transform">person_add</span>
-               Sincronizar Nova Entidade
+               <span className="material-symbols-outlined text-[18px] font-black">person_add</span>
+               Novo Contato
              </button>
           </div>
         </header>
 
         {/* KPI INTELLIGENCE LAYER */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-           <KPICard label="Dataset Size" value={databaseSize} icon="storage" emoji="📡" />
-           <KPICard label="Network Load" value={activeNetwork} icon="radar" emoji="🔥" />
-           <KPICard label="Shield Nodes" value={clientes} icon="verified" emoji="🛡️" color="#22C55E" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+           <KPICard label="Dataset Size" value={databaseSize} icon="storage" color="#F97316" />
+           <KPICard label="Network Load" value={activeNetwork} icon="radar" color="#F97316" />
+           <KPICard label="Shield Nodes" value={clientes} icon="verified" color="#22C55E" />
            <KPICard label="Sync Heartbeat" value="0 ms" icon="monitor_heart" color="#A855F7" />
         </div>
 
         {/* DATASET TABLE AREA */}
         <div className="relative group">
-           <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[40px] blur-3xl opacity-20 group-hover:opacity-40 transition-opacity pointer-events-none" />
-           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[40px] overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)]">
+           <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[32px] blur-3xl opacity-20 group-hover:opacity-40 transition-opacity pointer-events-none" />
+           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] overflow-hidden shadow-2xl">
               <div className="overflow-x-auto scrollbar-hide">
                 <table className="w-full text-left border-collapse min-w-[1000px]">
                   <thead>
                     <tr className="bg-[#1A1A1A]/20">
-                      <th className="px-12 py-10 text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Entidade / Nó do Cluster</th>
-                      <th className="px-12 py-10 text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Status Operacional</th>
-                      <th className="px-12 py-10 text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Canal de Entrada</th>
-                      <th className="px-12 py-10 text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Audit Status</th>
-                      <th className="px-12 py-10 text-right text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Comandos</th>
+                      <th className="px-8 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Entidade</th>
+                      <th className="px-8 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Status</th>
+                      <th className="px-8 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Canal</th>
+                      <th className="px-8 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Audit</th>
+                      <th className="px-8 py-6 text-right text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Ações</th>
                     </tr>
                   </thead>
                <tbody>
                   {filteredContacts.length === 0 ? (
                      <tr>
-                        <td colSpan={6} className="py-40 text-center text-[#404040]">
-                           <div className="flex flex-col items-center gap-6 italic opacity-20">
-                              <span className="material-symbols-outlined text-[80px]">dataset</span>
-                              <div className="font-black text-[16px] tracking-[0.3em] uppercase">DATASET VAZIO OU SEM RESULTADOS</div>
+                        <td colSpan={6} className="py-24 text-center text-[#404040]">
+                           <div className="flex flex-col items-center gap-4 italic opacity-20">
+                              <span className="material-symbols-outlined text-[60px]">dataset</span>
+                              <div className="font-black text-[12px] tracking-[0.3em] uppercase">DATASET VAZIO</div>
                            </div>
                         </td>
                      </tr>
                   ) : (
                       filteredContacts.map((contact: any) => (
                         <tr key={contact.id} className="group/row hover:bg-[#F97316]/[0.02] transition-colors border-b border-white/[0.03]">
-                          {/* IDENTIDADE */}
-                          <td className="px-12 py-10">
-                            <div className="flex items-center gap-6">
-                              <div className="relative">
-                                 <div className="absolute -inset-2 bg-[#F97316]/20 rounded-2xl blur-lg opacity-0 group-hover/row:opacity-100 transition-opacity" />
-                                 <div className="w-16 h-16 rounded-2xl bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-white font-black text-2xl group-hover/row:border-[#F97316]/40 group-hover/row:text-[#F97316] transition-all relative z-10 shadow-lg font-mono">
-                                   {contact.nome?.slice(0, 1).toUpperCase()}
+                          <td className="px-8 py-6">
+                            <div className="flex items-center gap-4">
+                               <div className="w-11 h-11 rounded-xl bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-white font-black text-lg group-hover/row:border-[#F97316]/40 group-hover/row:text-[#F97316] transition-all shadow-lg font-mono">
+                                 {contact.nome?.slice(0, 1).toUpperCase()}
+                               </div>
+                               <div className="space-y-1">
+                                 <div className="text-[16px] font-black text-white italic tracking-tighter uppercase group-hover/row:text-[#F97316] transition-colors leading-none">{contact.nome}</div>
+                                 <div className="flex items-center gap-2">
+                                    <span className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest leading-none">{contact.empresa || "Pessoa Física"}</span>
                                  </div>
-                              </div>
-                              <div className="space-y-1.5">
-                                <div className="text-[19px] font-black text-white italic tracking-tighter uppercase group-hover/row:text-[#F97316] transition-colors leading-none">{contact.nome}</div>
-                                <div className="flex items-center gap-3">
-                                   <span className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest leading-none">{contact.empresa || "Pessoa Física"}</span>
-                                   <span className="w-1 h-1 rounded-full bg-[#262626]" />
-                                   <span className="text-[10px] font-mono font-bold text-[#6B7280] lowercase tracking-tight leading-none">{contact.email}</span>
-                                 </div>
-                              </div>
+                               </div>
                             </div>
                           </td>
 
-                          {/* STATUS */}
-                          <td className="px-12 py-10">
+                          <td className="px-8 py-6">
                             <div className={cn(
-                              "inline-flex items-center gap-3 px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] shadow-xl",
+                              "inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-[0.2em]",
                               contact.status === "cliente" 
                                 ? "bg-green-500/10 text-green-500 border-green-500/30" 
                                 : "bg-[#F97316]/10 text-[#F97316] border-[#F97316]/30"
                             )}>
-                              <div className={cn("w-2 h-2 rounded-full animate-pulse", contact.status === "cliente" ? "bg-green-500" : "bg-[#F97316]")} />
                               {contact.status || "Novo Lead"}
                             </div>
                           </td>
 
-                          {/* CANAL */}
-                          <td className="px-12 py-10">
-                             <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-[18px] text-[#404040] group-hover/row:text-[#F97316] transition-colors">hub</span>
-                                <div className="text-[12px] font-black text-white uppercase italic tracking-widest">{contact.canalOrigem || "Direto"}</div>
+                          <td className="px-8 py-6">
+                             <div className="flex items-center gap-2 text-[11px] font-black text-white uppercase italic tracking-widest">
+                                <span className="material-symbols-outlined text-[16px] text-[#404040]">hub</span>
+                                {contact.canalOrigem || "Direto"}
                              </div>
                           </td>
 
-                          {/* ÚLTIMA ATIVIDADE */}
-                          <td className="px-10 py-8">
-                             <div className="text-[11px] font-black text-[#404040] italic uppercase tracking-tighter">
-                                {contact.updatedAt ? `Sincronizado via Node em ${new Date(contact.updatedAt).toLocaleDateString()}` : "Dataset Inativo"}
+                          <td className="px-8 py-6">
+                             <div className="text-[9px] font-black text-[#404040] italic uppercase tracking-tighter">
+                                {contact.updatedAt ? `Node Sync: ${new Date(contact.updatedAt).toLocaleDateString()}` : "D. Inativo"}
                              </div>
                           </td>
 
-                          {/* AÇÕES */}
-                          <td className="px-10 py-8 text-right">
-                             <div className="flex items-center justify-end gap-3 opacity-0 group-hover/row:opacity-100 transition-opacity">
+                          <td className="px-8 py-6 text-right">
+                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
                                 <button 
                                   onClick={() => {
                                      setSelectedContact(contact)
                                      setIsDetailOpen(true)
                                   }}
-                                  className="w-11 h-11 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-xl text-[#F2F2F2] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all focus:outline-none shadow-xl"
+                                  className="w-9 h-9 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-lg text-[#F2F2F2] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all shadow-xl"
                                 >
-                                   <span className="material-symbols-outlined text-[20px]">visibility</span>
+                                   <span className="material-symbols-outlined text-[18px]">visibility</span>
                                 </button>
                                 <button 
                                   onClick={() => {
                                      setSelectedContact(contact)
                                      setIsEditOpen(true)
                                   }}
-                                  className="w-11 h-11 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-xl text-[#F2F2F2] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all focus:outline-none shadow-xl"
+                                  className="w-9 h-9 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-lg text-[#F2F2F2] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all shadow-xl"
                                 >
-                                   <span className="material-symbols-outlined text-[20px]">edit</span>
+                                   <span className="material-symbols-outlined text-[18px]">edit</span>
                                 </button>
                              </div>
                           </td>

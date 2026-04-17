@@ -111,21 +111,21 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
   }
 
   return (
-    <div className="space-y-16 pb-20">
+    <div className="space-y-10 pb-20">
       {groups.map((group) => (
         <div key={group.title} className="animate-in fade-in slide-in-from-bottom-6 duration-700">
-          <div className="flex items-center gap-4 mb-8 ml-4">
-            <div className="w-1.5 h-6 rounded-full shadow-lg" style={{ backgroundColor: group.color, boxShadow: `0 0 20px ${group.color}40` }} />
-            <h3 className="text-[14px] font-black uppercase tracking-[0.4em] text-white/90 italic">{group.title}</h3>
-            <span className="text-[10px] font-mono font-black text-secondary px-3 py-0.5 bg-white/5 border border-white/10 rounded-full">{group.items.length}</span>
+          <div className="flex items-center gap-3 mb-4 ml-4">
+            <div className="w-1.5 h-4 rounded-full shadow-lg" style={{ backgroundColor: group.color }} />
+            <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-white/90 italic">{group.title}</h3>
+            <span className="text-[9px] font-mono font-black text-secondary px-2 py-0.5 bg-white/5 border border-white/10 rounded-full">{group.items.length}</span>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {group.items.map((item, i) => (
               <div 
                 key={item.id} 
                 className={cn(
-                  "flex items-center gap-6 p-6 rounded-[32px] border transition-all duration-300 group relative overflow-hidden",
+                  "flex items-center gap-5 p-4 rounded-[24px] border transition-all duration-300 group relative overflow-hidden",
                   item.status === "DONE" 
                     ? "bg-black/40 border-white/5 opacity-50" 
                     : "bg-[#0D0D0D] border-white/5 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-0.5"
@@ -135,35 +135,33 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                 <button 
                   onClick={() => toggleMutation.mutate({ id: item.id, status: item.status === "OPEN" ? "DONE" : "OPEN" })}
                   className={cn(
-                    "w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all duration-500 shrink-0",
+                    "w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-500 shrink-0",
                     item.status === "DONE" 
                       ? "bg-primary border-primary text-black" 
                       : "border-white/10 hover:border-primary/60 hover:bg-primary/5"
                   )}
                 >
-                  {item.status === "DONE" && <span className="material-symbols-outlined text-[18px] font-black">check</span>}
-                  {item.status !== "DONE" && <div className="w-1.5 h-1.5 rounded-full bg-white/10 transition-all group-hover:bg-primary/40" />}
+                  {item.status === "DONE" && <span className="material-symbols-outlined text-[14px] font-black">check</span>}
                 </button>
 
                 {/* ICON BLOCK */}
                 <div 
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-500 group-hover:rotate-6 group-hover:scale-110 shrink-0"
+                  className="w-11 h-11 rounded-xl flex items-center justify-center shadow-2xl transition-all duration-500 group-hover:rotate-6 shrink-0"
                   style={{ 
-                    backgroundColor: `${String(TYPE_COLORS[item.tipo] || '#64748B')}15`, 
-                    border: `1px solid ${String(TYPE_COLORS[item.tipo] || '#64748B')}30`,
-                    boxShadow: `0 10px 30px -10px ${String(TYPE_COLORS[item.tipo] || '#64748B')}40`
+                    backgroundColor: `${String(TYPE_COLORS[item.tipo] || '#64748B')}10`, 
+                    border: `1px solid ${String(TYPE_COLORS[item.tipo] || '#64748B')}20`,
                   }}
                 >
-                  <span className="material-symbols-outlined text-[24px] transition-all" style={{ color: String(TYPE_COLORS[item.tipo] || '#64748B') }}>
+                  <span className="material-symbols-outlined text-[20px] transition-all" style={{ color: String(TYPE_COLORS[item.tipo] || '#64748B') }}>
                     {String(TYPE_ICONS[item.tipo] || 'event')}
                   </span>
                 </div>
 
                 {/* MAIN CONTENT */}
                 <div className="flex-1 min-w-0 pr-4">
-                  <div className="flex items-center gap-3 mb-1.5">
+                  <div className="flex items-center gap-3 mb-1">
                     <h4 className={cn(
-                      "text-[16px] font-black text-white tracking-tight truncate uppercase leading-tight",
+                      "text-[14px] font-black text-white tracking-tight truncate uppercase leading-none",
                       item.status === "DONE" && "text-secondary line-through"
                     )}>{String(item.titulo || "Sem Título")}</h4>
                     
@@ -171,28 +169,28 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                       const d = safeDate(item.dueAt)
                       if (d && isBefore(d, now) && item.status === "OPEN") {
                         return (
-                          <span className="px-2 py-0.5 rounded-lg bg-red-500/10 text-red-500 text-[8px] font-black uppercase tracking-[0.2em] border border-red-500/20">Atrasado</span>
+                          <span className="px-1.5 py-0.5 rounded-lg bg-red-500/10 text-red-500 text-[7px] font-black uppercase tracking-[0.1em] border border-red-500/20">Atrasado</span>
                         )
                       }
                       return null
                     })()}
                   </div>
                   
-                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                    <p className="text-[12px] text-secondary font-bold truncate max-w-[500px] italic">
-                      {String(item.descricao || "Sem detalhes adicionais...")}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                    <p className="text-[11px] text-secondary font-bold truncate max-w-[500px] italic">
+                      {String(item.descricao || "Sem detalhes...")}
                     </p>
                     
-                    <div className="flex items-center gap-4 border-l border-white/5 pl-4 ml-2">
+                    <div className="flex items-center gap-3 border-l border-white/5 pl-3">
                       {item.contact && (
-                        <div className="flex items-center gap-2 text-[10px] text-primary font-black uppercase tracking-tighter hover:opacity-100 transition-opacity">
-                          <span className="material-symbols-outlined text-[15px]">person</span>
+                        <div className="flex items-center gap-1.5 text-[9px] text-primary font-black uppercase tracking-tighter">
+                          <span className="material-symbols-outlined text-[13px]">person</span>
                           {String(item.contact?.nome || '')}
                         </div>
                       )}
                       {item.deal && (
-                        <div className="flex items-center gap-2 text-[10px] text-[#A855F7] font-black uppercase tracking-tighter hover:opacity-100 transition-opacity">
-                          <span className="material-symbols-outlined text-[15px]">attach_money</span>
+                        <div className="flex items-center gap-1.5 text-[9px] text-[#A855F7] font-black uppercase tracking-tighter">
+                          <span className="material-symbols-outlined text-[13px]">attach_money</span>
                           {String(item.deal?.titulo || '')}
                         </div>
                       )}
@@ -201,15 +199,15 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                 </div>
 
                 {/* INFO & ACTIONS */}
-                <div className="flex items-center gap-8 shrink-0">
-                   <div className="text-right border-r border-white/5 pr-8 hidden lg:block">
-                      <div className="text-[12px] font-mono font-black text-white italic tracking-tighter">
+                <div className="flex items-center gap-6 shrink-0">
+                   <div className="text-right border-r border-white/5 pr-6 hidden lg:block">
+                      <div className="text-[11px] font-mono font-black text-white leading-none">
                         {(() => {
                            const d = safeDate(item.dueAt)
                            return d ? format(d, "HH:mm") : '--:--'
                         })()}
                       </div>
-                      <div className="text-[9px] font-black text-secondary uppercase tracking-[0.2em] mt-1">
+                      <div className="text-[8px] font-black text-secondary uppercase tracking-[0.1em] mt-1">
                         {(() => {
                            const d = safeDate(item.dueAt)
                            if (!d) return 'Sem data'
@@ -223,19 +221,19 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                    <div className="flex items-center gap-2 opacity-30 group-hover:opacity-100 transition-all duration-300">
                       <button 
                         onClick={() => onEdit(item)}
-                        className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 border border-white/10 hover:border-primary/50 text-white transition-all hover:scale-110 active:scale-90"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5 border border-white/10 hover:border-primary/50 text-white transition-all"
                         title="Editar"
                       >
-                        <span className="material-symbols-outlined text-[20px]">edit</span>
+                        <span className="material-symbols-outlined text-[16px]">edit</span>
                       </button>
                       <button 
                         onClick={() => {
                           if (confirm("Confirmar exclusão?")) deleteMutation.mutate(item.id)
                         }}
-                        className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 border border-white/10 hover:border-red-500/50 text-white/50 hover:text-red-500 transition-all hover:scale-110 active:scale-90"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5 border border-white/10 hover:border-red-500/50 text-white/50 hover:text-red-500 transition-all"
                         title="Deletar"
                       >
-                        <span className="material-symbols-outlined text-[20px]">delete</span>
+                        <span className="material-symbols-outlined text-[16px]">delete</span>
                       </button>
                    </div>
                 </div>
