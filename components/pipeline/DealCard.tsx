@@ -12,6 +12,7 @@ export interface Deal {
   stageId?: string | null
   telefone?: string | null
   origem?: string | null
+  dataPrevista?: string | null
   createdAt: string
   contact?: {
     nome: string

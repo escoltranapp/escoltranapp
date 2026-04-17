@@ -11,81 +11,86 @@ export async function GET(req: NextRequest) {
     }
 
     const now = new Date()
-    const currentMonthStart = startOfMonth(now)
     const lastMonthStart = startOfMonth(subMonths(now, 1))
     const lastMonthEnd = endOfMonth(subMonths(now, 1))
 
     // 1. Total de Contatos & Crescimento
-    const totalContacts = await prisma.contato.count()
-    const lastMonthContacts = await prisma.contato.count({
-      where: { createdAt: { gte: lastMonthStart, lte: lastMonthEnd } }
+    const totalContacts = await prisma.contact.count({
+      where: { userId: session.user.id },
     })
-    const contactsTrend = lastMonthContacts > 0 
-      ? `+${Math.round(((totalContacts - lastMonthContacts) / lastMonthContacts) * 100)}%` 
-      : "+0%"
+    const lastMonthContacts = await prisma.contact.count({
+      where: { userId: session.user.id, createdAt: { gte: lastMonthStart, lte: lastMonthEnd } },
+    })
+    const contactsTrend =
+      lastMonthContacts > 0
+        ? `+${Math.round(((totalContacts - lastMonthContacts) / lastMonthContacts) * 100)}%`
+        : "+0%"
 
     // 2. Deals Abertos & Valor em Pipeline
     const dealsAbertosCount = await prisma.deal.count({
-      where: { status: "OPEN" }
+      where: { userId: session.user.id, status: "OPEN" },
     })
     const pipelineValue = await prisma.deal.aggregate({
-      where: { status: "OPEN" },
-      _sum: { valor: true }
+      where: { userId: session.user.id, status: "OPEN" },
+      _sum: { valorEstimado: true },
     })
 
     // 3. Taxa de Conversão (Ganhos / (Ganhos + Perdas))
-    const wonDeals = await prisma.deal.count({ where: { status: "WON" } })
-    const lostDeals = await prisma.deal.count({ where: { status: "LOST" } })
-    const conversionRate = (wonDeals + lostDeals) > 0 
-      ? Math.round((wonDeals / (wonDeals + lostDeals)) * 100) 
-      : 0
+    const wonDeals = await prisma.deal.count({ where: { userId: session.user.id, status: "WON" } })
+    const lostDeals = await prisma.deal.count({ where: { userId: session.user.id, status: "LOST" } })
+    const conversionRate =
+      wonDeals + lostDeals > 0 ? Math.round((wonDeals / (wonDeals + lostDeals)) * 100) : 0
 
     // 4. Receita Fechada & Tendência
     const totalRevenue = await prisma.deal.aggregate({
-      where: { status: "WON" },
-      _sum: { valor: true }
+      where: { userId: session.user.id, status: "WON" },
+      _sum: { valorEstimado: true },
     })
     const lastMonthRevenue = await prisma.deal.aggregate({
-      where: { 
+      where: {
+        userId: session.user.id,
         status: "WON",
-        updatedAt: { gte: lastMonthStart, lte: lastMonthEnd } 
+        updatedAt: { gte: lastMonthStart, lte: lastMonthEnd },
       },
-      _sum: { valor: true }
+      _sum: { valorEstimado: true },
     })
-    const revenueTrend = (lastMonthRevenue._sum.valor || 0) > 0
-      ? `+${Math.round((((totalRevenue._sum.valor || 0) - (lastMonthRevenue._sum.valor || 0)) / (lastMonthRevenue._sum.valor || 0)) * 100)}%`
-      : "+0%"
+    const revTotal = totalRevenue._sum.valorEstimado ?? 0
+    const revLastMonth = lastMonthRevenue._sum.valorEstimado ?? 0
+    const revenueTrend =
+      revLastMonth > 0
+        ? `+${Math.round(((revTotal - revLastMonth) / revLastMonth) * 100)}%`
+        : "+0%"
 
     // 5. Deals Recentes
     const recentDeals = await prisma.deal.findMany({
+      where: { userId: session.user.id },
       take: 4,
       orderBy: { updatedAt: "desc" },
-      include: { contact: true }
+      include: { contact: true },
     })
 
-    // 6. Performance UTM (Mock por enquanto até termos a tabela de UTM completa)
-    // Se o sistema já tiver campos de UTM no Lead, podemos contar aqui.
+    // 6. Performance UTM
+    const totalDeals = await prisma.deal.count({ where: { userId: session.user.id } })
     const utmPerformance = {
       leadsRastreados: totalContacts,
-      dealsAtribuidos: await prisma.deal.count(),
-      conversao: `${((wonDeals / totalContacts) * 100 || 0).toFixed(1)}%`,
-      receita: totalRevenue._sum.valor || 0,
+      dealsAtribuidos: totalDeals,
+      conversao: `${totalContacts > 0 ? ((wonDeals / totalContacts) * 100).toFixed(1) : "0.0"}%`,
+      receita: revTotal,
       topCampanhas: [
-        { nome: "Direto", valor: totalRevenue._sum.valor ? totalRevenue._sum.valor * 0.6 : 0 },
-        { nome: "Google Ads", valor: totalRevenue._sum.valor ? totalRevenue._sum.valor * 0.3 : 0 },
-        { nome: "Facebook", valor: totalRevenue._sum.valor ? totalRevenue._sum.valor * 0.1 : 0 },
-      ]
+        { nome: "Direto", valor: revTotal * 0.6 },
+        { nome: "Google Ads", valor: revTotal * 0.3 },
+        { nome: "Facebook", valor: revTotal * 0.1 },
+      ],
     }
 
     return NextResponse.json({
       contacts: { total: totalContacts, trend: contactsTrend },
-      deals: { total: dealsAbertosCount, value: pipelineValue._sum.valor || 0 },
+      deals: { total: dealsAbertosCount, value: pipelineValue._sum.valorEstimado ?? 0 },
       conversion: { rate: conversionRate, won: wonDeals, lost: lostDeals },
-      revenue: { total: totalRevenue._sum.valor || 0, trend: revenueTrend },
+      revenue: { total: revTotal, trend: revenueTrend },
       recentDeals,
-      utmPerformance
+      utmPerformance,
     })
-
   } catch (error) {
     console.error("Dashboard Metrics Error:", error)
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })

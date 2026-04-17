@@ -25,7 +25,6 @@ export async function GET(req: NextRequest) {
       include: {
         contact: { select: { nome: true, sobrenome: true, email: true, telefone: true, tags: true } },
         stage: { select: { id: true, name: true, color: true, order: true } },
-        user: { select: { name: true } },
       },
     })
 

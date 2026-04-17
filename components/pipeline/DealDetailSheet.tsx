@@ -144,7 +144,7 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
               <div className="grid grid-cols-2 gap-6 bg-[#1A1A1A] border border-white/5 p-6 rounded-2xl">
                 <div className="space-y-1">
                   <div className="text-[9px] font-mono font-bold text-[#404040] uppercase tracking-widest">First Source</div>
-                  <div className="text-[13px] font-bold text-white uppercase italic">{deal.origin || "Direct"}</div>
+                  <div className="text-[13px] font-bold text-white uppercase italic">{deal.origem || "Direct"}</div>
                 </div>
                 <div className="space-y-1">
                   <div className="text-[9px] font-mono font-bold text-[#404040] uppercase tracking-widest">First Campaign</div>
