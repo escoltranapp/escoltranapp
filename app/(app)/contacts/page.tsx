@@ -104,10 +104,6 @@ export default function ContactsPage() {
                   <h1 className="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
                     CRM
                   </h1>
-                  <p className="text-[#404040] text-xs font-mono font-black uppercase tracking-[0.5em] mt-3 flex items-center gap-3">
-                     <span className="w-8 h-[1px] bg-[#262626]" />
-                     Escaneando Cluster: Escoltran Cloud Architecture
-                  </p>
                </div>
             </div>
           </div>
