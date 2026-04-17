@@ -196,7 +196,7 @@ export default function LeadSearchPage() {
                                  <SelectValue placeholder={searchData.estado ? "Selecione a Cidade" : "Aguardando Estado..."} />
                               </SelectTrigger>
                               <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[300px]">
-                                 {citiesForState.map(c => <SelectItem key={c} value={c} className="focus:bg-[#F97316]">{c}</SelectItem>)}
+                                 {citiesForState.map((c: string) => <SelectItem key={c} value={c} className="focus:bg-[#F97316]">{c}</SelectItem>)}
                                  <SelectItem value="custom" className="focus:bg-[#F97316] text-[#F97316] font-black italic">+ OUTRA CIDADE</SelectItem>
                               </SelectContent>
                            </Select>
