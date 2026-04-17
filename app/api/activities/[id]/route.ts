@@ -14,7 +14,7 @@ export async function PATCH(
 
     const { id } = await params
     const body = await req.json()
-    const { status, titulo, descricao, dueAt } = body
+    const { status, titulo, descricao, dueAt, tipo } = body
 
     const existing = await prisma.activity.findFirst({
       where: { id, ownerUserId: session.user.id },
@@ -31,6 +31,7 @@ export async function PATCH(
     }
     if (titulo !== undefined) updateData.titulo = titulo
     if (descricao !== undefined) updateData.descricao = descricao
+    if (tipo !== undefined) updateData.tipo = tipo
     if (dueAt !== undefined) updateData.dueAt = dueAt ? new Date(dueAt) : null
 
     const activity = await prisma.activity.update({

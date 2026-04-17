@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
+import { auth, getTeamUserIds } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
 export async function GET(req: NextRequest) {
@@ -9,11 +9,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const teamUserIds = await getTeamUserIds(session.user.id)
     const { searchParams } = new URL(req.url)
     const status = searchParams.get("status")
 
     const where = {
-      ownerUserId: session.user.id,
+      ownerUserId: { in: teamUserIds },
       ...(status && { status: status as "OPEN" | "DONE" }),
     }
 
