@@ -273,7 +273,14 @@ export default function ListasDisparoPage() {
   const disparar = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/listas-disparo/${id}/disparar`, { method: "POST" })
-      const body = await res.json()
+      
+      let body
+      try {
+        body = await res.json()
+      } catch (e) {
+        throw new Error(`Falha no servidor (${res.status}). Verifique os logs do Easypanel.`)
+      }
+
       if (!res.ok) throw new Error(body.error || "Erro ao disparar")
       return body
     },
