@@ -40,6 +40,8 @@ function ActivitiesContent() {
       if (!res.ok) throw new Error("Erro ao carregar atividades")
       let data = await res.json()
       
+      if (!Array.isArray(data)) return []
+
       if (typeFilter !== "ALL") {
         data = data.filter((a: any) => a.tipo === typeFilter)
       }

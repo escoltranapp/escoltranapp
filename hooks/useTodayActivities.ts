@@ -15,6 +15,8 @@ export function useTodayActivities() {
       if (!res.ok) throw new Error("Erro ao carregar atividades do dia")
       const data = await res.json()
       
+      if (!Array.isArray(data)) return []
+
       return data.filter((a: any) => {
         if (!a.dueAt) return false
         const d = new Date(a.dueAt)

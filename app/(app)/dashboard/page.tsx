@@ -179,7 +179,11 @@ export default function DashboardPage() {
                               {item.titulo}
                            </p>
                            <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.2em]">
-                              {item.dueAt ? format(new Date(item.dueAt), "HH:mm") : 'Sem hora'}
+                              {(() => {
+                                 if (!item.dueAt) return 'Sem hora'
+                                 const d = new Date(item.dueAt)
+                                 return isNaN(d.getTime()) ? 'Hora Inválida' : format(d, "HH:mm")
+                              })()}
                            </p>
                         </div>
                      </div>

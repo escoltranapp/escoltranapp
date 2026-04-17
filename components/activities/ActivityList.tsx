@@ -62,12 +62,30 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
 
   const now = startOfDay(new Date())
   
+  const safeDate = (dateStr: any) => {
+    if (!dateStr) return null
+    const d = new Date(dateStr)
+    return isNaN(d.getTime()) ? null : d
+  }
+
   const groups = [
-    { title: 'Atrasadas', items: activities.filter(a => a.status === "OPEN" && a.dueAt && isBefore(new Date(a.dueAt), now)), color: '#EF4444' },
-    { title: 'Para Hoje', items: activities.filter(a => a.status === "OPEN" && a.dueAt && isToday(new Date(a.dueAt))), color: '#3B82F6' },
-    { title: 'Amanhã', items: activities.filter(a => a.status === "OPEN" && a.dueAt && isTomorrow(new Date(a.dueAt))), color: '#F59E0B' },
-    { title: 'Próximas', items: activities.filter(a => a.status === "OPEN" && a.dueAt && isAfter(startOfDay(new Date(a.dueAt)), startOfDay(new Date(now.getTime() + 86400000)))), color: '#8B5CF6' },
-    { title: 'Sem Data', items: activities.filter(a => a.status === "OPEN" && !a.dueAt), color: '#6B7280' },
+    { title: 'Atrasadas', items: activities.filter(a => {
+      const d = safeDate(a.dueAt)
+      return a.status === "OPEN" && d && isBefore(d, now)
+    }), color: '#EF4444' },
+    { title: 'Para Hoje', items: activities.filter(a => {
+      const d = safeDate(a.dueAt)
+      return a.status === "OPEN" && d && isToday(d)
+    }), color: '#3B82F6' },
+    { title: 'Amanhã', items: activities.filter(a => {
+      const d = safeDate(a.dueAt)
+      return a.status === "OPEN" && d && isTomorrow(d)
+    }), color: '#F59E0B' },
+    { title: 'Próximas', items: activities.filter(a => {
+      const d = safeDate(a.dueAt)
+      return a.status === "OPEN" && d && isAfter(startOfDay(d), startOfDay(new Date(now.getTime() + 86400000)))
+    }), color: '#8B5CF6' },
+    { title: 'Sem Data', items: activities.filter(a => a.status === "OPEN" && !safeDate(a.dueAt)), color: '#6B7280' },
     { title: 'Concluídas', items: activities.filter(a => a.status === "DONE"), color: '#22C55E' },
   ].filter(g => g.items.length > 0)
 
@@ -130,9 +148,12 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                       "text-[14px] font-bold text-foreground truncate italic",
                       item.status === "DONE" && "line-through"
                     )}>{item.titulo}</h4>
-                    {item.dueAt && isBefore(new Date(item.dueAt), now) && item.status === "OPEN" && (
-                      <span className="px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 text-[8px] font-black font-mono uppercase tracking-widest border border-red-500/20">Atrasado</span>
-                    )}
+                    {(() => {
+                      const d = safeDate(item.dueAt)
+                      return d && isBefore(d, now) && item.status === "OPEN" && (
+                        <span className="px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 text-[8px] font-black font-mono uppercase tracking-widest border border-red-500/20">Atrasado</span>
+                      )
+                    })()}
                   </div>
                   <div className="flex items-center gap-4">
                     <p className="text-[11px] text-secondary font-medium truncate max-w-[400px]">
@@ -157,10 +178,16 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                 <div className="flex items-center gap-2">
                    <div className="text-right mr-4 hidden md:block">
                       <div className="text-[10px] font-mono font-black text-foreground uppercase tracking-widest">
-                        {item.dueAt ? format(new Date(item.dueAt), "HH:mm") : '--:--'}
+                        {(() => {
+                           const d = safeDate(item.dueAt)
+                           return d ? format(d, "HH:mm") : '--:--'
+                        })()}
                       </div>
                       <div className="text-[9px] font-bold text-secondary uppercase tracking-tighter">
-                        {item.dueAt ? format(new Date(item.dueAt), "dd MMM", { locale: ptBR }) : 'Sem data'}
+                        {(() => {
+                           const d = safeDate(item.dueAt)
+                           return d ? format(d, "dd MMM", { locale: ptBR }) : 'Sem data'
+                        })()}
                       </div>
                    </div>
                    
