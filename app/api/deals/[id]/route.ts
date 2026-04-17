@@ -57,10 +57,39 @@ export async function PATCH(
       },
     })
 
-    // Record stage change in history
+    // Record stage change in history and create automatic activity
     if (stageId && stageId !== existing.stageId) {
+      // 1. Record in history
       await prisma.dealStageHistory.create({
         data: { dealId: id, stageId, movedBy: session.user.id },
+      })
+
+      // 2. Map stage to activity type for automatic registration
+      const mapStageToActivityType = (name: string) => {
+        const n = name.toLowerCase()
+        if (n.includes('proposta')) return 'REUNIAO'
+        if (n.includes('negocia')) return 'TAREFA'
+        if (n.includes('qualifica')) return 'LIGACAO'
+        if (n.includes('prospec')) return 'NOTA'
+        if (n.includes('fechamento')) return 'WHATSAPP'
+        return 'TAREFA'
+      }
+
+      const activityType = mapStageToActivityType(deal.stage.name)
+      const contactName = deal.contact ? `${deal.contact.nome} ${deal.contact.sobrenome}` : 'Nenhum contato vinculado'
+
+      // 3. Create the activity
+      await prisma.activity.create({
+        data: {
+          tipo: activityType,
+          titulo: `Card movido para ${deal.stage.name}`,
+          descricao: `${deal.titulo} - ${contactName}`,
+          dueAt: new Date(),
+          status: 'DONE', // Moved activities are records of past actions, so status as done makes sense as a 'record'
+          contactId: deal.contactId,
+          dealId: deal.id,
+          ownerUserId: session.user.id,
+        }
       })
     }
 
