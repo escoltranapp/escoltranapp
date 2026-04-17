@@ -451,11 +451,14 @@ export default function LeadSearchPage() {
                </div>
             )}
 
-            <div className="flex justify-center pt-8 border-t border-white/[0.03]">
-               <button className="text-[11px] font-mono font-black text-[#404040] hover:text-[#F97316] transition-colors uppercase tracking-[0.5em] italic">Carregar mais registros do diretório</button>
-            </div>
-         </div>
-      </div>
+           <button 
+              onClick={() => setDisplayLimit(prev => prev + 10)}
+              className="w-full py-10 text-[11px] font-mono font-black text-[#404040] hover:text-white uppercase tracking-[0.8em] transition-all border-t border-white/5 hover:bg-white/[0.01]"
+           >
+              {isLoadingRecent && displayLimit > 10 ? "CARREGANDO..." : "CARREGAR MAIS REGISTROS DO DIRETÓRIO"}
+           </button>
+        </div>
+      </section>
 
       <NewContactDialog 
         open={isNewContactOpen}
