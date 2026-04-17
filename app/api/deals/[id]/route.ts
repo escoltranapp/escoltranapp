@@ -67,12 +67,12 @@ export async function PATCH(
       // 2. Map stage to activity type for automatic registration
       const mapStageToActivityType = (name: string) => {
         const n = name.toLowerCase()
-        if (n.includes('proposta')) return 'REUNIAO'
-        if (n.includes('negocia')) return 'TAREFA'
-        if (n.includes('qualifica')) return 'LIGACAO'
-        if (n.includes('prospec')) return 'NOTA'
+        if (n.includes('proposta')) return 'MEETING'
+        if (n.includes('negocia')) return 'TASK'
+        if (n.includes('qualifica')) return 'CALL'
+        if (n.includes('prospec')) return 'NOTE'
         if (n.includes('fechamento')) return 'WHATSAPP'
-        return 'TAREFA'
+        return 'TASK'
       }
 
       const stageName = deal.stage?.name || 'Etapa Desconhecida'
