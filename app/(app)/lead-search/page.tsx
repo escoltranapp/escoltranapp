@@ -106,13 +106,6 @@ export default function LeadSearchPage() {
     { cnpj: "33.683.111/0001-07", empresa: "SERVIÇO FEDERAL ...", telefone: "(61) 2021-8000", email: "secretaria.diretoria@...", situacao: "ATIVA", cidade: "BRASILIA/DF" }
   ]
 
-
-  const cnpjLeads = [
-    { cnpj: "46.403.379/0001-81", empresa: "SHEGO LENE E ANN...", telefone: "(64) 9320-3707", email: "xmlleneanne@gmai...", situacao: "ATIVA", cidade: "SANTA HELENA DE GOIAS/GO" },
-    { cnpj: "13.590.585/0001-99", empresa: "NETFLIX ENTRETE...", telefone: "(11) 4228-6851", email: "corporatebrazil@net...", situacao: "ATIVA", cidade: "SAO PAULO/SP" },
-    { cnpj: "33.683.111/0001-07", empresa: "SERVIÇO FEDERAL ...", telefone: "(61) 2021-8000", email: "secretaria.diretoria@...", situacao: "ATIVA", cidade: "BRASILIA/DF" }
-  ]
-
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-12 space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
       

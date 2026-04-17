@@ -1,19 +1,20 @@
-import { createClient } from "@/lib/supabase/server"
+import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
 export async function GET() {
-  const supabase = await createClient()
+  try {
+    const data = await prisma.contact.findMany({
+      where: {
+        canalOrigem: "Google"
+      },
+      orderBy: {
+        updatedAt: 'desc'
+      },
+      take: 10
+    })
 
-  const { data, error } = await supabase
-    .from("contacts")
-    .select("*")
-    .eq("canalOrigem", "Google")
-    .order("updatedAt", { ascending: false })
-    .limit(10)
-
-  if (error) {
+    return NextResponse.json(data)
+  } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
-
-  return NextResponse.json(data)
 }
