@@ -90,6 +90,8 @@ export default function LeadSearchPage() {
     }
   }
 
+  const citiesForState = searchData.estado ? (mainCitiesByState as any)[searchData.estado] || [] : []
+
   const { data: recentLeads = [], isLoading: isLoadingRecent } = useQuery({
     queryKey: ["recent-google-leads"],
     queryFn: async () => {
