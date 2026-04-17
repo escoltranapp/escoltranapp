@@ -148,7 +148,8 @@ export default function LeadSearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-8 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
+  return (
+    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
       
       {/* IMMERSIVE AETHER BACKGROUND */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F97316]/5 blur-[120px] rounded-full pointer-events-none" />
@@ -156,7 +157,7 @@ export default function LeadSearchPage() {
       {/* HEADER ESCOLTRAN STYLE */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-10 relative z-10">
         <div className="space-y-4">
-           <h1 className="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
+           <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
              Busca de <span className="text-[#F97316]">Leads</span>
            </h1>
            <div className="flex items-center gap-4">
@@ -171,25 +172,25 @@ export default function LeadSearchPage() {
            <div className={`absolute inset-y-2 w-[140px] bg-[#F97316] rounded-2xl transition-all duration-500 shadow-[0_0_30px_rgba(249,115,22,0.3)] ${activeMode === 'cnpj' ? 'translate-x-[150px]' : 'translate-x-0'}`} />
            <button 
               onClick={() => setActiveMode("google")}
-              className={`relative z-10 px-8 py-4 text-[11px] font-black uppercase tracking-widest transition-colors duration-300 w-[140px] ${activeMode === 'google' ? 'text-white' : 'text-[#404040]'}`}
+              className={`relative z-10 px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 w-[120px] ${activeMode === 'google' ? 'text-white' : 'text-[#404040]'}`}
            >
               Busca Google
            </button>
            <button 
               onClick={() => setActiveMode("cnpj")}
-              className={`relative z-10 px-8 py-4 text-[11px] font-black uppercase tracking-widest transition-colors duration-300 w-[140px] ${activeMode === 'cnpj' ? 'text-white' : 'text-[#404040]'}`}
+              className={`relative z-10 px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 w-[120px] ${activeMode === 'cnpj' ? 'text-white' : 'text-[#404040]'}`}
            >
               Busca CNPJ
            </button>
         </div>
       </header>
 
-      <section className="relative z-10 space-y-10">
+      <section className="relative z-10 space-y-8">
         {/* BUSCA FORM */}
-        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-[32px] p-8 md:p-10 shadow-2xl relative group overflow-hidden">
+        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-[32px] p-8 shadow-2xl relative group overflow-hidden">
              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#F97316]/30 to-transparent" />
              
-             <div className="flex items-center gap-6 mb-12">
+             <div className="flex items-center gap-6 mb-8">
                 <span className="material-symbols-outlined text-[#F97316] text-[24px] animate-pulse">
                    {activeMode === "google" ? "public" : "database"}
                 </span>
@@ -199,14 +200,14 @@ export default function LeadSearchPage() {
              </div>
 
              {activeMode === "google" ? (
-                <div className="space-y-10">
-                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="space-y-8">
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-3">
                          <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">ESTADO</label>
-                         <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val, cidade: ""}))}>
-                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
-                               <SelectValue placeholder="Selecione o Estado" />
-                            </SelectTrigger>
+                          <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val, cidade: ""}))}>
+                             <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-12 rounded-xl text-white font-black tracking-widest px-6 text-[11px]">
+                                <SelectValue placeholder="Selecione o Estado" />
+                             </SelectTrigger>
                             <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[300px]">
                                {brazilianStates.map(s => <SelectItem key={s.value} value={s.value} className="focus:bg-[#F97316]">{s.label}</SelectItem>)}
                             </SelectContent>
@@ -227,8 +228,8 @@ export default function LeadSearchPage() {
                                  }
                               }}
                            >
-                              <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6 disabled:opacity-20 flex-1">
-                                 <SelectValue placeholder={searchData.estado ? (isLoadingCities ? "Carregando cidades..." : "Selecione a Cidade") : "Aguardando Estado..."} />
+                              <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-12 rounded-xl text-white font-black tracking-widest px-6 disabled:opacity-20 flex-1 text-[11px]">
+                                 <SelectValue placeholder={searchData.estado ? (isLoadingCities ? "Sincronizando..." : "Selecione") : "Estado..."} />
                               </SelectTrigger>
                               <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[400px] p-0 overflow-hidden flex flex-col">
                                  <div className="p-3 sticky top-0 bg-[#0A0A0A] z-10 border-b border-white/5">
@@ -262,10 +263,10 @@ export default function LeadSearchPage() {
                            
                            {(!searchData.cidade || searchData.cidade === "custom") && searchData.estado && (
                               <input 
-                                 placeholder="OU DIGITE AQUI..."
+                                 placeholder="OU DIGITE..."
                                  value={customCity}
                                  onChange={(e) => setCustomCity(e.target.value)}
-                                 className="bg-[#0A0A0A]/60 border border-white/[0.06] h-14 rounded-xl text-white font-black text-[11px] tracking-widest px-6 focus:outline-none focus:border-[#F97316]/50 transition-colors w-[180px]"
+                                 className="bg-[#0A0A0A]/60 border border-white/[0.06] h-12 rounded-xl text-white font-black text-[10px] tracking-widest px-6 focus:outline-none focus:border-[#F97316]/50 transition-colors w-[150px] uppercase"
                               />
                            )}
                         </div>
@@ -274,7 +275,7 @@ export default function LeadSearchPage() {
                       <div className="space-y-3">
                          <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">NICHO DE MERCADO</label>
                          <Select onValueChange={(val) => setSearchData(s => ({...s, nicho: val}))}>
-                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
+                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-12 rounded-xl text-white font-black tracking-widest px-6 text-[11px]">
                                <SelectValue placeholder="Selecione o Nicho" />
                             </SelectTrigger>
                             <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[400px]">
@@ -291,7 +292,7 @@ export default function LeadSearchPage() {
                    <button 
                      onClick={handleSearch}
                      disabled={isSearching}
-                     className="w-full h-20 bg-[#F97316] text-white rounded-[24px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-4 hover:bg-[#F97316]/90 transition-all hover:scale-[1.01] hover:shadow-[0_20px_40px_rgba(249,115,22,0.2)] disabled:opacity-50 disabled:scale-100"
+                     className="w-full h-14 bg-[#F97316] text-white rounded-[20px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-4 hover:bg-[#F97316]/90 transition-all hover:scale-[1.01] hover:shadow-[0_20px_40px_rgba(249,115,22,0.2)] disabled:opacity-50 disabled:scale-100 text-[12px]"
                    >
                      {isSearching ? (
                         <>
@@ -340,27 +341,27 @@ export default function LeadSearchPage() {
         </div>
 
         {/* STATS PREVIEW */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
            {[
              { label: "Total Google", value: "4.950", icon: "public", color: "#F97316" },
              { label: "Leads Hoje", value: "12", icon: "calendar_today", color: "#22C55E" },
              { label: "Conversões", value: "158", icon: "trending_up", color: "#A855F7" },
              { label: "Na Semana", value: "78", icon: "event", color: "#3B82F6" }
            ].map((stat, i) => (
-              <div key={i} className="bg-[#0D0D0D] border border-white/[0.03] p-8 rounded-[32px] flex flex-col items-center justify-center gap-6 group hover:border-[#F97316]/20 transition-all">
-                 <div className="h-14 w-14 rounded-2xl bg-[#1A1A1A] border border-white/5 flex items-center justify-center group-hover:bg-[#F97316]/10 transition-all">
-                    <span className="material-symbols-outlined text-[24px]" style={{ color: stat.color }}>{stat.icon}</span>
+              <div key={i} className="bg-[#0D0D0D] border border-white/[0.03] p-6 rounded-[24px] flex flex-col items-center justify-center gap-4 group hover:border-[#F97316]/20 transition-all">
+                 <div className="h-10 w-10 rounded-xl bg-[#1A1A1A] border border-white/5 flex items-center justify-center group-hover:bg-[#F97316]/10 transition-all">
+                    <span className="material-symbols-outlined text-[18px]" style={{ color: stat.color }}>{stat.icon}</span>
                  </div>
-                 <div className="text-center space-y-1">
-                    <div className="text-4xl font-black text-white italic tracking-tighter">{stat.value}</div>
-                    <div className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">{stat.label}</div>
+                 <div className="text-center space-y-0.5">
+                    <div className="text-2xl font-black text-white italic tracking-tighter">{stat.value}</div>
+                    <div className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.2em]">{stat.label}</div>
                  </div>
               </div>
            ))}
         </div>
 
         {/* RECENT LEADS - AETHER STYLE */}
-        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-[32px] p-10 space-y-10">
+        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-[32px] p-8 space-y-8">
            <div className="flex items-center justify-between">
               <div className="flex items-center gap-6">
                  <div className="h-10 w-10 rounded-xl bg-[#F97316]/10 border border-[#F97316]/20 flex items-center justify-center">

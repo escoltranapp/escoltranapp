@@ -20,14 +20,14 @@ function KPICard({
 
         <div className="flex items-start justify-between">
           <div 
-            className="w-14 h-14 rounded-2xl flex items-center justify-center border transition-all duration-500 shadow-xl"
+            className="w-12 h-12 rounded-xl flex items-center justify-center border transition-all duration-500 shadow-xl"
             style={{ 
               backgroundColor: `${color}10`,
               borderColor: `${color}30`,
-              boxShadow: `0 0 20px ${color}10`
+              boxShadow: `0 0 15px ${color}10`
             }}
           >
-            <span className="material-symbols-outlined text-[28px]" style={{ color }}>{icon}</span>
+            <span className="material-symbols-outlined text-[24px]" style={{ color }}>{icon}</span>
           </div>
           {trend && (
              <div className="px-4 py-1.5 rounded-full text-[10px] font-black font-mono tracking-widest text-white bg-white/[0.03] border border-white/[0.06] group-hover/card:bg-[#F97316]/20 group-hover/card:border-[#F97316]/30 transition-all uppercase">
@@ -38,7 +38,7 @@ function KPICard({
 
         <div className="space-y-2 relative z-10 pt-8">
            <div className="text-[11px] font-mono text-[#404040] uppercase tracking-[0.3em] font-black italic group-hover/card:translate-x-1 transition-transform">{label}</div>
-           <div className="text-4xl font-black text-white tracking-tighter font-mono flex items-baseline gap-2">
+           <div className="text-3xl font-black text-white tracking-tighter font-mono flex items-baseline gap-2">
               {value}
            </div>
         </div>
@@ -75,10 +75,10 @@ export default function DashboardPage() {
                   <span className="material-symbols-outlined text-white text-3xl font-black relative z-10">monitoring</span>
                </div>
                <div>
-                  <h1 className="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
+                  <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
                     Overview <span className="text-[#F97316] drop-shadow-[0_0_20px_rgba(249,115,22,0.4)]">Operacional</span>
                   </h1>
-                  <p className="text-[#404040] text-[11px] font-mono font-black uppercase tracking-[0.3em] mt-3 flex items-center gap-3">
+                  <p className="text-[#404040] text-[10px] font-mono font-black uppercase tracking-[0.3em] mt-3 flex items-center gap-3">
                      <span className="w-8 h-[1px] bg-[#262626]" />
                      RELATÓRIO SINCRONIZADO: ESCOLTRAN_CLUSTER_AETHER
                   </p>
@@ -100,7 +100,7 @@ export default function DashboardPage() {
         {/* GRÁFICO REVENUE (GLASSMORPHIC) */}
         <div className="lg:col-span-8 group relative">
            <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[32px] blur-3xl opacity-20 transition-opacity group-hover:opacity-40" />
-           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] p-12 flex flex-col shadow-2xl h-full">
+           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] p-8 flex flex-col shadow-2xl h-full">
               <div className="flex items-center justify-between mb-20">
                  <div className="space-y-1">
                     <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">Evolução de Dataset</h3>
@@ -136,7 +136,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-4 group relative">
            <div className="absolute -inset-1 bg-gradient-to-br from-white/5 to-transparent rounded-[32px] blur-3xl opacity-10 transition-opacity" />
            <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] p-12 shadow-2xl h-full overflow-hidden">
-              <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic mb-12 flex items-center gap-4">
+              <h3 className="text-xl font-black text-white tracking-tighter uppercase italic mb-8 flex items-center gap-4">
                  <span className="material-symbols-outlined text-[#F97316]">history</span>
                  Cluster Log
               </h3>
@@ -173,8 +173,8 @@ export default function DashboardPage() {
       </div>
 
       {/* FAB ESCOLTRAN (GLASSMORPHIC) */}
-      <button className="fixed bottom-12 right-12 w-20 h-20 bg-gradient-to-br from-[#F97316] to-[#FB923C] rounded-3xl shadow-[0_25px_50px_rgba(249,115,22,0.5)] flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all z-[100] group border border-white/20">
-         <span className="material-symbols-outlined text-[36px] font-black group-hover:rotate-180 transition-transform duration-700">add</span>
+      <button className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-br from-[#F97316] to-[#FB923C] rounded-2xl shadow-[0_20px_40px_rgba(249,115,22,0.4)] flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all z-[100] group border border-white/20">
+         <span className="material-symbols-outlined text-[28px] font-black group-hover:rotate-180 transition-transform duration-700">add</span>
       </button>
 
     </div>
