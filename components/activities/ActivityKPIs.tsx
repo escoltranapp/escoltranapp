@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 
 interface ActivityKPIsProps {
@@ -7,6 +8,14 @@ interface ActivityKPIsProps {
 }
 
 export function ActivityKPIs({ activities }: ActivityKPIsProps) {
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return <div className="h-32 bg-surface/50 animate-pulse rounded-2xl mb-12" />
+
   const now = new Date()
   now.setHours(0, 0, 0, 0)
   const tomorrow = new Date(now)

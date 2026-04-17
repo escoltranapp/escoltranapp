@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { 
   format, 
   startOfMonth, 
@@ -31,7 +31,14 @@ const TYPE_COLORS: Record<string, string> = {
 }
 
 export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) {
+  const [mounted, setMounted] = useState(false)
   const [currentDate, setCurrentDate] = useState(new Date())
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return <div className="h-[600px] bg-surface/50 animate-pulse rounded-[32px] overflow-hidden" />
 
   const firstDayOfMonth = startOfMonth(currentDate)
   const lastDayOfMonth = endOfMonth(currentDate)

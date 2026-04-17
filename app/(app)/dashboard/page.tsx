@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { formatCurrency, cn } from "@/lib/utils"
 import { useTodayActivities } from "@/hooks/useTodayActivities"
@@ -50,6 +51,12 @@ function KPICard({
 }
 
 export default function DashboardPage() {
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const { data: stats } = useQuery({
     queryKey: ["dashboard-metrics"],
     queryFn: async () => {
@@ -60,6 +67,10 @@ export default function DashboardPage() {
   })
 
   const { data: todayActivities = [], isLoading: isActivitiesLoading } = useTodayActivities()
+
+  if (!mounted) return <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+    <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+  </div>
 
   const TYPE_ICONS: Record<string, string> = {
     CALL: 'call',

@@ -3,6 +3,7 @@
 import { format, isToday, isTomorrow, isBefore, isAfter, startOfDay } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { cn } from "@/lib/utils"
+import { useState, useEffect } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
 
@@ -30,8 +31,15 @@ const TYPE_COLORS: Record<string, string> = {
 }
 
 export function ActivityList({ activities, onEdit }: ActivityListProps) {
+  const [mounted, setMounted] = useState(false)
   const queryClient = useQueryClient()
   const { toast } = useToast()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return <div className="h-96 bg-surface/50 animate-pulse rounded-[32px] overflow-hidden" />
 
   const toggleMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string, status: string }) => {
