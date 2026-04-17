@@ -220,72 +220,24 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
           const totalValue = stage.deals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
 
           return (
-            <div key={stage.id} className="flex flex-col min-w-[360px] max-w-[360px] select-none group/column transition-transform duration-500">
+            <div key={stage.id} className="flex flex-col min-w-[340px] max-w-[340px] select-none group/column transition-transform duration-500">
               
               {/* STAGE HEADER - ELITE AETHER STYLE */}
-              <div className="mb-8 px-4 relative">
-                {/* BACKGLOW FOR COLUMN */}
-                <div 
-                  className="absolute -top-10 -left-10 w-40 h-40 blur-[80px] opacity-10 group-hover/column:opacity-20 transition-opacity rounded-full pointer-events-none" 
-                  style={{ backgroundColor: stage.color || '#F97316' }}
-                />
-
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-4">
-                    <div className="w-3 h-3 rounded-full relative shadow-[0_0_15px_rgba(249,115,22,0.8)]" style={{ backgroundColor: stage.color || '#F97316' }}>
-                       <div className="absolute inset-0 rounded-full animate-ping opacity-30" style={{ backgroundColor: stage.color || '#F97316' }} />
-                    </div>
-                    
-                    {editingStageId === stage.id ? (
-                      <div className="flex items-center gap-3">
-                         <input 
-                            autoFocus
-                            value={editStageName}
-                            onChange={(e) => setEditStageName(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleUpdateStage(stage.id)}
-                            className="bg-[#1A1A1A] border border-[#F97316]/40 rounded-xl px-4 py-2 text-[14px] font-black text-white w-40 focus:border-[#F97316] outline-none shadow-2xl"
-                         />
-                         <button onClick={() => handleUpdateStage(stage.id)} className="text-[#F97316] hover:scale-110 transition-transform">
-                           <span className="material-symbols-outlined text-[20px]">check_circle</span>
-                         </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-4 group/title relative">
-                        <h2 className="text-[14px] font-black uppercase tracking-[0.4em] text-white italic drop-shadow-sm">
-                          {stage.name}
-                        </h2>
-                        <div className="flex opacity-0 group-hover/column:opacity-100 transition-all gap-2 translate-x-[-10px] group-hover/column:translate-x-0">
-                            <button 
-                               onClick={() => {
-                                  setEditingStageId(stage.id)
-                                  setEditStageName(stage.name)
-                               }}
-                               className="p-1 text-[#404040] hover:text-[#F97316] transition-colors"
-                            >
-                               <span className="material-symbols-outlined text-[16px]">draw</span>
-                            </button>
-                            <button 
-                               onClick={() => handleDeleteStage(stage.id, stage.deals.length)}
-                               className="p-1 text-[#404040] hover:text-red-500 transition-colors"
-                            >
-                               <span className="material-symbols-outlined text-[16px]">delete_sweep</span>
-                            </button>
-                        </div>
-                      </div>
-                    )}
+              <div className="mb-6 px-2">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: stage.color || '#F97316' }} />
+                    <h2 className="text-[13px] font-black text-white uppercase tracking-tight italic">
+                      {stage.name}
+                    </h2>
+                    <span className="text-[10px] font-mono font-black text-[#404040] bg-white/[0.03] px-2 py-0.5 rounded-lg border border-white/[0.05]">
+                      {stage.deals.length}
+                    </span>
                   </div>
-                  <div className="flex flex-col items-end">
-                     <span className="text-[10px] font-mono font-black text-[#F97316] bg-[#F97316]/5 px-3 py-1 rounded-full border border-[#F97316]/10 shadow-lg">
-                       {stage.deals.length} DATA_UNITS
-                     </span>
+                  
+                  <div className="text-[12px] font-black text-[#3B82F6] font-mono tracking-tighter">
+                    {totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
                   </div>
-                </div>
-                
-                <div className="flex items-baseline gap-2 pl-7">
-                   <div className="text-3xl font-black text-white tracking-tighter italic font-mono flex items-baseline truncate">
-                      {totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
-                      <span className="text-[10px] text-[#404040] font-mono uppercase ml-2 tracking-widest">Est_Value</span>
-                   </div>
                 </div>
               </div>
 

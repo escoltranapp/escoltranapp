@@ -9,30 +9,7 @@ import { NewDealDialog } from "@/components/pipeline/NewDealDialog"
 import { type Deal } from "@/components/pipeline/DealCard"
 import { cn } from "@/lib/utils"
 
-function KPICard({
-  label, value, icon, trend, color = "#F97316"
-}: {
-  label: string; value: string | number; icon: string; trend?: string; color?: string
-}) {
-  return (
-    <div className="bg-[#1A1A1A] border border-white/5 rounded-2xl p-6 hover:bg-[#262626] transition-all group overflow-hidden shadow-lg">
-      <div className="flex items-center justify-between mb-6">
-        <div className="w-10 h-10 rounded-xl bg-[#F97316]/10 border border-[#F97316]/20 flex items-center justify-center">
-          <span className="material-symbols-outlined text-[20px]" style={{ color }}>{icon}</span>
-        </div>
-        {trend && (
-           <div className="px-2 py-0.5 rounded-full text-[10px] font-black font-mono text-[#F97316] bg-[#F97316]/5 border border-[#F97316]/10 uppercase tracking-widest">
-              {trend}
-           </div>
-        )}
-      </div>
-      <div>
-         <div className="text-[10px] font-mono text-[#6B7280] uppercase tracking-[0.2em] font-black mb-1 italic">{label}</div>
-         <div className="text-2xl font-black text-white tracking-tighter font-mono">{value}</div>
-      </div>
-    </div>
-  )
-}
+import { ClosedDealsModal } from "@/components/pipeline/ClosedDealsModal"
 
 export default function PipelinePage() {
   const queryClient = useQueryClient()
@@ -41,6 +18,7 @@ export default function PipelinePage() {
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
   const [pipelineSelection, setPipelineSelection] = useState("vendas-matriz")
   const [isNewDealOpen, setIsNewDealOpen] = useState(false)
+  const [isArchivedOpen, setIsArchivedOpen] = useState(false)
   const [preselectedStageId, setPreselectedStageId] = useState<string | undefined>(undefined)
 
   const { data: boardData, isLoading, refetch } = useQuery({
@@ -86,58 +64,54 @@ export default function PipelinePage() {
     }),
   }))
 
-  const allOpen = stages.flatMap(s => s.deals.filter(d => d.status === "OPEN"))
-  const totalValue = allOpen.reduce((a, d) => a + (d.valorEstimado || 0), 0)
-
   return (
-    <div className="animate-in fade-in duration-700 pb-24">
+    <div className="animate-in fade-in duration-700 pb-24 h-full flex flex-col">
       
-      {/* HEADER ESCOLTRAN STYLE */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div>
-           <h1 className="text-4xl font-black text-white tracking-tighter italic uppercase">Fluxo Operacional</h1>
-           <p className="text-[#6B7280] text-[15px] mt-2 font-bold tracking-tight">Gestão de pipelines e orquestração de deals Escoltran</p>
+      {/* HEADER ESCOLTRAN STYLE - MATCHING SCREENSHOT */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <div className="flex items-center gap-6">
+           <h1 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">Pipeline</h1>
+           
+           <div className="relative group">
+              <select 
+                value={pipelineSelection}
+                onChange={(e) => setPipelineSelection(e.target.value)}
+                className="bg-[#111111] text-[#A3A3A3] border border-white/[0.05] rounded-xl pl-4 pr-10 py-2 text-[11px] font-black uppercase tracking-widest focus:border-[#3B82F6]/50 outline-none cursor-pointer appearance-none min-w-[160px] hover:bg-white/[0.02] transition-all"
+              >
+                <option value="vendas-matriz">Vendas Matriz</option>
+                <option value="pos-vendas">Pós-Vendas / CS</option>
+                <option value="retencao">Fluxo Retenção</option>
+              </select>
+              <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[16px] text-[#404040] pointer-events-none group-hover:text-white transition-colors">expand_more</span>
+           </div>
         </div>
         
-        <div className="flex items-center gap-3">
-          {/* SELETOR DE PIPELINE */}
-          <select 
-            value={pipelineSelection}
-            onChange={(e) => setPipelineSelection(e.target.value)}
-            className="bg-[#1A1A1A] text-[#F2F2F2] border border-[#262626] rounded-xl px-4 py-3 text-[12px] font-black uppercase tracking-widest focus:border-[#F97316]/50 outline-none cursor-pointer appearance-none min-w-[200px]"
-          >
-            <option value="vendas-matriz">Vendas Matriz</option>
-            <option value="pos-vendas">Pós-Vendas / CS</option>
-            <option value="retencao">Fluxo Retenção</option>
-          </select>
+        <div className="flex items-center gap-2">
+           <button 
+            onClick={() => setIsArchivedOpen(true)}
+            className="flex items-center gap-3 px-5 py-2.5 bg-white/[0.02] border border-white/[0.05] rounded-xl text-[10px] font-black uppercase tracking-widest text-[#A3A3A3] hover:text-white hover:bg-white/[0.05] transition-all"
+           >
+              <span className="material-symbols-outlined text-[18px]">inventory_2</span>
+              Arquivados
+           </button>
 
-          <button 
+           <button className="flex items-center gap-3 px-5 py-2.5 bg-white/[0.02] border border-white/[0.05] rounded-xl text-[10px] font-black uppercase tracking-widest text-[#A3A3A3] hover:text-white hover:bg-white/[0.05] transition-all">
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              Pipeline
+           </button>
+
+           <button 
             onClick={() => setIsNewDealOpen(true)}
-            className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-6 py-3 rounded-xl flex items-center gap-2 hover:scale-105 transition-all shadow-lg shadow-[#F97316]/20 text-[12px] uppercase tracking-widest"
-          >
-            <span className="material-symbols-outlined text-[20px] font-black">add_box</span>
-            <span>Novo Registro</span>
-          </button>
-          
-          <button 
-            onClick={() => refetch()}
-            className="w-12 h-12 flex items-center justify-center rounded-xl border border-white/5 bg-[#1A1A1A] text-[#404040] hover:text-[#F97316] transition-all group"
-          >
-            <span className={cn("material-symbols-outlined text-[22px]", isLoading && "animate-spin font-black")}>sync</span>
-          </button>
+            className="flex items-center gap-3 px-6 py-2.5 bg-[#3B82F6] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+           >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              Deal
+           </button>
         </div>
       </header>
 
-      {/* METRIC GRID - USANDO GRID-STATS PARA EVITAR OVERLAP */}
-      <div className="grid-stats mb-12">
-        <KPICard label="Dataset Aberto" value={allOpen.length} icon="dataset" trend="Active" />
-        <KPICard label="Volume em Fluxo" value={totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })} icon="payments" trend="+8.2%" />
-        <KPICard label="Network Active" value={boardData?.totalDeals || 0} icon="hub" trend="Live Sync" />
-        <KPICard label="Eficiência Engine" value="84%" icon="settings_input_component" trend="Optimized" />
-      </div>
-
       {/* BOARD AREA */}
-      <div className="min-h-[600px] bg-[#0A0A0A] rounded-3xl border border-white/[0.03] p-4 relative overflow-hidden group">
+      <div className="flex-1 min-h-0">
         {/* BACKGROUND ACCENT */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#F97316]/5 blur-[128px] rounded-full pointer-events-none opacity-50" />
         
@@ -157,6 +131,11 @@ export default function PipelinePage() {
           />
         )}
       </div>
+
+      <ClosedDealsModal 
+        isOpen={isArchivedOpen}
+        onClose={() => setIsArchivedOpen(false)}
+      />
 
       <DealDetailSheet 
         deal={selectedDeal} 
