@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -11,7 +11,7 @@ import { ActivityKPIs } from "@/components/activities/ActivityKPIs"
 
 type ViewMode = 'list' | 'calendar'
 
-export default function ActivitiesPage() {
+function ActivitiesContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   
@@ -171,5 +171,17 @@ export default function ActivitiesPage() {
         activity={editingActivity}
       />
     </div>
+  )
+}
+
+export default function ActivitiesPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      </div>
+    }>
+      <ActivitiesContent />
+    </Suspense>
   )
 }
