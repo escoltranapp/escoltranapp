@@ -52,6 +52,25 @@ export default function LeadSearchPage() {
   const [isNewContactOpen, setIsNewContactOpen] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const [customCity, setCustomCity] = useState("")
+  const [citySearchTerm, setCitySearchTerm] = useState("")
+
+  const { data: allCities = [], isLoading: isLoadingCities } = useQuery({
+    queryKey: ["cities", searchData.estado],
+    queryFn: async () => {
+      if (!searchData.estado) return []
+      const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${searchData.estado}/municipios?orderBy=nome`)
+      if (!res.ok) return []
+      const data = await res.json()
+      return data.map((c: any) => c.nome)
+    },
+    enabled: !!searchData.estado,
+    staleTime: 1000 * 60 * 60 // 1 hora de cache
+  })
+
+  const filteredCities = allCities.filter((city: string) => 
+    city.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .includes(citySearchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
+  )
 
   const handleSearch = async () => {
     const finalCity = customCity || searchData.cidade
@@ -89,8 +108,6 @@ export default function LeadSearchPage() {
       setIsSearching(false)
     }
   }
-
-  const citiesForState = searchData.estado ? (mainCitiesByState as any)[searchData.estado] || [] : []
 
   const { data: recentLeads = [], isLoading: isLoadingRecent } = useQuery({
     queryKey: ["recent-google-leads"],
@@ -184,29 +201,56 @@ export default function LeadSearchPage() {
                      <div className="space-y-3">
                         <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] pl-1">CIDADE</label>
                         <div className="flex gap-2">
-                           <Select onValueChange={(val) => {
-                              if (val === "custom") {
-                                 setSearchData(s => ({...s, cidade: ""}))
-                              } else {
-                                 setSearchData(s => ({...s, cidade: val}))
-                                 setCustomCity("")
-                              }
-                           }}>
+                           <Select 
+                              disabled={!searchData.estado}
+                              onValueChange={(val) => {
+                                 if (val === "custom") {
+                                    setSearchData(s => ({...s, cidade: ""}))
+                                 } else {
+                                    setSearchData(s => ({...s, cidade: val}))
+                                    setCustomCity("")
+                                 }
+                              }}
+                           >
                               <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6 disabled:opacity-20 flex-1">
-                                 <SelectValue placeholder={searchData.estado ? "Selecione a Cidade" : "Aguardando Estado..."} />
+                                 <SelectValue placeholder={searchData.estado ? (isLoadingCities ? "Carregando cidades..." : "Selecione a Cidade") : "Aguardando Estado..."} />
                               </SelectTrigger>
-                              <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[300px]">
-                                 {citiesForState.map((c: string) => <SelectItem key={c} value={c} className="focus:bg-[#F97316]">{c}</SelectItem>)}
-                                 <SelectItem value="custom" className="focus:bg-[#F97316] text-[#F97316] font-black italic">+ OUTRA CIDADE</SelectItem>
+                              <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[400px] p-0 overflow-hidden flex flex-col">
+                                 <div className="p-3 sticky top-0 bg-[#0A0A0A] z-10 border-b border-white/5">
+                                    <input 
+                                       placeholder="PESQUISAR CIDADE..."
+                                       className="w-full h-10 bg-[#1A1A1A] border border-white/5 rounded-lg px-4 text-[10px] font-mono font-black text-white focus:border-[#F97316]/50 outline-none"
+                                       value={citySearchTerm}
+                                       onChange={(e) => setCitySearchTerm(e.target.value)}
+                                       onKeyDown={(e) => e.stopPropagation()}
+                                       onPointerDown={(e) => e.stopPropagation()}
+                                    />
+                                 </div>
+                                 <div className="overflow-y-auto max-h-[300px]">
+                                    {isLoadingCities ? (
+                                       <div className="p-8 text-center animate-pulse">
+                                          <span className="text-[10px] font-mono text-[#F97316] uppercase tracking-[0.3em]">Sincronizando IBGE...</span>
+                                       </div>
+                                    ) : filteredCities.length === 0 ? (
+                                       <div className="p-8 text-center">
+                                          <span className="text-[10px] font-mono text-[#404040] uppercase tracking-[0.3em]">Nenhuma cidade encontrada</span>
+                                       </div>
+                                    ) : (
+                                       filteredCities.slice(0, 50).map((c: string) => (
+                                          <SelectItem key={c} value={c} className="focus:bg-[#F97316]">{c}</SelectItem>
+                                       ))
+                                    )}
+                                    <SelectItem value="custom" className="focus:bg-[#F97316] text-[#F97316] font-black italic border-t border-white/5">+ OUTRA CIDADE</SelectItem>
+                                 </div>
                               </SelectContent>
                            </Select>
                            
-                           {(!searchData.cidade || citiesForState.length === 0 || searchData.cidade === "custom") && searchData.estado && (
+                           {(!searchData.cidade || searchData.cidade === "custom") && searchData.estado && (
                               <input 
-                                 placeholder="Digite a cidade..."
+                                 placeholder="OU DIGITE AQUI..."
                                  value={customCity}
                                  onChange={(e) => setCustomCity(e.target.value)}
-                                 className="bg-[#0A0A0A]/60 border border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6 focus:outline-none focus:border-[#F97316]/50 transition-colors w-[200px]"
+                                 className="bg-[#0A0A0A]/60 border border-white/[0.06] h-14 rounded-xl text-white font-black text-[11px] tracking-widest px-6 focus:outline-none focus:border-[#F97316]/50 transition-colors w-[180px]"
                               />
                            )}
                         </div>
