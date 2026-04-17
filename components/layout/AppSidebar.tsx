@@ -48,11 +48,7 @@ export function AppSidebar({ isOpen = true, onClose }: AppSidebarProps) {
               <span className="text-2xl font-black text-white italic">E</span>
             </div>
             <div>
-              <h1 className="text-xl font-black text-foreground italic tracking-tighter leading-none">ESCOLTRAN</h1>
-              <div className="flex items-center gap-2 mt-2">
-                 <div className="w-1.5 h-[1px] bg-[#F97316]" />
-                 <span className="text-[9px] font-mono font-black text-secondary uppercase tracking-[0.3em]">CRM System</span>
-              </div>
+              <h1 className="text-xl font-black text-foreground italic tracking-tighter leading-none mt-1">ESCOLTRAN</h1>
             </div>
           </Link>
         </div>
