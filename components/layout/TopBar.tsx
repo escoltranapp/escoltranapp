@@ -26,7 +26,6 @@ export function TopBar({ onMenuClick }: TopBarProps) {
         <div className="flex items-center gap-3">
            <div className="text-right hidden lg:block">
               <div className="text-[12px] font-black text-white uppercase tracking-tight">{session?.user?.name || "Operador"}</div>
-              <div className="text-[9px] font-mono font-black text-[#F97316] uppercase tracking-[0.2em] italic">Auth: Node_A1</div>
            </div>
            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#F97316] to-[#FB923C] p-[1.5px] shadow-lg shadow-[#F97316]/10">
               <div className="w-full h-full rounded-full bg-[#0A0A0A] flex items-center justify-center overflow-hidden">
