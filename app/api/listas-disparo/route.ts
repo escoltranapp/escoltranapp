@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { nome, descricao, telefones, leadIds } = body
+    const { nome, descricao, telefones, leadIds, configEnvio } = body
 
     if (!nome) {
       return NextResponse.json({ error: "Nome é obrigatório" }, { status: 400 })
@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
         descricao,
         status: "RASCUNHO",
         userId: session.user.id,
+        configEnvio: configEnvio ?? undefined,
       },
     })
 
