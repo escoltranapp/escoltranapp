@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   format,
   startOfMonth,
@@ -32,12 +32,17 @@ const TYPE_COLORS: Record<string, string> = {
 
 export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) {
   const [currentDate, setCurrentDate] = useState(() => new Date())
+  const [mounted, setMounted] = useState(false)
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // 1. Cálculos de datas
   const firstDayOfMonth = startOfMonth(currentDate)
   const lastDayOfMonth = endOfMonth(currentDate)
   const startDate = startOfWeek(firstDayOfMonth, { weekStartsOn: 0 })
   const endDate = endOfWeek(lastDayOfMonth, { weekStartsOn: 0 })
-
   const days = eachDayOfInterval({ start: startDate, end: endDate })
 
   const nextMonth = () => setCurrentDate((d) => addMonths(d, 1))
@@ -46,47 +51,57 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
 
   const safeActivities = Array.isArray(activities) ? activities : []
 
+  // 2. Trava de 'mounted' condicional APENAS no retorno do JSX
+  if (!mounted) return (
+    <div className="bg-[#0D0D0D] border border-white/5 rounded-[40px] h-[600px] animate-pulse p-8">
+       <div className="w-1/3 h-10 bg-white/5 rounded-2xl mb-12" />
+       <div className="grid grid-cols-7 gap-4">
+          {[1,2,3,4,5,6,7,8,9,10,11,12,13,14].map(i => <div key={i} className="h-32 bg-white/[0.03] rounded-3xl" />)}
+       </div>
+    </div>
+  )
+
   return (
-    <div className="bg-surface border border-border rounded-[32px] overflow-hidden shadow-2xl animate-in fade-in duration-500">
+    <div className="bg-[#0D0D0D] border border-white/5 rounded-[40px] overflow-hidden shadow-2xl animate-in fade-in duration-700">
       {/* CALENDAR HEADER */}
-      <div className="p-8 border-b border-border flex items-center justify-between bg-foreground/[0.01]">
+      <div className="p-10 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
         <div>
-          <h3 className="text-2xl font-black text-foreground italic uppercase tracking-tighter">
+          <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter">
             {format(currentDate, "MMMM yyyy", { locale: ptBR })}
           </h3>
-          <p className="text-[10px] font-mono text-secondary uppercase tracking-[0.3em] mt-1">
-            Timeline Operacional
+          <p className="text-[10px] font-mono text-secondary uppercase tracking-[0.4em] mt-1 font-black underline decoration-primary/30">
+            Timeline de Engajamento
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             onClick={goToday}
-            className="px-4 py-2 rounded-xl border border-border text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:border-primary/50 transition-all mr-2"
+            className="px-6 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:border-primary/50 transition-all mr-2"
           >
             Hoje
           </button>
           <button
             onClick={prevMonth}
-            className="w-10 h-10 rounded-xl border border-border flex items-center justify-center hover:bg-foreground/[0.05] transition-all"
+            className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all text-white"
           >
-            <span className="material-symbols-outlined text-[20px]">chevron_left</span>
+            <span className="material-symbols-outlined text-[24px]">chevron_left</span>
           </button>
           <button
             onClick={nextMonth}
-            className="w-10 h-10 rounded-xl border border-border flex items-center justify-center hover:bg-foreground/[0.05] transition-all"
+            className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all text-white"
           >
-            <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+            <span className="material-symbols-outlined text-[24px]">chevron_right</span>
           </button>
         </div>
       </div>
 
       {/* DAYS OF WEEK */}
-      <div className="grid grid-cols-7 border-b border-border">
+      <div className="grid grid-cols-7 border-b border-white/5">
         {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((day) => (
           <div
             key={day}
-            className="py-4 text-center text-[10px] font-black uppercase tracking-[0.2em] text-secondary italic border-r border-border last:border-r-0 bg-foreground/[0.02]"
+            className="py-6 text-center text-[11px] font-black uppercase tracking-[0.3em] text-secondary italic border-r border-white/5 last:border-r-0 bg-white/[0.02]"
           >
             {day}
           </div>
@@ -94,7 +109,7 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
       </div>
 
       {/* CALENDAR GRID */}
-      <div className="grid grid-cols-7 border-collapse">
+      <div className="grid grid-cols-7">
         {days.map((day) => {
           const dayActivities = safeActivities.filter((a) => {
             if (!a?.dueAt) return false
@@ -109,54 +124,54 @@ export function ActivityCalendar({ activities, onEdit }: ActivityCalendarProps) 
             <div
               key={day.toISOString()}
               className={cn(
-                "min-h-[140px] p-3 border-r border-b border-border group transition-all relative overflow-hidden",
-                !isCurrentMonth && "bg-foreground/[0.01] opacity-20",
-                isTodayDate && "bg-primary/[0.02]"
+                "min-h-[160px] p-4 border-r border-b border-white/5 group transition-all relative overflow-hidden",
+                !isCurrentMonth && "bg-black/40 opacity-20",
+                isTodayDate && "bg-primary/[0.03]"
               )}
             >
-              <div className="flex justify-between items-start mb-2">
+              <div className="flex justify-between items-start mb-4">
                 <span
                   className={cn(
-                    "text-[12px] font-black font-mono tracking-tighter w-7 h-7 flex items-center justify-center rounded-lg transition-all",
+                    "text-[14px] font-black font-mono tracking-tighter w-8 h-8 flex items-center justify-center rounded-xl transition-all",
                     isTodayDate
-                      ? "bg-primary text-white shadow-lg shadow-primary/30"
-                      : "text-secondary group-hover:text-foreground"
+                      ? "bg-primary text-black shadow-lg shadow-primary/30 scale-110"
+                      : "text-secondary group-hover:text-white"
                   )}
                 >
                   {format(day, "d")}
                 </span>
                 {dayActivities.length > 0 && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_#F97316]" />
                 )}
               </div>
 
-              <div className="space-y-1">
-                {dayActivities.slice(0, 3).map((act) => (
+              <div className="space-y-1.5">
+                {dayActivities.slice(0, 4).map((act) => (
                   <button
                     key={act.id}
                     onClick={() => onEdit(act)}
                     className={cn(
-                      "w-full text-left px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-tighter truncate border transition-all hover:scale-105 active:scale-95",
-                      act.status === "DONE" ? "opacity-40 grayscale" : "opacity-100"
+                      "w-full text-left px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter truncate border transition-all hover:translate-x-1 active:scale-95",
+                      act.status === "DONE" ? "opacity-30 grayscale" : "opacity-100"
                     )}
                     style={{
-                      backgroundColor: `${TYPE_COLORS[act.tipo] ?? "#6B7280"}10`,
-                      borderColor: `${TYPE_COLORS[act.tipo] ?? "#6B7280"}30`,
-                      color: TYPE_COLORS[act.tipo] ?? "#6B7280",
+                      backgroundColor: `${String(TYPE_COLORS[act.tipo] ?? "#6B7280")}15`,
+                      borderColor: `${String(TYPE_COLORS[act.tipo] ?? "#6B7280")}30`,
+                      color: String(TYPE_COLORS[act.tipo] ?? "#6B7280"),
                     }}
                   >
-                    {act.titulo || "Sem título"}
+                    {String(act.titulo || "Sem título")}
                   </button>
                 ))}
-                {dayActivities.length > 3 && (
-                  <div className="text-[8px] font-black text-secondary text-center uppercase tracking-widest mt-1">
-                    + {dayActivities.length - 3} mais
+                {dayActivities.length > 4 && (
+                  <div className="text-[8px] font-black text-secondary text-center uppercase tracking-widest mt-2 opacity-50">
+                    + {dayActivities.length - 4} atividades
                   </div>
                 )}
               </div>
 
               {isTodayDate && (
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary" />
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-primary" />
               )}
             </div>
           )

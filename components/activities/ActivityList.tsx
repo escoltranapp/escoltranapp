@@ -31,15 +31,10 @@ const TYPE_COLORS: Record<string, string> = {
 }
 
 export function ActivityList({ activities, onEdit }: ActivityListProps) {
+  // 1. TODOS os hooks devem vir PRIMEIRO
   const [mounted, setMounted] = useState(false)
   const queryClient = useQueryClient()
   const { toast } = useToast()
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return <div className="space-y-4">{[1,2,3].map(i => <div key={i} className="h-24 bg-surface/50 animate-pulse rounded-[32px]" />)}</div>
 
   const toggleMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string, status: string }) => {
@@ -65,6 +60,17 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
       toast({ title: "Atividade removida" })
     }
   })
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // 2. Trava de 'mounted' APENAS no retorno do JSX
+  if (!mounted) return (
+    <div className="space-y-4">
+      {[1,2,3].map(i => <div key={i} className="h-28 bg-white/5 animate-pulse rounded-[32px]" />)}
+    </div>
+  )
 
   const now = startOfDay(new Date())
   
@@ -143,13 +149,13 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                 <div 
                   className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-500 group-hover:rotate-6 group-hover:scale-110 shrink-0"
                   style={{ 
-                    backgroundColor: `${TYPE_COLORS[item.tipo] || '#64748B'}15`, 
-                    border: `1px solid ${TYPE_COLORS[item.tipo] || '#64748B'}30`,
-                    boxShadow: `0 10px 30px -10px ${TYPE_COLORS[item.tipo] || '#64748B'}40`
+                    backgroundColor: `${String(TYPE_COLORS[item.tipo] || '#64748B')}15`, 
+                    border: `1px solid ${String(TYPE_COLORS[item.tipo] || '#64748B')}30`,
+                    boxShadow: `0 10px 30px -10px ${String(TYPE_COLORS[item.tipo] || '#64748B')}40`
                   }}
                 >
-                  <span className="material-symbols-outlined text-[24px] transition-all" style={{ color: TYPE_COLORS[item.tipo] || '#64748B' }}>
-                    {TYPE_ICONS[item.tipo] || 'event'}
+                  <span className="material-symbols-outlined text-[24px] transition-all" style={{ color: String(TYPE_COLORS[item.tipo] || '#64748B') }}>
+                    {String(TYPE_ICONS[item.tipo] || 'event')}
                   </span>
                 </div>
 
@@ -159,7 +165,7 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                     <h4 className={cn(
                       "text-[16px] font-black text-white tracking-tight truncate uppercase leading-tight",
                       item.status === "DONE" && "text-secondary line-through"
-                    )}>{item.titulo || "Sem Título"}</h4>
+                    )}>{String(item.titulo || "Sem Título")}</h4>
                     
                     {(() => {
                       const d = safeDate(item.dueAt)
@@ -174,20 +180,20 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                   
                   <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
                     <p className="text-[12px] text-secondary font-bold truncate max-w-[500px] italic">
-                      {item.descricao || "Sem detalhes adicionais..."}
+                      {String(item.descricao || "Sem detalhes adicionais...")}
                     </p>
                     
                     <div className="flex items-center gap-4 border-l border-white/5 pl-4 ml-2">
                       {item.contact && (
                         <div className="flex items-center gap-2 text-[10px] text-primary font-black uppercase tracking-tighter hover:opacity-100 transition-opacity">
                           <span className="material-symbols-outlined text-[15px]">person</span>
-                          {item.contact?.nome}
+                          {String(item.contact?.nome || '')}
                         </div>
                       )}
                       {item.deal && (
                         <div className="flex items-center gap-2 text-[10px] text-[#A855F7] font-black uppercase tracking-tighter hover:opacity-100 transition-opacity">
                           <span className="material-symbols-outlined text-[15px]">attach_money</span>
-                          {item.deal?.titulo}
+                          {String(item.deal?.titulo || '')}
                         </div>
                       )}
                     </div>

@@ -14,14 +14,15 @@ export function ActivityKPIs({ activities }: ActivityKPIsProps) {
     setMounted(true)
   }, [])
 
-  if (!mounted) return <div className="grid grid-cols-3 gap-6 mb-12">{[1,2,3].map(i => <div key={i} className="h-32 bg-surface/30 animate-pulse rounded-[32px]" />)}</div>
+  // NUNCA retorne cedo se houver lógica de hooks ou cálculos complexos que o React precise rastrear
+  // Mas aqui não temos outros hooks além de useState/useEffect, então o erro 310 é improvável NESTE arquivo,
+  // mas vamos padronizar por segurança.
 
+  const safeActivities = Array.isArray(activities) ? activities : []
   const now = new Date()
   now.setHours(0, 0, 0, 0)
   const tomorrow = new Date(now)
   tomorrow.setDate(tomorrow.getDate() + 1)
-  
-  const safeActivities = Array.isArray(activities) ? activities : []
   
   const pending = safeActivities.filter(a => a.status === "OPEN")
   const overdue = pending.filter(a => {
@@ -41,6 +42,8 @@ export function ActivityKPIs({ activities }: ActivityKPIsProps) {
     { label: 'Total Ativo', value: pending.length, icon: 'layers', color: '#8B5CF6', glow: 'shadow-purple-500/10' },
   ]
 
+  if (!mounted) return <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">{[1,2,3].map(i => <div key={i} className="h-40 bg-white/5 animate-pulse rounded-[40px]" />)}</div>
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
       {stats.map((s) => (
@@ -57,15 +60,15 @@ export function ActivityKPIs({ activities }: ActivityKPIsProps) {
               className="w-16 h-16 rounded-3xl flex items-center justify-center border transition-all duration-500 group-hover:rotate-6 shadow-Inner" 
               style={{ backgroundColor: `${s.color}15`, borderColor: `${s.color}30` }}
             >
-              <span className="material-symbols-outlined text-[32px] font-black" style={{ color: s.color }}>{s.icon}</span>
+              <span className="material-symbols-outlined text-[32px] font-black" style={{ color: s.color }}>{String(s.icon)}</span>
             </div>
             
             <div className="flex-1 min-w-0">
                <div className="text-[10px] font-black font-mono text-secondary uppercase tracking-[0.4em] mb-1 italic opacity-60">
-                 {s.label}
+                 {String(s.label)}
                </div>
                <div className="text-4xl font-black text-white tracking-tighter font-mono flex items-baseline gap-2">
-                 {s.value}
+                 {Number(s.value)}
                  <span className="text-[10px] text-secondary lowercase font-bold tracking-normal italic opacity-40">registros</span>
                </div>
             </div>
@@ -73,7 +76,7 @@ export function ActivityKPIs({ activities }: ActivityKPIsProps) {
           
           {/* HOVER ACCENT */}
           <div className="absolute bottom-4 right-8 opacity-0 group-hover:opacity-40 transition-opacity">
-             <span className="material-symbols-outlined text-[40px] text-white/5 font-black">{s.icon}</span>
+             <span className="material-symbols-outlined text-[40px] text-white/5 font-black">{String(s.icon)}</span>
           </div>
         </div>
       ))}
