@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
-import { getInitials } from "@/lib/utils"
+import { cn, getInitials } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 
 export default function SettingsPage() {
