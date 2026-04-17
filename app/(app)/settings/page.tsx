@@ -31,6 +31,29 @@ export default function SettingsPage() {
     }
   }, [session])
 
+  const [isTesting, setIsTesting] = useState(false)
+
+  const handleTestConnection = async () => {
+    if (!n8nUrl) return toast({ title: "Insira uma URL primeiro", variant: "destructive" })
+    setIsTesting(true)
+    try {
+      const res = await fetch(n8nUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ test: true, message: "Teste de conexão Escoltran" })
+      })
+      if (res.ok) {
+        toast({ title: "CONEXÃO ESTABELECIDA", description: `O n8n recebeu o sinal (Status ${res.status})` })
+      } else {
+        toast({ title: "ERRO NA RESPOSTA", description: `O n8n respondeu, mas com erro ${res.status}`, variant: "destructive" })
+      }
+    } catch (e: any) {
+      toast({ title: "FALHA DE ALCANCE", description: `Não foi possível tocar no n8n: ${e.message}`, variant: "destructive" })
+    } finally {
+      setIsTesting(false)
+    }
+  }
+
   const handleSave = async () => {
     setIsSaving(true)
     try {
@@ -215,7 +238,19 @@ export default function SettingsPage() {
                           </div>
                           
                           <div className="space-y-3">
-                             <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">Webhook URL Target</label>
+                             <div className="flex items-center justify-between">
+                                <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">Webhook URL Target</label>
+                                <button 
+                                  onClick={handleTestConnection}
+                                  disabled={isTesting}
+                                  className="text-[9px] font-black uppercase tracking-widest text-[#F97316] hover:text-white transition-colors flex items-center gap-2"
+                                >
+                                   <span className={cn("material-symbols-outlined text-[14px]", isTesting && "animate-spin")}>
+                                     {isTesting ? 'sync' : 'radar'}
+                                   </span>
+                                   {isTesting ? "Testando..." : "Testar Conexão Agora"}
+                                </button>
+                             </div>
                              <Input 
                                className="bg-black/40 border-white/[0.06] h-14 rounded-xl text-white font-mono text-[12px] tracking-widest px-6 focus:border-[#F97316]/50 transition-all outline-none" 
                                placeholder="Ex: https://n8n.seusistema.com/webhook/..."
