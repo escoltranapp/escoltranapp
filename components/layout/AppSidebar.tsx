@@ -84,30 +84,41 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
         ))}
       </nav>
 
-      {/* FOOTER USER AREA */}
-      <div className="px-6 pt-8 border-t border-white/[0.03] mx-2 mt-auto">
-         <div className="p-5 rounded-2xl bg-[#1A1A1A] border border-white/[0.03] space-y-6 shadow-2xl">
-            <div className="flex items-center gap-4">
-               <div className="w-11 h-11 rounded-full bg-[#0A0A0A] border border-[#F97316]/30 flex items-center justify-center text-[13px] font-black text-[#F97316] shadow-[0_0_15px_rgba(249,115,22,0.1)]">
-                  {session?.user?.name?.slice(0, 2).toUpperCase() || "EC"}
-               </div>
-               <div className="flex-1 min-w-0">
-                  <div className="text-[13px] font-black text-white truncate uppercase tracking-tighter italic">
-                     {session?.user?.name?.split(" ")[0] || "Operador"}
+      {/* FOOTER USER AREA - HYPER PREMIUM ORBITAL MODE */}
+      <div className="px-4 pb-8 mt-auto relative z-10">
+         <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-[24px] blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative bg-[#1A1A1A]/30 backdrop-blur-2xl border border-white/[0.03] p-5 rounded-[24px] space-y-6 shadow-2xl overflow-hidden group/card">
+               {/* AMBIENT GLOW INSIDE CARD */}
+               <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-[#F97316]/5 blur-[40px] rounded-full pointer-events-none" />
+               
+               <div className="flex items-center gap-4 relative z-10">
+                  <div className="relative">
+                     <div className="absolute inset-0 bg-[#F97316]/20 rounded-full blur-md animate-pulse" />
+                     <div className="w-12 h-12 rounded-full bg-[#0A0A0A] border border-[#F97316]/40 flex items-center justify-center text-[14px] font-black text-[#F97316] shadow-[0_0_20px_rgba(249,115,22,0.15)] relative z-10">
+                        {session?.user?.name?.slice(0, 2).toUpperCase() || "EC"}
+                     </div>
                   </div>
-                  <div className="flex items-center gap-2 mt-1">
-                     <div className="w-1.5 h-1.5 rounded-full bg-[#34D399] shadow-[0_0_8px_#34D399]" />
-                     <span className="text-[9px] font-black text-[#6B7280] uppercase tracking-widest">Live Node</span>
+                  <div className="flex-1 min-w-0">
+                     <div className="text-[14px] font-black text-white truncate uppercase tracking-tight italic group-hover/card:text-[#F97316] transition-colors">
+                        {session?.user?.name?.split(" ")[0] || "Operador"}
+                     </div>
+                     <div className="flex items-center gap-2 mt-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.05] w-fit">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#34D399] shadow-[0_0_10px_#34D399] animate-[pulse_2s_infinite]" />
+                        <span className="text-[10px] font-mono font-black text-[#34D399]/70 uppercase tracking-[0.1em]">Live Node</span>
+                     </div>
                   </div>
                </div>
+
+               <button 
+                 onClick={() => signOut()}
+                 className="w-full flex items-center justify-center gap-3 text-[#404040] hover:text-white transition-all py-3.5 border border-white/5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-white/[0.02] hover:bg-[#F97316]/10 hover:border-[#F97316]/30 group/logout relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover/logout:translate-x-full transition-transform duration-1000" />
+                  <span className="material-symbols-outlined text-[18px] group-hover/logout:rotate-12 transition-transform">logout</span>
+                  <span>Terminal Exit</span>
+               </button>
             </div>
-            <button 
-              onClick={() => signOut()}
-              className="w-full flex items-center justify-center gap-2 text-[#404040] hover:text-white transition-all py-3 border border-white/5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#F97316]/10 hover:border-[#F97316]/30 group"
-             >
-              <span className="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">logout</span>
-              <span>Sair do Sistema</span>
-            </button>
          </div>
       </div>
     </aside>

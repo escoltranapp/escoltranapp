@@ -15,12 +15,33 @@
   }
   
   body {
-    @apply bg-[#0A0A0A] text-white antialiased selection:bg-[#F97316]/30 selection:text-[#F97316];
+    @apply bg-[#0A0A0A] text-white antialiased selection:bg-[#F97316]/30 selection:text-[#F97316] relative overflow-x-hidden;
     font-family: var(--font-inter);
   }
 
+  body::before {
+    content: "";
+    @apply fixed inset-0 pointer-events-none z-[100] opacity-[0.03];
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    filter: brightness(100%) contrast(150%);
+  }
+
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tighter italic uppercase font-black;
+    @apply tracking-tighter italic uppercase font-black text-glow;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+  
+  .border-glow {
+    @apply border border-white/[0.04] hover:border-[#F97316]/30 transition-all duration-500 shadow-[0_0_0_1px_rgba(255,255,255,0.02)];
+  }
+
+  .aether-glow {
+    @apply absolute blur-[160px] rounded-full pointer-events-none opacity-20 animate-pulse;
   }
 }
 
