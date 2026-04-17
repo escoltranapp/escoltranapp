@@ -27,15 +27,12 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tighter italic uppercase font-black text-glow;
+    @apply tracking-tighter italic uppercase font-black;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
   }
 }
 
 @layer utilities {
-  .text-glow {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-  }
-  
   .border-glow {
     @apply border border-white/[0.04] hover:border-[#F97316]/30 transition-all duration-500 shadow-[0_0_0_1px_rgba(255,255,255,0.02)];
   }
