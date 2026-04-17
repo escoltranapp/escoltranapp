@@ -59,6 +59,19 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
     },
   })
 
+  // Gap 5: fetch real audit log for this deal
+  const { data: auditLogsRaw } = useQuery({
+    queryKey: ["deal-audit-log", deal?.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/deals/${deal!.id}/audit-log`)
+      if (!res.ok) return []
+      const data = await res.json()
+      return Array.isArray(data) ? data : []
+    },
+    enabled: open && !!deal?.id,
+  })
+  const auditLogs: Array<{ id: string; evento: string; createdAt: string }> = auditLogsRaw ?? []
+
   // Gap 4: fetch activities for this deal
   const { data: activitiesRaw, isLoading: loadingActivities } = useQuery({
     queryKey: ["deal-activities", deal?.id],
@@ -263,24 +276,39 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
             </div>
             {/* ─── FIM ATIVIDADES ──────────────────────────────────────── */}
 
-            {/* HISTÓRICO DE AUDITORIA */}
+            {/* HISTÓRICO DE AUDITORIA — Gap 5: real data */}
             <div className="space-y-6 pb-12">
               <div className="flex items-center gap-3">
                 <div className="w-1.5 h-6 bg-[#F97316] rounded-full" />
                 <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">Cluster Audit Log</h3>
+                {auditLogs.length > 0 && (
+                  <span className="text-[10px] font-mono font-black text-[#F97316] bg-[#F97316]/5 px-2 py-0.5 rounded-full border border-[#F97316]/10">
+                    {auditLogs.length}
+                  </span>
+                )}
               </div>
-              <div className="space-y-0.5">
-                {[
-                  { t: "12m ago", e: "Status movido para Qualificação por Ricardo M." },
-                  { t: "2h ago", e: "Lead sincronizado via Google Ads Node" },
-                  { t: "1d ago", e: "Entrada no dataset principal Escoltran" },
-                ].map((log, i) => (
-                  <div key={i} className="flex gap-4 p-4 border-l border-[#262626] bg-[#1A1A1A]/30 hover:bg-[#1A1A1A] transition-all">
-                    <div className="text-[10px] font-mono font-black text-[#404040] min-w-[60px]">{log.t}</div>
-                    <div className="text-[12px] text-[#A3A3A3] font-bold tracking-tight uppercase leading-none">{log.e}</div>
-                  </div>
-                ))}
-              </div>
+              {auditLogs.length === 0 ? (
+                <div className="flex items-center justify-center py-8 bg-[#1A1A1A]/30 border border-white/5 rounded-xl border-dashed">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-[#404040]">
+                    Nenhum evento registrado
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-0.5">
+                  {auditLogs.map((log) => {
+                    const d = safeDate(log.createdAt)
+                    const timeLabel = d
+                      ? format(d, "dd/MM HH:mm", { locale: ptBR })
+                      : "—"
+                    return (
+                      <div key={log.id} className="flex gap-4 p-4 border-l border-[#262626] bg-[#1A1A1A]/30 hover:bg-[#1A1A1A] transition-all">
+                        <div className="text-[10px] font-mono font-black text-[#404040] min-w-[80px] shrink-0">{timeLabel}</div>
+                        <div className="text-[12px] text-[#A3A3A3] font-bold tracking-tight uppercase leading-snug">{log.evento}</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </SheetContent>

@@ -239,6 +239,7 @@ model Deal {
   pipeline     Pipeline?          @relation(fields: [pipelineId], references: [id])
   activities   Activity[]
   stageHistory DealStageHistory[]
+  auditLogs    DealAuditLog[]
   aiSessions   AiQualificationSession[]
 
   @@index([userId])
@@ -258,6 +259,18 @@ model DealStageHistory {
   stage Stage @relation(fields: [stageId], references: [id])
 
   @@map("deal_stage_history")
+}
+
+model DealAuditLog {
+  id        String   @id @default(cuid())
+  dealId    String
+  evento    String
+  createdAt DateTime @default(now())
+
+  deal Deal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@index([dealId])
+  @@map("deal_audit_logs")
 }
 
 model Contact {

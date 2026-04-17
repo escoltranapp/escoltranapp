@@ -43,6 +43,18 @@ export async function PATCH(
       },
     })
 
+    // Gap 5: register audit log entry when activity is completed and linked to a deal
+    if (status === "DONE" && existing.dealId) {
+      const tipoLabel = existing.tipo ?? "ATIVIDADE"
+      await prisma.dealAuditLog.create({
+        data: {
+          dealId: existing.dealId,
+          evento: `ATIVIDADE CONCLUÍDA: ${tipoLabel} — ${existing.titulo}`,
+          createdAt: (updateData.doneAt as Date | undefined) ?? new Date(),
+        },
+      })
+    }
+
     return NextResponse.json(activity)
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
