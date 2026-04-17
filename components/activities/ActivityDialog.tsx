@@ -78,15 +78,25 @@ export function ActivityDialog({ open, onOpenChange, activity }: ActivityDialogP
     } else {
       const qContactId = searchParams.get("contact_id")
       const qDealId = searchParams.get("deal_id")
+      
       if (qContactId) setContactId(qContactId)
-      if (qDealId) setDealId(qDealId)
+      if (qDealId) {
+        setDealId(qDealId)
+        // Se temos o ID e a lista de deals carregou, tenta sugerir um título
+        if (deals.length > 0 && !titulo) {
+          const selectedDeal = deals.find((d: any) => d.id === qDealId)
+          if (selectedDeal) {
+            setTitulo(`Follow-up: ${selectedDeal.titulo}`)
+          }
+        }
+      }
       
       setTipo('TASK')
-      setTitulo("")
+      if (!qDealId) setTitulo("")
       setDescricao("")
       setDueAt("")
     }
-  }, [activity, open, searchParams])
+  }, [activity, open, searchParams, deals])
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {

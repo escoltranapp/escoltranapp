@@ -57,15 +57,17 @@ function ActivitiesContent() {
   const [statusFilter, setStatusFilter] = useState("OPEN")
   const [typeFilter, setTypeFilter] = useState("ALL")
 
-  // Read query params once on mount
+  // Detect query params changes
   useEffect(() => {
     if (!searchParams) return
     const s = searchParams.get("status")
     const t = searchParams.get("type")
+    const isNew = searchParams.get("new") === "true"
+    
     if (s) setStatusFilter(s)
     if (t) setTypeFilter(t)
-    if (searchParams.get("new") === "true") setIsDialogOpen(true)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    if (isNew) setIsDialogOpen(true)
+  }, [searchParams])
 
   const { data: activitiesData, isLoading } = useQuery({
     queryKey: ["activities", statusFilter, typeFilter],

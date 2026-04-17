@@ -61,8 +61,8 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
       setLossReasonOpen(false)
 
       if (variables.status === "WON") {
-        // Redireciona para atividades para facilitar o follow-up do novo cliente
-        router.push("/activities")
+        // Redireciona para atividades com o modal de nova atividade aberto e o negócio vinculado
+        router.push(`/activities?new=true&deal_id=${deal?.id}`)
       }
     },
   })
