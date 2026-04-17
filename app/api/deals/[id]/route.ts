@@ -75,14 +75,15 @@ export async function PATCH(
         return 'TAREFA'
       }
 
-      const activityType = mapStageToActivityType(deal.stage.name)
+      const stageName = deal.stage?.name || 'Etapa Desconhecida'
+      const activityType = mapStageToActivityType(stageName)
       const contactName = deal.contact ? `${deal.contact.nome} ${deal.contact.sobrenome}` : 'Nenhum contato vinculado'
 
       // 3. Create the activity
       await prisma.activity.create({
         data: {
           tipo: activityType,
-          titulo: `Card movido para ${deal.stage.name}`,
+          titulo: `Card movido para ${stageName}`,
           descricao: `${deal.titulo} - ${contactName}`,
           dueAt: new Date(),
           status: 'DONE', // Moved activities are records of past actions, so status as done makes sense as a 'record'
