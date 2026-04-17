@@ -122,8 +122,14 @@ function ActivitiesContent() {
           onChange={(e) => setTypeFilter(e.target.value)}
           className="bg-background border border-border rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest text-secondary outline-none focus:border-primary transition-all"
         >
-          Sincronizar
-        </button>
+          <option value="ALL">Todos os Tipos</option>
+          <option value="CALL">Ligações</option>
+          <option value="MEETING">Reuniões</option>
+          <option value="TASK">Tarefas</option>
+          <option value="WHATSAPP">WhatsApp</option>
+          <option value="NOTE">Notas</option>
+          <option value="EMAIL">Email</option>
+        </select>
       </div>
 
       {isLoading ? (
