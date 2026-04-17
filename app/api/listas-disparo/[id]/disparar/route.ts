@@ -95,12 +95,23 @@ export async function POST(
       data: { status: "EM_PROCESSAMENTO" },
     })
 
-    // Fire-and-forget: N8n will call back via /api/disparos/callback
-    fetch(user.n8nWebhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }).catch((e) => console.error("[disparar] N8n webhook error:", e))
+    // Fire-and-forget, but let's at least await the handshake to log errors
+    try {
+      console.log(`[disparar] Enviando payload para: ${user.n8nWebhookUrl}`)
+      const n8nRes = await fetch(user.n8nWebhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      
+      if (!n8nRes.ok) {
+        console.error(`[disparar] n8n retornou erro ${n8nRes.status}:`, await n8nRes.text())
+      } else {
+        console.log(`[disparar] Webhook enviado com sucesso para n8n.`)
+      }
+    } catch (e) {
+      console.error("[disparar] Erro crítico ao chamar webhook n8n:", e)
+    }
 
     return NextResponse.json({ ok: true, totalLeads: leads.length })
   } catch (error) {
