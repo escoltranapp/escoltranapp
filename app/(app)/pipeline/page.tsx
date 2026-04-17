@@ -67,17 +67,23 @@ export default function PipelinePage() {
     },
   })
 
+  const now = new Date()
   const stages: Stage[] = (boardData?.stages || []).map((s: any) => ({
     id: s.id,
     pipelineId: s.pipelineId,
     name: s.name,
     color: s.color || "#F97316",
-    deals: (s.deals || []).map((d: any) => ({
-      ...d,
-      valorEstimado: Number(d.valorEstimado) || 0,
-       prioridade: (d.prioridade?.toUpperCase() || "MEDIA") as "ALTA" | "MEDIA" | "BAIXA",
-      status: (d.status?.toUpperCase() || "OPEN") as "OPEN" | "WON" | "LOST",
-    })),
+    deals: (s.deals || []).map((d: any) => {
+      const pendingActs: Array<{ id: string; dueAt: string | null }> = d.activities || []
+      return {
+        ...d,
+        valorEstimado: Number(d.valorEstimado) || 0,
+        prioridade: (d.prioridade?.toUpperCase() || "MEDIA") as "ALTA" | "MEDIA" | "BAIXA",
+        status: (d.status?.toUpperCase() || "OPEN") as "OPEN" | "WON" | "LOST",
+        pendingActivitiesCount: pendingActs.length,
+        hasOverdueActivities: pendingActs.some((a) => a.dueAt && new Date(a.dueAt) < now),
+      }
+    }),
   }))
 
   const allOpen = stages.flatMap(s => s.deals.filter(d => d.status === "OPEN"))

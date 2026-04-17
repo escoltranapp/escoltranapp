@@ -12,10 +12,12 @@ export async function GET(req: NextRequest) {
     const teamUserIds = await getTeamUserIds(session.user.id)
     const { searchParams } = new URL(req.url)
     const status = searchParams.get("status")
+    const dealId = searchParams.get("dealId")
 
     const where = {
       ownerUserId: { in: teamUserIds },
       ...(status && { status: status as "OPEN" | "DONE" }),
+      ...(dealId && { dealId }),
     }
 
     const activities = await prisma.activity.findMany({

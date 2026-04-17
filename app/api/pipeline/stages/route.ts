@@ -44,6 +44,10 @@ export async function GET() {
           orderBy: { createdAt: "desc" },
           include: {
             contact: { select: { nome: true, sobrenome: true, email: true } },
+            activities: {
+              where: { status: "OPEN" },
+              select: { id: true, dueAt: true },
+            },
           },
         },
       },
