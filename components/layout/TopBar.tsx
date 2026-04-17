@@ -1,3 +1,5 @@
+"use client"
+
 import { cn } from "@/lib/utils"
 
 interface TopBarProps {
@@ -5,8 +7,6 @@ interface TopBarProps {
 }
 
 export function TopBar({ onMenuClick }: TopBarProps) {
-  const { data: session } = useSession()
-
   return (
     <header className="fixed top-0 right-0 left-0 md:left-[256px] h-16 bg-background/80 backdrop-blur-xl border-b border-border z-40 px-6">
       <div className="h-full max-w-[1600px] mx-auto flex items-center justify-between gap-6">
