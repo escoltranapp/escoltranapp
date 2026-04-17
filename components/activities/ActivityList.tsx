@@ -35,12 +35,7 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return <div className="h-96 bg-surface/50 animate-pulse rounded-[32px] overflow-hidden" />
-
+  // All hooks must be declared before any conditional returns (Rules of Hooks)
   const toggleMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string, status: string }) => {
       const res = await fetch(`/api/activities/${id}`, {
@@ -67,6 +62,12 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
       toast({ title: "Atividade excluída" })
     }
   })
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return <div className="h-96 bg-surface/50 animate-pulse rounded-[32px] overflow-hidden" />
 
   const now = startOfDay(new Date())
   
