@@ -95,25 +95,52 @@ export async function POST(
       data: { status: "EM_PROCESSAMENTO" },
     })
 
-    // Fire-and-forget, but let's at least await the handshake to log errors
     try {
-      console.log(`[disparar] Enviando payload para: ${user.n8nWebhookUrl}`)
+      console.log(`[disparar] Rota: /api/listas-disparo/${id}/disparar`)
+      console.log(`[disparar] Endpoint Destino n8n: ${user.n8nWebhookUrl}`)
+      
       const n8nRes = await fetch(user.n8nWebhookUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         body: JSON.stringify(payload),
       })
       
       if (!n8nRes.ok) {
-        console.error(`[disparar] n8n retornou erro ${n8nRes.status}:`, await n8nRes.text())
-      } else {
-        console.log(`[disparar] Webhook enviado com sucesso para n8n.`)
-      }
-    } catch (e) {
-      console.error("[disparar] Erro crítico ao chamar webhook n8n:", e)
-    }
+        const errorText = await n8nRes.text()
+        console.error(`[disparar] n8n REJEITOU (Status ${n8nRes.status}):`, errorText)
+        
+        // Reverte status para não travar a lista
+        await prisma.listaDisparo.update({
+          where: { id },
+          data: { status: "RASCUNHO" },
+        })
 
-    return NextResponse.json({ ok: true, totalLeads: leads.length })
+        return NextResponse.json(
+          { error: `O n8n recusou a conexão (Erro ${n8nRes.status}). Verifique se a URL está correta e o workflow ativo.` },
+          { status: 502 }
+        )
+      }
+
+      console.log(`[disparar] SUCESSO: n8n recebeu o disparo.`)
+      return NextResponse.json({ ok: true, totalLeads: leads.length })
+
+    } catch (e: any) {
+      console.error("[disparar] ERRO CRÍTICO AO ACESSAR N8N:", e)
+      
+      // Reverte status
+      await prisma.listaDisparo.update({
+        where: { id },
+        data: { status: "RASCUNHO" },
+      })
+
+      return NextResponse.json(
+        { error: `Não foi possível alcançar o n8n: ${e.message}. Verifique sua conexão e a URL configurada.` },
+        { status: 500 }
+      )
+    }
   } catch (error) {
     console.error("POST /api/listas-disparo/[id]/disparar error:", error)
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
