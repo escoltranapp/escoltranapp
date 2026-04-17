@@ -37,18 +37,20 @@ export default function SettingsPage() {
     if (!n8nUrl) return toast({ title: "Insira uma URL primeiro", variant: "destructive" })
     setIsTesting(true)
     try {
-      const res = await fetch(n8nUrl, {
+      const res = await fetch('/api/user/profile/test-webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ test: true, message: "Teste de conexão Escoltran" })
+        body: JSON.stringify({ url: n8nUrl })
       })
-      if (res.ok) {
-        toast({ title: "CONEXÃO ESTABELECIDA", description: `O n8n recebeu o sinal (Status ${res.status})` })
+      const data = await res.json()
+      
+      if (res.ok && data.ok) {
+        toast({ title: "CONEXÃO ESTABELECIDA", description: `O servidor n8n respondeu com sucesso (Status ${data.status})` })
       } else {
-        toast({ title: "ERRO NA RESPOSTA", description: `O n8n respondeu, mas com erro ${res.status}`, variant: "destructive" })
+        toast({ title: "ERRO NA RESPOSTA", description: data.error || `O n8n retornou erro ${data.status}`, variant: "destructive" })
       }
     } catch (e: any) {
-      toast({ title: "FALHA DE ALCANCE", description: `Não foi possível tocar no n8n: ${e.message}`, variant: "destructive" })
+      toast({ title: "FALHA DE ALCANCE", description: `O servidor do Escoltran não conseguiu falar com o n8n: ${e.message}`, variant: "destructive" })
     } finally {
       setIsTesting(false)
     }
