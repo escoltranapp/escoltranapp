@@ -43,12 +43,14 @@ export function ActivityDialog({ open, onOpenChange, activity }: ActivityDialogP
   // Fetch contacts and deals for selection
   const { data: contactsRaw } = useQuery({
     queryKey: ["contacts"],
-    queryFn: () => fetch("/api/contacts").then(res => res.json())
+    queryFn: () => fetch("/api/contacts").then(res => res.json()),
+    enabled: open
   })
 
   const { data: dealsRaw } = useQuery({
     queryKey: ["deals"],
-    queryFn: () => fetch("/api/deals").then(res => res.json())
+    queryFn: () => fetch("/api/deals").then(res => res.json()),
+    enabled: open
   })
 
   const contacts = Array.isArray(contactsRaw) ? contactsRaw : []

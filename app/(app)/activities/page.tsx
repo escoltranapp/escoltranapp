@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+// Importações seguras
 import { ActivityList } from "@/components/activities/ActivityList"
 import { ActivityCalendar } from "@/components/activities/ActivityCalendar"
 import { ActivityDialog } from "@/components/activities/ActivityDialog"
@@ -11,7 +12,34 @@ import { ActivityKPIs } from "@/components/activities/ActivityKPIs"
 
 type ViewMode = 'list' | 'calendar'
 
+// Componente de segurança para capturar erros específicos
+function LocalErrorBoundary({ children }: { children: React.ReactNode }) {
+  const [hasError, setHasError] = useState(false)
+  const [errorMsg, setErrorMsg] = useState("")
+
+  useEffect(() => {
+    const handleError = (error: ErrorEvent) => {
+      setHasError(true)
+      setErrorMsg(error.message)
+    }
+    window.addEventListener("error", handleError)
+    return () => window.removeEventListener("error", handleError)
+  }, [])
+
+  if (hasError) {
+    return (
+      <div className="p-12 bg-red-950/20 border border-red-500/50 rounded-3xl text-center">
+        <h2 className="text-xl font-black text-red-500 uppercase tracking-tighter mb-4">Falha Crítica Detectada</h2>
+        <p className="text-xs font-mono text-red-400/70 break-all">{errorMsg}</p>
+        <button onClick={() => window.location.reload()} className="mt-6 px-6 py-2 bg-red-500 text-white font-black text-[10px] uppercase rounded-lg">Resetar Módulo</button>
+      </div>
+    )
+  }
+  return children
+}
+
 function ActivitiesContent() {
+  const [mounted, setMounted] = useState(false)
   const searchParams = useSearchParams()
   const router = useRouter()
   
@@ -23,17 +51,25 @@ function ActivitiesContent() {
   const [typeFilter, setTypeFilter] = useState("ALL")
 
   useEffect(() => {
-    if (searchParams) {
-      const s = searchParams.get("status")
-      const t = searchParams.get("type")
-      if (s) setStatusFilter(s)
-      if (t) setTypeFilter(t)
-      
-      if (searchParams.get("new") === "true") {
-        setIsDialogOpen(true)
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted && searchParams) {
+      try {
+        const s = searchParams.get("status")
+        const t = searchParams.get("type")
+        if (s) setStatusFilter(s)
+        if (t) setTypeFilter(t)
+        
+        if (searchParams.get("new") === "true") {
+          setIsDialogOpen(true)
+        }
+      } catch (e) {
+        console.error("Erro ao ler query params", e)
       }
     }
-  }, [searchParams])
+  }, [mounted, searchParams])
 
   const { data: activitiesData, isLoading, refetch } = useQuery({
     queryKey: ["activities", statusFilter, typeFilter],
@@ -52,8 +88,22 @@ function ActivitiesContent() {
         return data.filter((a: any) => a?.tipo === typeFilter)
       }
       return data
-    }
+    },
+    enabled: mounted // Só busca dados após montar
   })
+
+  // Se não montou, mostra o Skeleton sênior
+  if (!mounted) {
+    return (
+      <div className="flex flex-col h-screen bg-[#0A0A0A] p-12 overflow-hidden">
+        <div className="w-full h-24 bg-surface/50 animate-pulse rounded-3xl mb-12" />
+        <div className="grid grid-cols-4 gap-6 mb-12">
+           {[1,2,3,4].map(i => <div key={i} className="h-32 bg-surface/30 animate-pulse rounded-3xl" />)}
+        </div>
+        <div className="flex-1 bg-surface/20 animate-pulse rounded-[48px]" />
+      </div>
+    )
+  }
 
   const activities = Array.isArray(activitiesData) ? activitiesData : []
 
@@ -132,19 +182,25 @@ function ActivitiesContent() {
         </select>
       </div>
 
-      {isLoading ? (
-        <div className="h-[400px] flex items-center justify-center">
-           <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-        </div>
-      ) : (
-        <>
-          {viewMode === 'list' ? (
-            <ActivityList activities={activities} onEdit={openEdit} />
+      <div className="flex-1 overflow-y-auto p-12 custom-scrollbar space-y-12">
+        <LocalErrorBoundary>
+          <ActivityKPIs activities={activities} />
+
+          {isLoading ? (
+            <div className="h-[400px] flex items-center justify-center">
+              <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+            </div>
           ) : (
-            <ActivityCalendar activities={activities} onEdit={openEdit} />
+            <>
+              {viewMode === 'list' ? (
+                <ActivityList activities={activities} onEdit={openEdit} />
+              ) : (
+                <ActivityCalendar activities={activities} onEdit={openEdit} />
+              )}
+            </>
           )}
-        </>
-      )}
+        </LocalErrorBoundary>
+      </div>
 
       <ActivityDialog 
         open={isDialogOpen} 
@@ -152,7 +208,7 @@ function ActivitiesContent() {
           setIsDialogOpen(open)
           if (!open) {
             setEditingActivity(null)
-            if (searchParams.get("new") || searchParams.get("contact_id") || searchParams.get("deal_id")) {
+            if (searchParams?.get("new") || searchParams?.get("contact_id") || searchParams?.get("deal_id")) {
                 router.replace('/activities')
             }
           }
@@ -166,9 +222,9 @@ function ActivitiesContent() {
 export default function ActivitiesPage() {
   return (
     <Suspense fallback={
-      <div className="h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-      </div>
+       <div className="min-h-screen bg-[#0A0A0A] p-12 flex items-center justify-center">
+          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+       </div>
     }>
       <ActivitiesContent />
     </Suspense>
