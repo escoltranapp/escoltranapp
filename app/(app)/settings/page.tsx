@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
-import { getInitials, cn } from "@/lib/utils"
+import { getInitials } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 
 export default function SettingsPage() {
@@ -24,8 +24,8 @@ export default function SettingsPage() {
       fetch('/api/user/profile')
         .then(res => res.json())
         .then(data => {
-          if (data.n8nWebhookUrl) setN8nUrl(data.n8nWebhookUrl)
-          if (data.name) setName(data.name)
+          if (data?.n8nWebhookUrl) setN8nUrl(data.n8nWebhookUrl)
+          if (data?.name) setName(data.name)
         })
         .catch(() => {})
     }
@@ -229,6 +229,17 @@ export default function SettingsPage() {
                  </div>
               </div>
            </div>
+        </TabsContent>
+        
+        {/* PLACEHOLDERS PARA AS OUTRAS ABAS */}
+        <TabsContent value="pipeline" className="p-12 text-center text-[#404040] font-mono text-[10px] uppercase tracking-widest">
+           Pipeline Dataset Node: Fully Encrypted & Offline
+        </TabsContent>
+        <TabsContent value="search" className="p-12 text-center text-[#404040] font-mono text-[10px] uppercase tracking-widest">
+           Lead Dataset Node: Fully Encrypted & Offline
+        </TabsContent>
+        <TabsContent value="templates" className="p-12 text-center text-[#404040] font-mono text-[10px] uppercase tracking-widest">
+           Message Template Node: Fully Encrypted & Offline
         </TabsContent>
       </Tabs>
 
