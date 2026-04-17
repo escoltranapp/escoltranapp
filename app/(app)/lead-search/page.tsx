@@ -416,9 +416,6 @@ export default function LeadSearchPage() {
                                     {new Date(lead.updatedAt).toLocaleDateString('pt-BR')} às {new Date(lead.updatedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                  </div>
                               </div>
-                              <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#0A0A0A] border border-white/5 text-[#404040] hover:text-[#F97316] transition-all">
-                                 <span className="material-symbols-outlined text-[18px]">visibility</span>
-                              </button>
                            </div>
                         </div>
                      ))
