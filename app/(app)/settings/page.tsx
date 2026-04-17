@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -9,17 +9,54 @@ import { getInitials, cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 
 export default function SettingsPage() {
-  const { data: session } = useSession()
+  const { data: session, update } = useSession()
   const [isSaving, setIsSaving] = useState(false)
+  const [n8nUrl, setN8nUrl] = useState("")
+  const [name, setName] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Fetch current data from database on mount
+  useEffect(() => {
+    if (session?.user) {
+      setName(session.user.name || "")
+      
+      // Fetch fresh profile data including the n8nWebhookUrl
+      fetch('/api/user/profile')
+        .then(res => res.json())
+        .then(data => {
+          if (data.n8nWebhookUrl) setN8nUrl(data.n8nWebhookUrl)
+          if (data.name) setName(data.name)
+        })
+        .catch(() => {})
+    }
+  }, [session])
+
   const handleSave = async () => {
-    setIsSaving(true); await new Promise(r => setTimeout(r, 1200))
-    toast({ 
-      title: "PROTOCOLO SINCRONIZADO", 
-      description: "As alterações do cluster foram persistidas no diretório mestre." 
-    })
-    setIsSaving(false)
+    setIsSaving(true)
+    try {
+      const res = await fetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ n8nWebhookUrl: n8nUrl, name })
+      })
+      
+      if (!res.ok) throw new Error("Erro ao salvar")
+      
+      await update() // Update client-side next-auth session
+      
+      toast({ 
+        title: "PROTOCOLO SINCRONIZADO", 
+        description: "As alterações do cluster foram persistidas no diretório mestre." 
+      })
+    } catch (e) {
+      toast({ 
+        title: "FALHA NA SINCRONIA", 
+        description: "Não foi possível persistir os dados no cluster.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const handleAvatarSync = () => {
@@ -29,7 +66,7 @@ export default function SettingsPage() {
     })
   }
 
-  const userName = session?.user?.name || "Operador Principal"
+  const userName = name || "Operador Principal"
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-12 space-y-12 animate-in fade-in duration-1000">
@@ -134,7 +171,8 @@ export default function SettingsPage() {
                           </label>
                           <Input 
                             className="bg-[#0A0A0A]/60 border-white/[0.06] h-16 rounded-2xl text-white font-black tracking-widest px-6 focus:border-[#F97316]/50 transition-all outline-none" 
-                            defaultValue={userName} 
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                           />
                        </div>
                        <div className="space-y-4">
@@ -144,6 +182,47 @@ export default function SettingsPage() {
                           </label>
                           <div className="h-16 px-6 rounded-2xl bg-[#1A1A1A]/30 border border-white/[0.02] flex items-center text-[#262626] font-mono font-black tracking-widest overflow-hidden opacity-60">
                              {session?.user?.email || "NOT_LOGGED_IN@CLUSTER"}
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </TabsContent>
+
+        {/* SEÇÃO INTEGRAÇÕES / SINCRONIA */}
+        <TabsContent value="integrations" className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+           <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[40px] blur-3xl opacity-20 group-hover:opacity-40 transition-opacity" />
+              <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl rounded-[40px] border border-white/[0.06] overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)]">
+                 <div className="p-8 border-b border-white/[0.03] bg-white/[0.01] flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                       <span className="w-1.5 h-6 bg-[#F97316] rounded-full" />
+                       <span className="text-[12px] font-mono font-black uppercase tracking-[0.4em] text-white">Global Integration Hub</span>
+                    </div>
+                    <span className="text-[10px] font-mono font-black text-emerald-500 uppercase tracking-widest">CONNECTED_OPERATIONAL</span>
+                 </div>
+                 
+                 <div className="p-12 space-y-12">
+                    <div className="flex items-center gap-8 p-8 bg-[#1A1A1A]/30 border border-white/5 rounded-3xl">
+                       <div className="w-16 h-16 rounded-2xl bg-[#F97316]/10 flex items-center justify-center border border-[#F97316]/20 shadow-inner">
+                          <span className="material-symbols-outlined text-[#F97316] text-[32px]">webhook</span>
+                       </div>
+                       <div className="space-y-4 flex-1">
+                          <div>
+                            <h4 className="text-[18px] font-black text-white tracking-widest uppercase italic">Integração N8N (Disparador)</h4>
+                            <p className="text-[#404040] text-[10px] font-mono uppercase tracking-[0.2em] mt-1">Este node gerencia o envio de massa para o orquestrador de automação.</p>
+                          </div>
+                          
+                          <div className="space-y-3">
+                             <label className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.3em]">Webhook URL Target</label>
+                             <Input 
+                               className="bg-black/40 border-white/[0.06] h-14 rounded-xl text-white font-mono text-[12px] tracking-widest px-6 focus:border-[#F97316]/50 transition-all outline-none" 
+                               placeholder="Ex: https://n8n.seusistema.com/webhook/..."
+                               value={n8nUrl}
+                               onChange={(e) => setN8nUrl(e.target.value)}
+                             />
+                             <p className="text-[10px] text-[#F97316]/60 font-mono italic">Aponte para o path configurado no seu node de entrada do n8n.</p>
                           </div>
                        </div>
                     </div>
