@@ -59,6 +59,17 @@ export default function DashboardPage() {
     },
   })
 
+  const { data: todayActivities = [], isLoading: isActivitiesLoading } = useTodayActivities()
+
+  const TYPE_ICONS: Record<string, string> = {
+    CALL: 'call',
+    MEETING: 'groups',
+    TASK: 'task_alt',
+    NOTE: 'description',
+    WHATSAPP: 'chat',
+    EMAIL: 'mail',
+  }
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-8 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
       
