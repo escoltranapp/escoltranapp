@@ -148,7 +148,6 @@ export default function LeadSearchPage() {
   }
 
   return (
-  return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
       
       {/* IMMERSIVE AETHER BACKGROUND */}
