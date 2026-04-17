@@ -22,20 +22,8 @@ export function TopBar({ onMenuClick }: TopBarProps) {
           <span className="material-symbols-outlined text-[24px]">menu</span>
         </button>
 
-        {/* USER PROFILE */}
-        <div className="flex items-center gap-3">
-           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#F97316] to-[#FB923C] p-[1.5px] shadow-lg shadow-[#F97316]/10">
-              <div className="w-full h-full rounded-full bg-[#0A0A0A] flex items-center justify-center overflow-hidden">
-                 {session?.user?.image ? (
-                   <img src={session.user.image} alt="" className="w-full h-full object-cover" />
-                 ) : (
-                   <span className="text-[11px] font-black text-white font-mono">
-                      {session?.user?.name?.slice(0, 2).toUpperCase() || "EC"}
-                   </span>
-                 )}
-              </div>
-           </div>
-        </div>
+        {/* EMPTY SPACE - ALL PROFILE MODULES REMOVED */}
+        <div />
       </div>
     </header>
   )
