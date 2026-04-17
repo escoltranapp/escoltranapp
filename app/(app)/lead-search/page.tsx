@@ -126,6 +126,27 @@ export default function LeadSearchPage() {
     { cnpj: "33.683.111/0001-07", empresa: "SERVIÇO FEDERAL ...", telefone: "(61) 2021-8000", email: "secretaria.diretoria@...", situacao: "ATIVA", cidade: "BRASILIA/DF" }
   ]
 
+  const formatAddress = (addr: any) => {
+    if (!addr) return "ENDEREÇO NÃO DISPONÍVEL"
+    
+    let obj = addr
+    if (typeof addr === 'string') {
+      try {
+        obj = JSON.parse(addr)
+      } catch {
+        return addr.toUpperCase()
+      }
+    }
+
+    const parts = []
+    if (obj.logradouro || obj.LOGRADOURO) parts.push(obj.logradouro || obj.LOGRADOURO)
+    if (obj.bairro || obj.BAIRRO) parts.push(obj.bairro || obj.BAIRRO)
+    if (obj.cidade || obj.CIDADE) parts.push(obj.cidade || obj.CIDADE)
+    if (obj.estado || obj.ESTADO) parts.push(obj.estado || obj.ESTADO)
+
+    return parts.length > 0 ? parts.join(", ").toUpperCase() : "ENDEREÇO NÃO FORMATADO"
+  }
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-12 space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-32">
       
@@ -381,8 +402,8 @@ export default function LeadSearchPage() {
                                        {lead.telefone || "SEM TELEFONE"}
                                     </p>
                                     <span className="text-[#404040]">•</span>
-                                    <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.1em] truncate max-w-[400px]">
-                                       {typeof lead.endereco === 'string' ? lead.endereco : JSON.stringify(lead.endereco)}
+                                    <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.1em] truncate max-w-[500px]">
+                                       {formatAddress(lead.endereco)}
                                     </p>
                                  </div>
                               </div>
@@ -452,10 +473,23 @@ export default function LeadSearchPage() {
             )}
 
            <button 
-              onClick={() => setDisplayLimit(prev => prev + 10)}
-              className="w-full py-10 text-[11px] font-mono font-black text-[#404040] hover:text-white uppercase tracking-[0.8em] transition-all border-t border-white/5 hover:bg-white/[0.01]"
+              onClick={() => {
+                setDisplayLimit(prev => prev + 10)
+              }}
+              disabled={isLoadingRecent}
+              className="w-full py-12 text-[12px] font-mono font-black text-[#404040] hover:text-[#F97316] uppercase tracking-[0.8em] transition-all border-t border-white/5 hover:bg-[#F97316]/5 disabled:opacity-50 group flex items-center justify-center gap-4"
            >
-              {isLoadingRecent && displayLimit > 10 ? "CARREGANDO..." : "CARREGAR MAIS REGISTROS DO DIRETÓRIO"}
+              {isLoadingRecent && displayLimit > 10 ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-[#F97316]/30 border-t-[#F97316] rounded-full animate-spin" />
+                  <span>SINCRONIZANDO...</span>
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">expand_more</span>
+                  CARREGAR MAIS REGISTROS DO DIRETÓRIO
+                </>
+              )}
            </button>
         </div>
       </div>
