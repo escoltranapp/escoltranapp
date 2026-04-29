@@ -96,8 +96,8 @@ export default function AiInsightsPage() {
          <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-2xl p-5 shadow-xl group hover:border-[#F97316]/20 transition-all">
             <div className="flex items-center justify-between mb-4">
                <span className="text-[10px] font-mono font-bold text-[#6B7280] uppercase tracking-widest">Taxa de Conversão</span>
-               <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
-                  <span className="material-symbols-outlined text-[16px] text-blue-500">show_chart</span>
+               <div className="h-8 w-8 rounded-lg bg-[#F97316]/10 flex items-center justify-center group-hover:bg-[#F97316]/20 transition-colors">
+                  <span className="material-symbols-outlined text-[16px] text-[#F97316]">show_chart</span>
                </div>
             </div>
             <div className="flex items-end justify-between">
@@ -277,7 +277,7 @@ export default function AiInsightsPage() {
               <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-2xl p-6 shadow-xl relative">
                  <div className="flex items-center gap-2 mb-2">
                     <span className="material-symbols-outlined text-[16px] text-rose-500">trending_down</span>
-                    <h3 className="text-[14px] font-black text-white tracking-tight">Motivos de Perda</h3>
+                    <h3 className="text-[14px] font-black text-white tracking-tight uppercase italic">MOTIVOS DE PERDA</h3>
                  </div>
                  <div className="h-[200px] w-full mt-4 relative flex items-center justify-center">
                     <ResponsiveContainer width="100%" height="100%">
@@ -302,8 +302,8 @@ export default function AiInsightsPage() {
                           />
                        </PieChart>
                     </ResponsiveContainer>
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-                       <div className="text-xl font-black text-[#F97316]">100%</div>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-2">
+                       <div className="text-2xl font-black text-[#F97316]">100%</div>
                     </div>
                  </div>
                  <div className="flex items-center gap-2 mt-4 justify-center">
