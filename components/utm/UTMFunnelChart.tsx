@@ -13,10 +13,10 @@ interface UTMFunnelChartProps {
 
 export function UTMFunnelChart({ data }: UTMFunnelChartProps) {
   const stages = [
-    { label: "Fontes", value: data.sources.length, sub: "Canais", color: "bg-[#0070F3]", width: "w-[400px]", topWidth: "100%", botWidth: "80%" },
-    { label: "Leads", value: data.leads, sub: "Contatos", color: "bg-[#00C2FF]", width: "w-[320px]", topWidth: "100%", botWidth: "75%" },
-    { label: "Deals", value: data.deals, sub: "Oportunidades", color: "bg-[#00E5FF]", width: "w-[240px]", topWidth: "100%", botWidth: "65%" },
-    { label: "Ganhos", value: data.won, sub: "Conversões", color: "bg-[#2563EB]", width: "w-[156px]", topWidth: "100%", botWidth: "100%" },
+    { label: "Fontes", value: data.sources.length, sub: "Canais", color: "bg-[#EA580C]", width: "w-[400px]", topWidth: "100%", botWidth: "80%" },
+    { label: "Leads", value: data.leads, sub: "Contatos", color: "bg-[#F97316]", width: "w-[320px]", topWidth: "100%", botWidth: "75%" },
+    { label: "Deals", value: data.deals, sub: "Oportunidades", color: "bg-[#FB923C]", width: "w-[240px]", topWidth: "100%", botWidth: "65%" },
+    { label: "Ganhos", value: data.won, sub: "Conversões", color: "bg-[#F59E0B]", width: "w-[156px]", topWidth: "100%", botWidth: "100%" },
   ]
 
   return (
@@ -61,13 +61,13 @@ export function UTMFunnelChart({ data }: UTMFunnelChartProps) {
 
       <div className="grid grid-cols-2 gap-20 mt-16 w-full max-w-[600px] border-t border-white/5 pt-10">
         <div className="text-center">
-          <div className="text-4xl font-black text-[#00C2FF] tracking-tighter">
+          <div className="text-4xl font-black text-[#F97316] tracking-tighter">
             {data.leads > 0 ? Math.round((data.deals / data.leads) * 100) : 0}%
           </div>
           <div className="text-[11px] font-black text-[#6B7280] uppercase tracking-widest mt-1">Lead → Deal</div>
         </div>
         <div className="text-center">
-          <div className="text-4xl font-black text-[#00E5FF] tracking-tighter">
+          <div className="text-4xl font-black text-[#FB923C] tracking-tighter">
             {data.deals > 0 ? Math.round((data.won / data.deals) * 100) : 0}%
           </div>
           <div className="text-[11px] font-black text-[#6B7280] uppercase tracking-widest mt-1">Deal → Ganho</div>
