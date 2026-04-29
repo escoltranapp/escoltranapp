@@ -341,7 +341,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
               <div className="w-24 h-24 rounded-full border border-white/5 flex items-center justify-center mb-10">
                  <span className="material-symbols-outlined text-[56px]">layers</span>
               </div>
-              <div className="text-[12px] font-mono font-black uppercase tracking-[0.5em] text-center italic">Aguardando Expansão de Cluster</div>
+              <div className="text-[12px] font-mono font-black uppercase tracking-[0.5em] text-center italic">Aguardando Novo Estágio</div>
            </div>
         </div>
       </div>
