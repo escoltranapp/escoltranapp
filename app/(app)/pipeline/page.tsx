@@ -82,8 +82,6 @@ export default function PipelinePage() {
                   onChange={(e) => setPipelineSelection(e.target.value)}
                   className="bg-[#111111] text-[#A3A3A3] border border-white/[0.05] rounded-xl pl-4 pr-10 py-1.5 text-xs font-medium focus:border-blue-500/50 outline-none cursor-pointer appearance-none min-w-[180px] hover:bg-white/[0.02] transition-all"
                 >
-                  <option value="vendas-matriz">Host Menos Imposto</option>
-                  <option value="pos-vendas">Pós-Vendas / CS</option>
                   <option value="retencao">Fluxo Retenção</option>
                 </select>
                 <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[16px] text-[#404040] pointer-events-none group-hover:text-white transition-colors">expand_more</span>

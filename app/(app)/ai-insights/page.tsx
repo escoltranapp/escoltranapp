@@ -59,7 +59,7 @@ export default function AiInsightsPage() {
 
         <div className="flex items-center gap-3">
            <div className="bg-[#1A1A1A] border border-white/5 rounded-xl h-10 px-4 flex items-center gap-3 cursor-pointer hover:border-[#F97316]/30 transition-all">
-              <span className="text-[11px] font-bold text-white tracking-wide">Host Menos Imposto</span>
+              <span className="text-[11px] font-bold text-white tracking-wide">Fluxo Retenção</span>
               <span className="material-symbols-outlined text-[16px] text-[#6B7280]">expand_more</span>
            </div>
            <button className="h-10 w-10 bg-[#1A1A1A] border border-white/5 rounded-xl flex items-center justify-center text-[#6B7280] hover:text-[#F97316] transition-all">
