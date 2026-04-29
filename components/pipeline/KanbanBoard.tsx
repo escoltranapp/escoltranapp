@@ -286,7 +286,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
                       <div className="w-8 h-8 rounded-full bg-[#0A0A0A] flex items-center justify-center border border-white/5 group-hover/btn:border-[#F97316]/40 transition-all shadow-xl">
                         <span className="material-symbols-outlined text-[20px] group-hover/btn:rotate-90 transition-transform">add</span>
                       </div>
-                      <span className="text-[11px] font-black uppercase tracking-[0.3em] font-mono italic">Novo Registro Operacional</span>
+                      <span className="text-[11px] font-black uppercase tracking-[0.3em] font-mono italic">Novo Negócio</span>
                     </button>
                   </div>
                 </div>
@@ -306,7 +306,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
                     <div className="w-12 h-12 rounded-2xl border border-white/5 bg-[#0A0A0A] flex items-center justify-center group-hover:border-[#F97316]/50 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.3)] duration-700">
                        <span className="material-symbols-outlined text-[28px] group-hover:rotate-180 transition-transform duration-700">add</span>
                     </div>
-                    <span className="text-[13px] font-black uppercase tracking-[0.4em] italic font-mono">Expandir Cluster</span>
+                    <span className="text-[13px] font-black uppercase tracking-[0.4em] italic font-mono">Novo Estágio</span>
                  </button>
               ) : (
                  <div className="w-full p-8 bg-[#1A1A1A]/40 backdrop-blur-3xl border border-[#F97316]/20 rounded-[32px] space-y-6 animate-in zoom-in-95 duration-500 shadow-2xl">
