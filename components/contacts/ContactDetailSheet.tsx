@@ -117,9 +117,6 @@ export function ContactDetailSheet({ contact, open, onOpenChange, onEdit }: Cont
                          <span className="px-3 py-0.5 rounded-full bg-[#F97316]/10 text-[#F97316] text-[9px] font-black uppercase tracking-[0.2em] border border-[#F97316]/20">
                             {localStatus?.toUpperCase() || "NOVO"}
                          </span>
-                         <span className="text-[9px] font-mono font-bold text-[#6B7280] uppercase tracking-[0.2em]">
-                            ID: #{contact.id.slice(-6).toUpperCase()}
-                         </span>
                       </div>
                       <DialogTitle className="text-2xl font-black text-white italic tracking-tight uppercase leading-none">
                          {contact.nome}
@@ -156,10 +153,6 @@ export function ContactDetailSheet({ contact, open, onOpenChange, onEdit }: Cont
                       <span className="w-8 h-[1px] bg-[#404040]" />
                       ORQUESTRAÇÃO DO FLUXO
                    </h4>
-                   <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#F97316] animate-ping" />
-                      <span className="text-[8px] font-mono font-bold text-[#F97316] uppercase tracking-wider">Live Sync</span>
-                   </div>
                 </div>
                 
                 <div className="grid grid-cols-6 gap-2">
