@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { useUTMAnalytics } from "@/hooks/useUTMAnalytics"
-import { BarChart2, ArrowUpRight } from "lucide-react"
+import { BarChart2, ArrowUpRight, ArrowRight } from "lucide-react"
 
 export function UTMWidget() {
   const { data, isLoading } = useUTMAnalytics()
@@ -55,6 +55,12 @@ export function UTMWidget() {
             </div>
           ))}
         </div>
+        <Link 
+          href="/utm-analytics" 
+          className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 rounded-lg border border-white/5 hover:border-white/10 bg-[#1A1A1A]/40 hover:bg-white/5 transition-all text-xs font-bold text-white group/btn"
+        >
+          Ver Analytics Completo <ArrowRight className="w-3.5 h-3.5 text-[#6B7280] group-hover/btn:text-white transition-colors" />
+        </Link>
       </CardContent>
     </Card>
   )
