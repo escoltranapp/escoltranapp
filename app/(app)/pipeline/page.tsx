@@ -10,6 +10,7 @@ import { type Deal } from "@/components/pipeline/DealCard"
 import { cn } from "@/lib/utils"
 
 import { ClosedDealsModal } from "@/components/pipeline/ClosedDealsModal"
+import { ImportDealsModal } from "@/components/pipeline/ImportDealsModal"
 
 export default function PipelinePage() {
   const queryClient = useQueryClient()
@@ -19,6 +20,7 @@ export default function PipelinePage() {
   const [pipelineSelection, setPipelineSelection] = useState("vendas-matriz")
   const [isNewDealOpen, setIsNewDealOpen] = useState(false)
   const [isArchivedOpen, setIsArchivedOpen] = useState(false)
+  const [isImportOpen, setIsImportOpen] = useState(false)
   const [preselectedStageId, setPreselectedStageId] = useState<string | undefined>(undefined)
 
   const { data: boardData, isLoading, refetch } = useQuery({
@@ -108,25 +110,13 @@ export default function PipelinePage() {
               Pipeline
            </button>
 
-           <input 
-             type="file" 
-             id="import-csv" 
-             className="hidden" 
-             accept=".csv,.xlsx" 
-             onChange={(e) => {
-               if (e.target.files?.[0]) {
-                 toast({ title: "Arquivo Selecionado", description: `O arquivo ${e.target.files[0].name} foi carregado para importação.` })
-                 e.target.value = "" // reset
-               }
-             }}
-           />
-           <label 
-             htmlFor="import-csv"
-             className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/[0.05] rounded-xl text-xs font-medium text-white hover:bg-white/[0.05] transition-all cursor-pointer"
+           <button 
+             onClick={() => setIsImportOpen(true)}
+             className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/[0.05] rounded-xl text-xs font-medium text-white hover:bg-white/[0.05] transition-all"
            >
               <span className="material-symbols-outlined text-[16px]">upload_file</span>
               Importar
-           </label>
+           </button>
         </div>
       </header>
 
@@ -155,6 +145,11 @@ export default function PipelinePage() {
       <ClosedDealsModal 
         isOpen={isArchivedOpen}
         onClose={() => setIsArchivedOpen(false)}
+      />
+
+      <ImportDealsModal 
+        isOpen={isImportOpen}
+        onClose={() => setIsImportOpen(false)}
       />
 
       <DealDetailSheet 
