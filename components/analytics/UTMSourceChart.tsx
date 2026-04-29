@@ -46,8 +46,8 @@ export function UTMSourceChart({ data }: UTMSourceChartProps) {
                 fontSize: "12px"
               }}
               itemStyle={{ color: "#fff" }}
-              formatter={(value: number) => [
-                `${value} (${((value / total) * 100).toFixed(0)}%)`,
+              formatter={(value: any) => [
+                `${value} (${total > 0 ? ((Number(value) / total) * 100).toFixed(0) : 0}%)`,
                 "Leads"
               ]}
             />
