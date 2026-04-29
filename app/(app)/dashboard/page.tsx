@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { formatCurrency, cn } from "@/lib/utils"
 import { useTodayActivities } from "@/hooks/useTodayActivities"
 import { format } from "date-fns"
+import { UTMWidget } from "@/components/utm/UTMWidget"
 
 function KPICard({ 
   label, value, icon, subtext, trend, color = "#F97316" 
@@ -176,56 +177,9 @@ export default function DashboardPage() {
         </SectionCard>
 
         {/* COL 3: PERFORMANCE UTM */}
-        <SectionCard title="Performance UTM" icon="trending_up">
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/[0.02] border border-white/[0.04] p-4 rounded-2xl">
-                <p className="text-[8px] font-black text-[#404040] uppercase tracking-widest flex items-center gap-2 mb-1">
-                  <span className="material-symbols-outlined text-[12px]">radar</span> Leads Rastreados
-                </p>
-                <p className="text-xl font-black text-white italic">{metrics?.utmPerformance?.leadsRastreados}</p>
-              </div>
-              <div className="bg-white/[0.02] border border-white/[0.04] p-4 rounded-2xl">
-                <p className="text-[8px] font-black text-[#404040] uppercase tracking-widest flex items-center gap-2 mb-1">
-                  <span className="material-symbols-outlined text-[12px]">hub</span> Deals Atribuídos
-                </p>
-                <p className="text-xl font-black text-white italic">{metrics?.utmPerformance?.dealsAtribuidos}</p>
-              </div>
-              <div className="bg-white/[0.02] border border-white/[0.04] p-4 rounded-2xl">
-                <p className="text-[8px] font-black text-[#404040] uppercase tracking-widest flex items-center gap-2 mb-1">
-                  <span className="material-symbols-outlined text-[12px]">query_stats</span> Conversão
-                </p>
-                <p className="text-xl font-black text-white italic">{metrics?.utmPerformance?.conversao}</p>
-              </div>
-              <div className="bg-white/[0.02] border border-white/[0.04] p-4 rounded-2xl">
-                <p className="text-[8px] font-black text-[#404040] uppercase tracking-widest flex items-center gap-2 mb-1">
-                  <span className="material-symbols-outlined text-[12px]">monetization_on</span> Receita
-                </p>
-                <p className="text-xl font-black text-white italic">R$ {Math.round((metrics?.utmPerformance?.receita || 0) / 1000)}k</p>
-              </div>
-            </div>
-
-            <div className="space-y-4 pt-4">
-              <p className="text-[9px] font-black text-[#404040] uppercase tracking-widest">Top Campanhas</p>
-              <div className="space-y-3">
-                {metrics?.utmPerformance?.topCampanhas?.map((camp: any, i: number) => (
-                  <div key={i} className="flex items-center justify-between group">
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-black text-[#404040] group-hover:text-white transition-colors">{i+1}</span>
-                      <p className="text-[11px] font-bold text-white/80 group-hover:text-white transition-colors uppercase">{camp.nome}</p>
-                    </div>
-                    <span className="text-[10px] font-mono font-black text-[#3B82F6]">{formatCurrency(camp.valor)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <button className="w-full mt-6 py-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-[10px] font-black uppercase tracking-widest text-white/40 hover:bg-white/[0.05] hover:text-white transition-all flex items-center justify-center gap-3 group">
-               Ver Analytics Completo
-               <span className="material-symbols-outlined text-[14px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-            </button>
-          </div>
-        </SectionCard>
+        <div className="h-full">
+          <UTMWidget />
+        </div>
 
       </div>
     </div>

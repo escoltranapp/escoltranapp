@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { classifyDeal, normalizeSourceLabel, getProductGroup } from "@/lib/lead-classification";
+import { subDays, format, startOfDay } from "date-fns";
 
 export async function GET(request: Request) {
   try {
@@ -10,140 +12,196 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const productId = searchParams.get("productId");
+    const productId = searchParams.get("productId") || "all";
+    const dateFrom = searchParams.get("from");
+    const dateTo = searchParams.get("to");
 
-    // Filter by user and product if provided
     const baseWhere: any = { userId: session.user.id };
-    if (productId && productId !== "all") {
+    if (productId !== "all") {
       baseWhere.produtoInteresse = productId;
     }
+    
+    // Add date filters if provided
+    if (dateFrom || dateTo) {
+      baseWhere.createdAt = {};
+      if (dateFrom) baseWhere.createdAt.gte = new Date(dateFrom);
+      if (dateTo) baseWhere.createdAt.lte = new Date(dateTo);
+    }
 
-    // 1. Fetch Stats
-    const [leadsCount, dealsCount, inPipelineDeals, wonDeals] = await Promise.all([
-      prisma.contact.count({
-        where: { 
-          userId: session.user.id,
-          OR: [
-            { utmSourceFirst: { not: null } },
-            { utmSourceLast: { not: null } }
-          ]
+    // 1. Fetch Raw Data
+    const [contacts, deals] = await Promise.all([
+      prisma.contact.findMany({
+        where: { userId: session.user.id },
+        select: {
+          id: true,
+          utmSourceFirst: true,
+          utmMediumFirst: true,
+          utmCampaignFirst: true,
+          utmContentFirst: true,
+          createdAt: true,
         }
       }),
-      prisma.deal.count({
-        where: baseWhere
-      }),
       prisma.deal.findMany({
-        where: { ...baseWhere, status: "OPEN" },
-        select: { valorEstimado: true }
-      }),
-      prisma.deal.findMany({
-        where: { ...baseWhere, status: "WON" },
-        select: { valorEstimado: true }
+        where: baseWhere,
+        select: {
+          id: true,
+          titulo: true,
+          valorEstimado: true,
+          status: true,
+          utmSource: true,
+          utmMedium: true,
+          utmCampaign: true,
+          utmContent: true,
+          createdAt: true,
+        }
       })
     ]);
 
-    const totalPipelineValue = inPipelineDeals.reduce((acc, deal) => acc + (deal.valorEstimado || 0), 0);
-    const totalRevenue = wonDeals.reduce((acc, deal) => acc + (deal.valorEstimado || 0), 0);
-    const wonCount = wonDeals.length;
-    const conversionRate = leadsCount > 0 ? (wonCount / leadsCount) * 100 : 0;
+    // 2. Process Data
+    const classifiedDeals = deals.map(d => classifyDeal(d));
+    
+    const wonDeals = classifiedDeals.filter(d => d.status === "WON");
+    const openDeals = classifiedDeals.filter(d => d.status === "OPEN");
+    const lostDeals = classifiedDeals.filter(d => d.status === "LOST");
 
-    // 2. Funnel Data
-    // Simplified funnel: Sources (Unique sources) -> Leads -> Deals -> Won
-    const uniqueSourcesCount = await prisma.contact.groupBy({
-      by: ['utmSourceFirst'],
-      where: { userId: session.user.id, utmSourceFirst: { not: null } },
-      _count: true
-    }).then(res => res.length);
-
-    const funnel = {
-      sources: uniqueSourcesCount,
-      leads: leadsCount,
-      deals: dealsCount,
-      won: wonCount
+    const totalRevenue = wonDeals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0);
+    const totalPipelineValue = openDeals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0);
+    
+    // Summary
+    const summary = {
+      totalContacts: contacts.length,
+      totalDeals: classifiedDeals.length,
+      totalWon: wonDeals.length,
+      totalRevenue,
+      conversionRate: contacts.length > 0 ? (wonDeals.length / contacts.length) * 100 : 0,
+      avgTicket: wonDeals.length > 0 ? totalRevenue / wonDeals.length : 0,
+      pipelineValue: totalPipelineValue,
+      openDeals: openDeals.length,
+      uniqueCampaigns: new Set(classifiedDeals.map(d => d.utmCampaign).filter(Boolean)).size,
     };
 
-    // 3. Top Campaigns
-    const topCampaignsRaw = await prisma.deal.groupBy({
-      by: ['utmCampaign'],
-      where: { ...baseWhere, utmCampaign: { not: null } },
-      _count: { _all: true },
-      _sum: { valorEstimado: true },
+    // Performance by Campaign
+    const campaignMap = new Map();
+    contacts.forEach(c => {
+      const key = c.utmCampaignFirst || "Direto";
+      if (!campaignMap.has(key)) {
+        campaignMap.set(key, { 
+          campaign: key, 
+          source: normalizeSourceLabel(c.utmSourceFirst), 
+          medium: c.utmMediumFirst || "", 
+          leads: 0, deals: 0, won: 0, lost: 0, revenue: 0 
+        });
+      }
+      campaignMap.get(key).leads++;
     });
 
-    // For each campaign, count won deals and leads
-    const topCampaigns = await Promise.all(topCampaignsRaw.map(async (camp) => {
-      const wonForCamp = await prisma.deal.count({
-        where: { ...baseWhere, utmCampaign: camp.utmCampaign, status: "WON" }
-      });
-      const leadsForCamp = await prisma.contact.count({
-        where: { userId: session.user.id, utmCampaignFirst: camp.utmCampaign }
-      });
-
-      return {
-        name: camp.utmCampaign,
-        leads: leadsForCamp,
-        deals: camp._count._all,
-        won: wonForCamp,
-        revenue: camp._sum.valorEstimado || 0,
-        conversion: leadsForCamp > 0 ? (wonForCamp / leadsForCamp) * 100 : 0
-      };
-    }));
-
-    // Sort by revenue
-    topCampaigns.sort((a, b) => b.revenue - a.revenue);
-
-    // 4. Top Ads (using utmContent as ad name)
-    const topAdsRaw = await prisma.deal.groupBy({
-      by: ['utmContent'],
-      where: { ...baseWhere, utmContent: { not: null } },
-      _count: { _all: true },
-      _sum: { valorEstimado: true },
+    classifiedDeals.forEach(d => {
+      const key = d.utmCampaign || "Direto";
+      if (!campaignMap.has(key)) {
+        campaignMap.set(key, { 
+          campaign: key, 
+          source: normalizeSourceLabel(d.utmSource), 
+          medium: d.utmMedium || "", 
+          leads: 0, deals: 0, won: 0, lost: 0, revenue: 0 
+        });
+      }
+      const row = campaignMap.get(key);
+      row.deals++;
+      if (d.status === "WON") {
+        row.won++;
+        row.revenue += d.valorEstimado || 0;
+      } else if (d.status === "LOST") {
+        row.lost++;
+      }
     });
 
-    const topAds = await Promise.all(topAdsRaw.map(async (ad) => {
-      const wonForAd = await prisma.deal.count({
-        where: { ...baseWhere, utmContent: ad.utmContent, status: "WON" }
-      });
-      const leadsForAd = await prisma.contact.count({
-        where: { userId: session.user.id, utmContentFirst: ad.utmContent }
-      });
+    const performance = Array.from(campaignMap.values()).map(r => ({
+      ...r,
+      conversion_rate: r.leads > 0 ? (r.won / r.leads) * 100 : 0,
+      avg_ticket: r.won > 0 ? r.revenue / r.won : 0,
+    })).sort((a, b) => b.revenue - a.revenue);
 
-      return {
-        name: ad.utmContent,
-        leads: leadsForAd,
-        deals: ad._count._all,
-        won: wonForAd,
-        revenue: ad._sum.valorEstimado || 0,
-        conversion: leadsForAd > 0 ? (wonForAd / leadsForAd) * 100 : 0
-      };
-    }));
-
-    topAds.sort((a, b) => b.revenue - a.revenue);
-
-    // 5. Source Distribution
-    const sourceDistRaw = await prisma.contact.groupBy({
-      by: ['utmSourceFirst'],
-      where: { userId: session.user.id, utmSourceFirst: { not: null } },
-      _count: { _all: true }
+    // Distribution by Source
+    const sourceMap = new Map();
+    contacts.forEach(c => {
+      const key = normalizeSourceLabel(c.utmSourceFirst);
+      if (!sourceMap.has(key)) sourceMap.set(key, { source: key, leads: 0, deals: 0, revenue: 0 });
+      sourceMap.get(key).leads++;
     });
+    classifiedDeals.forEach(d => {
+      const key = normalizeSourceLabel(d.utmSource);
+      if (!sourceMap.has(key)) sourceMap.set(key, { source: key, leads: 0, deals: 0, revenue: 0 });
+      const row = sourceMap.get(key);
+      row.deals++;
+      if (d.status === "WON") row.revenue += d.valorEstimado || 0;
+    });
+    const sourceDistribution = Array.from(sourceMap.values());
 
-    const sourceDistribution = sourceDistRaw.map(src => ({
-      name: src.utmSourceFirst,
-      value: src._count._all
-    }));
+    // Funnel Summary
+    const funnel = {
+      sources: Array.from(new Set(contacts.map(c => normalizeSourceLabel(c.utmSourceFirst)))),
+      leads: contacts.length,
+      deals: classifiedDeals.length,
+      won: wonDeals.length
+    };
+
+    // Timeline (last 30 days)
+    const timelineMap = new Map();
+    const thirtyDaysAgo = subDays(new Date(), 30);
+    
+    contacts.forEach(c => {
+      if (new Date(c.createdAt) >= thirtyDaysAgo) {
+        const date = format(c.createdAt, "yyyy-MM-dd");
+        if (!timelineMap.has(date)) timelineMap.set(date, { date, leads: 0, deals: 0, revenue: 0 });
+        timelineMap.get(date).leads++;
+      }
+    });
+    classifiedDeals.forEach(d => {
+      if (new Date(d.createdAt) >= thirtyDaysAgo) {
+        const date = format(d.createdAt, "yyyy-MM-dd");
+        if (!timelineMap.has(date)) timelineMap.set(date, { date, leads: 0, deals: 0, revenue: 0 });
+        const row = timelineMap.get(date);
+        row.deals++;
+        if (d.status === "WON") row.revenue += d.valorEstimado || 0;
+      }
+    });
+    const timeline = Array.from(timelineMap.values()).sort((a, b) => a.date.localeCompare(b.date));
+
+    // Top Ads
+    const adMap = new Map();
+    classifiedDeals.forEach(d => {
+      const key = d.utmContent || "Sem criativo";
+      if (!adMap.has(key)) {
+        adMap.set(key, { 
+          name: key, 
+          adset: d.utmCampaign, 
+          source: normalizeSourceLabel(d.utmSource), 
+          leads: 0, deals: 0, won: 0, lost: 0, pipeline_value: 0, revenue: 0 
+        });
+      }
+      const row = adMap.get(key);
+      row.deals++;
+      if (d.status === "WON") { row.won++; row.revenue += d.valorEstimado || 0; }
+      else if (d.status === "LOST") row.lost++;
+      else if (d.status === "OPEN") row.pipeline_value += d.valorEstimado || 0;
+    });
+    // Add leads to adMap from contacts
+    contacts.forEach(c => {
+      const key = c.utmContentFirst || "Sem criativo";
+      if (adMap.has(key)) adMap.get(key).leads++;
+    });
+    const topAds = Array.from(adMap.values())
+      .sort((a, b) => b.revenue - a.revenue || b.pipeline_value - a.pipeline_value)
+      .slice(0, 10);
 
     return NextResponse.json({
-      stats: {
-        leads: leadsCount,
-        deals: dealsCount,
-        pipelineValue: totalPipelineValue,
-        conversionRate,
-        revenue: totalRevenue
-      },
+      summary,
+      performance,
+      sourceDistribution,
       funnel,
-      topCampaigns: topCampaigns.slice(0, 5),
-      topAds: topAds.slice(0, 5),
-      sourceDistribution
+      timeline,
+      topAds,
+      topCampaigns: performance.slice(0, 10)
     });
 
   } catch (error) {

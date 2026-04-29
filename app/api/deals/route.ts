@@ -60,6 +60,34 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Título é obrigatório" }, { status: 400 })
     }
 
+    // SNAPSHOT UTM from Contact
+    let utmSnapshot = {};
+    if (contactId) {
+      const contact = await prisma.contact.findUnique({
+        where: { id: contactId },
+        select: {
+          utmSourceFirst: true, utmMediumFirst: true, utmCampaignFirst: true,
+          utmContentFirst: true, utmTermFirst: true,
+          utmSourceLast: true, utmMediumLast: true, utmCampaignLast: true,
+          utmContentLast: true, utmTermLast: true,
+          landingPageFirst: true, referrerFirst: true,
+        }
+      });
+      
+      if (contact) {
+        utmSnapshot = {
+          utmSource: contact.utmSourceLast || contact.utmSourceFirst,
+          utmMedium: contact.utmMediumLast || contact.utmMediumFirst,
+          utmCampaign: contact.utmCampaignLast || contact.utmCampaignFirst,
+          utmContent: contact.utmContentLast || contact.utmContentFirst,
+          utmTerm: contact.utmTermLast || contact.utmTermFirst,
+          landingPage: contact.landingPageFirst,
+          referrer: contact.referrerFirst,
+          capturedAt: new Date(),
+        };
+      }
+    }
+
     const deal = await prisma.deal.create({
       data: {
         titulo,
@@ -74,6 +102,7 @@ export async function POST(req: NextRequest) {
         dataPrevista: dataPrevista ? new Date(dataPrevista) : null,
         descricao,
         userId: session.user.id,
+        ...utmSnapshot,
       },
       include: {
         contact: { select: { nome: true, sobrenome: true, email: true } },

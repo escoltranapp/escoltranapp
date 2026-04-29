@@ -9,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
 import { format, isBefore, startOfDay } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { UTMInfoCard } from "@/components/utm/UTMInfoCard"
 
 interface DealDetailSheetProps {
   deal: Deal | null
@@ -141,20 +142,16 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
                 <div className="w-1.5 h-6 bg-[#F97316] rounded-full" />
                 <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">Parâmetros UTM (Dataset)</h3>
               </div>
-              <div className="grid grid-cols-2 gap-6 bg-[#1A1A1A] border border-white/5 p-6 rounded-2xl">
-                <div className="space-y-1">
-                  <div className="text-[9px] font-mono font-bold text-[#404040] uppercase tracking-widest">First Source</div>
-                  <div className="text-[13px] font-bold text-white uppercase italic">{deal.origem || "Direct"}</div>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-[9px] font-mono font-bold text-[#404040] uppercase tracking-widest">First Campaign</div>
-                  <div className="text-[13px] font-bold text-white uppercase italic">Brand_Google_Search</div>
-                </div>
-                <div className="col-span-2 pt-4 border-t border-white/[0.04] space-y-1">
-                  <div className="text-[9px] font-mono font-bold text-[#404040] uppercase tracking-widest">Last Click Path</div>
-                  <div className="text-[12px] font-mono text-[#A3A3A3] break-all">escoltranapp.com/v2/pipeline?ref=nav_side</div>
-                </div>
-              </div>
+              <UTMInfoCard 
+                utmSource={deal.utmSource}
+                utmMedium={deal.utmMedium}
+                utmCampaign={deal.utmCampaign}
+                utmContent={deal.utmContent}
+                utmTerm={deal.utmTerm}
+                capturedAt={deal.capturedAt}
+                landingPage={deal.landingPage}
+                referrer={deal.referrer}
+              />
             </div>
 
             {/* DATASET FINANCEIRO */}

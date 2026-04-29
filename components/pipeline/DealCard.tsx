@@ -25,6 +25,14 @@ export interface Deal {
   } | null
   pendingActivitiesCount?: number
   hasOverdueActivities?: boolean
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  utmContent?: string | null
+  utmTerm?: string | null
+  capturedAt?: string | null
+  landingPage?: string | null
+  referrer?: string | null
 }
 
 interface DealCardProps {
