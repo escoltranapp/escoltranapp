@@ -120,7 +120,32 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
-     setActiveDeal(null)
+    const { active } = event
+    
+    if (activeDeal) {
+      const activeId = active.id as string
+      let currentStageId = ""
+      for (const stage of stages) {
+        if (stage.deals.some(d => d.id === activeId)) {
+          currentStageId = stage.id
+          break
+        }
+      }
+
+      let originalStageId = ""
+      for (const stage of initialStages) {
+        if (stage.deals.some(d => d.id === activeId)) {
+          originalStageId = stage.id
+          break
+        }
+      }
+
+      if (currentStageId && originalStageId && currentStageId !== originalStageId) {
+        onDealMove(activeId, originalStageId, currentStageId)
+      }
+    }
+
+    setActiveDeal(null)
   }
 
   const handleUpdateStage = async (id: string) => {
