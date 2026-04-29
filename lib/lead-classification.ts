@@ -47,7 +47,7 @@ export interface DealUTM {
   titulo?: string | null
 }
 
-export function classifyDeal(deal: DealUTM): DealUTM {
+export function classifyDeal<T extends DealUTM>(deal: T): T {
   if (deal.utmSource) return deal
   for (const rule of MANUAL_CAMPAIGN_RULES) {
     if (rule.test(deal.titulo ?? '')) {
@@ -69,7 +69,7 @@ export interface ContactUTM {
   utmContentFirst?: string | null
 }
 
-export function classifyContact(contact: ContactUTM, dealTitle?: string): ContactUTM {
+export function classifyContact<T extends ContactUTM>(contact: T, dealTitle?: string): T {
   if (contact.utmSourceFirst) return contact
   for (const rule of MANUAL_CAMPAIGN_RULES) {
     if (rule.test(dealTitle ?? '')) {
