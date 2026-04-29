@@ -131,18 +131,7 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                     : "bg-[#0D0D0D] border-white/5 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-0.5"
                 )}
               >
-                {/* STATUS TOGGLE */}
-                <button 
-                  onClick={() => toggleMutation.mutate({ id: item.id, status: item.status === "OPEN" ? "DONE" : "OPEN" })}
-                  className={cn(
-                    "w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-500 shrink-0",
-                    item.status === "DONE" 
-                      ? "bg-primary border-primary text-black" 
-                      : "border-white/10 hover:border-primary/60 hover:bg-primary/5"
-                  )}
-                >
-                  {item.status === "DONE" && <span className="material-symbols-outlined text-[14px] font-black">check</span>}
-                </button>
+                {/* STATUS TOGGLE REMOVIDO CONFORME PEDIDO */}
 
                 {/* ICON BLOCK */}
                 <div 
