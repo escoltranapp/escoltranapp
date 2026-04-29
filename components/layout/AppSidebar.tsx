@@ -110,7 +110,7 @@ export function AppSidebar({ isOpen = true, onClose }: AppSidebarProps) {
                    className="w-full mt-5 flex items-center justify-center gap-3 text-secondary hover:text-foreground transition-all py-3 border border-border rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-foreground/[0.01] hover:bg-primary/10 hover:border-primary/30 group/logout"
                   >
                     <span className="material-symbols-outlined text-[16px] group-hover/logout:rotate-12 transition-transform">logout</span>
-                    <span>Terminal Exit</span>
+                    <span>Sair do Sistema</span>
                  </button>
               </div>
            </div>

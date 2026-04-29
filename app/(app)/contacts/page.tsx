@@ -129,13 +129,13 @@ export default function ContactsPage() {
 
         {/* KPI INTELLIGENCE LAYER */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-           <KPICard label="Dataset Size" value={databaseSize} icon="storage" color="#F97316" />
-           <KPICard label="Network Load" value={activeNetwork} icon="radar" color="#F97316" />
-           <KPICard label="Shield Nodes" value={clientes} icon="verified" color="#22C55E" />
-           <KPICard label="Sync Heartbeat" value="0 ms" icon="monitor_heart" color="#A855F7" />
+           <KPICard label="Total de Contatos" value={databaseSize} icon="storage" color="#F97316" />
+           <KPICard label="Leads em Conversão" value={activeNetwork} icon="radar" color="#F97316" />
+           <KPICard label="Clientes Ativos" value={clientes} icon="verified" color="#22C55E" />
+           <KPICard label="Taxa de Resposta" value="0 ms" icon="monitor_heart" color="#A855F7" />
         </div>
 
-        {/* DATASET TABLE AREA */}
+        {/* CONTACTS TABLE AREA */}
         <div className="relative group">
            <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[32px] blur-3xl opacity-20 group-hover:opacity-40 transition-opacity pointer-events-none" />
            <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] overflow-hidden shadow-2xl">
@@ -155,8 +155,8 @@ export default function ContactsPage() {
                      <tr>
                         <td colSpan={6} className="py-24 text-center text-[#404040]">
                            <div className="flex flex-col items-center gap-4 italic opacity-20">
-                              <span className="material-symbols-outlined text-[60px]">dataset</span>
-                              <div className="font-black text-[12px] tracking-[0.3em] uppercase">DATASET VAZIO</div>
+                              <span className="material-symbols-outlined text-[60px]">contacts</span>
+                              <div className="font-black text-[12px] tracking-[0.3em] uppercase">NENHUM CONTATO</div>
                            </div>
                         </td>
                      </tr>
@@ -197,7 +197,7 @@ export default function ContactsPage() {
 
                           <td className="px-8 py-6">
                              <div className="text-[9px] font-black text-[#404040] italic uppercase tracking-tighter">
-                                {contact.updatedAt ? `Node Sync: ${new Date(contact.updatedAt).toLocaleDateString()}` : "D. Inativo"}
+                                {contact.updatedAt ? `Atualizado em: ${new Date(contact.updatedAt).toLocaleDateString()}` : "Sem atividade"}
                              </div>
                           </td>
 

@@ -50,7 +50,7 @@ export default function SettingsPage() {
         toast({ title: "ERRO NA RESPOSTA", description: data.error || `O n8n retornou erro ${data.status}`, variant: "destructive" })
       }
     } catch (e: any) {
-      toast({ title: "FALHA DE ALCANCE", description: `O servidor do Escoltran não conseguiu falar com o n8n: ${e.message}`, variant: "destructive" })
+      toast({ title: "FALHA DE COMUNICAÇÃO", description: `O servidor do Escoltran não conseguiu falar com o n8n: ${e.message}`, variant: "destructive" })
     } finally {
       setIsTesting(false)
     }
@@ -70,13 +70,13 @@ export default function SettingsPage() {
       await update() // Update client-side next-auth session
       
       toast({ 
-        title: "PROTOCOLO SINCRONIZADO", 
-        description: "As alterações do cluster foram persistidas no diretório mestre." 
+        title: "CONFIGURAÇÕES SALVAS", 
+        description: "Suas preferências foram atualizadas com sucesso." 
       })
     } catch (e) {
       toast({ 
-        title: "FALHA NA SINCRONIA", 
-        description: "Não foi possível persistir os dados no cluster.",
+        title: "FALHA AO SALVAR", 
+        description: "Não foi possível salvar as configurações.",
         variant: "destructive"
       })
     } finally {
@@ -86,8 +86,8 @@ export default function SettingsPage() {
 
   const handleAvatarSync = () => {
     toast({ 
-      title: "AVATAR SINCRONIZADO", 
-      description: "Foto de perfil atualizada via node de identidade global." 
+      title: "FOTO ATUALIZADA", 
+      description: "Sua foto de perfil foi alterada com sucesso." 
     })
   }
 
@@ -109,11 +109,11 @@ export default function SettingsPage() {
               </div>
               <div>
                  <h1 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">
-                   Configuração <span className="text-[#F97316]">Core</span>
+                   Configurações <span className="text-[#F97316]">Gerais</span>
                  </h1>
                  <p className="text-[#404040] text-[10px] font-mono font-black uppercase tracking-[0.3em] mt-2 flex items-center gap-2">
                     <span className="w-6 h-[1px] bg-[#262626]" />
-                    ESTADO ADMINISTRATIVO: ACTIVE_CLUSTER
+                    STATUS: ATIVO
                  </p>
               </div>
            </div>
@@ -124,10 +124,10 @@ export default function SettingsPage() {
       <Tabs defaultValue="profile" className="space-y-8 relative z-10">
         <TabsList className="bg-[#1A1A1A]/30 backdrop-blur-3xl border border-white/[0.04] h-12 p-1 gap-1 rounded-xl w-fit shadow-xl">
           {[
-            { id: "profile", label: "Identidade", icon: "fingerprint" },
-            { id: "pipeline", label: "Pipeline", icon: "rebase_edit" },
-            { id: "integrations", label: "Sincronia", icon: "hub" },
-            { id: "search", label: "Dataset", icon: "database" },
+            { id: "profile", label: "Conta", icon: "person" },
+            { id: "pipeline", label: "Pipeline", icon: "view_kanban" },
+            { id: "integrations", label: "Integrações", icon: "extension" },
+            { id: "search", label: "Dados", icon: "table_view" },
             { id: "templates", label: "Modelos", icon: "auto_awesome_motion" }
           ].map((tab) => (
             <TabsTrigger 
@@ -149,9 +149,9 @@ export default function SettingsPage() {
                  <div className="p-6 border-b border-white/[0.03] bg-white/[0.01] flex items-center justify-between">
                     <div className="flex items-center gap-3">
                        <span className="w-1.5 h-4 bg-[#F97316] rounded-full" />
-                       <span className="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-white">Security Identity Node</span>
+                       <span className="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-white">Segurança da Conta</span>
                     </div>
-                    <span className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">ENCRYPTED_LINK_v2</span>
+                    <span className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">ACESSO_PROTEGIDO</span>
                  </div>
                  
                  <div className="p-8 space-y-10">
@@ -169,20 +169,20 @@ export default function SettingsPage() {
                             className="absolute -bottom-2 -right-2 p-2 bg-[#F97316] rounded-lg border-[3px] border-[#0A0A0A] text-white shadow-lg opacity-0 group-hover/avatar:opacity-100 translate-y-1 group-hover/avatar:translate-y-0 transition-all duration-300 z-20"
                             onClick={() => fileInputRef.current?.click()}
                           >
-                             <span className="material-symbols-outlined text-[16px]">sync_alt</span>
+                             <span className="material-symbols-outlined text-[16px]">add_a_photo</span>
                           </button>
                           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" />
                        </div>
                        
                        <div className="space-y-3">
-                          <h4 className="text-[14px] font-black text-white tracking-widest uppercase italic">Gestão de Identidade Visual</h4>
-                          <p className="text-[#6B7280] text-[10px] font-mono uppercase tracking-widest max-w-[350px]">O avatar é sincronizado automaticamente com os nodes de autenticação global.</p>
+                          <h4 className="text-[14px] font-black text-white tracking-widest uppercase italic">Gestão de Perfil</h4>
+                          <p className="text-[#6B7280] text-[10px] font-mono uppercase tracking-widest max-w-[350px]">Sua foto de perfil é visível em toda a plataforma para outros usuários.</p>
                           <button
                             onClick={handleAvatarSync}
                             className="px-5 py-2.5 bg-[#1A1A1A] border border-white/[0.04] rounded-lg text-[9px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] hover:text-[#F97316] hover:border-[#F97316]/40 hover:bg-[#F97316]/5 transition-all shadow-md flex items-center gap-2"
                           >
-                            <span className="material-symbols-outlined text-[14px]">cached</span>
-                            Re-Sincronizar Dataset
+                            <span className="material-symbols-outlined text-[14px]">sync</span>
+                            Atualizar Foto
                           </button>
                        </div>
                     </div>
@@ -192,7 +192,7 @@ export default function SettingsPage() {
                        <div className="space-y-3">
                           <label className="text-[9px] font-mono font-black text-[#6B7280] uppercase tracking-[0.3em] flex items-center gap-2">
                              <span className="material-symbols-outlined text-[14px]">person</span>
-                             Nome de Operação
+                             Nome do Operador
                           </label>
                           <Input 
                             className="bg-[#0A0A0A]/60 border-white/[0.06] h-12 rounded-xl text-white font-black tracking-wide px-4 focus:border-[#F97316]/50 transition-all outline-none text-sm" 
@@ -203,10 +203,10 @@ export default function SettingsPage() {
                        <div className="space-y-3">
                           <label className="text-[9px] font-mono font-black text-[#6B7280] uppercase tracking-[0.3em] flex items-center gap-2">
                              <span className="material-symbols-outlined text-[14px]">alternate_email</span>
-                             Dataset de Email
+                             Email de Acesso
                           </label>
                           <div className="h-12 px-4 rounded-xl bg-[#1A1A1A]/30 border border-white/[0.02] flex items-center text-[#6B7280] font-mono font-black tracking-widest overflow-hidden opacity-80 text-[11px]">
-                             {session?.user?.email || "NOT_LOGGED_IN@CLUSTER"}
+                             {session?.user?.email || "NÃO AUTENTICADO"}
                           </div>
                        </div>
                     </div>
@@ -223,9 +223,9 @@ export default function SettingsPage() {
                  <div className="p-6 border-b border-white/[0.03] bg-white/[0.01] flex items-center justify-between">
                     <div className="flex items-center gap-3">
                        <span className="w-1.5 h-4 bg-[#F97316] rounded-full" />
-                       <span className="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-white">Global Integration Hub</span>
+                       <span className="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-white">Central de Integrações</span>
                     </div>
-                    <span className="text-[9px] font-mono font-black text-emerald-500 uppercase tracking-widest">CONNECTED_OPERATIONAL</span>
+                    <span className="text-[9px] font-mono font-black text-emerald-500 uppercase tracking-widest">SISTEMA_CONECTADO</span>
                  </div>
                  
                  <div className="p-8 space-y-8">
@@ -236,7 +236,7 @@ export default function SettingsPage() {
                        <div className="space-y-4 flex-1">
                           <div>
                             <h4 className="text-[14px] font-black text-white tracking-widest uppercase italic">Integração N8N (Disparador)</h4>
-                            <p className="text-[#6B7280] text-[10px] font-mono uppercase tracking-widest mt-1">Este node gerencia o envio de massa para o orquestrador de automação.</p>
+                            <p className="text-[#6B7280] text-[10px] font-mono uppercase tracking-widest mt-1">Configure aqui a integração com a sua plataforma de automação.</p>
                           </div>
                           
                           <div className="space-y-3">
@@ -259,7 +259,7 @@ export default function SettingsPage() {
                                value={n8nUrl}
                                onChange={(e) => setN8nUrl(e.target.value)}
                              />
-                             <p className="text-[9px] text-[#F97316]/60 font-mono italic">Aponte para o path configurado no seu node de entrada do n8n.</p>
+                             <p className="text-[9px] text-[#F97316]/60 font-mono italic">Insira a URL do webhook correspondente no seu n8n.</p>
                           </div>
                        </div>
                     </div>
@@ -270,13 +270,13 @@ export default function SettingsPage() {
         
         {/* PLACEHOLDERS PARA AS OUTRAS ABAS */}
         <TabsContent value="pipeline" className="p-8 text-center text-[#6B7280] font-mono text-[10px] uppercase tracking-widest">
-           Pipeline Dataset Node: Fully Encrypted & Offline
+           Configurações de Pipeline em breve.
         </TabsContent>
         <TabsContent value="search" className="p-8 text-center text-[#6B7280] font-mono text-[10px] uppercase tracking-widest">
-           Lead Dataset Node: Fully Encrypted & Offline
+           Configurações de Leads em breve.
         </TabsContent>
         <TabsContent value="templates" className="p-8 text-center text-[#6B7280] font-mono text-[10px] uppercase tracking-widest">
-           Message Template Node: Fully Encrypted & Offline
+           Modelos de mensagens em breve.
         </TabsContent>
       </Tabs>
 
@@ -284,7 +284,7 @@ export default function SettingsPage() {
       <footer className="pt-8 border-t border-white/[0.04] flex justify-between items-center relative z-10">
          <div className="flex items-center gap-3 text-[#404040] font-mono text-[9px] font-black uppercase tracking-[0.3em]">
             <span className="material-symbols-outlined text-[14px]">verified_user</span>
-            Escoltran Internal Protocol v2.5.4
+            Escoltran CRM v2.5.4
          </div>
          <button 
            className="bg-[#F97316] text-white h-12 px-8 text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-3 shadow-[0_10px_20px_rgba(249,115,22,0.2)] hover:scale-[1.02] active:scale-95 transition-all rounded-xl group"
@@ -294,9 +294,9 @@ export default function SettingsPage() {
             {isSaving ? (
                <span className="material-symbols-outlined animate-spin text-[18px]">refresh</span>
             ) : (
-               <span className="material-symbols-outlined text-[18px] group-hover:rotate-12 transition-transform">cloud_sync</span>
+               <span className="material-symbols-outlined text-[18px] group-hover:rotate-12 transition-transform">save</span>
             )}
-            <span>{isSaving ? "SINCRONIZANDO..." : "SALVAR CONFIGURAÇÃO"}</span>
+            <span>{isSaving ? "SALVANDO..." : "SALVAR CONFIGURAÇÃO"}</span>
          </button>
       </footer>
     </div>

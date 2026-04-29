@@ -44,7 +44,7 @@ export default function AuthPage() {
       })
 
       if (result?.error) {
-        toast({ variant: "destructive", title: "ERRO DE ACESSO", description: "O dataset não reconhece estas credenciais." })
+        toast({ variant: "destructive", title: "ERRO DE ACESSO", description: "As credenciais informadas estão incorretas." })
       } else {
         router.push("/dashboard")
         router.refresh()
@@ -74,7 +74,7 @@ export default function AuthPage() {
         toast({ variant: "destructive", title: "FALHA NO REGISTRO", description: err.message })
       }
     } catch {
-      toast({ variant: "destructive", title: "TIMEOUT", description: "O cluster Escoltran não respondeu ao registro." })
+      toast({ variant: "destructive", title: "TIMEOUT", description: "O servidor não respondeu ao registro." })
     } finally {
       setIsLoading(false)
     }
@@ -161,7 +161,7 @@ export default function AuthPage() {
                   ) : (
                     <>
                       <span className="material-symbols-outlined text-[18px]">verified_user</span>
-                      Autenticar no Cluster
+                      Acessar Plataforma
                     </>
                   )}
                 </button>

@@ -318,14 +318,14 @@ export default function AiInsightsPage() {
         <TabsContent value="insights">
            <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-2xl overflow-hidden shadow-xl">
               <div className="p-6 border-b border-white/[0.04] flex items-center justify-between bg-[#0A0A0A]/50">
-                 <span className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-[#6B7280]">Neural Analysis Pipeline</span>
+                 <span className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-[#6B7280]">Insights e Análise de Dados</span>
                  <div className="flex items-center gap-2 text-[#F97316]/50 text-[10px] font-mono uppercase font-black tracking-widest">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#F97316] animate-pulse" /> Live Node
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#F97316] animate-pulse" /> Em Tempo Real
                  </div>
               </div>
               <div className="min-h-[400px] flex flex-col items-center justify-center p-12 bg-[#0A0A0A]/40 opacity-20">
                  <span className="material-symbols-outlined text-[64px] text-[#F97316]">psychology</span>
-                 <div className="font-mono text-[11px] uppercase font-black tracking-[0.2em] mt-6 italic">Waiting for Neural Inputs...</div>
+                 <div className="font-mono text-[11px] uppercase font-black tracking-[0.2em] mt-6 italic">Aguardando dados...</div>
               </div>
            </div>
         </TabsContent>
