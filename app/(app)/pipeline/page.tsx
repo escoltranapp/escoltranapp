@@ -70,42 +70,52 @@ export default function PipelinePage() {
       {/* HEADER ESCOLTRAN STYLE - MATCHING SCREENSHOT */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div className="flex items-center gap-6">
-           <h1 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">Pipeline</h1>
+           <h1 className="text-2xl font-bold text-white tracking-tight">Pipeline</h1>
            
-           <div className="relative group">
-              <select 
-                value={pipelineSelection}
-                onChange={(e) => setPipelineSelection(e.target.value)}
-                className="bg-[#111111] text-[#A3A3A3] border border-white/[0.05] rounded-xl pl-4 pr-10 py-2 text-[11px] font-black uppercase tracking-widest focus:border-[#3B82F6]/50 outline-none cursor-pointer appearance-none min-w-[160px] hover:bg-white/[0.02] transition-all"
-              >
-                <option value="vendas-matriz">Vendas Matriz</option>
-                <option value="pos-vendas">Pós-Vendas / CS</option>
-                <option value="retencao">Fluxo Retenção</option>
-              </select>
-              <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[16px] text-[#404040] pointer-events-none group-hover:text-white transition-colors">expand_more</span>
+           <div className="flex items-center gap-2">
+             <span className="material-symbols-outlined text-[16px] text-amber-500 cursor-pointer">star</span>
+             <div className="relative group">
+                <select 
+                  value={pipelineSelection}
+                  onChange={(e) => setPipelineSelection(e.target.value)}
+                  className="bg-[#111111] text-[#A3A3A3] border border-white/[0.05] rounded-xl pl-4 pr-10 py-1.5 text-xs font-medium focus:border-blue-500/50 outline-none cursor-pointer appearance-none min-w-[180px] hover:bg-white/[0.02] transition-all"
+                >
+                  <option value="vendas-matriz">Host Menos Imposto</option>
+                  <option value="pos-vendas">Pós-Vendas / CS</option>
+                  <option value="retencao">Fluxo Retenção</option>
+                </select>
+                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[16px] text-[#404040] pointer-events-none group-hover:text-white transition-colors">expand_more</span>
+             </div>
+             <span className="material-symbols-outlined text-[16px] text-[#404040] hover:text-amber-500 cursor-pointer transition-colors ml-1">star</span>
+             <span className="material-symbols-outlined text-[16px] text-[#404040] hover:text-red-500 cursor-pointer transition-colors ml-2">delete</span>
            </div>
         </div>
         
         <div className="flex items-center gap-2">
+           <button className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/[0.05] rounded-xl text-xs font-medium text-white hover:bg-white/[0.05] transition-all">
+              <span className="material-symbols-outlined text-[16px]">check</span>
+              Selecionar
+           </button>
+
            <button 
             onClick={() => setIsArchivedOpen(true)}
-            className="flex items-center gap-3 px-5 py-2.5 bg-white/[0.02] border border-white/[0.05] rounded-xl text-[10px] font-black uppercase tracking-widest text-[#A3A3A3] hover:text-white hover:bg-white/[0.05] transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/[0.05] rounded-xl text-xs font-medium text-white hover:bg-white/[0.05] transition-all"
            >
-              <span className="material-symbols-outlined text-[18px]">inventory_2</span>
+              <span className="material-symbols-outlined text-[16px]">inventory_2</span>
               Arquivados
            </button>
 
-           <button className="flex items-center gap-3 px-5 py-2.5 bg-white/[0.02] border border-white/[0.05] rounded-xl text-[10px] font-black uppercase tracking-widest text-[#A3A3A3] hover:text-white hover:bg-white/[0.05] transition-all">
-              <span className="material-symbols-outlined text-[18px]">add</span>
+           <button 
+             onClick={() => setIsNewDealOpen(true)}
+             className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/[0.05] rounded-xl text-xs font-medium text-white hover:bg-white/[0.05] transition-all"
+           >
+              <span className="material-symbols-outlined text-[16px]">add</span>
               Pipeline
            </button>
 
-           <button 
-            onClick={() => setIsNewDealOpen(true)}
-            className="flex items-center gap-3 px-6 py-2.5 bg-[#3B82F6] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)]"
-           >
-              <span className="material-symbols-outlined text-[18px]">add</span>
-              Deal
+           <button className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/[0.05] rounded-xl text-xs font-medium text-white hover:bg-white/[0.05] transition-all">
+              <span className="material-symbols-outlined text-[16px]">upload_file</span>
+              Importar
            </button>
         </div>
       </header>

@@ -107,214 +107,176 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-full sm:max-w-xl bg-[#0A0A0A] border-l border-[#1A1A1A] p-0 overflow-y-auto scrollbar-hide">
-          <div className="h-40 bg-gradient-to-br from-[#F97316]/20 to-transparent border-b border-[#F97316]/10 p-8 flex items-end">
-            <div className="flex-1">
-              <div className="text-[10px] font-mono font-black text-[#F97316] uppercase tracking-[0.3em] mb-2 leading-none">
-                Deal Identifier: {deal.id.slice(0, 8)}
+        <SheetContent className="w-full sm:max-w-[500px] bg-[#0A0A0A] border-l border-[#1A1A1A] p-0 flex flex-col h-full">
+          {/* HEADER */}
+          <div className="p-6 pb-0 flex flex-col gap-4 relative">
+            <button onClick={() => onOpenChange(false)} className="absolute top-4 right-4 text-[#A3A3A3] hover:text-white">
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
+            <div className="flex items-center gap-3 pr-8">
+              <div className="w-10 h-10 rounded-full bg-[#1e293b] text-blue-400 font-black flex items-center justify-center text-sm">
+                {deal.contact?.nome ? deal.contact.nome.charAt(0).toUpperCase() : "D"}
               </div>
-              <SheetTitle className="text-3xl font-black text-white italic tracking-tighter uppercase leading-tight">
-                {deal.titulo}
-              </SheetTitle>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-black text-white">{deal.titulo}</h2>
+                  <span className="material-symbols-outlined text-[14px] text-[#A3A3A3] cursor-pointer hover:text-white">edit</span>
+                </div>
+                <p className="text-xs text-[#A3A3A3] font-medium">{deal.contact?.nome || "Sem contato"}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between mt-2">
+              <div className="text-2xl font-black text-blue-500 tracking-tight">
+                {deal.valorEstimado?.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) ?? "R$ 0,00"}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-full bg-[#1A1A1A] border border-white/[0.05] text-[10px] font-bold text-white uppercase">{deal.status === "OPEN" ? "Aberto" : deal.status}</span>
+                <span className="px-2.5 py-1 rounded-full bg-[#1A1A1A] border border-white/[0.05] text-[10px] font-bold text-amber-500 uppercase">{deal.prioridade}</span>
+                <span className="px-2.5 py-1 rounded-full bg-white text-black text-[10px] font-bold uppercase">Nova Lead</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mt-4">
+               <div className="flex items-center gap-3 bg-[#111111] border border-white/[0.05] rounded-xl p-3">
+                 <span className="material-symbols-outlined text-amber-500 text-[18px]">trending_up</span>
+                 <div>
+                   <p className="text-white text-xs font-bold">{(activities || []).length} atividades</p>
+                   <p className="text-[#6B7280] text-[10px]">pendentes</p>
+                 </div>
+               </div>
+               <div className="flex items-center gap-3 bg-[#111111] border border-white/[0.05] rounded-xl p-3">
+                 <span className="material-symbols-outlined text-[#A3A3A3] text-[18px]">schedule</span>
+                 <div>
+                   <p className="text-white text-xs font-bold">0 dias</p>
+                   <p className="text-[#6B7280] text-[10px]">neste estágio</p>
+                 </div>
+               </div>
+            </div>
+
+            {/* TABS */}
+            <div className="flex items-center gap-6 mt-6 border-b border-white/[0.05] overflow-x-auto scrollbar-hide">
+              <button className="text-[11px] font-bold text-white border-b-2 border-white pb-3 px-1 whitespace-nowrap">Dados</button>
+              <button className="text-[11px] font-medium text-[#6B7280] hover:text-white transition-colors pb-3 px-1 whitespace-nowrap">UTM</button>
+              <button className="text-[11px] font-medium text-[#6B7280] hover:text-white transition-colors pb-3 px-1 whitespace-nowrap">Atividades</button>
+              <button className="text-[11px] font-medium text-[#6B7280] hover:text-white transition-colors pb-3 px-1 whitespace-nowrap">Histórico</button>
+              <button className="text-[11px] font-medium text-[#6B7280] hover:text-white transition-colors pb-3 px-1 whitespace-nowrap">Anotações</button>
             </div>
           </div>
 
-          <div className="p-8 space-y-12">
-            {/* AÇÕES DE STATUS */}
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={() => updateStatus.mutate({ status: "WON" })}
-                className="bg-green-600/10 border border-green-600/30 text-green-500 font-black py-4 rounded-xl text-[11px] uppercase tracking-widest hover:bg-green-600 hover:text-white transition-all shadow-lg shadow-green-600/5"
-              >
-                Marcar como Ganho
-              </button>
-              <button
-                onClick={() => setLossReasonOpen(true)}
-                className="bg-red-600/10 border border-red-600/30 text-red-500 font-black py-4 rounded-xl text-[11px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-lg shadow-red-600/5"
-              >
-                Marcar como Perdido
-              </button>
-            </div>
+          {/* CONTENT AREA */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-8 scrollbar-hide">
+             {/* Contato Vinculado */}
+             <div>
+                <div className="flex items-center gap-2 mb-4 text-white text-[11px] font-bold">
+                  <span className="material-symbols-outlined text-[16px]">person</span>
+                  Contato Vinculado
+                </div>
+                <div className="bg-[#111111] border border-white/[0.05] rounded-2xl p-4">
+                   <div className="flex items-center gap-3 mb-4">
+                     <div className="w-8 h-8 rounded-full bg-[#1e293b] text-blue-400 font-black flex items-center justify-center text-xs">
+                       {deal.contact?.nome ? deal.contact.nome.charAt(0).toUpperCase() : "C"}
+                     </div>
+                     <div>
+                       <p className="text-xs font-bold text-white">{deal.contact?.nome || "Sem nome"}</p>
+                       <div className="flex items-center gap-1 text-[#6B7280] text-[10px]">
+                         <span className="material-symbols-outlined text-[12px]">call</span>
+                         {deal.telefone || deal.contact?.telefone || "Sem telefone"}
+                       </div>
+                     </div>
+                   </div>
+                   <div className="flex items-center gap-2">
+                     <button className="flex-1 flex items-center justify-center gap-2 py-2 bg-transparent border border-white/[0.05] hover:bg-white/[0.02] transition-colors rounded-lg text-[11px] font-bold text-white">
+                        <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                        Ver
+                     </button>
+                     <button className="flex-1 flex items-center justify-center gap-2 py-2 bg-transparent border border-green-500/20 hover:bg-green-500/10 transition-colors rounded-lg text-[11px] font-bold text-green-500">
+                        WhatsApp
+                     </button>
+                   </div>
+                </div>
+             </div>
 
-            {/* DADOS UTM */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="w-1.5 h-6 bg-[#F97316] rounded-full" />
-                <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">Parâmetros UTM (Dataset)</h3>
-              </div>
-              <UTMInfoCard 
-                utmSource={deal.utmSource}
-                utmMedium={deal.utmMedium}
-                utmCampaign={deal.utmCampaign}
-                utmContent={deal.utmContent}
-                utmTerm={deal.utmTerm}
-                capturedAt={deal.capturedAt}
-                landingPage={deal.landingPage}
-                referrer={deal.referrer}
-              />
-            </div>
-
-            {/* DATASET FINANCEIRO */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="w-1.5 h-6 bg-[#F97316] rounded-full" />
-                <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">Dataset Financeiro</h3>
-              </div>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="p-6 bg-[#1A1A1A] border border-white/5 rounded-2xl">
-                  <div className="text-[10px] font-mono font-bold text-[#404040] mb-2 uppercase tracking-widest">Valor Estimado</div>
-                  <div className="text-2xl font-black text-[#F97316] font-mono tracking-tighter">
-                    {deal.valorEstimado?.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) ?? "—"}
+             {/* Informações do Deal */}
+             <div>
+                <div className="flex items-center gap-2 mb-4 text-white text-[11px] font-bold">
+                  <span className="material-symbols-outlined text-[16px]">info</span>
+                  Informações do Deal
+                </div>
+                <div className="bg-[#111111] border border-white/[0.05] rounded-2xl p-4">
+                  <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                     <div>
+                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Produto</p>
+                       <p className="text-xs font-medium text-white">Sistema/App</p>
+                     </div>
+                     <div>
+                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Ramo da Empresa</p>
+                       <p className="text-xs font-medium text-white">—</p>
+                     </div>
+                     <div>
+                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Faturamento Mensal</p>
+                       <p className="text-xs font-medium text-white">—</p>
+                     </div>
+                     <div>
+                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Origem</p>
+                       <select className="bg-transparent border-b border-white/10 text-xs font-medium text-white pb-1 w-full outline-none focus:border-white/30">
+                         <option className="bg-[#111111]">Selecionar origem</option>
+                       </select>
+                     </div>
+                     <div>
+                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Prioridade</p>
+                       <select className="bg-transparent border-b border-white/10 text-xs font-medium text-white pb-1 w-full outline-none focus:border-white/30">
+                         <option className="bg-[#111111]">Média</option>
+                       </select>
+                     </div>
+                     <div>
+                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Vendedor</p>
+                       <select className="bg-transparent border-b border-white/10 text-xs font-medium text-white pb-1 w-full outline-none focus:border-white/30">
+                         <option className="bg-[#111111]">Sem vendedor</option>
+                       </select>
+                     </div>
+                     <div>
+                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Criado</p>
+                       <p className="text-xs font-medium text-white">{new Date(deal.createdAt).toLocaleDateString("pt-BR")}</p>
+                     </div>
+                     <div>
+                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Atualizado</p>
+                       <p className="text-xs font-medium text-white">há pouco</p>
+                     </div>
                   </div>
                 </div>
-                <div className="p-6 bg-[#1A1A1A] border border-white/5 rounded-2xl">
-                  <div className="text-[10px] font-mono font-bold text-[#404040] mb-2 uppercase tracking-widest">Data Prevista</div>
-                  <div className="text-[15px] font-bold text-white uppercase italic">
-                    {deal.dataPrevista ? new Date(deal.dataPrevista).toLocaleDateString() : "PENDENTE"}
-                  </div>
-                </div>
-              </div>
-            </div>
+             </div>
+          </div>
 
-            {/* ─── GAP 4: ATIVIDADES ─────────────────────────────────── */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-6 bg-[#F97316] rounded-full" />
-                  <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">Atividades</h3>
-                  {activities.length > 0 && (
-                    <span className="text-[10px] font-mono font-black text-[#F97316] bg-[#F97316]/5 px-2 py-0.5 rounded-full border border-[#F97316]/10">
-                      {activities.length}
-                    </span>
-                  )}
-                </div>
-                <button
-                  onClick={() => router.push(`/activities?new=true&deal_id=${deal.id}`)}
-                  className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#F97316] hover:text-white transition-colors px-3 py-1.5 rounded-lg border border-[#F97316]/20 hover:bg-[#F97316]/10"
-                >
-                  <span className="material-symbols-outlined text-[14px]">add</span>
-                  Nova Atividade
-                </button>
-              </div>
-
-              {loadingActivities ? (
-                <div className="space-y-2">
-                  {[1, 2].map((i) => (
-                    <div key={i} className="h-16 bg-[#1A1A1A] animate-pulse rounded-xl" />
-                  ))}
-                </div>
-              ) : activities.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-10 bg-[#1A1A1A] border border-white/5 rounded-2xl border-dashed">
-                  <span className="material-symbols-outlined text-[32px] text-white/10 mb-3">pending_actions</span>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#404040]">
-                    Nenhuma atividade vinculada
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {activities.map((act: any) => {
-                    const dueDate = safeDate(act.dueAt)
-                    const isOverdue = dueDate && isBefore(dueDate, now) && act.status === "OPEN"
-                    const color = ACTIVITY_COLORS[act.tipo] ?? "#6B7280"
-
-                    return (
-                      <div
-                        key={act.id}
-                        className={cn(
-                          "flex items-center gap-4 p-4 rounded-xl border transition-all",
-                          act.status === "DONE"
-                            ? "bg-[#0A0A0A] border-white/5 opacity-50"
-                            : isOverdue
-                            ? "bg-red-500/5 border-red-500/20"
-                            : "bg-[#1A1A1A] border-white/5 hover:border-white/10"
-                        )}
-                      >
-                        {/* icon */}
-                        <div
-                          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                          style={{ backgroundColor: `${color}15`, border: `1px solid ${color}30` }}
-                        >
-                          <span className="material-symbols-outlined text-[16px]" style={{ color }}>
-                            {ACTIVITY_ICONS[act.tipo] ?? "event_note"}
-                          </span>
-                        </div>
-
-                        {/* content */}
-                        <div className="flex-1 min-w-0">
-                          <p className={cn(
-                            "text-[13px] font-bold text-white truncate",
-                            act.status === "DONE" && "line-through text-[#A3A3A3]"
-                          )}>
-                            {act.titulo}
-                          </p>
-                          <div className="flex items-center gap-3 mt-0.5">
-                            {dueDate && (
-                              <span className="text-[10px] font-mono text-[#6B7280]">
-                                {format(dueDate, "dd MMM, HH:mm", { locale: ptBR })}
-                              </span>
-                            )}
-                            {isOverdue && (
-                              <span className="text-[8px] font-black uppercase tracking-widest text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20">
-                                Atrasada
-                              </span>
-                            )}
-                            {act.status === "DONE" && (
-                              <span className="text-[8px] font-black uppercase tracking-widest text-green-500 bg-green-500/10 px-1.5 py-0.5 rounded border border-green-500/20">
-                                Concluída
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* type label */}
-                        <span
-                          className="text-[8px] font-black uppercase tracking-widest shrink-0 px-2 py-0.5 rounded-full border"
-                          style={{ color, backgroundColor: `${color}10`, borderColor: `${color}20` }}
-                        >
-                          {act.tipo}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-            {/* ─── FIM ATIVIDADES ──────────────────────────────────────── */}
-
-            {/* HISTÓRICO DE AUDITORIA — Gap 5: real data */}
-            <div className="space-y-6 pb-12">
-              <div className="flex items-center gap-3">
-                <div className="w-1.5 h-6 bg-[#F97316] rounded-full" />
-                <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#A3A3A3] italic">Cluster Audit Log</h3>
-                {auditLogs.length > 0 && (
-                  <span className="text-[10px] font-mono font-black text-[#F97316] bg-[#F97316]/5 px-2 py-0.5 rounded-full border border-[#F97316]/10">
-                    {auditLogs.length}
-                  </span>
-                )}
-              </div>
-              {auditLogs.length === 0 ? (
-                <div className="flex items-center justify-center py-8 bg-[#1A1A1A]/30 border border-white/5 rounded-xl border-dashed">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#404040]">
-                    Nenhum evento registrado
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-0.5">
-                  {auditLogs.map((log) => {
-                    const d = safeDate(log.createdAt)
-                    const timeLabel = d
-                      ? format(d, "dd/MM HH:mm", { locale: ptBR })
-                      : "—"
-                    return (
-                      <div key={log.id} className="flex gap-4 p-4 border-l border-[#262626] bg-[#1A1A1A]/30 hover:bg-[#1A1A1A] transition-all">
-                        <div className="text-[10px] font-mono font-black text-[#404040] min-w-[80px] shrink-0">{timeLabel}</div>
-                        <div className="text-[12px] text-[#A3A3A3] font-bold tracking-tight uppercase leading-snug">{log.evento}</div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
+          {/* BOTTOM BAR */}
+          <div className="p-4 border-t border-white/[0.05] bg-[#0A0A0A] flex items-center justify-between">
+             <div className="flex items-center gap-1">
+               <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-white/[0.05] hover:bg-white/[0.05] text-[#A3A3A3] transition-colors">
+                 <span className="material-symbols-outlined text-[18px]">call</span>
+               </button>
+               <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-white/[0.05] hover:bg-white/[0.05] text-[#A3A3A3] transition-colors">
+                 <span className="material-symbols-outlined text-[18px]">chat</span>
+               </button>
+               <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-white/[0.05] hover:bg-white/[0.05] text-[#A3A3A3] transition-colors">
+                 <span className="material-symbols-outlined text-[18px]">mail</span>
+               </button>
+             </div>
+             <div className="flex items-center gap-2">
+               <button 
+                 onClick={() => updateStatus.mutate({ status: "WON" })}
+                 className="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-green-500/20 text-green-500 font-bold text-xs hover:bg-green-500/10 transition-colors"
+               >
+                 <span className="material-symbols-outlined text-[16px]">emoji_events</span>
+                 Ganho
+               </button>
+               <button 
+                 onClick={() => setLossReasonOpen(true)}
+                 className="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-red-500/20 text-red-500 font-bold text-xs hover:bg-red-500/10 transition-colors"
+               >
+                 <span className="material-symbols-outlined text-[16px]">close</span>
+                 Perdido
+               </button>
+             </div>
           </div>
         </SheetContent>
       </Sheet>
