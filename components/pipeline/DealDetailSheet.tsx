@@ -190,7 +190,21 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
                         <span className="material-symbols-outlined text-[14px]">open_in_new</span>
                         Ver
                      </button>
-                     <button className="flex-1 flex items-center justify-center gap-2 py-2 bg-transparent border border-green-500/20 hover:bg-green-500/10 transition-colors rounded-lg text-[11px] font-bold text-green-500">
+                     <button 
+                       onClick={() => {
+                         const phone = deal.telefone || deal.contact?.telefone || ""
+                         let cleanPhone = phone.replace(/\D/g, "")
+                         if (cleanPhone) {
+                           if (cleanPhone.length <= 11) {
+                             cleanPhone = "55" + cleanPhone
+                           }
+                           window.open(`https://wa.me/${cleanPhone}`, '_blank')
+                         } else {
+                           toast({ title: "Aviso", description: "Este contato não possui um número de telefone cadastrado." })
+                         }
+                       }}
+                       className="flex-1 flex items-center justify-center gap-2 py-2 bg-transparent border border-green-500/20 hover:bg-green-500/10 transition-colors rounded-lg text-[11px] font-bold text-green-500"
+                     >
                         WhatsApp
                      </button>
                    </div>
