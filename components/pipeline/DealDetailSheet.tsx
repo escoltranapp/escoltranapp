@@ -114,7 +114,7 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
               <span className="material-symbols-outlined text-[20px]">close</span>
             </button>
             <div className="flex items-center gap-3 pr-8">
-              <div className="w-10 h-10 rounded-full bg-[#1e293b] text-blue-400 font-black flex items-center justify-center text-sm">
+              <div className="w-10 h-10 rounded-full bg-[#F97316]/10 text-[#F97316] font-black flex items-center justify-center text-sm border border-[#F97316]/20">
                 {deal.contact?.nome ? deal.contact.nome.charAt(0).toUpperCase() : "D"}
               </div>
               <div className="flex-1">
@@ -127,7 +127,7 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
             </div>
 
             <div className="flex items-center justify-between mt-2">
-              <div className="text-2xl font-black text-blue-500 tracking-tight">
+              <div className="text-2xl font-black text-[#F97316] tracking-tight">
                 {deal.valorEstimado?.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) ?? "R$ 0,00"}
               </div>
               <div className="flex items-center gap-2">
@@ -174,7 +174,7 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
                 </div>
                 <div className="bg-[#111111] border border-white/[0.05] rounded-2xl p-4">
                    <div className="flex items-center gap-3 mb-4">
-                     <div className="w-8 h-8 rounded-full bg-[#1e293b] text-blue-400 font-black flex items-center justify-center text-xs">
+                     <div className="w-8 h-8 rounded-full bg-[#F97316]/10 text-[#F97316] font-black flex items-center justify-center text-xs border border-[#F97316]/20">
                        {deal.contact?.nome ? deal.contact.nome.charAt(0).toUpperCase() : "C"}
                      </div>
                      <div>
