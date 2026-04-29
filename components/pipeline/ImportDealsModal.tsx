@@ -40,13 +40,13 @@ export function ImportDealsModal({ isOpen, onClose }: ImportDealsModalProps) {
         <div className="p-6 border-b border-white/[0.05] flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3 mb-6">
-              <span className="material-symbols-outlined text-blue-500 text-2xl">table_chart</span>
+              <span className="material-symbols-outlined text-[#F97316] text-2xl">table_chart</span>
               <h2 className="text-xl font-bold text-white tracking-tight">Importar deals em massa</h2>
             </div>
             
             {/* Stepper */}
             <div className="flex items-center gap-3 text-[13px] font-medium">
-              <span className="text-blue-500 bg-blue-500/10 px-2 py-1 rounded-md">1. Planilha</span>
+              <span className="text-[#F97316] bg-[#F97316]/10 px-2 py-1 rounded-md">1. Planilha</span>
               <span className="material-symbols-outlined text-[#404040] text-[16px]">arrow_forward</span>
               <span className="text-[#A3A3A3]">2. Atribuição</span>
               <span className="material-symbols-outlined text-[#404040] text-[16px]">arrow_forward</span>
@@ -86,7 +86,7 @@ export function ImportDealsModal({ isOpen, onClose }: ImportDealsModalProps) {
             onDrop={handleDrop}
             className={cn(
               "border-2 border-dashed rounded-2xl p-12 flex flex-col items-center justify-center gap-4 transition-all relative overflow-hidden",
-              dragActive ? "border-blue-500 bg-blue-500/5" : "border-white/[0.08] bg-transparent hover:bg-white/[0.02]"
+              dragActive ? "border-[#F97316] bg-[#F97316]/5" : "border-white/[0.08] bg-transparent hover:bg-white/[0.02]"
             )}
           >
             <input 
@@ -111,7 +111,7 @@ export function ImportDealsModal({ isOpen, onClose }: ImportDealsModalProps) {
             Cancelar
           </button>
           <button 
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#0052cc] hover:bg-[#0052cc]/90 text-white text-[13px] font-bold transition-colors"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-br from-[#F97316] to-[#FB923C] hover:scale-[1.02] shadow-[0_10px_20px_rgba(249,115,22,0.2)] text-white text-[13px] font-bold transition-all"
           >
             Avançar
             <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
