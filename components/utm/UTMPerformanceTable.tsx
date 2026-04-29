@@ -38,7 +38,7 @@ export function UTMPerformanceTable({ data }: UTMPerformanceTableProps) {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="bg-blue-500/5 border-blue-500/20 text-blue-400 text-[10px] font-black uppercase">
+                  <Badge variant="outline" className="bg-orange-500/5 border-orange-500/20 text-orange-400 text-[10px] font-black uppercase">
                     {row.source}
                   </Badge>
                 </TableCell>

@@ -3,14 +3,14 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts"
 
 const COLORS = [
-  "#0070F3", // Blue
-  "#10B981", // Green
+  "#F97316", // Orange (Primary)
+  "#FB923C", // Light Orange
+  "#EA580C", // Dark Orange
   "#F59E0B", // Amber
-  "#EF4444", // Red
-  "#8B5CF6", // Violet
-  "#EC4899", // Pink
-  "#06B6D4", // Cyan
-  "#F97316", // Orange
+  "#D97706", // Dark Amber
+  "#B45309", // Rust
+  "#78350F", // Deep Brown
+  "#FDBA74", // Peach
 ]
 
 interface UTMSourceChartProps {

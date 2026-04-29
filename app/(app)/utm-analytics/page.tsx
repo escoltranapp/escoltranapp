@@ -74,7 +74,7 @@ export default function UTMAnalyticsPage() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {kpis.map((kpi) => (
           <Card key={kpi.label} className="bg-[#0A0A0A] border-white/5 relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-[10px] text-[#6B7280] font-black uppercase tracking-widest flex items-center gap-2">
                 <kpi.icon className="w-3 h-3" strokeWidth={2.5} />

@@ -15,12 +15,12 @@ export function UTMTimelineChart({ data }: UTMTimelineChartProps) {
         <AreaChart data={data}>
           <defs>
             <linearGradient id="leadsGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#0070F3" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#0070F3" stopOpacity={0} />
+              <stop offset="5%" stopColor="#F97316" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#F97316" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="dealsGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+              <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#1A1A1A" vertical={false} />
@@ -53,7 +53,7 @@ export function UTMTimelineChart({ data }: UTMTimelineChartProps) {
             type="monotone" 
             dataKey="leads" 
             name="Leads" 
-            stroke="#0070F3" 
+            stroke="#F97316" 
             fill="url(#leadsGrad)" 
             strokeWidth={3}
             animationDuration={2000}
@@ -62,7 +62,7 @@ export function UTMTimelineChart({ data }: UTMTimelineChartProps) {
             type="monotone" 
             dataKey="deals" 
             name="Deals" 
-            stroke="#10B981" 
+            stroke="#F59E0B" 
             fill="url(#dealsGrad)" 
             strokeWidth={3}
             animationDuration={2500}

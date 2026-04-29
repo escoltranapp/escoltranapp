@@ -19,7 +19,7 @@ export function UTMWidget() {
         <CardTitle className="text-[10px] font-black uppercase tracking-widest text-[#6B7280] flex items-center gap-2">
           <BarChart2 className="w-3 h-3" /> UTM Analytics
         </CardTitle>
-        <Link href="/utm-analytics" className="text-[9px] font-black uppercase tracking-widest text-blue-500 hover:text-blue-400 flex items-center gap-1 transition-colors">
+        <Link href="/utm-analytics" className="text-[9px] font-black uppercase tracking-widest text-orange-500 hover:text-orange-400 flex items-center gap-1 transition-colors">
           Ver tudo <ArrowUpRight className="w-2.5 h-2.5" />
         </Link>
       </CardHeader>
@@ -41,7 +41,7 @@ export function UTMWidget() {
           </div>
           <div>
             <p className="text-[9px] font-black uppercase tracking-tighter text-[#6B7280]">Conv.</p>
-            <p className="text-xl font-black text-blue-500">
+            <p className="text-xl font-black text-orange-500">
               {(summary?.conversionRate ?? 0).toFixed(1)}%
             </p>
           </div>

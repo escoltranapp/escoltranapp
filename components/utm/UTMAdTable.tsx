@@ -51,7 +51,7 @@ export function UTMAdTable({ data }: UTMAdTableProps) {
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
-                  <span className="text-[11px] font-black text-blue-400">
+                  <span className="text-[11px] font-black text-orange-400">
                     {row.leads ? ((row.won / row.leads) * 100).toFixed(1) : 0}%
                   </span>
                 </TableCell>
