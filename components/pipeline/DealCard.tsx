@@ -68,12 +68,12 @@ export function DealCard({ deal, onClick }: DealCardProps) {
       {...listeners}
       onClick={onClick}
       className={cn(
-        "bg-[#1A1A1A]/40 backdrop-blur-xl rounded-[24px] p-5 border border-white/[0.04] transition-all duration-500 cursor-grab active:cursor-grabbing hover:bg-[#1A1A1A]/60 hover:border-[#3B82F6]/30 relative group overflow-hidden shadow-xl",
-        isDragging && "scale-[1.02] shadow-[0_0_50px_rgba(0,0,0,0.8)] border-[#3B82F6]/20"
+        "bg-[#1A1A1A]/40 backdrop-blur-xl rounded-[24px] p-5 border border-white/[0.04] transition-all duration-500 cursor-grab active:cursor-grabbing hover:bg-[#1A1A1A]/60 hover:border-[#F97316]/30 relative group overflow-hidden shadow-xl",
+        isDragging && "scale-[1.02] shadow-[0_0_50px_rgba(0,0,0,0.8)] border-[#F97316]/20"
       )}
     >
       <div className="flex items-start justify-between mb-4">
-        <h3 className="text-[14px] font-black text-white tracking-tight leading-tight group-hover:text-[#3B82F6] transition-colors pr-4">
+        <h3 className="text-[14px] font-black text-white tracking-tight leading-tight group-hover:text-[#F97316] transition-colors pr-4">
           {deal.titulo}
         </h3>
         <button className="text-[#404040] hover:text-white transition-colors">
@@ -93,8 +93,8 @@ export function DealCard({ deal, onClick }: DealCardProps) {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[9px] font-black text-[#3B82F6] italic">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F97316]/10 border border-[#F97316]/20 text-[9px] font-black text-[#F97316] italic">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#F97316]" />
             {deal.user?.name || "Sem Atribuição"}
           </div>
           
@@ -112,7 +112,7 @@ export function DealCard({ deal, onClick }: DealCardProps) {
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t border-white/[0.03]">
-           <div className="text-[16px] font-black text-[#3B82F6] tracking-tighter">
+           <div className="text-[16px] font-black text-[#F97316] tracking-tighter">
               {deal.valorEstimado ? formatCurrency(deal.valorEstimado) : "R$ 0"}
            </div>
            

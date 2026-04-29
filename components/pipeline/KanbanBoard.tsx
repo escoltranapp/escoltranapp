@@ -260,7 +260,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
                     </span>
                   </div>
                   
-                  <div className="text-[12px] font-black text-[#3B82F6] font-mono tracking-tighter">
+                  <div className="text-[12px] font-black text-[#F97316] font-mono tracking-tighter">
                     {totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
                   </div>
                 </div>
