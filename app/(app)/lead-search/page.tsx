@@ -154,9 +154,9 @@ export default function LeadSearchPage() {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F97316]/5 blur-[120px] rounded-full pointer-events-none" />
       
       {/* HEADER ESCOLTRAN STYLE */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-10 relative z-10">
-        <div className="space-y-4">
-           <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
+        <div className="space-y-2">
+           <h1 className="text-3xl font-black text-white italic tracking-tight uppercase leading-none">
              Busca de <span className="text-[#F97316]">Leads</span>
            </h1>
            <div className="flex items-center gap-4">
@@ -167,44 +167,44 @@ export default function LeadSearchPage() {
            </div>
         </div>
 
-        <div className="flex bg-[#0A0A0A] p-2 rounded-[24px] border border-white/5 relative group">
-           <div className={`absolute inset-y-2 w-[140px] bg-[#F97316] rounded-2xl transition-all duration-500 shadow-[0_0_30px_rgba(249,115,22,0.3)] ${activeMode === 'cnpj' ? 'translate-x-[150px]' : 'translate-x-0'}`} />
+        <div className="flex bg-[#0A0A0A] p-1.5 rounded-2xl border border-white/5 relative group">
+           <div className={`absolute inset-y-1.5 w-[140px] bg-[#F97316] rounded-xl transition-all duration-500 shadow-[0_0_20px_rgba(249,115,22,0.3)] ${activeMode === 'cnpj' ? 'translate-x-[140px]' : 'translate-x-0'}`} />
            <button 
               onClick={() => setActiveMode("google")}
-              className={`relative z-10 px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 w-[120px] ${activeMode === 'google' ? 'text-white' : 'text-[#404040]'}`}
+              className={`relative z-10 px-5 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 w-[140px] ${activeMode === 'google' ? 'text-white' : 'text-[#404040]'}`}
            >
               Busca Google
            </button>
            <button 
               onClick={() => setActiveMode("cnpj")}
-              className={`relative z-10 px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 w-[120px] ${activeMode === 'cnpj' ? 'text-white' : 'text-[#404040]'}`}
+              className={`relative z-10 px-5 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 w-[140px] ${activeMode === 'cnpj' ? 'text-white' : 'text-[#404040]'}`}
            >
               Busca CNPJ
            </button>
         </div>
       </header>
 
-      <section className="relative z-10 space-y-8">
+      <section className="relative z-10 space-y-6">
         {/* BUSCA FORM */}
-        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-[32px] p-8 shadow-2xl relative group overflow-hidden">
+        <div className="bg-[#0D0D0D] border border-white/[0.03] rounded-2xl p-6 shadow-xl relative group overflow-hidden">
              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#F97316]/30 to-transparent" />
              
-             <div className="flex items-center gap-6 mb-8">
-                <span className="material-symbols-outlined text-[#F97316] text-[24px] animate-pulse">
+             <div className="flex items-center gap-4 mb-6">
+                <span className="material-symbols-outlined text-[#F97316] text-[20px] animate-pulse">
                    {activeMode === "google" ? "public" : "database"}
                 </span>
-                <h3 className="text-[12px] font-mono font-black uppercase tracking-[0.2em] text-white">
+                <h3 className="text-[11px] font-mono font-black uppercase tracking-widest text-white">
                   {activeMode === "google" ? "BUSCAR LEADS NO GOOGLE MAPS" : "BUSCAR EMPRESAS POR CNPJ"}
                 </h3>
              </div>
 
              {activeMode === "google" ? (
-              <div className="space-y-8">
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="space-y-3">
-                         <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">ESTADO</label>
+              <div className="space-y-6">
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">ESTADO</label>
                           <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val, cidade: ""}))}>
-                             <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-12 rounded-xl text-white font-black tracking-widest px-6 text-[11px]">
+                             <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-11 rounded-xl text-white font-black tracking-widest px-4 text-[11px]">
                                 <SelectValue placeholder="Selecione o Estado" />
                              </SelectTrigger>
                             <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[300px]">
@@ -213,8 +213,8 @@ export default function LeadSearchPage() {
                          </Select>
                       </div>
 
-                      <div className="space-y-3">
-                        <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">CIDADE</label>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">CIDADE</label>
                         <div className="flex gap-2">
                            <Select 
                               disabled={!searchData.estado}
@@ -227,7 +227,7 @@ export default function LeadSearchPage() {
                                  }
                               }}
                            >
-                              <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-12 rounded-xl text-white font-black tracking-widest px-6 disabled:opacity-20 flex-1 text-[11px]">
+                              <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-11 rounded-xl text-white font-black tracking-widest px-4 disabled:opacity-20 flex-1 text-[11px]">
                                  <SelectValue placeholder={searchData.estado ? (isLoadingCities ? "Sincronizando..." : "Selecione") : "Estado..."} />
                               </SelectTrigger>
                               <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[400px] p-0 overflow-hidden flex flex-col">
@@ -265,16 +265,16 @@ export default function LeadSearchPage() {
                                  placeholder="OU DIGITE..."
                                  value={customCity}
                                  onChange={(e) => setCustomCity(e.target.value)}
-                                 className="bg-[#0A0A0A]/60 border border-white/[0.06] h-12 rounded-xl text-white font-black text-[10px] tracking-widest px-6 focus:outline-none focus:border-[#F97316]/50 transition-colors w-[150px] uppercase"
+                                 className="bg-[#0A0A0A]/60 border border-white/[0.06] h-11 rounded-xl text-white font-black text-[10px] tracking-widest px-4 focus:outline-none focus:border-[#F97316]/50 transition-colors w-[150px] uppercase"
                               />
                            )}
                         </div>
                      </div>
 
-                      <div className="space-y-3">
-                         <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">NICHO DE MERCADO</label>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">NICHO DE MERCADO</label>
                          <Select onValueChange={(val) => setSearchData(s => ({...s, nicho: val}))}>
-                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-12 rounded-xl text-white font-black tracking-widest px-6 text-[11px]">
+                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-11 rounded-xl text-white font-black tracking-widest px-4 text-[11px]">
                                <SelectValue placeholder="Selecione o Nicho" />
                             </SelectTrigger>
                             <SelectContent className="bg-[#0A0A0A] border-white/10 text-white max-h-[400px]">
@@ -291,7 +291,7 @@ export default function LeadSearchPage() {
                    <button 
                      onClick={handleSearch}
                      disabled={isSearching}
-                     className="w-full h-14 bg-[#F97316] text-white rounded-[20px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-4 hover:bg-[#F97316]/90 transition-all hover:scale-[1.01] hover:shadow-[0_20px_40px_rgba(249,115,22,0.2)] disabled:opacity-50 disabled:scale-100 text-[12px]"
+                     className="w-full h-12 bg-[#F97316] text-white rounded-xl font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-[#F97316]/90 transition-all hover:scale-[1.01] hover:shadow-[0_10px_20px_rgba(249,115,22,0.2)] disabled:opacity-50 disabled:scale-100 text-[11px]"
                    >
                      {isSearching ? (
                         <>
@@ -307,12 +307,12 @@ export default function LeadSearchPage() {
                    </button>
                 </div>
              ) : (
-                <div className="space-y-10">
-                   <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                      <div className="space-y-3">
-                         <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">ESTADO</label>
+                <div className="space-y-6">
+                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">ESTADO</label>
                          <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val}))}>
-                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-14 rounded-xl text-white font-black tracking-widest px-6">
+                            <SelectTrigger className="bg-[#0A0A0A]/60 border-white/[0.06] h-11 rounded-xl text-white font-black tracking-widest px-4">
                                <SelectValue placeholder="UF" />
                             </SelectTrigger>
                             <SelectContent className="bg-[#0A0A0A] border-white/10 text-white">
@@ -321,17 +321,17 @@ export default function LeadSearchPage() {
                          </Select>
                       </div>
 
-                      <div className="md:col-span-3 space-y-3">
-                         <label className="text-[11px] font-mono font-black text-[#404040] uppercase tracking-[0.2em] pl-1">CÓDIGO CNAE OU NOME DO SETOR</label>
+                      <div className="md:col-span-3 space-y-2">
+                         <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">CÓDIGO CNAE OU NOME DO SETOR</label>
                          <input 
                            type="text" 
                            placeholder="EX: 4711302 OU COMÉRCIO VAREJISTA..."
-                           className="w-full h-14 bg-[#0A0A0A]/60 border border-white/[0.06] rounded-xl text-white font-black tracking-widest px-8 focus:outline-none focus:border-[#F97316]/50 transition-colors uppercase"
+                           className="w-full h-11 bg-[#0A0A0A]/60 border border-white/[0.06] rounded-xl text-white font-black tracking-widest px-4 focus:outline-none focus:border-[#F97316]/50 transition-colors uppercase text-[11px]"
                          />
                       </div>
                    </div>
 
-                   <button className="w-full h-20 bg-white text-black rounded-[24px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-4 hover:bg-white/90 transition-all hover:scale-[1.01] hover:shadow-[0_20px_40px_rgba(255,255,255,0.1)]">
+                   <button className="w-full h-12 bg-white text-black rounded-xl font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-white/90 transition-all hover:scale-[1.01] hover:shadow-[0_10px_20px_rgba(255,255,255,0.1)] text-[11px]">
                       <span className="material-symbols-outlined">analytics</span>
                       <span>Consultar Base Receita</span>
                    </button>
@@ -388,77 +388,77 @@ export default function LeadSearchPage() {
                      </div>
                   ) : (
                      recentLeads.map((lead: any) => (
-                        <div key={lead.id} className="group flex flex-col md:flex-row md:items-center justify-between p-8 bg-[#1A1A1A]/20 border border-white/[0.03] rounded-[32px] hover:bg-[#1A1A1A]/40 transition-all hover:translate-x-2 gap-6">
-                           <div className="flex items-center gap-8 flex-1 min-w-0">
-                              <div className="h-12 w-12 rounded-2xl bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-[#404040] group-hover:text-[#F97316] group-hover:border-[#F97316]/30 transition-all flex-shrink-0">
-                                 <span className="material-symbols-outlined">business</span>
+                        <div key={lead.id} className="group flex flex-col md:flex-row md:items-center justify-between p-5 bg-[#1A1A1A]/20 border border-white/[0.03] rounded-2xl hover:bg-[#1A1A1A]/40 transition-all hover:translate-x-1 gap-4">
+                           <div className="flex items-center gap-5 flex-1 min-w-0">
+                              <div className="h-10 w-10 rounded-xl bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-[#404040] group-hover:text-[#F97316] group-hover:border-[#F97316]/30 transition-all flex-shrink-0">
+                                 <span className="material-symbols-outlined text-[18px]">business</span>
                               </div>
-                              <div className="space-y-2 flex-1 min-w-0">
-                                 <h4 className="text-[17px] font-black text-white uppercase italic tracking-tighter leading-none group-hover:text-[#F97316] transition-colors truncate">
+                              <div className="space-y-1.5 flex-1 min-w-0">
+                                 <h4 className="text-[14px] font-black text-white uppercase italic tracking-tight leading-none group-hover:text-[#F97316] transition-colors truncate">
                                     {lead.empresa || lead.nome}
                                  </h4>
-                                 <div className="flex flex-wrap gap-4 items-center">
-                                    <p className="text-[#F97316] font-mono font-black text-[12px] tracking-widest leading-none">
+                                 <div className="flex flex-wrap gap-3 items-center">
+                                    <p className="text-[#F97316] font-mono font-bold text-[10px] tracking-wider leading-none">
                                        {lead.telefone || "SEM TELEFONE"}
                                     </p>
-                                    <span className="text-[#404040]">•</span>
-                                    <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.1em] truncate max-w-[500px]">
+                                    <span className="text-[#404040] text-[10px]">•</span>
+                                    <p className="text-[9px] font-mono font-bold text-[#6B7280] uppercase tracking-wider truncate max-w-[500px]">
                                        {formatAddress(lead.endereco)}
                                     </p>
                                  </div>
                               </div>
                            </div>
                            
-                           <div className="flex items-center justify-between md:justify-end gap-12 flex-shrink-0">
+                           <div className="flex items-center justify-between md:justify-end gap-8 flex-shrink-0">
                               <div className="text-left md:text-right space-y-1">
-                                 <div className="text-[10px] font-mono font-black text-[#F97316] uppercase tracking-widest">{lead.etapaFunil}</div>
-                                 <div className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">
+                                 <div className="text-[9px] font-mono font-bold text-[#F97316] uppercase tracking-wider">{lead.etapaFunil}</div>
+                                 <div className="text-[9px] font-mono font-bold text-[#6B7280] uppercase tracking-wider">
                                     {new Date(lead.updatedAt).toLocaleDateString('pt-BR')} às {new Date(lead.updatedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                  </div>
                               </div>
                            </div>
-                        </div>
-                     ))
+                              </div>
+                      ))
                   )}
                </div>
             ) : (
                <div className="overflow-x-auto">
                   <table className="w-full">
                      <thead>
-                        <tr className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/5">
-                           <th className="pb-6 text-left pl-4">CNPJ</th>
-                           <th className="pb-6 text-left">EMPRESA</th>
-                           <th className="pb-6 text-left">TELEFONE / E-MAIL</th>
-                           <th className="pb-6 text-left">SITUAÇÃO / CIDADE</th>
-                           <th className="pb-6 text-right pr-4">AÇÕES</th>
+                        <tr className="text-[9px] font-mono font-bold text-[#6B7280] uppercase tracking-wider border-b border-white/5">
+                           <th className="pb-4 text-left pl-4">CNPJ</th>
+                           <th className="pb-4 text-left">EMPRESA</th>
+                           <th className="pb-4 text-left">TELEFONE / E-MAIL</th>
+                           <th className="pb-4 text-left">SITUAÇÃO / CIDADE</th>
+                           <th className="pb-4 text-right pr-4">AÇÕES</th>
                         </tr>
                      </thead>
                      <tbody className="divide-y divide-white/[0.02]">
                         {cnpjLeads.map((lead, i) => (
                            <tr key={i} className="group hover:bg-white/[0.01] transition-colors">
-                              <td className="py-8 pl-4">
-                                 <div className="text-[12px] font-mono font-black text-[#F97316]">{lead.cnpj}</div>
+                              <td className="py-5 pl-4">
+                                 <div className="text-[11px] font-mono font-bold text-[#F97316]">{lead.cnpj}</div>
                               </td>
-                              <td className="py-8">
-                                 <div className="text-[14px] font-black text-white uppercase italic tracking-tighter">{lead.empresa}</div>
+                              <td className="py-5">
+                                 <div className="text-[13px] font-black text-white uppercase italic tracking-tight">{lead.empresa}</div>
                               </td>
-                              <td className="py-8">
+                              <td className="py-5">
                                  <div className="space-y-1">
-                                    <div className="text-[12px] font-mono font-black text-white">{lead.telefone}</div>
-                                    <div className="text-[10px] font-mono text-[#404040]">{lead.email}</div>
+                                    <div className="text-[11px] font-mono font-bold text-white">{lead.telefone}</div>
+                                    <div className="text-[10px] font-mono text-[#6B7280]">{lead.email}</div>
                                  </div>
                               </td>
-                              <td className="py-8">
+                              <td className="py-5">
                                  <div className="space-y-1">
                                     <div className="flex items-center gap-2">
                                        <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-                                       <div className="text-[10px] font-mono font-black text-emerald-500 uppercase">{lead.situacao}</div>
+                                       <div className="text-[9px] font-mono font-bold text-emerald-500 uppercase">{lead.situacao}</div>
                                     </div>
-                                    <div className="text-[10px] font-mono text-[#404040] uppercase">{lead.cidade}</div>
+                                    <div className="text-[9px] font-mono text-[#6B7280] uppercase">{lead.cidade}</div>
                                  </div>
                               </td>
-                              <td className="py-8 pr-4 text-right">
-                                 <button className="h-10 px-6 bg-[#1A1A1A] border border-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-[#404040] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all">
+                              <td className="py-5 pr-4 text-right">
+                                 <button className="h-9 px-4 bg-[#1A1A1A] border border-white/5 rounded-lg text-[9px] font-bold uppercase tracking-wider text-[#A3A3A3] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all">
                                     Extrair Sócios
                                  </button>
                               </td>
@@ -474,7 +474,7 @@ export default function LeadSearchPage() {
                 setDisplayLimit(prev => prev + 10)
               }}
               disabled={isLoadingRecent}
-              className="w-full py-12 text-[12px] font-mono font-black text-[#404040] hover:text-[#F97316] uppercase tracking-[0.8em] transition-all border-t border-white/5 hover:bg-[#F97316]/5 disabled:opacity-50 group flex items-center justify-center gap-4"
+              className="w-full py-6 text-[10px] font-mono font-bold text-[#6B7280] hover:text-[#F97316] uppercase tracking-widest transition-all border-t border-white/5 hover:bg-[#F97316]/5 disabled:opacity-50 group flex items-center justify-center gap-3"
            >
               {isLoadingRecent && displayLimit > 10 ? (
                 <>
