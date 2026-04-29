@@ -36,7 +36,7 @@ const roiSource = [
 ]
 
 const lostReasons = [
-  { name: 'Não é o público-alvo', value: 100, color: '#22C55E' }
+  { name: 'Não é o público-alvo', value: 100, color: '#F97316' }
 ]
 
 export default function AiInsightsPage() {
@@ -279,7 +279,7 @@ export default function AiInsightsPage() {
                     <span className="material-symbols-outlined text-[16px] text-rose-500">trending_down</span>
                     <h3 className="text-[14px] font-black text-white tracking-tight">Motivos de Perda</h3>
                  </div>
-                 <div className="h-[200px] w-full mt-4">
+                 <div className="h-[200px] w-full mt-4 relative flex items-center justify-center">
                     <ResponsiveContainer width="100%" height="100%">
                        <PieChart>
                           <Pie
@@ -302,12 +302,12 @@ export default function AiInsightsPage() {
                           />
                        </PieChart>
                     </ResponsiveContainer>
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-[20px] text-center">
-                       <div className="text-xl font-black text-emerald-500">100%</div>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
+                       <div className="text-xl font-black text-[#F97316]">100%</div>
                     </div>
                  </div>
                  <div className="flex items-center gap-2 mt-4 justify-center">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#F97316]"></span>
                     <span className="text-[10px] font-bold text-white">Não é o público-alvo</span>
                  </div>
               </div>
