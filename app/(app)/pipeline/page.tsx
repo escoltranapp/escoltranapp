@@ -19,7 +19,6 @@ export default function PipelinePage() {
   const [pipelineSelection, setPipelineSelection] = useState("vendas-matriz")
   const [isNewDealOpen, setIsNewDealOpen] = useState(false)
   const [isArchivedOpen, setIsArchivedOpen] = useState(false)
-  const [isSelecting, setIsSelecting] = useState(false)
   const [preselectedStageId, setPreselectedStageId] = useState<string | undefined>(undefined)
 
   const { data: boardData, isLoading, refetch } = useQuery({
@@ -93,17 +92,6 @@ export default function PipelinePage() {
         </div>
         
         <div className="flex items-center gap-2">
-           <button 
-             onClick={() => setIsSelecting(!isSelecting)}
-             className={cn(
-               "flex items-center gap-2 px-4 py-2 bg-transparent border rounded-xl text-xs font-medium transition-all",
-               isSelecting ? "border-[#F97316] text-[#F97316] bg-[#F97316]/10" : "border-white/[0.05] text-white hover:bg-white/[0.05]"
-             )}
-           >
-              <span className="material-symbols-outlined text-[16px]">check</span>
-              Selecionar
-           </button>
-
            <button 
             onClick={() => setIsArchivedOpen(true)}
             className="flex items-center gap-2 px-4 py-2 bg-transparent border border-white/[0.05] rounded-xl text-xs font-medium text-white hover:bg-white/[0.05] transition-all"
