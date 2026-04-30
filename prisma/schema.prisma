@@ -91,7 +91,7 @@ model User {
   disparoStatusWebhookUrl    String?
 
   status            StatusUsuario @default(ATIVO)
-  role              AppRole       @default(MEMBER)
+  role              AppRole       @default(ADMIN)
 
   accounts          Account[]
   sessions          Session[]
