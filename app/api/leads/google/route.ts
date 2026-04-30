@@ -28,11 +28,11 @@ export async function POST(req: Request) {
       select: { n8nWebhookUrl: true }
     })
 
-    const webhookUrl = user?.n8nWebhookUrl || process.env.N8N_WEBHOOK_URL || "https://escoltran-n8n.tyii5c.easypanel.host/webhook/escoltran"
+    // Usar SEMPRE a URL do ambiente (Easypanel) para evitar conflitos com dados antigos no banco
+    const webhookUrl = process.env.N8N_WEBHOOK_URL || "https://escoltran-n8n.tyii5c.easypanel.host/webhook/escoltran"
     
-    console.log(`[LEAD_SEARCH_GOOGLE] Triggering Webhook: ${webhookUrl}`)
-    console.log(`[LEAD_SEARCH_GOOGLE] Payload:`, { estado, cidade, nicho, user_id: session.user.id })
-
+    console.log(`[LEAD_SEARCH_GOOGLE] FORCING WEBHOOK: ${webhookUrl}`)
+    
     // 3. Trigger N8N
     const n8nResponse = await fetch(webhookUrl, {
       method: "POST",
@@ -44,6 +44,8 @@ export async function POST(req: Request) {
         user_id: session.user.id
       })
     })
+
+    console.log(`[LEAD_SEARCH_GOOGLE] N8N Response Status: ${n8nResponse.status} ${n8nResponse.statusText}`)
 
     if (!n8nResponse.ok) {
       throw new Error("Falha na comunicação com o broker de automação")
