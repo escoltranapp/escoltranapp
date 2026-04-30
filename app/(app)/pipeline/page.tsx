@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils"
 
 import { ClosedDealsModal } from "@/components/pipeline/ClosedDealsModal"
 import { ImportDealsModal } from "@/components/pipeline/ImportDealsModal"
+import { DeleteStageModal } from "@/components/pipeline/DeleteStageModal"
 
 export default function PipelinePage() {
   const queryClient = useQueryClient()
@@ -21,6 +22,7 @@ export default function PipelinePage() {
   const [isNewDealOpen, setIsNewDealOpen] = useState(false)
   const [isArchivedOpen, setIsArchivedOpen] = useState(false)
   const [isImportOpen, setIsImportOpen] = useState(false)
+  const [isDeleteStageOpen, setIsDeleteStageOpen] = useState(false)
   const [preselectedStageId, setPreselectedStageId] = useState<string | undefined>(undefined)
 
   const { data: boardData, isLoading, refetch } = useQuery({
@@ -87,7 +89,12 @@ export default function PipelinePage() {
                 <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[16px] text-[#404040] pointer-events-none group-hover:text-white transition-colors">expand_more</span>
              </div>
              <span className="material-symbols-outlined text-[16px] text-[#404040] hover:text-amber-500 cursor-pointer transition-colors ml-1">star</span>
-             <span className="material-symbols-outlined text-[16px] text-[#404040] hover:text-red-500 cursor-pointer transition-colors ml-2">delete</span>
+             <span 
+              onClick={() => setIsDeleteStageOpen(true)}
+              className="material-symbols-outlined text-[16px] text-[#404040] hover:text-red-500 cursor-pointer transition-colors ml-2"
+             >
+              delete
+             </span>
            </div>
         </div>
         
@@ -148,6 +155,12 @@ export default function PipelinePage() {
       <ImportDealsModal 
         isOpen={isImportOpen}
         onClose={() => setIsImportOpen(false)}
+      />
+
+      <DeleteStageModal 
+        isOpen={isDeleteStageOpen}
+        onClose={() => setIsDeleteStageOpen(false)}
+        stages={stages}
       />
 
       <DealDetailSheet 
