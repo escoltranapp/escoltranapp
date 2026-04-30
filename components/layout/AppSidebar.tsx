@@ -13,7 +13,7 @@ const NAV_ITEMS = [
   { label: "Busca de Leads", path: "/lead-search", icon: "manage_search" },
   { label: "Disparo em Massa", path: "/listas-disparo", icon: "campaign" },
   { label: "UTM Analytics", path: "/utm-analytics", icon: "monitoring" },
-  { label: "IA Insights", path: "/ai-insights", icon: "auto_awesome" },
+  { label: "IA Insights", path: "/ai-insights", icon: "hub" },
   { label: "Configurações", path: "/settings", icon: "settings" },
 ]
 
