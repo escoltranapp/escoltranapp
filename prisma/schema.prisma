@@ -14,12 +14,12 @@ enum PermissionLevel {
   FULL
 }
 
-enum UserStatus {
+enum AppStatus {
   ATIVO
   INATIVO
 }
 
-enum UserRole {
+enum UserAppRole {
   ADMIN
   MEMBER
 }
@@ -90,8 +90,8 @@ model User {
   disparoCancelarWebhookUrl  String?
   disparoStatusWebhookUrl    String?
 
-  status            UserStatus @default(ATIVO)
-  role              UserRole   @default(ADMIN)
+  status            AppStatus @default(ATIVO)
+  role              UserAppRole @default(ADMIN)
 
   accounts          Account[]
   sessions          Session[]
@@ -175,7 +175,7 @@ model TeamMember {
 model UserRole {
   id     String  @id @default(cuid())
   userId String
-  role   UserRole @default(MEMBER)
+  role   UserAppRole @default(MEMBER)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
