@@ -47,6 +47,7 @@ class ErrorBoundary extends Component<
 type ViewMode = "list" | "calendar"
 
 // ─── Main Module (client-only, no SSR) ──────────────────────────────────────
+// ─── Main Module (client-only, no SSR) ──────────────────────────────────────
 function ActivitiesContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -86,6 +87,13 @@ function ActivitiesContent() {
   })
 
   const activities = Array.isArray(activitiesData) ? activitiesData : []
+  
+  const todayCount = activities.filter(a => {
+    const d = a.dueAt ? new Date(a.dueAt) : null
+    return a.status === "OPEN" && d && isToday(d)
+  }).length
+
+  const pendingCount = activities.filter(a => a.status === "OPEN").length
 
   const openNew = () => {
     setEditingActivity(null)
@@ -99,94 +107,91 @@ function ActivitiesContent() {
 
   return (
     <div className="flex flex-col h-screen bg-[#0A0A0A] text-white overflow-hidden">
-      {/* HEADER */}
-      <div className="px-8 py-5 border-b border-white/5 flex items-center justify-between bg-[#0D0D0D]">
-        <div>
-          <h1 className="text-2xl font-black italic tracking-tighter uppercase leading-none">
-            <span className="text-primary underline decoration-primary/30">Módulo</span> Atividades
-          </h1>
-          <p className="text-[9px] font-mono text-secondary uppercase tracking-[0.4em] font-black mt-2">
-            CRM &amp; Follow-ups
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex p-1 bg-background border border-border rounded-xl">
-            <button
-              onClick={() => setViewMode("list")}
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
-                viewMode === "list"
-                  ? "bg-primary text-white shadow-lg shadow-primary/10"
-                  : "text-secondary hover:text-foreground"
-              )}
-            >
-              Lista
-            </button>
-            <button
-              onClick={() => setViewMode("calendar")}
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
-                viewMode === "calendar"
-                  ? "bg-primary text-white shadow-lg shadow-primary/10"
-                  : "text-secondary hover:text-foreground"
-              )}
-            >
-              Calendário
-            </button>
+      {/* HEADER - NEW DESIGN FROM SCREENSHOT */}
+      <div className="px-10 py-8 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-4">
+            <h1 className="text-3xl font-black text-white tracking-tight">Atividades</h1>
+            <div className="flex items-center gap-3">
+              <div className="px-3 py-1 rounded-full bg-[#F97316]/20 text-[#F97316] text-[10px] font-black uppercase tracking-wider border border-[#F97316]/20">
+                {todayCount} para hoje
+              </div>
+              <div className="px-3 py-1 rounded-full bg-white/5 text-secondary text-[10px] font-black uppercase tracking-wider border border-white/5">
+                {pendingCount} pendentes
+              </div>
+            </div>
           </div>
 
           <button
             onClick={openNew}
-            className="bg-primary text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-primary/5 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+            className="bg-[#F97316] hover:bg-[#FB923C] text-white px-6 py-3 rounded-xl font-black text-[11px] uppercase tracking-[0.1em] shadow-[0_0_20px_rgba(249,115,22,0.2)] transition-all flex items-center gap-2"
           >
-            <span className="material-symbols-outlined text-[16px]">add</span>
+            <span className="material-symbols-outlined text-[18px]">add</span>
             Nova Atividade
           </button>
         </div>
-      </div>
 
-      {/* FILTERS */}
-      <div className="px-8 py-2 border-b border-white/5 flex items-center justify-between bg-surface/30">
-        <div className="flex items-center gap-3">
-          {(["OPEN", "DONE", "ALL"] as const).map((s) => (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+             <div className="relative group">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="bg-[#1A1A1A] border border-white/5 rounded-xl px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-[#F97316]/50 transition-all appearance-none pr-12 min-w-[150px]"
+                >
+                  <option value="OPEN">Pendentes</option>
+                  <option value="DONE">Concluídas</option>
+                  <option value="ALL">Todas</option>
+                </select>
+                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
+             </div>
+
+             <div className="relative group">
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="bg-[#1A1A1A] border border-white/5 rounded-xl px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-[#F97316]/50 transition-all appearance-none pr-12 min-w-[150px]"
+                >
+                  <option value="ALL">Todos</option>
+                  <option value="CALL">Ligações</option>
+                  <option value="MEETING">Reuniões</option>
+                  <option value="TASK">Tarefas</option>
+                  <option value="WHATSAPP">WhatsApp</option>
+                  <option value="NOTE">Notas</option>
+                  <option value="EMAIL">Email</option>
+                </select>
+                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
+             </div>
+          </div>
+
+          <div className="flex p-1 bg-[#1A1A1A] border border-white/5 rounded-xl">
             <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
+              onClick={() => setViewMode("list")}
               className={cn(
-                "text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full transition-all border",
-                statusFilter === s
-                  ? "bg-white text-black border-white"
-                  : "text-secondary border-white/5 hover:border-white/20"
+                "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
+                viewMode === "list" ? "bg-[#F97316] text-white shadow-lg shadow-[#F97316]/20" : "text-secondary hover:text-white"
               )}
             >
-              {s === "OPEN" ? "Pendentes" : s === "DONE" ? "Concluídas" : "Todas"}
+              <span className="material-symbols-outlined text-[20px]">format_list_bulleted</span>
             </button>
-          ))}
+            <button
+              onClick={() => setViewMode("calendar")}
+              className={cn(
+                "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
+                viewMode === "calendar" ? "bg-[#F97316] text-white shadow-lg shadow-[#F97316]/20" : "text-secondary hover:text-white"
+              )}
+            >
+              <span className="material-symbols-outlined text-[20px]">calendar_today</span>
+            </button>
+          </div>
         </div>
-
-        <select
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-          className="bg-background border border-border rounded-xl px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-secondary outline-none focus:border-primary transition-all"
-        >
-          <option value="ALL">Todos os Tipos</option>
-          <option value="CALL">Ligações</option>
-          <option value="MEETING">Reuniões</option>
-          <option value="TASK">Tarefas</option>
-          <option value="WHATSAPP">WhatsApp</option>
-          <option value="NOTE">Notas</option>
-          <option value="EMAIL">Email</option>
-        </select>
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-8">
-        <ActivityKPIs activities={activities} />
-
+      <div className="flex-1 overflow-y-auto px-10 custom-scrollbar space-y-8 pb-10">
         {isLoading ? (
           <div className="h-[400px] flex items-center justify-center">
-            <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-[#F97316]/20 border-t-[#F97316] rounded-full animate-spin" />
           </div>
         ) : viewMode === "list" ? (
           <ActivityList activities={activities} onEdit={openEdit} />

@@ -12,26 +12,16 @@ interface ActivityListProps {
   onEdit: (activity: any) => void
 }
 
-const TYPE_ICONS: Record<string, string> = {
-  CALL: 'call',
-  MEETING: 'groups',
-  TASK: 'task_alt',
-  NOTE: 'description',
-  WHATSAPP: 'chat',
-  EMAIL: 'mail',
-}
-
-const TYPE_COLORS: Record<string, string> = {
-  CALL: '#3B82F6',
-  MEETING: '#A855F7',
-  TASK: '#F59E0B',
-  NOTE: '#94A3B8',
-  WHATSAPP: '#22C55E',
-  EMAIL: '#EC4899',
+const TYPE_CONFIG: Record<string, { label: string, icon: string, color: string, bg: string }> = {
+  CALL: { label: 'Ligação', icon: 'call', color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.1)' },
+  MEETING: { label: 'Reunião', icon: 'groups', color: '#A855F7', bg: 'rgba(168, 85, 247, 0.1)' },
+  TASK: { label: 'Tarefa', icon: 'task_alt', color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.1)' },
+  NOTE: { label: 'Nota', icon: 'description', color: '#94A3B8', bg: 'rgba(148, 163, 184, 0.1)' },
+  WHATSAPP: { label: 'WhatsApp', icon: 'chat', color: '#22C55E', bg: 'rgba(34, 197, 94, 0.1)' },
+  EMAIL: { label: 'Email', icon: 'mail', color: '#EC4899', bg: 'rgba(236, 72, 153, 0.1)' },
 }
 
 export function ActivityList({ activities, onEdit }: ActivityListProps) {
-  // 1. TODOS os hooks devem vir PRIMEIRO
   const [mounted, setMounted] = useState(false)
   const queryClient = useQueryClient()
   const { toast } = useToast()
@@ -65,10 +55,9 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
     setMounted(true)
   }, [])
 
-  // 2. Trava de 'mounted' APENAS no retorno do JSX
   if (!mounted) return (
     <div className="space-y-4">
-      {[1,2,3].map(i => <div key={i} className="h-28 bg-white/5 animate-pulse rounded-[32px]" />)}
+      {[1,2,3].map(i => <div key={i} className="h-28 bg-white/5 animate-pulse rounded-2xl" />)}
     </div>
   )
 
@@ -81,29 +70,29 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
   }
 
   const groups = [
-    { title: 'Atrasadas', items: activities.filter(a => {
+    { title: 'ATRASADAS', items: activities.filter(a => {
       const d = safeDate(a.dueAt)
       return a.status === "OPEN" && d && isBefore(d, now)
     }), color: '#EF4444' },
-    { title: 'Para Hoje', items: activities.filter(a => {
+    { title: 'HOJE', items: activities.filter(a => {
       const d = safeDate(a.dueAt)
       return a.status === "OPEN" && d && isToday(d)
-    }), color: '#FFB800' },
-    { title: 'Amanhã', items: activities.filter(a => {
+    }), color: '#F97316' },
+    { title: 'AMANHÃ', items: activities.filter(a => {
       const d = safeDate(a.dueAt)
       return a.status === "OPEN" && d && isTomorrow(d)
     }), color: '#F97316' },
-    { title: 'Próximas', items: activities.filter(a => {
+    { title: 'PRÓXIMAS', items: activities.filter(a => {
       const d = safeDate(a.dueAt)
       return a.status === "OPEN" && d && isAfter(startOfDay(d), startOfDay(new Date(now.getTime() + 86400000)))
-    }), color: '#8B5CF6' },
-    { title: 'Sem Data', items: activities.filter(a => a.status === "OPEN" && !safeDate(a.dueAt)), color: '#64748B' },
-    { title: 'Concluídas', items: activities.filter(a => a.status === "DONE"), color: '#22C55E' },
+    }), color: '#F97316' },
+    { title: 'SEM DATA', items: activities.filter(a => a.status === "OPEN" && !safeDate(a.dueAt)), color: '#404040' },
+    { title: 'CONCLUÍDAS', items: activities.filter(a => a.status === "DONE"), color: '#22C55E' },
   ].filter(g => g.items.length > 0)
 
   if (activities.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 bg-[#0D0D0D] border border-white/5 rounded-[40px] border-dashed">
+      <div className="flex flex-col items-center justify-center py-32 bg-[#1A1A1A]/20 border border-white/5 rounded-3xl border-dashed">
          <span className="material-symbols-outlined text-[64px] text-white/5 mb-6">inventory_2</span>
          <p className="text-secondary font-black uppercase tracking-[0.5em] text-[10px]">Silêncio por aqui...</p>
       </div>
@@ -111,128 +100,116 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
   }
 
   return (
-    <div className="space-y-10 pb-20">
+    <div className="space-y-12 pb-20">
       {groups.map((group) => (
-        <div key={group.title} className="animate-in fade-in slide-in-from-bottom-6 duration-700">
-          <div className="flex items-center gap-3 mb-4 ml-4">
-            <div className="w-1.5 h-4 rounded-full shadow-lg" style={{ backgroundColor: group.color }} />
-            <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-white/90 italic">{group.title}</h3>
-            <span className="text-[9px] font-mono font-black text-secondary px-2 py-0.5 bg-white/5 border border-white/10 rounded-full">{group.items.length}</span>
+        <div key={group.title} className="space-y-6">
+          <div className="flex items-center gap-2">
+            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white">{group.title} ({group.items.length})</h3>
           </div>
 
-          <div className="space-y-3">
-            {group.items.map((item, i) => (
-              <div 
-                key={item.id} 
-                className={cn(
-                  "flex items-center gap-5 p-4 rounded-[24px] border transition-all duration-300 group relative overflow-hidden",
-                  item.status === "DONE" 
-                    ? "bg-black/40 border-white/5 opacity-50" 
-                    : "bg-[#0D0D0D] border-white/5 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-0.5"
-                )}
-              >
-                {/* STATUS TOGGLE REMOVIDO CONFORME PEDIDO */}
-
-                {/* ICON BLOCK */}
+          <div className="space-y-4">
+            {group.items.map((item) => {
+              const config = TYPE_CONFIG[item.tipo] || TYPE_CONFIG.TASK
+              const d = safeDate(item.dueAt)
+              
+              return (
                 <div 
-                  className="w-11 h-11 rounded-xl flex items-center justify-center shadow-2xl transition-all duration-500 group-hover:rotate-6 shrink-0"
-                  style={{ 
-                    backgroundColor: `${String(TYPE_COLORS[item.tipo] || '#64748B')}10`, 
-                    border: `1px solid ${String(TYPE_COLORS[item.tipo] || '#64748B')}20`,
-                  }}
+                  key={item.id} 
+                  className={cn(
+                    "flex items-start gap-6 p-6 rounded-2xl border transition-all duration-300 group bg-[#1A1A1A]/30 border-white/[0.03] hover:border-white/10 hover:bg-[#1A1A1A]/50",
+                    item.status === "DONE" && "opacity-50"
+                  )}
                 >
-                  <span className="material-symbols-outlined text-[20px] transition-all" style={{ color: String(TYPE_COLORS[item.tipo] || '#64748B') }}>
-                    {String(TYPE_ICONS[item.tipo] || 'event')}
-                  </span>
-                </div>
+                  {/* CHECKBOX */}
+                  <button 
+                    onClick={() => toggleMutation.mutate({ id: item.id, status: item.status === "OPEN" ? "DONE" : "OPEN" })}
+                    className={cn(
+                      "mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                      item.status === "DONE" 
+                        ? "bg-[#F97316] border-[#F97316]" 
+                        : "border-white/20 hover:border-[#F97316]/50"
+                    )}
+                  >
+                    {item.status === "DONE" && <span className="material-symbols-outlined text-[14px] text-white font-black">check</span>}
+                  </button>
 
-                {/* MAIN CONTENT */}
-                <div className="flex-1 min-w-0 pr-4">
-                  <div className="flex items-center gap-3 mb-1">
-                    <h4 className={cn(
-                      "text-[14px] font-black text-white tracking-tight truncate uppercase leading-none",
-                      item.status === "DONE" && "text-secondary line-through"
-                    )}>{String(item.titulo || "Sem Título")}</h4>
-                    
-                    {(() => {
-                      const d = safeDate(item.dueAt)
-                      if (d && isBefore(d, now) && item.status === "OPEN") {
-                        return (
-                          <span className="px-1.5 py-0.5 rounded-lg bg-red-500/10 text-red-500 text-[7px] font-black uppercase tracking-[0.1em] border border-red-500/20">Atrasado</span>
-                        )
-                      }
-                      return null
-                    })()}
-                  </div>
-                  
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                    <p className="text-[11px] text-secondary font-bold truncate max-w-[500px] italic">
-                      {String(item.descricao || "Sem detalhes...")}
-                    </p>
-                    
-                    <div className="flex items-center gap-3 border-l border-white/5 pl-3">
+                  {/* CONTENT */}
+                  <div className="flex-1 space-y-4 min-w-0">
+                    <div className="space-y-1">
+                      {/* TYPE TAG */}
+                      <div 
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider mb-2"
+                        style={{ backgroundColor: config.bg, color: config.color }}
+                      >
+                        <span className="material-symbols-outlined text-[14px]">{config.icon}</span>
+                        {config.label}
+                      </div>
+
+                      <h4 className={cn(
+                        "text-[16px] font-black text-white tracking-tight leading-none uppercase",
+                        item.status === "DONE" && "line-through text-secondary"
+                      )}>
+                        {item.titulo}
+                      </h4>
+                      <p className="text-[12px] text-secondary font-medium leading-relaxed max-w-4xl line-clamp-2 italic">
+                        {item.descricao || "Sem descrição disponível"}
+                      </p>
+                    </div>
+
+                    {/* METADATA */}
+                    <div className="flex flex-wrap items-center gap-6">
+                      <div className={cn(
+                        "flex items-center gap-2 text-[10px] font-black uppercase tracking-wider",
+                        d && isBefore(d, now) && item.status === "OPEN" ? "text-red-500" : "text-[#F97316]"
+                      )}>
+                        <span className="material-symbols-outlined text-[16px]">schedule</span>
+                        {d ? (isToday(d) ? `Hoje às ${format(d, "HH:mm")}` : isTomorrow(d) ? `Amanhã às ${format(d, "HH:mm")}` : format(d, "dd/MM 'às' HH:mm", { locale: ptBR })) : "Sem data"}
+                      </div>
+
                       {item.contact && (
-                        <div className="flex items-center gap-1.5 text-[9px] text-primary font-black uppercase tracking-tighter">
-                          <span className="material-symbols-outlined text-[13px]">person</span>
-                          {String(item.contact?.nome || '')}
+                        <div className="flex items-center gap-2 text-[10px] text-secondary font-black uppercase tracking-wider">
+                          <span className="material-symbols-outlined text-[16px]">person</span>
+                          {item.contact.nome}
                         </div>
                       )}
+
                       {item.deal && (
-                        <div className="flex items-center gap-1.5 text-[9px] text-[#A855F7] font-black uppercase tracking-tighter">
-                          <span className="material-symbols-outlined text-[13px]">attach_money</span>
-                          {String(item.deal?.titulo || '')}
+                        <div className="flex items-center gap-2 text-[10px] text-secondary font-black uppercase tracking-wider">
+                          <span className="material-symbols-outlined text-[16px]">business_center</span>
+                          {item.deal.titulo}
                         </div>
                       )}
                     </div>
                   </div>
-                </div>
 
-                {/* INFO & ACTIONS */}
-                <div className="flex items-center gap-6 shrink-0">
-                   <div className="text-right border-r border-white/5 pr-6 hidden lg:block">
-                      <div className="text-[11px] font-mono font-black text-white leading-none">
-                        {(() => {
-                           const d = safeDate(item.dueAt)
-                           return d ? format(d, "HH:mm") : '--:--'
-                        })()}
-                      </div>
-                      <div className="text-[8px] font-black text-secondary uppercase tracking-[0.1em] mt-1">
-                        {(() => {
-                           const d = safeDate(item.dueAt)
-                           if (!d) return 'Sem data'
-                           if (isToday(d)) return 'Hoje'
-                           if (isTomorrow(d)) return 'Amanhã'
-                           return format(d, "dd/MM", { locale: ptBR })
-                        })()}
-                      </div>
-                   </div>
-                   
-                   <div className="flex items-center gap-2 opacity-30 group-hover:opacity-100 transition-all duration-300">
+                  {/* ACTIONS */}
+                  <div className="relative group/actions">
+                    <button className="w-10 h-10 flex items-center justify-center text-secondary hover:text-white transition-colors">
+                      <span className="material-symbols-outlined text-[20px]">more_vert</span>
+                    </button>
+                    
+                    <div className="absolute right-0 top-10 w-48 bg-[#1A1A1A] border border-white/10 rounded-xl shadow-2xl opacity-0 scale-95 group-hover/actions:opacity-100 group-hover/actions:scale-100 transition-all pointer-events-none group-hover/actions:pointer-events-auto z-50 overflow-hidden">
                       <button 
                         onClick={() => onEdit(item)}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5 border border-white/10 hover:border-primary/50 text-white transition-all"
-                        title="Editar"
+                        className="w-full px-4 py-3 text-left text-[10px] font-black uppercase tracking-wider hover:bg-white/5 flex items-center gap-3"
                       >
-                        <span className="material-symbols-outlined text-[16px]">edit</span>
+                        <span className="material-symbols-outlined text-[18px]">edit</span>
+                        Editar
                       </button>
                       <button 
                         onClick={() => {
-                          if (confirm("Confirmar exclusão?")) deleteMutation.mutate(item.id)
+                          if (confirm("Deseja realmente excluir esta atividade?")) deleteMutation.mutate(item.id)
                         }}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5 border border-white/10 hover:border-red-500/50 text-white/50 hover:text-red-500 transition-all"
-                        title="Deletar"
+                        className="w-full px-4 py-3 text-left text-[10px] font-black uppercase tracking-wider hover:bg-red-500/10 text-red-500 flex items-center gap-3 border-t border-white/5"
                       >
-                        <span className="material-symbols-outlined text-[16px]">delete</span>
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                        Excluir
                       </button>
-                   </div>
+                    </div>
+                  </div>
                 </div>
-
-                {/* AMBIENT LIGHT DECORATION */}
-                {item.status !== "DONE" && (
-                   <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-primary/5 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
-                )}
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       ))}
