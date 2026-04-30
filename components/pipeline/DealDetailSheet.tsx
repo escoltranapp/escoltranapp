@@ -47,7 +47,7 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
       const res = await fetch(`/api/deals/${deal?.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, lossReason: reason }),
+        body: JSON.stringify({ status, motivoPerda: reason }),
       })
       if (!res.ok) throw new Error("Falha ao atualizar status")
       return res.json()
@@ -320,11 +320,16 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
                   Abortar
                 </button>
                 <button
-                  disabled={!lossReason.trim()}
-                  className="flex-1 bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black py-4 rounded-xl text-[10px] uppercase tracking-widest shadow-lg shadow-[#F97316]/20 disabled:opacity-30 disabled:grayscale transition-all"
+                  disabled={!lossReason.trim() || updateStatus.isPending}
+                  className="flex-1 bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black py-4 rounded-xl text-[10px] uppercase tracking-widest shadow-lg shadow-[#F97316]/20 disabled:opacity-30 disabled:grayscale transition-all flex items-center justify-center gap-2"
                   onClick={() => updateStatus.mutate({ status: "LOST", reason: lossReason })}
                 >
-                  Registrar Perda
+                  {updateStatus.isPending ? (
+                    <>
+                      <span className="material-symbols-outlined animate-spin text-[16px]">sync</span>
+                      Processando...
+                    </>
+                  ) : "Registrar Perda"}
                 </button>
               </div>
             </div>

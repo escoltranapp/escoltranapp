@@ -15,7 +15,16 @@ export default function AiInsightsPage() {
     },
   })
 
-  const topOpportunities = metrics?.recentDeals?.map((d: any) => ({
+  interface Opportunity {
+    id: string
+    name: string
+    contact: string
+    score: number
+    status: string
+    color: string
+  }
+
+  const topOpportunities: Opportunity[] = metrics?.recentDeals?.map((d: any) => ({
     id: d.id,
     name: d.titulo,
     contact: d.contact?.nome || "Sem Nome",

@@ -56,28 +56,28 @@ function KPICard({
 
 export default function ContactsPage() {
   const [search, setSearch] = useState("")
+  const [limit, setLimit] = useState(15)
   const [isNewContactOpen, setIsNewContactOpen] = useState(false)
   const [selectedContact, setSelectedContact] = useState<any>(null)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
 
-  const { data: contactsData, isLoading } = useQuery<any>({
-    queryKey: ["contacts"],
+  const { data: contactsData, isLoading, isFetching } = useQuery<any>({
+    queryKey: ["contacts", limit, search],
     queryFn: async () => {
-      const res = await fetch("/api/contacts")
-      if (!res.ok) return []
+      const res = await fetch(`/api/contacts?limit=${limit}&search=${search}`)
+      if (!res.ok) return { contacts: [], total: 0 }
       return res.json()
     },
+    placeholderData: (previousData: any) => previousData
   })
 
   // DEFENSIVE DATA EXTRACTION - FIXING API STRUCTURE DISCREPANCY
   const contacts = Array.isArray(contactsData?.contacts) ? contactsData.contacts : []
   const counts = contactsData?.counts || { all: 0, leads: 0, clientes: 0, inativos: 0 }
+  const total = contactsData?.total || 0
 
-  const filteredContacts = contacts.filter((c: any) => 
-    c.nome?.toLowerCase().includes(search.toLowerCase()) || 
-    c.empresa?.toLowerCase().includes(search.toLowerCase())
-  )
+  const hasMore = contacts.length < total
 
   const databaseSize = counts.all
   const activeNetwork = counts.leads
@@ -149,7 +149,7 @@ export default function ContactsPage() {
                     </tr>
                   </thead>
                <tbody>
-                  {filteredContacts.length === 0 ? (
+                  {contacts.length === 0 ? (
                      <tr>
                         <td colSpan={6} className="py-24 text-center text-[#404040]">
                            <div className="flex flex-col items-center gap-4 italic opacity-20">
@@ -159,7 +159,7 @@ export default function ContactsPage() {
                         </td>
                      </tr>
                   ) : (
-                      filteredContacts.map((contact: any) => (
+                      contacts.map((contact: any) => (
                         <tr key={contact.id} className="group/row hover:bg-[#F97316]/[0.02] transition-colors border-b border-white/[0.03]">
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
@@ -226,9 +226,30 @@ export default function ContactsPage() {
                   )}
                </tbody>
             </table>
-         </div>
+          </div>
+
+          {/* LOAD MORE SECTION */}
+          {hasMore && (
+            <div className="p-8 flex justify-center border-t border-white/[0.03] bg-[#0A0A0A]/20">
+               <button 
+                 onClick={() => setLimit(prev => prev + 15)}
+                 disabled={isFetching}
+                 className="group relative flex items-center gap-3 px-8 py-3 bg-[#1A1A1A] border border-white/[0.05] rounded-xl text-[10px] font-black text-[#A3A3A3] uppercase tracking-[0.2em] hover:text-[#F97316] hover:border-[#F97316]/30 hover:bg-[#F97316]/5 transition-all shadow-xl disabled:opacity-50"
+               >
+                  {isFetching ? (
+                    <span className="material-symbols-outlined animate-spin text-[16px]">sync</span>
+                  ) : (
+                    <span className="material-symbols-outlined text-[16px] group-hover:rotate-180 transition-transform duration-500">expand_more</span>
+                  )}
+                  <span>{isFetching ? "CARREGANDO..." : "VER MAIS CONTATOS"}</span>
+                  
+                  {/* GLOW EFFECT */}
+                  <div className="absolute inset-0 bg-[#F97316]/5 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
+               </button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
 
       <NewContactDialog 
         open={isNewContactOpen}
