@@ -141,6 +141,7 @@ function ActivitiesContent() {
                 >
                   <option value="OPEN">Pendentes</option>
                   <option value="DONE">Concluídas</option>
+                  <option value="LOST">Perdidas</option>
                   <option value="ALL">Todas</option>
                 </select>
                 <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>

@@ -72,22 +72,23 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
   const groups = [
     { title: 'ATRASADAS', items: activities.filter(a => {
       const d = safeDate(a.dueAt)
-      return a.status === "OPEN" && d && isBefore(d, now)
+      return a.status === "OPEN" && d && isBefore(d, now) && a.deal?.status !== "LOST"
     }), color: '#EF4444' },
     { title: 'HOJE', items: activities.filter(a => {
       const d = safeDate(a.dueAt)
-      return a.status === "OPEN" && d && isToday(d)
+      return a.status === "OPEN" && d && isToday(d) && a.deal?.status !== "LOST"
     }), color: '#F97316' },
     { title: 'AMANHÃ', items: activities.filter(a => {
       const d = safeDate(a.dueAt)
-      return a.status === "OPEN" && d && isTomorrow(d)
+      return a.status === "OPEN" && d && isTomorrow(d) && a.deal?.status !== "LOST"
     }), color: '#F97316' },
     { title: 'PRÓXIMAS', items: activities.filter(a => {
       const d = safeDate(a.dueAt)
-      return a.status === "OPEN" && d && isAfter(startOfDay(d), startOfDay(new Date(now.getTime() + 86400000)))
+      return a.status === "OPEN" && d && isAfter(startOfDay(d), startOfDay(new Date(now.getTime() + 86400000))) && a.deal?.status !== "LOST"
     }), color: '#F97316' },
-    { title: 'SEM DATA', items: activities.filter(a => a.status === "OPEN" && !safeDate(a.dueAt)), color: '#404040' },
-    { title: 'CONCLUÍDAS', items: activities.filter(a => a.status === "DONE"), color: '#22C55E' },
+    { title: 'SEM DATA', items: activities.filter(a => a.status === "OPEN" && !safeDate(a.dueAt) && a.deal?.status !== "LOST"), color: '#404040' },
+    { title: 'CONCLUÍDAS', items: activities.filter(a => a.status === "DONE" && a.deal?.status !== "LOST"), color: '#22C55E' },
+    { title: 'NEGÓCIOS PERDIDOS', items: activities.filter(a => a.deal?.status === "LOST"), color: '#EF4444' },
   ].filter(g => g.items.length > 0)
 
   if (activities.length === 0) {
