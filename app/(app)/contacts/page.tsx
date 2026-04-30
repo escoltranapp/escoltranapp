@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { cn } from "@/lib/utils"
 import { NewContactDialog } from "@/components/contacts/NewContactDialog"
 import { ContactDetailSheet } from "@/components/contacts/ContactDetailSheet"
+import { ChannelIcon } from "@/components/ui/ChannelIcon"
 
 function KPICard({
   label, value, icon, emoji, color = "#F97316"
@@ -190,7 +191,7 @@ export default function ContactsPage() {
 
                           <td className="px-8 py-6">
                              <div className="flex items-center gap-2 text-[11px] font-black text-white uppercase italic tracking-widest">
-                                <span className="material-symbols-outlined text-[16px] text-[#404040]">hub</span>
+                                <ChannelIcon channel={contact.canalOrigem || "Direto"} />
                                 {contact.canalOrigem || "Direto"}
                              </div>
                           </td>

@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { cn } from "@/lib/utils"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
+import { ChannelIcon } from "@/components/ui/ChannelIcon"
 
 interface ContactDetailSheetProps {
   contact: any | null
@@ -212,7 +213,11 @@ export function ContactDetailSheet({ contact, open, onOpenChange, onEdit }: Cont
                       ].map((row: any, i: number) => (
                          <div key={i} className="group flex items-start gap-4">
                             <div className="mt-0.5 w-6 h-6 flex items-center justify-center text-[#6B7280] group-hover:text-[#F97316] group-hover:bg-[#F97316]/5 rounded transition-all">
-                               <span className="material-symbols-outlined text-[16px]">{row.icon}</span>
+                               {row.label === "ORIGEM" ? (
+                                   <ChannelIcon channel={row.value} />
+                                ) : (
+                                   <span className="material-symbols-outlined text-[16px]">{row.icon}</span>
+                                )}
                             </div>
                             <div className="flex-1 space-y-1">
                                <label className="text-[9px] font-mono font-bold text-[#6B7280] uppercase tracking-wider">{row.label}</label>

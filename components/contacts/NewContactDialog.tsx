@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect } from "react"
+import { ChannelIcon } from "@/components/ui/ChannelIcon"
 
 interface NewContactDialogProps {
   open: boolean
@@ -193,12 +194,15 @@ export function NewContactDialog({ open, onOpenChange, contact }: NewContactDial
 
             <div className="space-y-3">
               <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.4em] pl-1">Origem do Tráfego</label>
-              <div className="group/input relative">
+              <div className="group/input relative flex items-center">
+                 <div className="absolute left-5 z-20 pointer-events-none opacity-50 group-focus-within/input:opacity-100 transition-opacity">
+                    <ChannelIcon channel={formData.canalOrigem} />
+                 </div>
                  <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-2xl opacity-0 group-focus-within/input:opacity-100 transition-opacity blur-sm" />
                  <select 
                    value={formData.canalOrigem}
                    onChange={e => setFormData(prev => ({ ...prev, canalOrigem: e.target.value }))}
-                   className="relative w-full bg-[#1A1A1A]/40 border border-white/[0.06] rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#F97316]/40 transition-all font-black text-[13px] tracking-tight appearance-none cursor-pointer"
+                   className="relative w-full bg-[#1A1A1A]/40 border border-white/[0.06] rounded-2xl pl-14 pr-6 py-4 text-white focus:outline-none focus:border-[#F97316]/40 transition-all font-black text-[13px] tracking-tight appearance-none cursor-pointer"
                  >
                    {originOptions.map(opt => (
                      <option key={opt.value} value={opt.value} className="bg-[#0A0A0A]">{opt.label}</option>
