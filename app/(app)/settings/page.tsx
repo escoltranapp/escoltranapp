@@ -91,6 +91,37 @@ export default function SettingsPage() {
     })
   }
 
+  const [users, setUsers] = useState<any[]>([])
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false)
+  const isAdmin = session?.user?.role === "admin"
+
+  // Fetch users if admin
+  useEffect(() => {
+    if (isAdmin) {
+      setIsLoadingUsers(true)
+      fetch('/api/admin/users')
+        .then(res => res.json())
+        .then(data => setUsers(Array.isArray(data) ? data : []))
+        .finally(() => setIsLoadingUsers(false))
+    }
+  }, [isAdmin])
+
+  const handleUpdateRole = async (userId: string, newRole: string) => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/role`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: newRole })
+      })
+      if (!res.ok) throw new Error()
+      
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u))
+      toast({ title: "PAPEL ATUALIZADO", description: `O usuário foi definido como ${newRole.toUpperCase()}.` })
+    } catch {
+      toast({ title: "ERRO AO ATUALIZAR", variant: "destructive" })
+    }
+  }
+
   const userName = name || "Operador Principal"
 
   return (
@@ -113,7 +144,7 @@ export default function SettingsPage() {
                  </h1>
                  <p className="text-[#404040] text-[10px] font-mono font-black uppercase tracking-[0.3em] mt-2 flex items-center gap-2">
                     <span className="w-6 h-[1px] bg-[#262626]" />
-                    STATUS: ATIVO
+                    {isAdmin ? "PERFIL ADMINISTRADOR" : "STATUS: ATIVO"}
                  </p>
               </div>
            </div>
@@ -127,9 +158,9 @@ export default function SettingsPage() {
             { id: "profile", label: "Conta", icon: "person" },
             { id: "pipeline", label: "Pipeline", icon: "view_kanban" },
             { id: "integrations", label: "Integrações", icon: "extension" },
-            { id: "search", label: "Dados", icon: "table_view" },
+            { id: "administration", label: "Gestão de Usuários", icon: "admin_panel_settings", admin: true },
             { id: "templates", label: "Modelos", icon: "auto_awesome_motion" }
-          ].map((tab) => (
+          ].filter(tab => !tab.admin || isAdmin).map((tab) => (
             <TabsTrigger 
               key={tab.id}
               value={tab.id} 
@@ -268,12 +299,75 @@ export default function SettingsPage() {
            </div>
         </TabsContent>
         
-        {/* PLACEHOLDERS PARA AS OUTRAS ABAS */}
+        {/* SEÇÃO ADMINISTRAÇÃO - APENAS PARA ADMINS */}
+        <TabsContent value="administration" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+           <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity" />
+              <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl rounded-3xl border border-white/[0.06] overflow-hidden shadow-2xl">
+                 <div className="p-6 border-b border-white/[0.03] bg-white/[0.01] flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                       <span className="w-1.5 h-4 bg-[#F97316] rounded-full" />
+                       <span className="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-white">Gestão de Operadores</span>
+                    </div>
+                    <span className="text-[9px] font-mono font-black text-[#F97316] uppercase tracking-widest">{users.length} USUÁRIOS</span>
+                 </div>
+                 
+                 <div className="p-0">
+                    <table className="w-full text-left border-collapse">
+                       <thead>
+                          <tr className="bg-white/[0.02]">
+                             <th className="px-8 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Usuário</th>
+                             <th className="px-8 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Email</th>
+                             <th className="px-8 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Papel</th>
+                             <th className="px-8 py-4 text-right text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Ações</th>
+                          </tr>
+                       </thead>
+                       <tbody className="divide-y divide-white/[0.03]">
+                          {users.map((u) => (
+                             <tr key={u.id} className="hover:bg-white/[0.01] transition-colors group/row">
+                                <td className="px-8 py-4 flex items-center gap-4">
+                                   <Avatar className="h-8 w-8 border border-white/10">
+                                      <AvatarImage src={u.image} />
+                                      <AvatarFallback className="text-[10px] font-black bg-[#1A1A1A] text-[#6B7280]">{getInitials(u.name || "")}</AvatarFallback>
+                                   </Avatar>
+                                   <span className="text-[12px] font-black text-white uppercase tracking-tight">{u.name}</span>
+                                </td>
+                                <td className="px-8 py-4 text-[11px] font-mono text-[#6B7280] tracking-wider">{u.email}</td>
+                                <td className="px-8 py-4">
+                                   <div className={cn(
+                                     "inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest",
+                                     u.role === "admin" ? "bg-red-500/10 text-red-500" : u.role === "manager" ? "bg-blue-500/10 text-blue-500" : "bg-emerald-500/10 text-emerald-500"
+                                   )}>
+                                      {u.role === "admin" ? "ADMIN" : u.role === "manager" ? "GESTOR" : "OPERADOR"}
+                                   </div>
+                                </td>
+                                <td className="px-8 py-4 text-right">
+                                   <select 
+                                     value={u.role}
+                                     onChange={(e) => handleUpdateRole(u.id, e.target.value)}
+                                     className="bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-white outline-none focus:border-[#F97316]/40 transition-all cursor-pointer"
+                                   >
+                                      <option value="user">Operador</option>
+                                      <option value="manager">Gestor</option>
+                                      <option value="admin">Admin</option>
+                                   </select>
+                                </td>
+                             </tr>
+                          ))}
+                       </tbody>
+                    </table>
+                    {users.length === 0 && !isLoadingUsers && (
+                       <div className="p-20 text-center text-[#404040] italic text-[10px] uppercase font-black tracking-widest">
+                          Nenhum usuário encontrado.
+                       </div>
+                    )}
+                 </div>
+              </div>
+           </div>
+        </TabsContent>
+
         <TabsContent value="pipeline" className="p-8 text-center text-[#6B7280] font-mono text-[10px] uppercase tracking-widest">
            Configurações de Pipeline em breve.
-        </TabsContent>
-        <TabsContent value="search" className="p-8 text-center text-[#6B7280] font-mono text-[10px] uppercase tracking-widest">
-           Configurações de Leads em breve.
         </TabsContent>
         <TabsContent value="templates" className="p-8 text-center text-[#6B7280] font-mono text-[10px] uppercase tracking-widest">
            Modelos de mensagens em breve.
