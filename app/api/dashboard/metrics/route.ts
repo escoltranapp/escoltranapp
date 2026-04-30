@@ -69,18 +69,25 @@ export async function GET(req: NextRequest) {
       include: { contact: true },
     })
 
-    // 6. Performance UTM
+    // 6. Performance UTM (Real counting from contacts)
+    const utmSources = await prisma.contact.groupBy({
+      by: ['canalOrigem'],
+      where: { userId: session.user.id },
+      _count: { _all: true },
+    })
+
+    const topCampanhas = utmSources.map(source => ({
+      nome: source.canalOrigem || "Direto",
+      valor: source._count._all
+    })).sort((a, b) => b.valor - a.valor).slice(0, 3)
+
     const totalDeals = await prisma.deal.count({ where: { userId: session.user.id } })
     const utmPerformance = {
       leadsRastreados: totalContacts,
       dealsAtribuidos: totalDeals,
       conversao: `${totalContacts > 0 ? ((wonDeals / totalContacts) * 100).toFixed(1) : "0.0"}%`,
       receita: revTotal,
-      topCampanhas: [
-        { nome: "Direto", valor: revTotal * 0.6 },
-        { nome: "Google Ads", valor: revTotal * 0.3 },
-        { nome: "Facebook", valor: revTotal * 0.1 },
-      ],
+      topCampanhas,
     }
 
     return NextResponse.json({

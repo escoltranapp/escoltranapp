@@ -168,7 +168,14 @@ export default function DashboardPage() {
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-[11px] font-black text-[#3B82F6]">{formatCurrency(deal.valor)}</p>
-                      <span className="text-[8px] px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 font-mono font-black uppercase">media</span>
+                      <span className={cn(
+                        "text-[8px] px-2 py-0.5 rounded-full font-mono font-black uppercase",
+                        deal.prioridade === "ALTA" ? "bg-red-500/10 text-red-500" : 
+                        deal.prioridade === "MEDIA" ? "bg-orange-500/10 text-orange-400" : 
+                        "bg-blue-500/10 text-blue-400"
+                      )}>
+                        {deal.prioridade || "MEDIA"}
+                      </span>
                     </div>
                   </div>
                 ))}

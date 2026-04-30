@@ -131,7 +131,6 @@ export default function ContactsPage() {
            <KPICard label="Total de Contatos" value={databaseSize} icon="storage" color="#F97316" />
            <KPICard label="Leads em Conversão" value={activeNetwork} icon="radar" color="#F97316" />
            <KPICard label="Clientes Ativos" value={clientes} icon="verified" color="#22C55E" />
-           <KPICard label="Taxa de Resposta" value="0 ms" icon="monitor_heart" color="#A855F7" />
         </div>
 
         {/* CONTACTS TABLE AREA */}

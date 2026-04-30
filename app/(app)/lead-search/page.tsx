@@ -94,7 +94,7 @@ export default function LeadSearchPage() {
       })
 
       if (res.ok) {
-        toast({ title: "CRAWLER INICIADO 🚀", description: "O agente de extração foi disparado. Os dados aparecerão em instantes." })
+        // Toast removido conforme solicitação
       } else {
         const errorData = await res.text()
         throw new Error(errorData)
@@ -120,11 +120,17 @@ export default function LeadSearchPage() {
     refetchInterval: 5000 
   })
 
-  const cnpjLeads = [
-    { cnpj: "46.403.379/0001-81", empresa: "SHEGO LENE E ANN...", telefone: "(64) 9320-3707", email: "xmlleneanne@gmai...", situacao: "ATIVA", cidade: "SANTA HELENA DE GOIAS/GO" },
-    { cnpj: "13.590.585/0001-99", empresa: "NETFLIX ENTRETE...", telefone: "(11) 4228-6851", email: "corporatebrazil@net...", situacao: "ATIVA", cidade: "SAO PAULO/SP" },
-    { cnpj: "33.683.111/0001-07", empresa: "SERVIÇO FEDERAL ...", telefone: "(61) 2021-8000", email: "secretaria.diretoria@...", situacao: "ATIVA", cidade: "BRASILIA/DF" }
-  ]
+  const { data: stats } = useQuery({
+    queryKey: ["lead-stats"],
+    queryFn: async () => {
+      const res = await fetch("/api/leads/stats")
+      if (!res.ok) return null
+      return res.json()
+    },
+    refetchInterval: 10000
+  })
+
+  const cnpjLeads: any[] = []
 
   const formatAddress = (addr: any) => {
     if (!addr) return "ENDEREÇO NÃO DISPONÍVEL"
@@ -342,10 +348,10 @@ export default function LeadSearchPage() {
         {/* STATS PREVIEW */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
            {[
-             { label: "Total Google", value: "4.950", icon: "public", color: "#F97316" },
-             { label: "Leads Hoje", value: "12", icon: "calendar_today", color: "#22C55E" },
-             { label: "Conversões", value: "158", icon: "trending_up", color: "#A855F7" },
-             { label: "Na Semana", value: "78", icon: "event", color: "#3B82F6" }
+             { label: "Total Google", value: stats?.totalGoogle || 0, icon: "public", color: "#F97316" },
+             { label: "Leads Hoje", value: stats?.leadsHoje || 0, icon: "calendar_today", color: "#22C55E" },
+             { label: "Conversões", value: stats?.conversoes || 0, icon: "trending_up", color: "#A855F7" },
+             { label: "Na Semana", value: stats?.naSemana || 0, icon: "event", color: "#3B82F6" }
            ].map((stat, i) => (
               <div key={i} className="bg-[#0D0D0D] border border-white/[0.03] p-6 rounded-[24px] flex flex-col items-center justify-center gap-4 group hover:border-[#F97316]/20 transition-all">
                  <div className="h-10 w-10 rounded-xl bg-[#1A1A1A] border border-white/5 flex items-center justify-center group-hover:bg-[#F97316]/10 transition-all">

@@ -1,52 +1,34 @@
 "use client"
 
 import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
-const monthlyTrend = [
-  { name: 'nov.', criados: 0, ganhos: 0 },
-  { name: 'dez.', criados: 0, ganhos: 0 },
-  { name: 'jan.', criados: 0, ganhos: 0 },
-  { name: 'fev.', criados: 0, ganhos: 0 },
-  { name: 'mar.', criados: 5, ganhos: 0 },
-  { name: 'abr.', criados: 184, ganhos: 1 },
-]
-
-const stageConversion = [
-  { name: 'Nova Lead', value: 0 },
-  { name: 'Reunião Marcada', value: 10 },
-  { name: 'Negociação', value: 0 },
-  { name: 'Follow up', value: 0 },
-]
-
-const timePerStage = [
-  { stage: 'Nova Lead', days: 0 },
-  { stage: 'Qualificação', days: 0 },
-  { stage: 'Reunião Marcada', days: 1.3 },
-  { stage: 'Reunião Realizada', days: 0 },
-  { stage: 'Negociação', days: 0 },
-  { stage: 'Follow up', days: 0 },
-]
-
-const roiSource = [
-  { source: 'Meta Ads', percent: 1, wins: 1, total: 157, color: '#22C55E' },
-  { source: 'Desconhecida', percent: 0, wins: 0, total: 6, color: '#F97316' },
-  { source: 'meta_ads', percent: 0, wins: 0, total: 21, color: '#A855F7' },
-]
-
-const lostReasons = [
-  { name: 'Não é o público-alvo', value: 100, color: '#F97316' }
-]
-
 export default function AiInsightsPage() {
-  const topOpportunities = [
-    { id: 1, name: "Escoltran - Elisete", contact: "Elisete", score: 65, status: "Manter acompanhamento regular", color: "#22C55E" },
-    { id: 2, name: "Escoltran - transfer", contact: "transfer", score: 59, status: "Manter acompanhamento regular", color: "#F97316" },
-    { id: 3, name: "Escoltran - Cristian Hencke", contact: "Cristian Hencke Dos Santos", score: 59, status: "Manter acompanhamento regular", color: "#F97316" },
-    { id: 4, name: "Escoltran - Fabianka", contact: "Fabianka", score: 59, status: "Manter acompanhamento regular", color: "#F97316" },
-    { id: 5, name: "Escoltran - Alcilea", contact: "Alcilea", score: 59, status: "Manter acompanhamento regular", color: "#F97316" },
-  ]
+  const { data: metrics, isLoading } = useQuery({
+    queryKey: ["dashboard-metrics"],
+    queryFn: async () => {
+      const res = await fetch("/api/dashboard/metrics")
+      if (!res.ok) throw new Error("Falha")
+      return res.json()
+    },
+  })
+
+  const topOpportunities = metrics?.recentDeals?.map((d: any) => ({
+    id: d.id,
+    name: d.titulo,
+    contact: d.contact?.nome || "Sem Nome",
+    score: d.prioridade === "ALTA" ? 85 : d.prioridade === "MEDIA" ? 60 : 30,
+    status: d.status === "OPEN" ? "Acompanhamento Ativo" : "Finalizado",
+    color: d.prioridade === "ALTA" ? "#EF4444" : d.prioridade === "MEDIA" ? "#F97316" : "#3B82F6"
+  })) || []
+
+  const monthlyTrend: any[] = []
+  const stageConversion: any[] = []
+  const timePerStage: any[] = []
+  const roiSource: any[] = []
+  const lostReasons: any[] = []
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] p-6 pb-32 space-y-8 animate-in fade-in duration-1000 relative overflow-hidden">
@@ -88,9 +70,9 @@ export default function AiInsightsPage() {
       {/* KPIS ESCOLTRAN STYLE */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative z-10">
          {[
-           { label: "Total de Negócios", value: "190", sub: "187 em aberto", icon: "radar", color: "#F97316", trend: "+12%" },
-           { label: "Taxa de Conversão", value: "33.3%", sub: "1 ganhos", icon: "show_chart", color: "#3B82F6", trend: "+5%" },
-           { label: "Valor Total Ganho", value: "R$ 5.000", sub: "Média: R$ 5.000", icon: "attach_money", color: "#22C55E", trend: "+18%" },
+           { label: "Total de Negócios", value: metrics?.deals?.total || 0, sub: `${metrics?.deals?.total || 0} em aberto`, icon: "radar", color: "#F97316", trend: "+0%" },
+           { label: "Taxa de Conversão", value: `${metrics?.conversion?.rate || 0}%`, sub: `${metrics?.conversion?.won || 0} ganhos`, icon: "show_chart", color: "#3B82F6", trend: "+0%" },
+           { label: "Valor Total Ganho", value: `R$ ${(metrics?.revenue?.total || 0).toLocaleString('pt-BR')}`, sub: `Média: R$ ${(metrics?.revenue?.total || 0).toLocaleString('pt-BR')}`, icon: "attach_money", color: "#22C55E", trend: "+0%" },
            { label: "Negócios em Risco", value: "0", sub: "Requerem atenção", icon: "warning", color: "#EF4444", trend: "Normal" }
          ].map((stat, i) => (
             <div key={i} className="bg-[#0D0D0D] border border-white/[0.04] rounded-[28px] p-8 shadow-2xl relative group hover:border-[#F97316]/20 transition-all overflow-hidden">
@@ -280,9 +262,9 @@ export default function AiInsightsPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                  {[
-                   { title: "Performance", icon: "equalizer", desc: "Sua taxa de conversão de 33.3% está acima da média do mercado. Continue assim!", color: "#3B82F6" },
-                   { title: "Próxima Ação", icon: "lightbulb", desc: "Mantenha o ritmo de follow-up para garantir boas conversões nos deals de alta pontuação.", color: "#F97316" },
-                   { title: "Foco", icon: "target", desc: "Sua melhor fonte de leads é \"Meta Ads\" com 1% de conversão. Invista mais nesse canal!", color: "#A855F7" }
+                   { title: "Performance", icon: "equalizer", desc: `Sua taxa de conversão de ${metrics?.conversion?.rate || 0}% é baseada em dados reais do sistema.`, color: "#3B82F6" },
+                   { title: "Próxima Ação", icon: "lightbulb", desc: "Acompanhe as oportunidades recentes para aumentar sua receita.", color: "#F97316" },
+                   { title: "Foco", icon: "target", desc: "Verifique o widget de UTM Analytics no Dashboard para focar nos melhores canais.", color: "#A855F7" }
                  ].map((card, i) => (
                     <div key={i} className="bg-[#111111]/40 border border-white/[0.04] p-8 rounded-[32px] space-y-6 group hover:border-[#F97316]/20 transition-all">
                        <div className="flex items-center gap-4">
