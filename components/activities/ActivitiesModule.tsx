@@ -4,10 +4,10 @@ import { Component, type ReactNode, useState, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { isToday } from "date-fns"
 import { ActivityList } from "@/components/activities/ActivityList"
 import { ActivityCalendar } from "@/components/activities/ActivityCalendar"
 import { ActivityDialog } from "@/components/activities/ActivityDialog"
-import { ActivityKPIs } from "@/components/activities/ActivityKPIs"
 
 // ─── Real React Error Boundary (must be a class component) ──────────────────
 class ErrorBoundary extends Component<
