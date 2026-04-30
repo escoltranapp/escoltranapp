@@ -15,7 +15,7 @@ function KPICard({
   return (
     <div className="relative group overflow-hidden">
       <div className="absolute -inset-0.5 bg-gradient-to-br from-white/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity blur-sm" />
-      <div className="relative bg-[#1A1A1A]/40 backdrop-blur-2xl border border-white/[0.04] rounded-3xl p-8 hover:bg-[#1A1A1A]/60 transition-all shadow-2xl min-h-[160px] flex flex-col justify-between group/card">
+      <div className="relative bg-[#1A1A1A]/40 backdrop-blur-2xl border border-white/[0.04] rounded-2xl p-6 hover:bg-[#1A1A1A]/60 transition-all shadow-2xl min-h-[130px] flex flex-col justify-between group/card">
         {/* RADIAL GLOW */}
         <div 
           className="absolute -top-10 -right-10 w-32 h-32 blur-[60px] opacity-20 group-hover/card:opacity-40 transition-opacity rounded-full" 
@@ -24,7 +24,7 @@ function KPICard({
 
         <div className="flex items-start justify-between">
           <div 
-            className="w-14 h-14 rounded-2xl flex items-center justify-center border transition-all duration-500 shadow-xl"
+            className="w-11 h-11 rounded-xl flex items-center justify-center border transition-all duration-500 shadow-xl"
             style={{ 
               backgroundColor: `${color}10`,
               borderColor: `${color}30`,
@@ -32,7 +32,7 @@ function KPICard({
             }}
           >
             {icon ? (
-              <span className="material-symbols-outlined text-[28px]" style={{ color }}>{icon}</span>
+              <span className="material-symbols-outlined text-[22px]" style={{ color }}>{icon}</span>
             ) : (
               <span className="text-2xl">{emoji}</span>
             )}
@@ -44,9 +44,9 @@ function KPICard({
 
         <div className="space-y-1 relative z-10">
            <div className="text-[10px] font-mono text-[#404040] uppercase tracking-[0.4em] font-black italic group-hover/card:translate-x-1 transition-transform">{label}</div>
-           <div className="text-4xl font-black text-white tracking-widest font-mono flex items-baseline gap-2">
+           <div className="text-3xl font-black text-white tracking-widest font-mono flex items-baseline gap-2">
               {value}
-              <span className="text-[10px] text-[#262626] font-black uppercase tracking-tighter">DATA_BITS</span>
+              <span className="text-[9px] text-[#262626] font-black uppercase tracking-tighter">DATA_BITS</span>
            </div>
         </div>
       </div>
@@ -95,18 +95,16 @@ export default function ContactsPage() {
         
         {/* HIGH-FIDELITY HEADER */}
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#F97316] to-[#FB923C] flex items-center justify-center shadow-[0_0_30px_rgba(249,115,22,0.3)] relative">
-                  <span className="material-symbols-outlined text-white text-2xl font-black relative z-10">groups</span>
+             <div className="flex items-center gap-3">
+               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#F97316] to-[#FB923C] flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.3)] relative">
+                  <span className="material-symbols-outlined text-white text-xl font-black relative z-10">groups</span>
                </div>
                <div>
-                  <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
+                  <h1 className="text-2xl font-black text-white italic tracking-tighter uppercase leading-none">
                     CRM
                   </h1>
                </div>
             </div>
-          </div>
           
           <div className="flex items-center gap-4">
              <div className="relative group w-[350px]">
@@ -144,11 +142,11 @@ export default function ContactsPage() {
                 <table className="w-full text-left border-collapse min-w-[1000px]">
                   <thead>
                     <tr className="bg-[#1A1A1A]/20">
-                      <th className="px-8 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Entidade</th>
-                      <th className="px-8 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Status</th>
-                      <th className="px-8 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Canal</th>
-                      <th className="px-8 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Audit</th>
-                      <th className="px-8 py-6 text-right text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Ações</th>
+                      <th className="px-6 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Entidade</th>
+                      <th className="px-6 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Status</th>
+                      <th className="px-6 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Canal</th>
+                      <th className="px-6 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Audit</th>
+                      <th className="px-6 py-4 text-right text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Ações</th>
                     </tr>
                   </thead>
                <tbody>
@@ -164,23 +162,23 @@ export default function ContactsPage() {
                   ) : (
                       filteredContacts.map((contact: any) => (
                         <tr key={contact.id} className="group/row hover:bg-[#F97316]/[0.02] transition-colors border-b border-white/[0.03]">
-                          <td className="px-8 py-6">
-                            <div className="flex items-center gap-4">
-                               <div className="w-11 h-11 rounded-xl bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-white font-black text-lg group-hover/row:border-[#F97316]/40 group-hover/row:text-[#F97316] transition-all shadow-lg font-mono">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                               <div className="w-10 h-10 rounded-lg bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-white font-black text-base group-hover/row:border-[#F97316]/40 group-hover/row:text-[#F97316] transition-all shadow-lg font-mono">
                                  {contact.nome?.slice(0, 1).toUpperCase()}
                                </div>
-                               <div className="space-y-1">
-                                 <div className="text-[16px] font-black text-white italic tracking-tighter uppercase group-hover/row:text-[#F97316] transition-colors leading-none">{contact.nome}</div>
+                               <div className="space-y-0.5">
+                                 <div className="text-[14px] font-black text-white italic tracking-tighter uppercase group-hover/row:text-[#F97316] transition-colors leading-none">{contact.nome}</div>
                                  <div className="flex items-center gap-2">
-                                    <span className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest leading-none">{contact.empresa || "Pessoa Física"}</span>
+                                    <span className="text-[8px] font-mono font-black text-[#404040] uppercase tracking-widest leading-none">{contact.empresa || "Pessoa Física"}</span>
                                  </div>
                                </div>
                             </div>
                           </td>
 
-                          <td className="px-8 py-6">
+                          <td className="px-6 py-4">
                             <div className={cn(
-                              "inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-[0.2em]",
+                              "inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[8px] font-black uppercase tracking-[0.2em]",
                               contact.status === "cliente" 
                                 ? "bg-green-500/10 text-green-500 border-green-500/30" 
                                 : "bg-[#F97316]/10 text-[#F97316] border-[#F97316]/30"
@@ -189,20 +187,20 @@ export default function ContactsPage() {
                             </div>
                           </td>
 
-                          <td className="px-8 py-6">
-                             <div className="flex items-center gap-2 text-[11px] font-black text-white uppercase italic tracking-widest">
+                          <td className="px-6 py-4">
+                             <div className="flex items-center gap-2 text-[10px] font-black text-white uppercase italic tracking-widest">
                                 <ChannelIcon channel={contact.canalOrigem || "Direto"} />
                                 {contact.canalOrigem || "Direto"}
                              </div>
                           </td>
 
-                          <td className="px-8 py-6">
-                             <div className="text-[9px] font-black text-[#404040] italic uppercase tracking-tighter">
+                          <td className="px-6 py-4">
+                             <div className="text-[8px] font-black text-[#404040] italic uppercase tracking-tighter">
                                 {contact.updatedAt ? `Atualizado em: ${new Date(contact.updatedAt).toLocaleDateString()}` : "Sem atividade"}
                              </div>
                           </td>
 
-                          <td className="px-8 py-6 text-right">
+                          <td className="px-6 py-4 text-right">
                              <div className="flex items-center justify-end gap-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
                                 <button 
                                   onClick={() => {
@@ -261,6 +259,5 @@ export default function ContactsPage() {
         }}
       />
     </div>
-  </div>
   )
 }
