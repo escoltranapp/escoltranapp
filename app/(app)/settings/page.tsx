@@ -16,6 +16,7 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [n8nUrl, setN8nUrl] = useState("")
   const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Fetch current data from database on mount
@@ -29,6 +30,7 @@ export default function SettingsPage() {
         .then(data => {
           if (data?.n8nWebhookUrl) setN8nUrl(data.n8nWebhookUrl)
           if (data?.name) setName(data.name)
+          if (data?.email) setEmail(data.email)
         })
         .catch(() => {})
     }
@@ -65,7 +67,7 @@ export default function SettingsPage() {
       const res = await fetch('/api/user/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ n8nWebhookUrl: n8nUrl, name })
+        body: JSON.stringify({ n8nWebhookUrl: n8nUrl, name, email })
       })
       
       if (!res.ok) throw new Error("Erro ao salvar")
@@ -318,9 +320,12 @@ export default function SettingsPage() {
                              <span className="material-symbols-outlined text-[14px]">alternate_email</span>
                              Email de Acesso
                           </label>
-                          <div className="h-12 px-4 rounded-xl bg-[#1A1A1A]/30 border border-white/[0.02] flex items-center text-[#6B7280] font-mono font-black tracking-widest overflow-hidden opacity-80 text-[11px]">
-                             {session?.user?.email || "NÃO AUTENTICADO"}
-                          </div>
+                           <Input 
+                             className="bg-[#0A0A0A]/60 border-white/[0.06] h-12 rounded-xl text-white font-black tracking-wide px-4 focus:border-[#F97316]/50 transition-all outline-none text-sm" 
+                             value={email}
+                             onChange={(e) => setEmail(e.target.value)}
+                             type="email"
+                           />
                        </div>
                     </div>
                  </div>

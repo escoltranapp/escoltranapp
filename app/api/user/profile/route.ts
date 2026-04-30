@@ -33,13 +33,24 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { n8nWebhookUrl, name } = await req.json()
+    const { n8nWebhookUrl, name, email } = await req.json()
+
+    // Verificação de e-mail duplicado se houver alteração
+    if (email && email !== session.user.email) {
+      const existingUser = await prisma.user.findUnique({
+        where: { email }
+      })
+      if (existingUser) {
+        return NextResponse.json({ error: "Este e-mail já está sendo utilizado por outro usuário" }, { status: 400 })
+      }
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: {
         n8nWebhookUrl,
-        name
+        name,
+        email
       }
     })
 
