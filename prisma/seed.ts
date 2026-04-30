@@ -15,9 +15,22 @@ async function main() {
       name: "Administrador",
       email: "admin@escoltran.com",
       password: hashedPassword,
+      role: "ADMIN",
+      status: "ATIVO",
       userRoles: {
-        create: { role: "admin" },
+        create: { role: "ADMIN" },
       },
+      modulePermissions: {
+        create: [
+          { moduleName: "pipeline", level: "FULL" },
+          { moduleName: "contacts", level: "FULL" },
+          { moduleName: "activities", level: "FULL" },
+          { moduleName: "lead-search", level: "FULL" },
+          { moduleName: "mass-messaging", level: "FULL" },
+          { moduleName: "utm-analytics", level: "FULL" },
+          { moduleName: "ai-insights", level: "FULL" },
+        ]
+      }
     },
   })
 
@@ -33,6 +46,7 @@ async function main() {
       data: {
         name: "Pipeline Principal",
         userId: user.id,
+        teamId: null, // Global or team specific
         stages: {
           create: [
             { name: "Prospecção", color: "#6b7280", order: 0, probability: 10 },
@@ -59,6 +73,7 @@ async function main() {
           tags: ["lead", "premium"],
           lgpdConsent: true,
           userId: user.id,
+          teamId: null,
         },
       }),
       prisma.contact.create({
@@ -70,6 +85,7 @@ async function main() {
           tags: ["cliente"],
           lgpdConsent: true,
           userId: user.id,
+          teamId: null,
         },
       }),
     ])
@@ -89,6 +105,7 @@ async function main() {
           stageId: firstStage.id,
           pipelineId: pipeline.id,
           userId: user.id,
+          teamId: null,
         },
       })
       console.log("Sample deal created")

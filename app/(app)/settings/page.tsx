@@ -7,6 +7,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { cn, getInitials } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 
 export default function SettingsPage() {
   const { data: session, update } = useSession()
@@ -93,7 +96,12 @@ export default function SettingsPage() {
 
   const [users, setUsers] = useState<any[]>([])
   const [isLoadingUsers, setIsLoadingUsers] = useState(false)
-  const isAdmin = session?.user?.role === "admin"
+  const [selectedUser, setSelectedUser] = useState<any>(null)
+  const [isPermissionsOpen, setIsPermissionsOpen] = useState(false)
+  const [isInviteOpen, setIsInviteOpen] = useState(false)
+  const [inviteData, setInviteData] = useState({ name: "", email: "", password: "" })
+  const [teams, setTeams] = useState<any[]>([])
+  const isAdmin = session?.user?.role === "ADMIN"
 
   // Fetch users if admin
   useEffect(() => {
@@ -103,6 +111,10 @@ export default function SettingsPage() {
         .then(res => res.json())
         .then(data => setUsers(Array.isArray(data) ? data : []))
         .finally(() => setIsLoadingUsers(false))
+
+      fetch('/api/admin/teams')
+        .then(res => res.json())
+        .then(data => setTeams(Array.isArray(data) ? data : []))
     }
   }, [isAdmin])
 
@@ -112,13 +124,83 @@ export default function SettingsPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role: newRole })
+      }).then(res => {
+        if (res.ok) {
+          toast({ title: "PAPEL ATUALIZADO", description: `Usuário agora é ${newRole.toUpperCase()}` })
+          setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u))
+        }
       })
-      if (!res.ok) throw new Error()
-      
-      setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u))
-      toast({ title: "PAPEL ATUALIZADO", description: `O usuário foi definido como ${newRole.toUpperCase()}.` })
     } catch {
       toast({ title: "ERRO AO ATUALIZAR", variant: "destructive" })
+    }
+  }
+
+  const handleUpdatePermissions = async (userId: string, module: string, level: string) => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/permissions`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ module, level })
+      })
+      
+      if (!res.ok) throw new Error()
+      
+      toast({ title: "PERMISSÃO ATUALIZADA", description: `Módulo ${module} atualizado para ${level}` })
+      
+      // Update local state if needed
+      setUsers(users.map(u => {
+        if (u.id === userId) {
+          const newPerms = [...(u.modulePermissions || [])]
+          const idx = newPerms.findIndex(p => p.moduleName === module)
+          if (idx >= 0) newPerms[idx].level = level
+          else newPerms.push({ moduleName: module, level })
+          return { ...u, modulePermissions: newPerms }
+        }
+        return u
+      }))
+    } catch {
+      toast({ title: "ERRO AO ATUALIZAR", variant: "destructive" })
+    }
+  }
+
+  const modules = [
+    { id: "pipeline", name: "Pipeline" },
+    { id: "contacts", name: "Contatos" },
+    { id: "activities", name: "Atividades" },
+    { id: "lead-search", name: "Busca de Leads" },
+    { id: "mass-messaging", name: "Disparo em Massa" },
+    { id: "utm-analytics", name: "UTM Analytics" },
+    { id: "ai-insights", name: "IA Insights" },
+  ]
+
+  const levels = [
+    { id: "NONE", name: "Sem acesso" },
+    { id: "VIEW", name: "Visualizar" },
+    { id: "EDIT", name: "Editar" },
+    { id: "FULL", name: "Administrador" },
+  ]
+
+  const handleInvite = async () => {
+    if (!inviteData.name || !inviteData.email || !inviteData.password) {
+      return toast({ title: "Preencha todos os campos", variant: "destructive" })
+    }
+    
+    try {
+      const res = await fetch('/api/admin/users/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(inviteData)
+      })
+      
+      if (!res.ok) throw new Error()
+      
+      toast({ title: "USUÁRIO CRIADO", description: `O acesso para ${inviteData.email} foi gerado.` })
+      setIsInviteOpen(false)
+      setInviteData({ name: "", email: "", password: "" })
+      // Refresh list
+      fetch('/api/admin/users').then(res => res.json()).then(data => setUsers(Array.isArray(data) ? data : []))
+    } catch {
+      toast({ title: "ERRO AO CRIAR USUÁRIO", variant: "destructive" })
     }
   }
 
@@ -301,69 +383,162 @@ export default function SettingsPage() {
         
         {/* SEÇÃO ADMINISTRAÇÃO - APENAS PARA ADMINS */}
         <TabsContent value="administration" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-           <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity" />
-              <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl rounded-3xl border border-white/[0.06] overflow-hidden shadow-2xl">
-                 <div className="p-6 border-b border-white/[0.03] bg-white/[0.01] flex items-center justify-between">
+           {/* SUB-TABS ADMIN */}
+           <Tabs defaultValue="users_mgmt" className="space-y-6">
+              <TabsList className="bg-[#1A1A1A]/50 p-1 rounded-xl h-10 gap-1 border border-white/5">
+                 <TabsTrigger value="users_mgmt" className="text-[9px] uppercase font-black px-4 h-full rounded-lg data-[state=active]:bg-[#F97316] data-[state=active]:text-white transition-all">Usuários & Permissões</TabsTrigger>
+                 <TabsTrigger value="teams_mgmt" className="text-[9px] uppercase font-black px-4 h-full rounded-lg data-[state=active]:bg-[#F97316] data-[state=active]:text-white transition-all">Gestão de Equipes</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="users_mgmt" className="space-y-6">
+                 <div className="relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity" />
+                    <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl rounded-3xl border border-white/[0.06] overflow-hidden shadow-2xl">
+                       <div className="p-6 border-b border-white/[0.03] bg-white/[0.01] flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                             <span className="w-1.5 h-4 bg-[#F97316] rounded-full" />
+                             <span className="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-white">Controle de Acesso</span>
+                          </div>
+                          <button 
+                            onClick={() => setIsInviteOpen(true)}
+                            className="bg-[#F97316] text-white text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-lg hover:scale-105 active:scale-95 transition-all"
+                          >
+                             Convidar Usuário
+                          </button>
+                       </div>
+                       
+                       <div className="p-0 overflow-x-auto">
+                          <table className="w-full text-left border-collapse min-w-[800px]">
+                             <thead>
+                                <tr className="bg-white/[0.02]">
+                                   <th className="px-8 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Usuário</th>
+                                   <th className="px-8 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Equipe</th>
+                                   <th className="px-8 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Papel</th>
+                                   <th className="px-8 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Status</th>
+                                   <th className="px-8 py-4 text-right text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Ações</th>
+                                </tr>
+                             </thead>
+                             <tbody className="divide-y divide-white/[0.03]">
+                                {users.map((u) => (
+                                   <tr key={u.id} className="hover:bg-white/[0.01] transition-colors group/row">
+                                      <td className="px-8 py-4 flex items-center gap-4">
+                                         <Avatar className="h-8 w-8 border border-white/10">
+                                            <AvatarImage src={u.image} />
+                                            <AvatarFallback className="text-[10px] font-black bg-[#1A1A1A] text-[#6B7280]">{getInitials(u.name || "")}</AvatarFallback>
+                                         </Avatar>
+                                         <div>
+                                            <span className="text-[11px] font-black text-white uppercase tracking-tight block">{u.name}</span>
+                                            <span className="text-[9px] font-mono text-[#404040]">{u.email}</span>
+                                         </div>
+                                      </td>
+                                      <td className="px-8 py-4">
+                                         <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest italic">{u.team?.name || "Sem Equipe"}</span>
+                                      </td>
+                                      <td className="px-8 py-4">
+                                         <div className={cn(
+                                           "inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest",
+                                           u.role === "ADMIN" ? "bg-red-500/10 text-red-500" : "bg-emerald-500/10 text-emerald-500"
+                                         )}>
+                                            {u.role === "ADMIN" ? "ADMINISTRADOR" : "EQUIPE"}
+                                         </div>
+                                      </td>
+                                      <td className="px-8 py-4">
+                                         <span className={cn(
+                                           "w-2 h-2 rounded-full inline-block mr-2",
+                                           u.status === "ATIVO" ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]"
+                                         )} />
+                                         <span className="text-[9px] font-black text-[#6B7280] uppercase tracking-widest">{u.status}</span>
+                                      </td>
+                                      <td className="px-8 py-4 text-right">
+                                         <div className="flex items-center justify-end gap-2">
+                                            <button 
+                                              className="p-2 hover:bg-white/5 rounded-lg transition-colors text-[#6B7280] hover:text-[#F97316]"
+                                              title="Editar Permissões"
+                                              onClick={() => {
+                                                setSelectedUser(u)
+                                                setIsPermissionsOpen(true)
+                                              }}
+                                            >
+                                               <span className="material-symbols-outlined text-[18px]">rule_settings</span>
+                                            </button>
+                                            <button className="p-2 hover:bg-white/5 rounded-lg transition-colors text-[#6B7280] hover:text-white" title="Alterar Senha">
+                                               <span className="material-symbols-outlined text-[18px]">lock_reset</span>
+                                            </button>
+                                            <button className="p-2 hover:bg-white/5 rounded-lg transition-colors text-[#6B7280] hover:text-red-500" title="Remover Usuário">
+                                               <span className="material-symbols-outlined text-[18px]">person_remove</span>
+                                            </button>
+                                         </div>
+                                      </td>
+                                   </tr>
+                                ))}
+                             </tbody>
+                          </table>
+                       </div>
+                    </div>
+                 </div>
+              </TabsContent>
+
+              <TabsContent value="teams_mgmt" className="space-y-6">
+                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                        <span className="w-1.5 h-4 bg-[#F97316] rounded-full" />
-                       <span className="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-white">Gestão de Operadores</span>
+                       <span className="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-white">Equipes Cadastradas</span>
                     </div>
-                    <span className="text-[9px] font-mono font-black text-[#F97316] uppercase tracking-widest">{users.length} USUÁRIOS</span>
+                    <button className="bg-[#1A1A1A] border border-white/5 text-white text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-lg hover:bg-[#F97316]/10 hover:border-[#F97316]/20 transition-all flex items-center gap-2">
+                       <span className="material-symbols-outlined text-[14px]">add_circle</span>
+                       Criar Nova Equipe
+                    </button>
                  </div>
-                 
-                 <div className="p-0">
-                    <table className="w-full text-left border-collapse">
-                       <thead>
-                          <tr className="bg-white/[0.02]">
-                             <th className="px-8 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Usuário</th>
-                             <th className="px-8 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Email</th>
-                             <th className="px-8 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Papel</th>
-                             <th className="px-8 py-4 text-right text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest border-b border-white/[0.03]">Ações</th>
-                          </tr>
-                       </thead>
-                       <tbody className="divide-y divide-white/[0.03]">
-                          {users.map((u) => (
-                             <tr key={u.id} className="hover:bg-white/[0.01] transition-colors group/row">
-                                <td className="px-8 py-4 flex items-center gap-4">
-                                   <Avatar className="h-8 w-8 border border-white/10">
-                                      <AvatarImage src={u.image} />
-                                      <AvatarFallback className="text-[10px] font-black bg-[#1A1A1A] text-[#6B7280]">{getInitials(u.name || "")}</AvatarFallback>
-                                   </Avatar>
-                                   <span className="text-[12px] font-black text-white uppercase tracking-tight">{u.name}</span>
-                                </td>
-                                <td className="px-8 py-4 text-[11px] font-mono text-[#6B7280] tracking-wider">{u.email}</td>
-                                <td className="px-8 py-4">
-                                   <div className={cn(
-                                     "inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest",
-                                     u.role === "admin" ? "bg-red-500/10 text-red-500" : u.role === "manager" ? "bg-blue-500/10 text-blue-500" : "bg-emerald-500/10 text-emerald-500"
-                                   )}>
-                                      {u.role === "admin" ? "ADMIN" : u.role === "manager" ? "GESTOR" : "OPERADOR"}
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {teams.map((t) => (
+                       <div key={t.id} className="group relative">
+                          <div className="absolute -inset-0.5 bg-gradient-to-br from-[#F97316]/20 to-transparent rounded-[24px] blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
+                          <div className="relative bg-[#0A0A0A]/60 backdrop-blur-xl border border-white/[0.06] p-6 rounded-[24px] hover:border-[#F97316]/30 transition-all">
+                             <div className="flex items-start justify-between mb-4">
+                                <div className="w-10 h-10 bg-[#F97316]/10 border border-[#F97316]/20 rounded-xl flex items-center justify-center">
+                                   <span className="material-symbols-outlined text-[#F97316] text-[20px]">groups</span>
+                                </div>
+                                <div className="flex gap-1">
+                                   <button className="p-1.5 hover:bg-white/5 rounded-lg text-[#404040] hover:text-white transition-colors">
+                                      <span className="material-symbols-outlined text-[16px]">edit</span>
+                                   </button>
+                                   <button className="p-1.5 hover:bg-white/5 rounded-lg text-[#404040] hover:text-red-500 transition-colors">
+                                      <span className="material-symbols-outlined text-[16px]">delete</span>
+                                   </button>
+                                </div>
+                             </div>
+                             <h3 className="text-[12px] font-black text-white uppercase tracking-tight">{t.name}</h3>
+                             <p className="text-[9px] font-mono text-[#404040] uppercase tracking-widest mt-1">{t.membersCount || 0} MEMBROS ATIVOS</p>
+                             
+                             <div className="mt-6 flex -space-x-2">
+                                {Array.from({ length: Math.min(t.membersCount || 0, 5) }).map((_, i) => (
+                                   <div key={i} className="w-6 h-6 rounded-full bg-[#1A1A1A] border border-[#0A0A0A] flex items-center justify-center text-[8px] font-black text-[#404040]">
+                                      {i + 1}
                                    </div>
-                                </td>
-                                <td className="px-8 py-4 text-right">
-                                   <select 
-                                     value={u.role}
-                                     onChange={(e) => handleUpdateRole(u.id, e.target.value)}
-                                     className="bg-[#1A1A1A] border border-white/5 rounded-lg px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-white outline-none focus:border-[#F97316]/40 transition-all cursor-pointer"
-                                   >
-                                      <option value="user">Operador</option>
-                                      <option value="manager">Gestor</option>
-                                      <option value="admin">Admin</option>
-                                   </select>
-                                </td>
-                             </tr>
-                          ))}
-                       </tbody>
-                    </table>
-                    {users.length === 0 && !isLoadingUsers && (
-                       <div className="p-20 text-center text-[#404040] italic text-[10px] uppercase font-black tracking-widest">
-                          Nenhum usuário encontrado.
+                                ))}
+                                {(t.membersCount || 0) > 5 && (
+                                   <div className="w-6 h-6 rounded-full bg-[#F97316]/20 border border-[#F97316]/30 flex items-center justify-center text-[8px] font-black text-[#F97316]">
+                                      +{(t.membersCount || 0) - 5}
+                                   </div>
+                                )}
+                             </div>
+                          </div>
+                       </div>
+                    ))}
+
+                    {teams.length === 0 && (
+                       <div className="bg-[#111111] border border-dashed border-white/5 rounded-2xl p-10 flex flex-col items-center justify-center text-center gap-4 col-span-full">
+                          <span className="material-symbols-outlined text-[48px] text-white/5">group_add</span>
+                          <div>
+                             <p className="text-[11px] font-black text-white uppercase tracking-widest italic">Nenhuma Equipe Criada</p>
+                             <p className="text-[9px] font-mono text-[#404040] uppercase tracking-widest mt-2 max-w-[300px]">Crie sua primeira equipe para começar a compartilhar dados entre usuários.</p>
+                          </div>
                        </div>
                     )}
                  </div>
-              </div>
-           </div>
+              </TabsContent>
+           </Tabs>
         </TabsContent>
 
         <TabsContent value="pipeline" className="p-8 text-center text-[#6B7280] font-mono text-[10px] uppercase tracking-widest">
@@ -393,6 +568,110 @@ export default function SettingsPage() {
             <span>{isSaving ? "SALVANDO..." : "SALVAR CONFIGURAÇÃO"}</span>
          </button>
       </footer>
+
+      {/* DIÁLOGO DE PERMISSÕES */}
+      <Dialog open={isPermissionsOpen} onOpenChange={setIsPermissionsOpen}>
+         <DialogContent className="bg-[#0A0A0A] border-white/5 max-w-lg">
+            <DialogHeader>
+               <DialogTitle className="text-[12px] font-black uppercase tracking-widest text-white">
+                  Permissões Granulares: {selectedUser?.name}
+               </DialogTitle>
+               <DialogDescription className="text-[10px] font-mono text-[#404040]">
+                  Defina o nível de acesso para cada módulo do CRM.
+               </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+               {modules.map((m) => {
+                  const currentPerm = selectedUser?.modulePermissions?.find((p: any) => p.moduleName === m.id)?.level || "NONE"
+                  return (
+                     <div key={m.id} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                        <div className="flex flex-col">
+                           <span className="text-[10px] font-black text-white uppercase tracking-tight">{m.name}</span>
+                        </div>
+                        <Select 
+                           value={currentPerm} 
+                           onValueChange={(val) => handleUpdatePermissions(selectedUser.id, m.id, val)}
+                        >
+                           <SelectTrigger className="w-[140px] h-8 bg-[#1A1A1A] border-white/5 text-[9px] font-black uppercase">
+                              <SelectValue />
+                           </SelectTrigger>
+                           <SelectContent className="bg-[#1A1A1A] border-white/10">
+                              {levels.map(l => (
+                                 <SelectItem key={l.id} value={l.id} className="text-[9px] font-black uppercase">{l.name}</SelectItem>
+                              ))}
+                           </SelectContent>
+                        </Select>
+                     </div>
+                  )
+               })}
+            </div>
+
+            <DialogFooter>
+               <button 
+                 onClick={() => setIsPermissionsOpen(false)}
+                 className="w-full bg-white/5 hover:bg-white/10 text-white text-[9px] font-black uppercase tracking-widest py-3 rounded-xl transition-all"
+               >
+                  Fechar e Salvar
+               </button>
+            </DialogFooter>
+         </DialogContent>
+      </Dialog>
+
+      {/* DIÁLOGO DE CONVITE */}
+      <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
+         <DialogContent className="bg-[#0A0A0A] border-white/5 max-w-md">
+            <DialogHeader>
+               <DialogTitle className="text-[12px] font-black uppercase tracking-widest text-white">
+                  Novo Acesso ao Escoltran
+               </DialogTitle>
+               <DialogDescription className="text-[10px] font-mono text-[#404040]">
+                  O usuário poderá acessar o CRM imediatamente com estas credenciais.
+               </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+               <div className="space-y-1.5">
+                  <label className="text-[9px] font-black text-[#404040] uppercase tracking-widest ml-1">Nome Completo</label>
+                  <Input 
+                    placeholder="Ex: João Silva" 
+                    className="bg-[#1A1A1A] border-white/5 text-white text-[11px] h-11"
+                    value={inviteData.name}
+                    onChange={(e) => setInviteData({ ...inviteData, name: e.target.value })}
+                  />
+               </div>
+               <div className="space-y-1.5">
+                  <label className="text-[9px] font-black text-[#404040] uppercase tracking-widest ml-1">Email Corporativo</label>
+                  <Input 
+                    type="email" 
+                    placeholder="joao@escoltran.com" 
+                    className="bg-[#1A1A1A] border-white/5 text-white text-[11px] h-11"
+                    value={inviteData.email}
+                    onChange={(e) => setInviteData({ ...inviteData, email: e.target.value })}
+                  />
+               </div>
+               <div className="space-y-1.5">
+                  <label className="text-[9px] font-black text-[#404040] uppercase tracking-widest ml-1">Senha Inicial</label>
+                  <Input 
+                    type="password" 
+                    placeholder="••••••••" 
+                    className="bg-[#1A1A1A] border-white/5 text-white text-[11px] h-11"
+                    value={inviteData.password}
+                    onChange={(e) => setInviteData({ ...inviteData, password: e.target.value })}
+                  />
+               </div>
+            </div>
+
+            <DialogFooter>
+               <button 
+                 onClick={handleInvite}
+                 className="w-full bg-[#F97316] text-white text-[9px] font-black uppercase tracking-widest py-4 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(249,115,22,0.2)]"
+               >
+                  Gerar Acesso e Convidar
+               </button>
+            </DialogFooter>
+         </DialogContent>
+      </Dialog>
     </div>
   )
 }

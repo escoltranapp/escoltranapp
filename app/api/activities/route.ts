@@ -9,14 +9,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const teamUserIds = await getTeamUserIds(session.user.id)
+    const teamId = session.user.teamId
+    const baseFilter = teamId ? { teamId } : { ownerUserId: session.user.id }
+
     const { searchParams } = new URL(req.url)
     const status = searchParams.get("status")
     const dealStatus = searchParams.get("dealStatus")
     const dealId = searchParams.get("dealId")
 
     const where: any = {
-      ownerUserId: { in: teamUserIds },
+      ...baseFilter,
       ...(status && status !== "LOST" && { status: status as "OPEN" | "DONE" }),
       ...(dealStatus && { deal: { status: dealStatus as "OPEN" | "WON" | "LOST" } }),
       ...(dealId && { dealId }),
@@ -64,6 +66,7 @@ export async function POST(req: NextRequest) {
         contactId,
         dealId,
         ownerUserId: session.user.id,
+        teamId: session.user.teamId,
       },
     })
 

@@ -7,10 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PermissionLevel {
+  NONE
+  VIEW
+  EDIT
+  FULL
+}
+
+enum StatusUsuario {
+  ATIVO
+  INATIVO
+}
+
 enum AppRole {
-  admin
-  manager
-  user
+  ADMIN
+  MEMBER
 }
 
 enum DealStatus {
@@ -79,10 +90,14 @@ model User {
   disparoCancelarWebhookUrl  String?
   disparoStatusWebhookUrl    String?
 
+  status            StatusUsuario @default(ATIVO)
+  role              AppRole       @default(MEMBER)
+
   accounts          Account[]
   sessions          Session[]
   teamMembers       TeamMember[]
   userRoles         UserRole[]
+  modulePermissions ModulePermission[]
   historicoBuscas   HistoricoBusca[]
   historicoBuscasCnpj HistoricoBuscaCnpj[]
   listasDisparo     ListaDisparo[]
@@ -160,17 +175,30 @@ model TeamMember {
 model UserRole {
   id     String  @id @default(cuid())
   userId String
-  role   AppRole @default(user)
+  role   AppRole @default(MEMBER)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_roles")
 }
 
+model ModulePermission {
+  id         String          @id @default(cuid())
+  userId     String
+  moduleName String
+  level      PermissionLevel @default(NONE)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleName])
+  @@map("module_permissions")
+}
+
 model Pipeline {
   id        String   @id @default(cuid())
   name      String
   userId    String
+  teamId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -228,6 +256,7 @@ model Deal {
   qualificationStatus   String?
 
   userId     String
+  teamId     String?
   contactId  String?
   stageId    String?
   pipelineId String?
@@ -311,6 +340,7 @@ model Contact {
   fbMetadata Json?
 
   userId    String
+  teamId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -350,6 +380,7 @@ model Activity {
   contactId   String?
   dealId      String?
   ownerUserId String
+  teamId      String?
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
@@ -373,6 +404,7 @@ model Lead {
   notas    String?
   status   LeadStatus @default(ATIVO)
   userId   String
+  teamId   String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -395,6 +427,7 @@ model LeadCnpj {
   email    String?
   notas    String?
   userId   String
+  teamId   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -438,6 +471,7 @@ model ListaDisparo {
   status      ListaDisparoStatus @default(RASCUNHO)
   configEnvio Json?
   userId      String
+  teamId      String?
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
 

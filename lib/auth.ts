@@ -48,7 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return null
           }
 
-          const role = user.userRoles[0]?.role || 'user'
+          const role = user.role || 'MEMBER'
           const teamId = user.teamMembers[0]?.teamId || null
 
           return {
@@ -69,8 +69,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.role = (user as { role?: string }).role || 'user'
-        token.teamId = (user as { teamId?: string | null }).teamId || null
+        token.role = (user as any).role || 'MEMBER'
+        token.teamId = (user as any).teamId || null
+
+        // Fetch permissions for the token
+        const permissions = await prisma.modulePermission.findMany({
+          where: { userId: user.id as string }
+        })
+        token.permissions = permissions.map(p => ({
+          module: p.moduleName,
+          level: p.level
+        }))
       }
       return token
     },
@@ -79,6 +88,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.id as string
         session.user.role = token.role as string
         session.user.teamId = token.teamId as string | null
+        session.user.permissions = token.permissions as any[]
       }
       return session
     },
@@ -106,4 +116,23 @@ export async function getTeamUserIds(userId: string): Promise<string[]> {
   } catch {
     return [userId]
   }
+}
+
+export async function hasPermission(userId: string, module: string, requiredLevel: 'VIEW' | 'EDIT' | 'FULL'): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { modulePermissions: true }
+  })
+
+  if (!user) return false
+  if (user.role === 'ADMIN') return true
+
+  const perm = user.modulePermissions.find(p => p.moduleName === module)
+  if (!perm) return false
+
+  const levels = ['NONE', 'VIEW', 'EDIT', 'FULL']
+  const userLevelIdx = levels.indexOf(perm.level)
+  const requiredLevelIdx = levels.indexOf(requiredLevel)
+
+  return userLevelIdx >= requiredLevelIdx
 }

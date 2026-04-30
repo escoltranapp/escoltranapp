@@ -16,8 +16,11 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "10")
     const skip = (page - 1) * limit
 
-    const where: Record<string, unknown> = {
-      userId: session.user.id,
+    const teamId = session.user.teamId
+    const baseFilter = teamId ? { teamId } : { userId: session.user.id }
+
+    const where: any = {
+      ...baseFilter,
       ...(search && {
         OR: [
           { nome: { contains: search, mode: "insensitive" },  },
@@ -41,10 +44,10 @@ export async function GET(req: NextRequest) {
       prisma.contact.count({ where }),
       // Tab counts
       Promise.all([
-        prisma.contact.count({ where: { userId: session.user.id } }),
-        prisma.contact.count({ where: { userId: session.user.id, status: "lead" } }),
-        prisma.contact.count({ where: { userId: session.user.id, status: "cliente" } }),
-        prisma.contact.count({ where: { userId: session.user.id, status: "inativo" } }),
+        prisma.contact.count({ where: baseFilter }),
+        prisma.contact.count({ where: { ...baseFilter, status: "lead" } }),
+        prisma.contact.count({ where: { ...baseFilter, status: "cliente" } }),
+        prisma.contact.count({ where: { ...baseFilter, status: "inativo" } }),
       ]),
     ])
 
@@ -96,6 +99,7 @@ export async function POST(req: NextRequest) {
         notas,
         lgpdConsent,
         userId: session.user.id,
+        teamId: session.user.teamId,
       },
     })
 

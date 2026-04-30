@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma"
 export async function GET(req: NextRequest) {
   try {
     const session = await auth()
-    if (!session?.user?.id || session.user.role !== "admin") {
+    if (!session?.user?.id || session.user.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -15,19 +15,20 @@ export async function GET(req: NextRequest) {
         name: true,
         email: true,
         image: true,
+        status: true,
+        role: true,
         createdAt: true,
-        userRoles: {
-          select: {
-            role: true
-          }
-        }
+        teamMembers: {
+          include: { team: true }
+        },
+        modulePermissions: true
       },
       orderBy: { createdAt: "desc" }
     })
 
     const formattedUsers = users.map(u => ({
       ...u,
-      role: u.userRoles[0]?.role || "user"
+      team: u.teamMembers[0]?.team || null,
     }))
 
     return NextResponse.json(formattedUsers)

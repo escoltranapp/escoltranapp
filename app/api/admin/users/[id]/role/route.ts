@@ -8,23 +8,35 @@ export async function PATCH(
 ) {
   try {
     const session = await auth()
-    if (!session?.user?.id || session.user.role !== "admin") {
+    if (!session?.user?.id || session.user.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { id } = await params
     const { role } = await req.json()
 
-    if (!["admin", "manager", "user"].includes(role)) {
+    if (!["ADMIN", "MEMBER"].includes(role)) {
       return NextResponse.json({ error: "Role inválida" }, { status: 400 })
     }
 
-    // Update or create role
-    await prisma.userRole.upsert({
-      where: { id: (await prisma.userRole.findFirst({ where: { userId: id } }))?.id || "new" },
-      update: { role },
-      create: { userId: id, role }
+    // Update role on User model directly
+    await prisma.user.update({
+      where: { id },
+      data: { role: role as any }
     })
+
+    // Also update UserRole for backward compatibility if it exists
+    const userRole = await prisma.userRole.findFirst({ where: { userId: id } })
+    if (userRole) {
+      await prisma.userRole.update({
+        where: { id: userRole.id },
+        data: { role: role as any }
+      })
+    } else {
+      await prisma.userRole.create({
+        data: { userId: id, role: role as any }
+      })
+    }
 
     return NextResponse.json({ ok: true })
   } catch (error) {

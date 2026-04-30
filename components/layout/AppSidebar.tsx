@@ -55,7 +55,26 @@ export function AppSidebar({ isOpen = true, onClose }: AppSidebarProps) {
 
         {/* 2. SCROLLABLE NAVIGATION */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden px-4 space-y-1 py-4 custom-scrollbar">
-          {NAV_ITEMS.map((item) => {
+          {NAV_ITEMS.filter(item => {
+            if (session?.user?.role === "ADMIN") return true
+            if (item.path === "/dashboard" || item.path === "/settings") return true
+            
+            const moduleMap: any = {
+              "/pipeline": "pipeline",
+              "/contacts": "contacts",
+              "/activities": "activities",
+              "/lead-search": "lead-search",
+              "/listas-disparo": "mass-messaging",
+              "/utm-analytics": "utm-analytics",
+              "/ai-insights": "ai-insights",
+            }
+            
+            const moduleName = moduleMap[item.path]
+            if (!moduleName) return true
+            
+            const perm = session?.user?.permissions?.find(p => p.module === moduleName)
+            return perm && perm.level !== "NONE"
+          }).map((item) => {
             const isActive = pathname === item.path || pathname.startsWith(item.path + "/")
             return (
               <Link

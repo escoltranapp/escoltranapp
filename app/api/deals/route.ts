@@ -13,8 +13,11 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get("status") || "OPEN"
     const pipelineId = searchParams.get("pipelineId")
 
+    const teamId = session.user.teamId
+    const baseFilter = teamId ? { teamId } : { userId: session.user.id }
+
     const where = {
-      userId: session.user.id,
+      ...baseFilter,
       ...(status !== "all" && { status: status as "OPEN" | "WON" | "LOST" }),
       ...(pipelineId && { pipelineId }),
     }
@@ -102,6 +105,7 @@ export async function POST(req: NextRequest) {
         dataPrevista: dataPrevista ? new Date(dataPrevista) : null,
         descricao,
         userId: session.user.id,
+        teamId: session.user.teamId,
         ...utmSnapshot,
       },
       include: {

@@ -29,8 +29,10 @@ export async function POST(req: NextRequest) {
         name,
         email,
         password: hashedPassword,
+        role: "MEMBER",
+        status: "ATIVO",
         userRoles: {
-          create: { role: "user" },
+          create: { role: "MEMBER" },
         },
       },
     })
