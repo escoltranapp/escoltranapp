@@ -292,50 +292,50 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
                </button>
              </div>
           </div>
-        </SheetContent>
-      </Sheet>
 
-      {/* MODAL DE MOTIVO DE PERDA */}
-      {lossReasonOpen && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black/90 backdrop-blur-md">
-          <div className="bg-[#1A1A1A] border border-[#F97316]/20 rounded-3xl p-8 w-full max-w-md shadow-[0_0_50px_rgba(249,115,22,0.1)] animate-in zoom-in-95 duration-200">
-            <h2 className="text-xl font-black text-white mb-6 uppercase tracking-tighter italic">Motivo de Perda Obrigatório</h2>
-            <div className="space-y-6">
-              <div>
-                <label className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#404040] font-black mb-3 block">
-                  Descreva a neutralidade do Deal
-                </label>
-                <textarea
-                  className="bg-[#0A0A0A] border border-white/10 rounded-2xl px-5 py-5 text-sm text-[#F2F2F2] focus:border-[#F97316]/50 outline-none w-full font-bold transition-all min-h-[120px] resize-none"
-                  placeholder="Ex: Valor fora do budget ou perda para concorrência"
-                  value={lossReason}
-                  onChange={(e) => setLossReason(e.target.value)}
-                />
-              </div>
-              <div className="flex gap-4 mt-8">
-                <button
-                  className="flex-1 bg-[#262626] text-[#6B7280] font-black py-4 rounded-xl text-[10px] uppercase tracking-widest"
-                  onClick={() => setLossReasonOpen(false)}
-                >
-                  Abortar
-                </button>
-                <button
-                  disabled={!lossReason.trim() || updateStatus.isPending}
-                  className="flex-1 bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black py-4 rounded-xl text-[10px] uppercase tracking-widest shadow-lg shadow-[#F97316]/20 disabled:opacity-30 disabled:grayscale transition-all flex items-center justify-center gap-2"
-                  onClick={() => updateStatus.mutate({ status: "LOST", reason: lossReason })}
-                >
-                  {updateStatus.isPending ? (
-                    <>
-                      <span className="material-symbols-outlined animate-spin text-[16px]">sync</span>
-                      Processando...
-                    </>
-                  ) : "Registrar Perda"}
-                </button>
+          {/* MODAL DE MOTIVO DE PERDA - MOVIDO PARA DENTRO DO SHEET PARA EVITAR FECHAMENTO PREMATURO */}
+          {lossReasonOpen && (
+            <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black/90 backdrop-blur-md" onClick={(e) => e.stopPropagation()}>
+              <div className="bg-[#1A1A1A] border border-[#F97316]/20 rounded-3xl p-8 w-full max-w-md shadow-[0_0_50px_rgba(249,115,22,0.1)] animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                <h2 className="text-xl font-black text-white mb-6 uppercase tracking-tighter italic">Motivo de Perda Obrigatório</h2>
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#404040] font-black mb-3 block">
+                      Descreva a neutralidade do Deal
+                    </label>
+                    <textarea
+                      className="bg-[#0A0A0A] border border-white/10 rounded-2xl px-5 py-5 text-sm text-[#F2F2F2] focus:border-[#F97316]/50 outline-none w-full font-bold transition-all min-h-[120px] resize-none"
+                      placeholder="Ex: Valor fora do budget ou perda para concorrência"
+                      value={lossReason}
+                      onChange={(e) => setLossReason(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex gap-4 mt-8">
+                    <button
+                      className="flex-1 bg-[#262626] text-[#6B7280] font-black py-4 rounded-xl text-[10px] uppercase tracking-widest"
+                      onClick={() => setLossReasonOpen(false)}
+                    >
+                      Abortar
+                    </button>
+                    <button
+                      disabled={!lossReason.trim() || updateStatus.isPending}
+                      className="flex-1 bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black py-4 rounded-xl text-[10px] uppercase tracking-widest shadow-lg shadow-[#F97316]/20 disabled:opacity-30 disabled:grayscale transition-all flex items-center justify-center gap-2"
+                      onClick={() => updateStatus.mutate({ status: "LOST", reason: lossReason })}
+                    >
+                      {updateStatus.isPending ? (
+                        <>
+                          <span className="material-symbols-outlined animate-spin text-[16px]">sync</span>
+                          Processando...
+                        </>
+                      ) : "Registrar Perda"}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
+        </SheetContent>
+      </Sheet>
     </>
   )
 }
