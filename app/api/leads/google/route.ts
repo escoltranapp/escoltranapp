@@ -28,9 +28,10 @@ export async function POST(req: Request) {
       select: { n8nWebhookUrl: true }
     })
 
-    const webhookUrl = user?.n8nWebhookUrl || process.env.N8N_WEBHOOK_URL || "https://auto.devnetlife.com/webhook/buscar-google"
+    const webhookUrl = user?.n8nWebhookUrl || process.env.N8N_WEBHOOK_URL || "https://escoltran-n8n.tyii5c.easypanel.host/webhook/escoltran"
     
-    console.log(`[LEAD_SEARCH_GOOGLE] Triggering: ${webhookUrl} for user: ${session.user.id}`)
+    console.log(`[LEAD_SEARCH_GOOGLE] Triggering Webhook: ${webhookUrl}`)
+    console.log(`[LEAD_SEARCH_GOOGLE] Payload:`, { estado, cidade, nicho, user_id: session.user.id })
 
     // 3. Trigger N8N
     const n8nResponse = await fetch(webhookUrl, {
