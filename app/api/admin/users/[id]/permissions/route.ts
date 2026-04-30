@@ -4,14 +4,14 @@ import { prisma } from "@/lib/prisma"
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth()
   if (!session || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
   }
 
-  const { id } = params
+  const { id } = await params
   const { module, level } = await req.json()
 
   try {
