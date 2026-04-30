@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Deal } from "./DealCard"
@@ -39,8 +39,14 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
   const queryClient = useQueryClient()
   const { toast } = useToast()
   const router = useRouter()
+  const [activeTab, setActiveTab] = useState<"dados" | "utm" | "activities" | "history" | "notes">("dados")
   const [lossReasonOpen, setLossReasonOpen] = useState(false)
   const [lossReason, setLossReason] = useState("")
+  const [notes, setNotes] = useState(deal?.descricao || "")
+
+  useEffect(() => {
+    if (deal) setNotes(deal.descricao || "")
+  }, [deal?.id])
 
   const updateStatus = useMutation({
     mutationFn: async ({ status, reason }: { status: "WON" | "LOST"; reason?: string }) => {
@@ -156,110 +162,229 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
 
             {/* TABS */}
             <div className="flex items-center gap-6 mt-6 border-b border-white/[0.05] overflow-x-auto scrollbar-hide">
-              <button className="text-[11px] font-bold text-white border-b-2 border-white pb-3 px-1 whitespace-nowrap">Dados</button>
-              <button className="text-[11px] font-medium text-[#6B7280] hover:text-white transition-colors pb-3 px-1 whitespace-nowrap">UTM</button>
-              <button className="text-[11px] font-medium text-[#6B7280] hover:text-white transition-colors pb-3 px-1 whitespace-nowrap">Atividades</button>
-              <button className="text-[11px] font-medium text-[#6B7280] hover:text-white transition-colors pb-3 px-1 whitespace-nowrap">Histórico</button>
-              <button className="text-[11px] font-medium text-[#6B7280] hover:text-white transition-colors pb-3 px-1 whitespace-nowrap">Anotações</button>
+              {[
+                { id: "dados", label: "Dados" },
+                { id: "utm", label: "UTM" },
+                { id: "activities", label: "Atividades" },
+                { id: "history", label: "Histórico" },
+                { id: "notes", label: "Anotações" }
+              ].map((tab) => (
+                <button 
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={cn(
+                    "text-[11px] font-bold pb-3 px-1 whitespace-nowrap transition-all border-b-2",
+                    activeTab === tab.id ? "text-white border-white" : "text-[#6B7280] border-transparent hover:text-white"
+                  )}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* CONTENT AREA */}
           <div className="flex-1 overflow-y-auto p-6 space-y-8 scrollbar-hide">
-             {/* Contato Vinculado */}
-             <div>
-                <div className="flex items-center gap-2 mb-4 text-white text-[11px] font-bold">
-                  <span className="material-symbols-outlined text-[16px]">person</span>
-                  Contato Vinculado
-                </div>
-                <div className="bg-[#111111] border border-white/[0.05] rounded-2xl p-4">
-                   <div className="flex items-center gap-3 mb-4">
-                     <div className="w-8 h-8 rounded-full bg-[#F97316]/10 text-[#F97316] font-black flex items-center justify-center text-xs border border-[#F97316]/20">
-                       {deal.contact?.nome ? deal.contact.nome.charAt(0).toUpperCase() : "C"}
-                     </div>
-                     <div>
-                       <p className="text-xs font-bold text-white">{deal.contact?.nome || "Sem nome"}</p>
-                       <div className="flex items-center gap-1 text-[#6B7280] text-[10px]">
-                         <span className="material-symbols-outlined text-[12px]">call</span>
-                         {deal.telefone || deal.contact?.telefone || "Sem telefone"}
-                       </div>
-                     </div>
+            {activeTab === "dados" && (
+              <>
+                {/* Contato Vinculado */}
+                <div>
+                   <div className="flex items-center gap-2 mb-4 text-white text-[11px] font-bold">
+                     <span className="material-symbols-outlined text-[16px]">person</span>
+                     Contato Vinculado
                    </div>
-                   <div className="flex items-center gap-2">
-                     <button className="flex-1 flex items-center justify-center gap-2 py-2 bg-transparent border border-white/[0.05] hover:bg-white/[0.02] transition-colors rounded-lg text-[11px] font-bold text-white">
-                        <span className="material-symbols-outlined text-[14px]">open_in_new</span>
-                        Ver
-                     </button>
-                     <button 
-                       onClick={() => {
-                         const phone = deal.telefone || deal.contact?.telefone || ""
-                         let cleanPhone = phone.replace(/\D/g, "")
-                         if (cleanPhone) {
-                           if (cleanPhone.length <= 11) {
-                             cleanPhone = "55" + cleanPhone
-                           }
-                           window.open(`https://wa.me/${cleanPhone}`, '_blank')
-                         } else {
-                           toast({ title: "Aviso", description: "Este contato não possui um número de telefone cadastrado." })
-                         }
-                       }}
-                       className="flex-1 flex items-center justify-center gap-2 py-2 bg-transparent border border-green-500/20 hover:bg-green-500/10 transition-colors rounded-lg text-[11px] font-bold text-green-500"
-                     >
-                        WhatsApp
-                     </button>
+                   <div className="bg-[#111111] border border-white/[0.05] rounded-2xl p-4">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-8 h-8 rounded-full bg-[#F97316]/10 text-[#F97316] font-black flex items-center justify-center text-xs border border-[#F97316]/20">
+                          {deal.contact?.nome ? deal.contact.nome.charAt(0).toUpperCase() : "C"}
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-white">{deal.contact?.nome || "Sem nome"}</p>
+                          <div className="flex items-center gap-1 text-[#6B7280] text-[10px]">
+                            <span className="material-symbols-outlined text-[12px]">call</span>
+                            {deal.telefone || deal.contact?.telefone || "Sem telefone"}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button className="flex-1 flex items-center justify-center gap-2 py-2 bg-transparent border border-white/[0.05] hover:bg-white/[0.02] transition-colors rounded-lg text-[11px] font-bold text-white">
+                           <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                           Ver
+                        </button>
+                        <button 
+                          onClick={() => {
+                            const phone = deal.telefone || deal.contact?.telefone || ""
+                            let cleanPhone = phone.replace(/\D/g, "")
+                            if (cleanPhone) {
+                              if (cleanPhone.length <= 11) {
+                                cleanPhone = "55" + cleanPhone
+                              }
+                              window.open(`https://wa.me/${cleanPhone}`, '_blank')
+                            } else {
+                              toast({ title: "Aviso", description: "Este contato não possui um número de telefone cadastrado." })
+                            }
+                          }}
+                          className="flex-1 flex items-center justify-center gap-2 py-2 bg-transparent border border-green-500/20 hover:bg-green-500/10 transition-colors rounded-lg text-[11px] font-bold text-green-500"
+                        >
+                           WhatsApp
+                        </button>
+                      </div>
                    </div>
                 </div>
-             </div>
 
-             {/* Informações do Deal */}
-             <div>
-                <div className="flex items-center gap-2 mb-4 text-white text-[11px] font-bold">
-                  <span className="material-symbols-outlined text-[16px]">info</span>
-                  Informações do Deal
+                {/* Informações do Deal */}
+                <div>
+                   <div className="flex items-center gap-2 mb-4 text-white text-[11px] font-bold">
+                     <span className="material-symbols-outlined text-[16px]">info</span>
+                     Informações do Deal
+                   </div>
+                   <div className="bg-[#111111] border border-white/[0.05] rounded-2xl p-4">
+                     <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Produto</p>
+                          <p className="text-xs font-medium text-white">{deal.produtoInteresse || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Origem</p>
+                          <p className="text-xs font-medium text-white">{deal.origem || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Prioridade</p>
+                          <p className="text-xs font-medium text-white uppercase">{deal.prioridade}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Status</p>
+                          <p className="text-xs font-medium text-white uppercase">{deal.status}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Criado</p>
+                          <p className="text-xs font-medium text-white">{new Date(deal.createdAt).toLocaleDateString("pt-BR")}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Atualizado</p>
+                          <p className="text-xs font-medium text-white">{new Date(deal.updatedAt).toLocaleDateString("pt-BR")}</p>
+                        </div>
+                     </div>
+                   </div>
                 </div>
-                <div className="bg-[#111111] border border-white/[0.05] rounded-2xl p-4">
-                  <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-                     <div>
-                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Produto</p>
-                       <p className="text-xs font-medium text-white">Sistema/App</p>
+              </>
+            )}
+
+            {activeTab === "utm" && (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                <UTMInfoCard 
+                  utmSource={deal.utmSource}
+                  utmMedium={deal.utmMedium}
+                  utmCampaign={deal.utmCampaign}
+                  utmContent={deal.utmContent}
+                  utmTerm={deal.utmTerm}
+                  landingPage={deal.landingPage}
+                  referrer={deal.referrer}
+                  capturedAt={deal.capturedAt}
+                />
+              </div>
+            )}
+
+            {activeTab === "activities" && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                 <div className="flex items-center justify-between">
+                    <h3 className="text-[11px] font-black uppercase text-white tracking-[0.2em]">Fluxo de Atividades</h3>
+                    <button 
+                      onClick={() => router.push(`/activities?new=true&deal_id=${deal.id}`)}
+                      className="text-[9px] font-black uppercase text-[#F97316] hover:text-white transition-colors"
+                    >
+                      Nova Atividade
+                    </button>
+                 </div>
+                 
+                 <div className="space-y-3">
+                    {activities.length === 0 ? (
+                      <div className="py-20 text-center bg-[#111111] border border-dashed border-white/5 rounded-2xl">
+                        <span className="material-symbols-outlined text-[40px] text-white/5 mb-3">inventory_2</span>
+                        <p className="text-[10px] font-mono text-[#404040] uppercase tracking-widest">Nenhuma atividade registrada</p>
+                      </div>
+                    ) : (
+                      activities.map((act) => (
+                        <div key={act.id} className="bg-[#111111] border border-white/[0.05] rounded-2xl p-4 flex items-start gap-4">
+                           <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${ACTIVITY_COLORS[act.tipo]}15`, color: ACTIVITY_COLORS[act.tipo] }}>
+                              <span className="material-symbols-outlined text-[20px]">{ACTIVITY_ICONS[act.tipo]}</span>
+                           </div>
+                           <div className="flex-1 min-w-0">
+                              <h4 className="text-[12px] font-black text-white uppercase truncate">{act.titulo}</h4>
+                              <p className="text-[10px] text-[#6B7280] line-clamp-1 mt-0.5 italic">{act.descricao || "Sem descrição"}</p>
+                              <div className="flex items-center gap-3 mt-3">
+                                 <span className="text-[9px] font-mono font-black text-[#F97316] uppercase">
+                                   {act.dueAt ? format(new Date(act.dueAt), "dd/MM 'às' HH:mm") : "Sem data"}
+                                 </span>
+                                 <span className={cn(
+                                   "text-[9px] font-black px-2 py-0.5 rounded-lg",
+                                   act.status === "OPEN" ? "bg-amber-500/10 text-amber-500" : "bg-emerald-500/10 text-emerald-500"
+                                 )}>
+                                   {act.status === "OPEN" ? "PENDENTE" : "CONCLUÍDO"}
+                                 </span>
+                              </div>
+                           </div>
+                        </div>
+                      ))
+                    )}
+                 </div>
+              </div>
+            )}
+
+            {activeTab === "history" && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                <h3 className="text-[11px] font-black uppercase text-white tracking-[0.2em]">Log de Auditoria</h3>
+                <div className="space-y-4">
+                   {auditLogs.length === 0 ? (
+                     <div className="py-20 text-center text-[#404040] italic text-[10px] uppercase font-black tracking-widest">
+                       Nenhum histórico disponível.
                      </div>
-                     <div>
-                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Ramo da Empresa</p>
-                       <p className="text-xs font-medium text-white">—</p>
-                     </div>
-                     <div>
-                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Faturamento Mensal</p>
-                       <p className="text-xs font-medium text-white">—</p>
-                     </div>
-                     <div>
-                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Origem</p>
-                       <select className="bg-transparent border-b border-white/10 text-xs font-medium text-white pb-1 w-full outline-none focus:border-white/30">
-                         <option className="bg-[#111111]">Selecionar origem</option>
-                       </select>
-                     </div>
-                     <div>
-                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Prioridade</p>
-                       <select className="bg-transparent border-b border-white/10 text-xs font-medium text-white pb-1 w-full outline-none focus:border-white/30">
-                         <option className="bg-[#111111]">Média</option>
-                       </select>
-                     </div>
-                     <div>
-                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Vendedor</p>
-                       <select className="bg-transparent border-b border-white/10 text-xs font-medium text-white pb-1 w-full outline-none focus:border-white/30">
-                         <option className="bg-[#111111]">Sem vendedor</option>
-                       </select>
-                     </div>
-                     <div>
-                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Criado</p>
-                       <p className="text-xs font-medium text-white">{new Date(deal.createdAt).toLocaleDateString("pt-BR")}</p>
-                     </div>
-                     <div>
-                       <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Atualizado</p>
-                       <p className="text-xs font-medium text-white">há pouco</p>
-                     </div>
-                  </div>
+                   ) : (
+                     auditLogs.map((log) => (
+                       <div key={log.id} className="relative pl-6 pb-6 border-l border-white/[0.05] last:pb-0">
+                          <div className="absolute left-[-5px] top-0 w-2.5 h-2.5 rounded-full bg-[#F97316] shadow-[0_0_10px_rgba(249,115,22,0.5)]" />
+                          <div className="bg-[#111111]/40 border border-white/[0.02] rounded-xl p-4">
+                             <p className="text-[11px] text-white font-medium leading-relaxed">{log.evento}</p>
+                             <p className="text-[9px] font-mono text-[#404040] font-black uppercase mt-2">
+                               {format(new Date(log.createdAt), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                             </p>
+                          </div>
+                       </div>
+                     ))
+                   )}
                 </div>
-             </div>
+              </div>
+            )}
+
+            {activeTab === "notes" && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 h-full flex flex-col">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-[11px] font-black uppercase text-white tracking-[0.2em]">Anotações Gerais</h3>
+                  <button 
+                    onClick={async () => {
+                      const res = await fetch(`/api/deals/${deal.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ descricao: notes })
+                      })
+                      if (res.ok) {
+                        queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
+                        toast({ title: "ANOTAÇÕES SALVAS" })
+                      }
+                    }}
+                    className="text-[9px] font-black uppercase text-[#F97316] hover:text-white transition-colors"
+                  >
+                    Salvar Notas
+                  </button>
+                </div>
+                <textarea 
+                  className="flex-1 w-full bg-[#111111] border border-white/[0.05] rounded-2xl p-6 text-sm text-white focus:border-[#F97316]/30 outline-none transition-all min-h-[300px] resize-none font-medium leading-relaxed"
+                  placeholder="Escreva aqui observações importantes sobre este negócio..."
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+              </div>
+            )}
           </div>
 
           {/* BOTTOM BAR */}

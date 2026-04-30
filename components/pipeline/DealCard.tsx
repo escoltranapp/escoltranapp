@@ -30,6 +30,9 @@ export interface Deal {
   utmCampaign?: string | null
   utmContent?: string | null
   utmTerm?: string | null
+  descricao?: string | null
+  produtoInteresse?: string | null
+  updatedAt: string
   capturedAt?: string | null
   landingPage?: string | null
   referrer?: string | null
