@@ -415,15 +415,24 @@ export default function LeadSearchPage() {
                               </div>
                            </div>
                            
-                           <div className="flex items-center justify-between md:justify-end gap-8 flex-shrink-0">
+                           <div className="flex items-center justify-between md:justify-end gap-4 flex-shrink-0">
                               <div className="text-left md:text-right space-y-1">
                                  <div className="text-[9px] font-mono font-bold text-[#F97316] uppercase tracking-wider">{lead.etapaFunil}</div>
                                  <div className="text-[9px] font-mono font-bold text-[#6B7280] uppercase tracking-wider">
                                     {new Date(lead.updatedAt).toLocaleDateString('pt-BR')} às {new Date(lead.updatedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                  </div>
                               </div>
+                              <button 
+                                 onClick={() => {
+                                   setIsNewContactOpen(true)
+                                 }}
+                                 className="h-10 w-10 rounded-xl bg-[#1A1A1A] border border-white/5 flex items-center justify-center text-[#404040] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all group/btn"
+                                 title="Importar como Contato"
+                               >
+                                  <span className="material-symbols-outlined text-[20px] group-hover/btn:scale-110 transition-transform">person_add</span>
+                               </button>
                            </div>
-                              </div>
+                        </div>
                       ))
                   )}
                </div>

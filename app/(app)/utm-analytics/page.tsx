@@ -32,7 +32,7 @@ import { UTMAdTable } from "@/components/utm/UTMAdTable"
 import { TopCampaignsCard } from "@/components/utm/TopCampaignsCard"
 import { TopAdsCard } from "@/components/utm/TopAdsCard"
 
-type ProductFilter = "all" | "HMI" | "Sistema"
+type ProductFilter = "all" | "Consultoria" | "Sistema"
 
 export default function UTMAnalyticsPage() {
   const [productFilter, setProductFilter] = useState<ProductFilter>("all")
@@ -63,7 +63,7 @@ export default function UTMAnalyticsPage() {
             </SelectTrigger>
             <SelectContent className="bg-[#0A0A0A] border-white/5 text-white">
               <SelectItem value="all" className="text-[10px] font-black uppercase tracking-widest">Todos os Produtos</SelectItem>
-              <SelectItem value="HMI" className="text-[10px] font-black uppercase tracking-widest">HMI</SelectItem>
+              <SelectItem value="Consultoria" className="text-[10px] font-black uppercase tracking-widest">Consultoria</SelectItem>
               <SelectItem value="Sistema" className="text-[10px] font-black uppercase tracking-widest">Sistema</SelectItem>
             </SelectContent>
           </Select>
