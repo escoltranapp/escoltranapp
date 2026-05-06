@@ -4,9 +4,19 @@ import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu"
+import { useToast } from "@/hooks/use-toast"
 
 export default function AiInsightsPage() {
-  const { data: metrics, isLoading } = useQuery({
+  const { toast } = useToast()
+  const [filter, setFilter] = useState("Geral (Global)")
+  
+  const { data: metrics, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ["dashboard-metrics"],
     queryFn: async () => {
       const res = await fetch("/api/dashboard/metrics")
@@ -14,6 +24,23 @@ export default function AiInsightsPage() {
       return res.json()
     },
   })
+
+  const handleExport = () => {
+    if (!metrics) return
+    const dataStr = JSON.stringify(metrics, null, 2)
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
+    const exportFileDefaultName = `escoltran-insights-${new Date().toISOString()}.json`
+    
+    const linkElement = document.createElement('a')
+    linkElement.setAttribute('href', dataUri)
+    linkElement.setAttribute('download', exportFileDefaultName)
+    linkElement.click()
+    
+    toast({
+      title: "DADOS EXPORTADOS",
+      description: "O dataset de insights foi compilado e baixado com sucesso."
+    })
+  }
 
   interface Opportunity {
     id: string
@@ -62,14 +89,41 @@ export default function AiInsightsPage() {
         </div>
 
         <div className="flex items-center gap-4 bg-[#0D0D0D] p-1.5 rounded-2xl border border-white/5">
-           <div className="bg-[#1A1A1A] border border-white/5 rounded-xl h-12 px-6 flex items-center gap-4 cursor-pointer hover:border-[#F97316]/40 transition-all group">
-              <span className="text-[11px] font-black text-white uppercase tracking-widest">Geral (Global)</span>
-              <span className="material-symbols-outlined text-[18px] text-[#404040] group-hover:text-[#F97316] transition-colors">expand_more</span>
-           </div>
-           <button className="h-12 w-12 bg-[#1A1A1A] border border-white/5 rounded-xl flex items-center justify-center text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/5 transition-all">
-              <span className="material-symbols-outlined text-[20px]">sync</span>
+           <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                 <div className="bg-[#1A1A1A] border border-white/5 rounded-xl h-12 px-6 flex items-center gap-4 cursor-pointer hover:border-[#F97316]/40 transition-all group">
+                    <span className="text-[11px] font-black text-white uppercase tracking-widest">{filter}</span>
+                    <span className="material-symbols-outlined text-[18px] text-[#404040] group-hover:text-[#F97316] transition-colors">expand_more</span>
+                 </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-[#0D0D0D] border-white/5 text-white">
+                 {["Geral (Global)", "Este Mês", "Trimestre", "Ano Fiscal"].map(f => (
+                    <DropdownMenuItem 
+                      key={f} 
+                      onClick={() => setFilter(f)}
+                      className="text-[10px] font-black uppercase tracking-widest focus:bg-primary/10 focus:text-primary cursor-pointer"
+                    >
+                       {f}
+                    </DropdownMenuItem>
+                 ))}
+              </DropdownMenuContent>
+           </DropdownMenu>
+
+           <button 
+             onClick={() => refetch()}
+             disabled={isRefetching}
+             className="h-12 w-12 bg-[#1A1A1A] border border-white/5 rounded-xl flex items-center justify-center text-[#404040] hover:text-[#F97316] hover:bg-[#F97316]/5 transition-all disabled:opacity-50"
+           >
+              <span className={cn(
+                "material-symbols-outlined text-[20px]",
+                isRefetching && "animate-spin"
+              )}>sync</span>
            </button>
-           <button className="h-12 px-6 bg-[#1A1A1A] border border-white/5 rounded-xl flex items-center gap-3 text-white hover:border-[#F97316]/30 hover:text-[#F97316] transition-all group">
+
+           <button 
+             onClick={handleExport}
+             className="h-12 px-6 bg-[#1A1A1A] border border-white/5 rounded-xl flex items-center gap-3 text-white hover:border-[#F97316]/30 hover:text-[#F97316] transition-all group"
+           >
               <span className="material-symbols-outlined text-[20px]">export_notes</span>
               <span className="text-[11px] font-black uppercase tracking-widest">Exportar</span>
            </button>
