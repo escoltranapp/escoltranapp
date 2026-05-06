@@ -6,7 +6,7 @@ import { useSession, signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 
 const NAV_ITEMS = [
-  { label: "Overview", path: "/dashboard", icon: "dashboard" },
+  { label: "Dashboard", path: "/dashboard", icon: "dashboard" },
   { label: "Pipeline", path: "/pipeline", icon: "view_kanban" },
   { label: "Contatos", path: "/contacts", icon: "person" },
   { label: "Atividades", path: "/activities", icon: "calendar_today" },
