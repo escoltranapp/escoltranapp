@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import * as XLSX from "xlsx"
 
 interface ImportDealsModalProps {
   isOpen: boolean
@@ -14,18 +15,27 @@ export function ImportDealsModal({ isOpen, onClose }: ImportDealsModalProps) {
   if (!isOpen) return null
 
   const handleDownloadTemplate = (type: "csv" | "xlsx") => {
-    const headers = "nome,telefone,email,titulo,valor,empresa"
-    const row = "João Silva,11999999999,joao@exemplo.com,Venda de Software,5000,Empresa ABC"
-    const csvContent = `${headers}\n${row}`
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.setAttribute("href", url)
-    link.setAttribute("download", `escoltran_modelo_deals.${type}`)
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const data = [
+      ["nome", "telefone", "email", "titulo", "valor", "empresa"],
+      ["João Silva", "11999999999", "joao@exemplo.com", "Venda de Software", "5000", "Empresa ABC"]
+    ]
+
+    if (type === "csv") {
+      const csvContent = data.map(row => row.join(",")).join("\n")
+      // Add BOM for Excel to recognize UTF-8
+      const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = `escoltran_modelo_deals.csv`
+      link.click()
+      URL.revokeObjectURL(url)
+    } else {
+      const ws = XLSX.utils.aoa_to_sheet(data)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, "Deals")
+      XLSX.writeFile(wb, "escoltran_modelo_deals.xlsx")
+    }
   }
 
   const handleDrag = (e: React.DragEvent) => {
