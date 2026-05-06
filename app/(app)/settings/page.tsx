@@ -64,6 +64,8 @@ export default function SettingsPage() {
     }
   }
 
+  const handleSave = async () => {
+    setIsSaving(true)
     if (password && password !== confirmPassword) {
       setIsSaving(false)
       return toast({ 
