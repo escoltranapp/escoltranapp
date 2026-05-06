@@ -49,19 +49,19 @@ export default function UTMAnalyticsPage() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-24 space-y-8">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-black text-white tracking-tighter uppercase italic">UTM Analytics</h1>
-          <p className="text-[#6B7280] text-sm mt-1 font-bold tracking-tight uppercase">Rastreamento de campanhas e atribuição de receita</p>
+          <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase italic">UTM Analytics</h1>
+          <p className="text-[#6B7280] text-xs md:text-sm mt-1 font-bold tracking-tight uppercase">Rastreamento de campanhas e atribuição de receita</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-black text-[#6B7280] uppercase tracking-widest">Filtrar por:</span>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-[#0D0D0D]/50 p-2 rounded-2xl border border-white/5">
+          <span className="text-[10px] font-black text-[#404040] uppercase tracking-widest ml-2 sm:ml-0">Filtrar por:</span>
           <Select value={productFilter} onValueChange={(v) => setProductFilter(v as ProductFilter)}>
-            <SelectTrigger className="w-[180px] bg-[#0A0A0A] border-white/5 text-[#6B7280] font-black text-[10px] uppercase tracking-widest h-9">
+            <SelectTrigger className="flex-1 sm:w-[180px] bg-[#1A1A1A] border-white/5 text-[#F2F2F2] font-black text-[10px] uppercase tracking-widest h-10 rounded-xl">
               <SelectValue placeholder="Pipeline" />
             </SelectTrigger>
-            <SelectContent className="bg-[#0A0A0A] border-white/5 text-white">
+            <SelectContent className="bg-[#0D0D0D] border-white/5 text-white">
               <SelectItem value="all" className="text-[10px] font-black uppercase tracking-widest">Todos os Produtos</SelectItem>
               <SelectItem value="Consultoria" className="text-[10px] font-black uppercase tracking-widest">Consultoria</SelectItem>
               <SelectItem value="Sistema" className="text-[10px] font-black uppercase tracking-widest">Sistema</SelectItem>
@@ -71,13 +71,13 @@ export default function UTMAnalyticsPage() {
       </header>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {kpis.map((kpi) => (
-          <Card key={kpi.label} className="bg-[#0A0A0A] border-white/5 relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
+          <Card key={kpi.label} className="bg-[#0D0D0D] border-white/5 relative overflow-hidden group shadow-xl">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#F97316]/20 to-transparent" />
             <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-[10px] text-[#6B7280] font-black uppercase tracking-widest flex items-center gap-2">
-                <kpi.icon className="w-3 h-3" strokeWidth={2.5} />
+              <CardTitle className="text-[9px] md:text-[10px] text-[#404040] font-black uppercase tracking-widest flex items-center gap-2">
+                <kpi.icon className="w-3 h-3 text-[#F97316]" strokeWidth={2.5} />
                 {kpi.label}
               </CardTitle>
             </CardHeader>
@@ -85,7 +85,7 @@ export default function UTMAnalyticsPage() {
               {isLoading ? (
                 <Skeleton className="h-7 w-20 bg-white/5" />
               ) : (
-                <p className="text-2xl font-black text-white tracking-tighter italic">
+                <p className="text-xl md:text-2xl font-black text-white tracking-tighter italic">
                   {kpi.format(kpi.value)}
                 </p>
               )}
@@ -96,38 +96,40 @@ export default function UTMAnalyticsPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="bg-[#0A0A0A] border border-white/5 p-1 h-auto mb-8">
-          <TabsTrigger 
-            value="overview" 
-            className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-[#6B7280] text-[10px] font-black uppercase tracking-widest px-6 py-2.5 gap-2"
-          >
-            <LayoutGrid className="w-3.5 h-3.5" /> Visão Geral
-          </TabsTrigger>
-          <TabsTrigger 
-            value="campaigns" 
-            className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-[#6B7280] text-[10px] font-black uppercase tracking-widest px-6 py-2.5 gap-2"
-          >
-            <Megaphone className="w-3.5 h-3.5" /> Campanhas
-          </TabsTrigger>
-          <TabsTrigger 
-            value="ads" 
-            className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-[#6B7280] text-[10px] font-black uppercase tracking-widest px-6 py-2.5 gap-2"
-          >
-            <Target className="w-3.5 h-3.5" /> Anúncios
-          </TabsTrigger>
-          <TabsTrigger 
-            value="sources" 
-            className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-[#6B7280] text-[10px] font-black uppercase tracking-widest px-6 py-2.5 gap-2"
-          >
-            <Globe className="w-3.5 h-3.5" /> Fontes
-          </TabsTrigger>
-          <TabsTrigger 
-            value="timeline" 
-            className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-[#6B7280] text-[10px] font-black uppercase tracking-widest px-6 py-2.5 gap-2"
-          >
-            <Clock className="w-3.5 h-3.5" /> Timeline
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto scrollbar-hide pb-2">
+          <TabsList className="bg-[#0D0D0D] border border-white/5 p-1 h-auto mb-4 flex-nowrap w-fit">
+            <TabsTrigger 
+              value="overview" 
+              className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-[#6B7280] text-[10px] font-black uppercase tracking-widest px-6 py-2.5 gap-2 whitespace-nowrap"
+            >
+              <LayoutGrid className="w-3.5 h-3.5" /> Visão Geral
+            </TabsTrigger>
+            <TabsTrigger 
+              value="campaigns" 
+              className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-[#6B7280] text-[10px] font-black uppercase tracking-widest px-6 py-2.5 gap-2 whitespace-nowrap"
+            >
+              <Megaphone className="w-3.5 h-3.5" /> Campanhas
+            </TabsTrigger>
+            <TabsTrigger 
+              value="ads" 
+              className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-[#6B7280] text-[10px] font-black uppercase tracking-widest px-6 py-2.5 gap-2 whitespace-nowrap"
+            >
+              <Target className="w-3.5 h-3.5" /> Anúncios
+            </TabsTrigger>
+            <TabsTrigger 
+              value="sources" 
+              className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-[#6B7280] text-[10px] font-black uppercase tracking-widest px-6 py-2.5 gap-2 whitespace-nowrap"
+            >
+              <Globe className="w-3.5 h-3.5" /> Fontes
+            </TabsTrigger>
+            <TabsTrigger 
+              value="timeline" 
+              className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-[#6B7280] text-[10px] font-black uppercase tracking-widest px-6 py-2.5 gap-2 whitespace-nowrap"
+            >
+              <Clock className="w-3.5 h-3.5" /> Timeline
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="overview" className="space-y-6 mt-0">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
