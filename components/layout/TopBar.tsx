@@ -12,15 +12,25 @@ export function TopBar({ onMenuClick }: TopBarProps) {
       <div className="h-full max-w-[1600px] mx-auto flex items-center justify-between gap-6">
         
         {/* MOBILE MENU TRIGGER */}
-        <button 
-          onClick={onMenuClick}
-          className="md:hidden w-10 h-10 flex items-center justify-center text-secondary"
-        >
-          <span className="material-symbols-outlined text-[24px]">menu</span>
-        </button>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={onMenuClick}
+            className="md:hidden w-10 h-10 flex items-center justify-center text-secondary hover:text-primary transition-colors"
+          >
+            <span className="material-symbols-outlined text-[24px]">menu</span>
+          </button>
+          <div className="md:hidden flex items-center gap-2">
+             <div className="w-8 h-8 bg-gradient-to-br from-[#F97316] to-[#FB923C] rounded-lg flex items-center justify-center shadow-lg">
+                <span className="text-[14px] font-black text-white italic">E</span>
+             </div>
+             <span className="text-[12px] font-black text-foreground italic tracking-tighter uppercase">Escoltran</span>
+          </div>
+        </div>
 
         {/* TOPBAR UTILITIES AREA - MINIMALIST */}
-        <div className="flex-1 flex justify-end items-center" />
+        <div className="flex items-center gap-4">
+           {/* Aqui podem entrar notificações ou perfil reduzido se necessário */}
+        </div>
       </div>
     </header>
   )

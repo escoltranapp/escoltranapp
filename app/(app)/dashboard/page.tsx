@@ -77,7 +77,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-8 space-y-8 animate-in fade-in duration-1000">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in duration-1000">
       
       <header className="space-y-1">
         <h1 className="text-3xl font-black text-white italic tracking-tighter uppercase">Dashboard</h1>

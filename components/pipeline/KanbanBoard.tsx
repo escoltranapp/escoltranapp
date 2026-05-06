@@ -245,7 +245,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
           const totalValue = stage.deals.reduce((acc, d) => acc + (d.valorEstimado || 0), 0)
 
           return (
-            <div key={stage.id} className="flex flex-col min-w-[340px] max-w-[340px] select-none group/column transition-transform duration-500">
+            <div key={stage.id} className="flex flex-col min-w-[280px] md:min-w-[340px] max-w-[280px] md:max-w-[340px] select-none group/column transition-transform duration-500">
               
               {/* STAGE HEADER - ELITE AETHER STYLE */}
               <div className="mb-6 px-2">
@@ -296,7 +296,7 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
         })}
 
         {/* ADD STAGE COLUMN - ELITE AETHER STYLE */}
-        <div className="flex flex-col min-w-[360px] max-w-[360px]">
+        <div className="flex flex-col min-w-[280px] md:min-w-[360px] max-w-[280px] md:max-w-[360px]">
            <div className="mb-8 min-h-[100px] flex items-center justify-center px-4">
               {!isAddingStage ? (
                  <button 

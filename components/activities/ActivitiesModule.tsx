@@ -106,12 +106,12 @@ function ActivitiesContent() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#0A0A0A] text-white overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-[#0A0A0A] text-white">
       {/* HEADER - NEW DESIGN FROM SCREENSHOT */}
-      <div className="px-10 py-8 space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="px-4 md:px-10 py-6 md:py-8 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="space-y-4">
-            <h1 className="text-3xl font-black text-white tracking-tight">Atividades</h1>
+            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">Atividades</h1>
             <div className="flex items-center gap-3">
               <div className="px-3 py-1 rounded-full bg-[#F97316]/20 text-[#F97316] text-[10px] font-black uppercase tracking-wider border border-[#F97316]/20">
                 {todayCount} para hoje
@@ -124,20 +124,20 @@ function ActivitiesContent() {
 
           <button
             onClick={openNew}
-            className="bg-[#F97316] hover:bg-[#FB923C] text-white px-6 py-3 rounded-xl font-black text-[11px] uppercase tracking-[0.1em] shadow-[0_0_20px_rgba(249,115,22,0.2)] transition-all flex items-center gap-2"
+            className="w-full sm:w-auto bg-[#F97316] hover:bg-[#FB923C] text-white px-6 py-3 rounded-xl font-black text-[11px] uppercase tracking-[0.1em] shadow-[0_0_20px_rgba(249,115,22,0.2)] transition-all flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
             Nova Atividade
           </button>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-             <div className="relative group">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+             <div className="relative group flex-1 sm:flex-none">
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-[#1A1A1A] border border-white/5 rounded-xl px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-[#F97316]/50 transition-all appearance-none pr-12 min-w-[150px]"
+                  className="w-full bg-[#1A1A1A] border border-white/5 rounded-xl px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-[#F97316]/50 transition-all appearance-none pr-12 min-w-[120px]"
                 >
                   <option value="OPEN">Pendentes</option>
                   <option value="DONE">Concluídas</option>
@@ -147,11 +147,11 @@ function ActivitiesContent() {
                 <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
              </div>
 
-             <div className="relative group">
+             <div className="relative group flex-1 sm:flex-none">
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="bg-[#1A1A1A] border border-white/5 rounded-xl px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-[#F97316]/50 transition-all appearance-none pr-12 min-w-[150px]"
+                  className="w-full bg-[#1A1A1A] border border-white/5 rounded-xl px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-[#F97316]/50 transition-all appearance-none pr-12 min-w-[120px]"
                 >
                   <option value="ALL">Todos</option>
                   <option value="CALL">Ligações</option>
@@ -165,7 +165,7 @@ function ActivitiesContent() {
              </div>
           </div>
 
-          <div className="flex p-1 bg-[#1A1A1A] border border-white/5 rounded-xl">
+          <div className="flex p-1 bg-[#1A1A1A] border border-white/5 rounded-xl self-end sm:self-auto">
             <button
               onClick={() => setViewMode("list")}
               className={cn(
@@ -189,7 +189,7 @@ function ActivitiesContent() {
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 overflow-y-auto px-10 custom-scrollbar space-y-8 pb-10">
+      <div className="flex-1 px-4 md:px-10 space-y-8 pb-10 overflow-x-hidden">
         {isLoading ? (
           <div className="h-[400px] flex items-center justify-center">
             <div className="w-12 h-12 border-4 border-[#F97316]/20 border-t-[#F97316] rounded-full animate-spin" />

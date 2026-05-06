@@ -250,7 +250,7 @@ export default function SettingsPage() {
   const userName = name || "Operador Principal"
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden p-6 md:p-8 space-y-8 animate-in fade-in duration-1000 max-w-5xl">
+    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden space-y-8 animate-in fade-in duration-1000 max-w-5xl">
       {/* IMMERSIVE BACKGROUND GLOWS */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F97316]/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#F97316]/5 blur-[120px] rounded-full pointer-events-none" />
@@ -264,7 +264,7 @@ export default function SettingsPage() {
                  <span className="material-symbols-outlined text-[24px] font-black relative z-10">settings_suggest</span>
               </div>
               <div>
-                 <h1 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">
+                 <h1 className="text-2xl md:text-3xl font-black text-white italic tracking-tighter uppercase leading-none">
                    Configurações <span className="text-[#F97316]">Gerais</span>
                  </h1>
                  <p className="text-[#404040] text-[10px] font-mono font-black uppercase tracking-[0.3em] mt-2 flex items-center gap-2">
@@ -278,24 +278,26 @@ export default function SettingsPage() {
 
       {/* TABS DE NAVEGAÇÃO EM GLASSMORPHISM */}
       <Tabs defaultValue="profile" className="space-y-8 relative z-10">
-        <TabsList className="bg-[#1A1A1A]/30 backdrop-blur-3xl border border-white/[0.04] h-12 p-1 gap-1 rounded-xl w-fit shadow-xl">
-          {[
-            { id: "profile", label: "Conta", icon: "person" },
-            { id: "pipeline", label: "Pipeline", icon: "view_kanban" },
-            { id: "integrations", label: "Integrações", icon: "extension" },
-            { id: "administration", label: "Gestão de Usuários", icon: "admin_panel_settings", admin: true },
-            { id: "templates", label: "Modelos", icon: "auto_awesome_motion" }
-          ].filter(tab => !tab.admin || isAdmin).map((tab) => (
-            <TabsTrigger 
-              key={tab.id}
-              value={tab.id} 
-              className="group flex items-center gap-2 text-[10px] uppercase font-black px-6 h-full rounded-lg transition-all duration-500 data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#F97316] data-[state=active]:to-[#FB923C] data-[state=active]:text-white data-[state=active]:shadow-[0_4px_10px_rgba(249,115,22,0.2)] text-[#6B7280]"
-            >
-              <span className="material-symbols-outlined text-[16px] group-data-[state=active]:text-white transition-colors">{tab.icon}</span>
-              <span className="tracking-[0.1em]">{tab.label}</span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="overflow-x-auto scrollbar-hide pb-2">
+          <TabsList className="bg-[#1A1A1A]/30 backdrop-blur-3xl border border-white/[0.04] h-12 p-1 gap-1 rounded-xl w-fit shadow-xl flex-nowrap">
+            {[
+              { id: "profile", label: "Conta", icon: "person" },
+              { id: "pipeline", label: "Pipeline", icon: "view_kanban" },
+              { id: "integrations", label: "Integrações", icon: "extension" },
+              { id: "administration", label: "Gestão de Usuários", icon: "admin_panel_settings", admin: true },
+              { id: "templates", label: "Modelos", icon: "auto_awesome_motion" }
+            ].filter(tab => !tab.admin || isAdmin).map((tab) => (
+              <TabsTrigger 
+                key={tab.id}
+                value={tab.id} 
+                className="group flex items-center gap-2 text-[10px] uppercase font-black px-6 h-full rounded-lg transition-all duration-500 data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#F97316] data-[state=active]:to-[#FB923C] data-[state=active]:text-white data-[state=active]:shadow-[0_4px_10px_rgba(249,115,22,0.2)] text-[#6B7280] whitespace-nowrap"
+              >
+                <span className="material-symbols-outlined text-[16px] group-data-[state=active]:text-white transition-colors">{tab.icon}</span>
+                <span className="tracking-[0.1em]">{tab.label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
         {/* SEÇÃO IDENTIDADE DE ACESSO */}
         <TabsContent value="profile" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

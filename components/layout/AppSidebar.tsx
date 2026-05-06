@@ -28,17 +28,9 @@ export function AppSidebar({ isOpen = true, onClose }: AppSidebarProps) {
 
   return (
     <>
-      {/* MOBILE OVERLAY */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] md:hidden"
-          onClick={onClose}
-        />
-      )}
-
       <aside className={cn(
-        "fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-border z-[100] transition-transform duration-500 ease-in-out flex flex-col",
-        !isOpen && "-translate-x-full md:translate-x-0"
+        "h-screen w-64 bg-sidebar border-r border-border flex flex-col",
+        !onClose ? "fixed left-0 top-0 z-[100]" : "relative"
       )}>
         
         {/* 1. FIXED HEADER */}

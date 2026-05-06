@@ -91,10 +91,10 @@ export default function ContactsPage() {
          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#F97316]/5 blur-[160px] rounded-full animate-pulse duration-[8s]" />
       </div>
 
-      <div className="relative z-10 p-8 space-y-8 max-w-[1600px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <div className="relative z-10 space-y-8 max-w-[1600px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000">
         
         {/* HIGH-FIDELITY HEADER */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
              <div className="flex items-center gap-3">
                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#F97316] to-[#FB923C] flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.3)] relative">
                   <span className="material-symbols-outlined text-white text-xl font-black relative z-10">groups</span>
@@ -106,8 +106,8 @@ export default function ContactsPage() {
                </div>
             </div>
           
-          <div className="flex items-center gap-4">
-             <div className="relative group w-[350px]">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+             <div className="relative group w-full lg:w-[350px]">
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#404040] group-focus-within:text-[#F97316] transition-all text-[18px]">search</span>
                 <input
                   placeholder="LOCALIZAR ENTIDADE..."
@@ -118,7 +118,7 @@ export default function ContactsPage() {
              </div>
              <button 
                onClick={() => setIsNewContactOpen(true)}
-               className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-8 py-4 rounded-xl flex items-center gap-3 hover:scale-[1.05] active:scale-95 transition-all shadow-2xl shadow-[#F97316]/30 text-[10px] uppercase tracking-[0.2em] group"
+               className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white font-black px-8 py-4 rounded-xl flex items-center justify-center gap-3 hover:scale-[1.05] active:scale-95 transition-all shadow-2xl shadow-[#F97316]/30 text-[10px] uppercase tracking-[0.2em] group"
              >
                <span className="material-symbols-outlined text-[18px] font-black">person_add</span>
                Novo Contato

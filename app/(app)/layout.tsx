@@ -27,7 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Área Principal com Offsets Rigorosos */}
       <main className="md:pl-[256px] pt-16 min-h-screen">
-        <div className="p-8 w-full max-w-[1600px] mx-auto">
+        <div className="p-4 md:p-8 w-full max-w-[1600px] mx-auto">
           {children}
         </div>
       </main>
