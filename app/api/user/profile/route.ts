@@ -35,10 +35,13 @@ export async function PATCH(req: NextRequest) {
 
     const { n8nWebhookUrl, name, email, password } = await req.json()
 
-    // Verificação de e-mail duplicado se houver alteração
-    if (email && email !== session.user.email) {
-      const existingUser = await prisma.user.findUnique({
-        where: { email }
+    // Verificação de e-mail duplicado (garante que não pertence a OUTRO usuário)
+    if (email) {
+      const existingUser = await prisma.user.findFirst({
+        where: { 
+          email,
+          NOT: { id: session.user.id }
+        }
       })
       if (existingUser) {
         return NextResponse.json({ error: "Este e-mail já está sendo utilizado por outro usuário" }, { status: 400 })
