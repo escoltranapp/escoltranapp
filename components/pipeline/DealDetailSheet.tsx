@@ -116,9 +116,6 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
         <SheetContent className="w-full sm:max-w-[500px] bg-[#0A0A0A] border-l border-[#1A1A1A] p-0 flex flex-col h-full">
           {/* HEADER */}
           <div className="p-6 pb-0 flex flex-col gap-4 relative">
-            <button onClick={() => onOpenChange(false)} className="absolute top-4 right-4 text-[#A3A3A3] hover:text-white">
-              <span className="material-symbols-outlined text-[20px]">close</span>
-            </button>
             <div className="flex items-center gap-3 pr-8">
               <div className="w-10 h-10 rounded-full bg-[#F97316]/10 text-[#F97316] font-black flex items-center justify-center text-sm border border-[#F97316]/20">
                 {deal.contact?.nome ? deal.contact.nome.charAt(0).toUpperCase() : "D"}
