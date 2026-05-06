@@ -13,6 +13,13 @@ import {
   DialogTitle, 
   DialogFooter 
 } from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface MessageTemplate {
   id: string
@@ -22,9 +29,9 @@ interface MessageTemplate {
   variaveis: string[]
 }
 
-const CANAL_CONFIG: Record<string, { label: string, icon: string, color: string }> = {
-  WHATSAPP: { label: 'WhatsApp', icon: 'chat', color: '#22C55E' },
-  EMAIL: { label: 'E-mail', icon: 'mail', color: '#3B82F6' },
+const CANAL_CONFIG: Record<string, { label: string, icon: string, color: string, bg: string }> = {
+  WHATSAPP: { label: 'WhatsApp', icon: 'chat', color: '#22C55E', bg: 'rgba(34, 197, 94, 0.1)' },
+  EMAIL: { label: 'E-mail', icon: 'mail', color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.1)' },
 }
 
 export function MessageTemplateConfig() {
@@ -99,21 +106,21 @@ export function MessageTemplateConfig() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h2 className="text-[10px] font-mono font-black text-[#F97316] uppercase tracking-[0.4em] mb-2 flex items-center gap-3">
             <span className="w-8 h-[1px] bg-[#F97316]/30"></span>
             Gestão de Modelos
           </h2>
           <p className="text-secondary text-[12px] font-medium max-w-md">
-            Padronize a comunicação da sua equipe com modelos de mensagens dinâmicos.
+            Padronize a comunicação da sua equipe com modelos de mensagens dinâmicos e variáveis personalizadas.
           </p>
         </div>
         <button
           onClick={() => handleOpenDialog()}
-          className="bg-white/5 hover:bg-white/10 border border-white/10 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-3"
+          className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(249,115,22,0.2)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 group"
         >
-          <span className="material-symbols-outlined text-[18px]">add</span>
+          <span className="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform">add</span>
           NOVO MODELO
         </button>
       </div>
@@ -126,7 +133,9 @@ export function MessageTemplateConfig() {
         </div>
       ) : templates?.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 bg-[#1A1A1A]/20 border border-white/5 border-dashed rounded-3xl">
-          <span className="material-symbols-outlined text-[48px] text-white/5 mb-4">description</span>
+          <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+             <span className="material-symbols-outlined text-[32px] text-white/10">description</span>
+          </div>
           <p className="text-secondary font-black uppercase tracking-[0.3em] text-[10px]">Nenhum modelo cadastrado</p>
         </div>
       ) : (
@@ -136,19 +145,23 @@ export function MessageTemplateConfig() {
             return (
               <div 
                 key={template.id}
-                className="group relative bg-[#1A1A1A]/40 border border-white/[0.05] p-6 rounded-2xl hover:border-[#F97316]/30 transition-all duration-300"
+                className="group relative bg-[#1A1A1A]/40 border border-white/[0.05] p-6 rounded-3xl hover:border-[#F97316]/30 transition-all duration-300 overflow-hidden shadow-xl"
               >
-                <div className="flex items-start justify-between mb-4">
+                <div className="absolute top-0 right-0 p-8 pointer-events-none opacity-5">
+                   <span className="material-symbols-outlined text-[80px]">{config.icon}</span>
+                </div>
+
+                <div className="flex items-start justify-between mb-6 relative z-10">
                   <div 
-                    className="p-2.5 rounded-xl border border-white/5"
-                    style={{ color: config.color, backgroundColor: `${config.color}10` }}
+                    className="p-3 rounded-2xl border border-white/5 shadow-inner"
+                    style={{ color: config.color, backgroundColor: config.bg }}
                   >
-                    <span className="material-symbols-outlined text-[20px]">{config.icon}</span>
+                    <span className="material-symbols-outlined text-[22px]">{config.icon}</span>
                   </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
                     <button 
                       onClick={() => handleOpenDialog(template)}
-                      className="p-2 text-secondary hover:text-white transition-colors"
+                      className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-secondary hover:text-white hover:bg-white/10 transition-all"
                     >
                       <span className="material-symbols-outlined text-[18px]">edit</span>
                     </button>
@@ -156,32 +169,37 @@ export function MessageTemplateConfig() {
                       onClick={() => {
                         if (confirm("Deseja realmente excluir este modelo?")) deleteMutation.mutate(template.id)
                       }}
-                      className="p-2 text-secondary hover:text-red-500 transition-colors"
+                      className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500/70 hover:text-red-500 hover:bg-red-500/20 transition-all"
                     >
                       <span className="material-symbols-outlined text-[18px]">delete</span>
                     </button>
                   </div>
                 </div>
                 
-                <h3 className="text-sm font-black text-white uppercase tracking-tight mb-2 truncate">
+                <h3 className="text-[15px] font-black text-white uppercase tracking-tight mb-3 truncate relative z-10 italic">
                   {template.nome}
                 </h3>
-                <p className="text-[11px] text-secondary font-medium line-clamp-3 leading-relaxed italic">
-                  "{template.conteudo}"
-                </p>
+                <div className="relative z-10">
+                  <p className="text-[12px] text-secondary font-medium line-clamp-3 leading-relaxed italic bg-black/20 p-3 rounded-xl border border-white/[0.03]">
+                    "{template.conteudo}"
+                  </p>
+                </div>
 
-                <div className="mt-6 pt-4 border-t border-white/[0.03] flex items-center justify-between">
-                  <span className="text-[9px] font-mono font-black text-secondary uppercase tracking-widest">
+                <div className="mt-8 pt-4 border-t border-white/[0.03] flex items-center justify-between relative z-10">
+                  <span className="text-[9px] font-mono font-black text-secondary uppercase tracking-[0.2em] flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: config.color }}></span>
                     {config.label}
                   </span>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1.5">
                     {template.variaveis.slice(0, 2).map(v => (
-                      <span key={v} className="px-2 py-0.5 bg-white/5 border border-white/5 rounded text-[8px] font-mono text-secondary">
+                      <span key={v} className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-[8px] font-black text-secondary uppercase tracking-widest">
                         {v}
                       </span>
                     ))}
                     {template.variaveis.length > 2 && (
-                      <span className="text-[8px] font-mono text-secondary">+{template.variaveis.length - 2}</span>
+                      <span className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[8px] font-black text-secondary">
+                        +{template.variaveis.length - 2}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -192,79 +210,112 @@ export function MessageTemplateConfig() {
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-[#0A0A0A] border-white/10 text-white max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-black italic uppercase tracking-tight">
+        <DialogContent className="bg-[#0A0A0A]/95 backdrop-blur-2xl border-white/10 text-white max-w-2xl rounded-[32px] overflow-hidden p-0 shadow-2xl">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#F97316] to-transparent opacity-50" />
+          
+          <DialogHeader className="p-8 pb-4">
+            <DialogTitle className="text-2xl font-black italic uppercase tracking-tight flex items-center gap-4">
+              <div className="w-12 h-12 bg-[#F97316]/10 rounded-2xl flex items-center justify-center border border-[#F97316]/20">
+                 <span className="material-symbols-outlined text-[#F97316]">{editingTemplate?.id ? 'edit_document' : 'add_circle'}</span>
+              </div>
               {editingTemplate?.id ? "Editar Modelo" : "Novo Modelo"}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-6 py-6">
-            <div className="grid grid-cols-2 gap-6">
+          <div className="px-8 space-y-8 pb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
-                <label className="text-[9px] font-mono font-black text-secondary uppercase tracking-[0.3em]">Nome do Modelo</label>
+                <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.3em] flex items-center gap-2 ml-1">
+                   <span className="material-symbols-outlined text-[14px]">label</span>
+                   Nome do Modelo
+                </label>
                 <Input 
-                  className="bg-white/5 border-white/10 h-12 rounded-xl px-4"
+                  className="bg-[#1A1A1A] border-white/10 h-14 rounded-2xl px-5 text-sm focus:border-[#F97316]/50 transition-all font-medium"
                   value={editingTemplate?.nome}
                   onChange={e => setEditingTemplate({ ...editingTemplate, nome: e.target.value })}
                   placeholder="Ex: Saudação Inicial"
                 />
               </div>
               <div className="space-y-3">
-                <label className="text-[9px] font-mono font-black text-secondary uppercase tracking-[0.3em]">Canal</label>
-                <select
-                  className="w-full bg-white/5 border border-white/10 h-12 rounded-xl px-4 outline-none focus:border-[#F97316]/50"
+                <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.3em] flex items-center gap-2 ml-1">
+                   <span className="material-symbols-outlined text-[14px]">cell_tower</span>
+                   Canal de Envio
+                </label>
+                <Select
                   value={editingTemplate?.canal}
-                  onChange={e => setEditingTemplate({ ...editingTemplate, canal: e.target.value })}
+                  onValueChange={val => setEditingTemplate({ ...editingTemplate, canal: val })}
                 >
-                  <option value="WHATSAPP">WhatsApp</option>
-                  <option value="EMAIL">E-mail</option>
-                </select>
+                  <SelectTrigger className="bg-[#1A1A1A] border-white/10 h-14 rounded-2xl px-5 text-sm focus:border-[#F97316]/50 transition-all">
+                    <SelectValue placeholder="Selecione o canal" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1A1A1A] border-white/10 text-white">
+                    <SelectItem value="WHATSAPP" className="hover:bg-white/5 transition-colors text-[10px] font-black uppercase tracking-widest py-3">WhatsApp</SelectItem>
+                    <SelectItem value="EMAIL" className="hover:bg-white/5 transition-colors text-[10px] font-black uppercase tracking-widest py-3">E-mail</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-[9px] font-mono font-black text-secondary uppercase tracking-[0.3em]">Conteúdo da Mensagem</label>
-                <div className="flex gap-2">
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <label className="text-[10px] font-mono font-black text-[#6B7280] uppercase tracking-[0.3em] flex items-center gap-2 ml-1">
+                   <span className="material-symbols-outlined text-[14px]">article</span>
+                   Conteúdo da Mensagem
+                </label>
+                <div className="flex flex-wrap gap-2">
                   <button 
                     onClick={() => insertVariable("nome")}
-                    className="px-2 py-1 bg-[#F97316]/10 text-[#F97316] text-[8px] font-black uppercase rounded hover:bg-[#F97316]/20 transition-all"
+                    className="px-4 py-2 bg-[#F97316]/5 text-[#F97316] text-[9px] font-black uppercase rounded-xl border border-[#F97316]/10 hover:bg-[#F97316]/10 transition-all flex items-center gap-2"
                   >
+                    <span className="material-symbols-outlined text-[14px]">person_add</span>
                     + Nome
                   </button>
                   <button 
                     onClick={() => insertVariable("empresa")}
-                    className="px-2 py-1 bg-[#F97316]/10 text-[#F97316] text-[8px] font-black uppercase rounded hover:bg-[#F97316]/20 transition-all"
+                    className="px-4 py-2 bg-[#F97316]/5 text-[#F97316] text-[9px] font-black uppercase rounded-xl border border-[#F97316]/10 hover:bg-[#F97316]/10 transition-all flex items-center gap-2"
                   >
+                    <span className="material-symbols-outlined text-[14px]">business</span>
                     + Empresa
                   </button>
                 </div>
               </div>
               <Textarea 
-                className="bg-white/5 border-white/10 min-h-[160px] rounded-2xl p-4 leading-relaxed resize-none"
+                className="bg-[#1A1A1A] border-white/10 min-h-[180px] rounded-[24px] p-6 leading-relaxed resize-none focus:border-[#F97316]/50 transition-all text-sm font-medium"
                 value={editingTemplate?.conteudo}
                 onChange={e => setEditingTemplate({ ...editingTemplate, conteudo: e.target.value })}
                 placeholder="Escreva sua mensagem aqui... Use {{nome}} para personalizar."
               />
+              <p className="text-[9px] text-secondary/50 font-mono italic px-2">
+                As variáveis serão substituídas automaticamente pelos dados do contato no momento do envio.
+              </p>
             </div>
           </div>
 
-          <DialogFooter className="gap-3">
+          <DialogFooter className="p-8 pt-4 bg-white/[0.02] border-t border-white/[0.03] gap-4">
             <button
               onClick={() => setIsDialogOpen(false)}
-              className="px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest text-secondary hover:text-white transition-all"
+              className="px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest text-secondary hover:text-white transition-all flex-1"
             >
               Cancelar
             </button>
             <button
               onClick={handleSave}
               disabled={saveMutation.isPending}
-              className="bg-[#F97316] hover:bg-[#FB923C] text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#F97316]/20 transition-all disabled:opacity-50"
+              className="bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#F97316]/20 transition-all disabled:opacity-50 flex-1 flex items-center justify-center gap-3"
             >
+              {saveMutation.isPending ? (
+                 <span className="material-symbols-outlined animate-spin text-[18px]">refresh</span>
+              ) : (
+                 <span className="material-symbols-outlined text-[18px]">save</span>
+              )}
               {saveMutation.isPending ? "SALVANDO..." : "SALVAR MODELO"}
             </button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
         </DialogContent>
       </Dialog>
     </div>
