@@ -62,7 +62,7 @@ export function NewDealDialog({ open, onOpenChange, stages, pipelineId, defaultS
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-stages"] })
-      toast({ title: "DEAL SINCRONIZADO 🛡️", description: "Nova oportunidade adicionada ao cluster." })
+      toast({ title: "NEGÓCIO CRIADO ✅", description: "Nova oportunidade adicionada com sucesso." })
       onOpenChange(false)
       setFormData({ 
         titulo: "", 
@@ -74,7 +74,7 @@ export function NewDealDialog({ open, onOpenChange, stages, pipelineId, defaultS
       })
     },
     onError: () => {
-      toast({ title: "ERRO DE SINCRONIZAÇÃO", description: "Não foi possível registrar o deal.", variant: "destructive" })
+      toast({ title: "ERRO AO CRIAR", description: "Não foi possível registrar o negócio.", variant: "destructive" })
     }
   })
 
@@ -82,26 +82,26 @@ export function NewDealDialog({ open, onOpenChange, stages, pipelineId, defaultS
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl bg-[#0A0A0A] border border-white/[0.05] p-0 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-t-[32px] md:rounded-[40px] h-[90vh] md:h-auto">
         <DialogHeader className="p-6 md:p-8 bg-gradient-to-br from-[#F97316]/10 to-transparent border-b border-white/[0.03] shrink-0">
-          <DialogTitle className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter leading-tight">Expandir Dataset Operacional</DialogTitle>
-          <p className="text-[#6B7280] text-[10px] md:text-[12px] font-bold uppercase tracking-widest mt-1">Registrar nova oportunidade Escoltran</p>
+          <DialogTitle className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter leading-tight">Novo Negócio</DialogTitle>
+          <p className="text-[#6B7280] text-[10px] md:text-[12px] font-bold uppercase tracking-widest mt-1">Registrar nova oportunidade no funil</p>
         </DialogHeader>
 
         <div className="p-6 md:p-8 space-y-6 md:space-y-8 overflow-y-auto scrollbar-hide flex-1">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {/* TÍTULO */}
             <div className="col-span-2 space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">Identificador do Deal / Título</label>
+              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">Título do Negócio</label>
               <input 
                 value={formData.titulo}
                 onChange={e => setFormData(prev => ({ ...prev, titulo: e.target.value }))}
                 className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-5 py-3.5 text-white focus:border-[#F97316]/50 outline-none transition-all font-bold text-sm"
-                placeholder="Ex: Consultoria Tech Escoltran v1"
+                placeholder="Ex: Consultoria Tech Escoltran"
               />
             </div>
 
             {/* VALOR E PRIORIDADE */}
             <div className="space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">Valor Estimado (BRL)</label>
+              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">Valor Estimado (R$)</label>
               <input 
                 type="number"
                 value={formData.valorEstimado}
@@ -111,21 +111,21 @@ export function NewDealDialog({ open, onOpenChange, stages, pipelineId, defaultS
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">Prioridade Neural</label>
+              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">Prioridade</label>
               <select 
                 value={formData.prioridade}
                 onChange={e => setFormData(prev => ({ ...prev, prioridade: e.target.value }))}
                 className="w-full bg-[#1A1A1A] border border-[#262626] rounded-xl px-5 py-3.5 text-white focus:border-[#F97316]/50 outline-none transition-all font-bold text-sm h-[52px] appearance-none"
               >
-                <option value="ALTA">CRÍTICA (ALTA)</option>
-                <option value="MEDIA">MODERADA (MÉDIA)</option>
-                <option value="BAIXA">STANDBY (BAIXA)</option>
+                <option value="ALTA">ALTA</option>
+                <option value="MEDIA">MÉDIA</option>
+                <option value="BAIXA">BAIXA</option>
               </select>
             </div>
 
             {/* CONTATO E ETAPA */}
             <div className="space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">Entidade / Contato</label>
+              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">Contato / Cliente</label>
               <select 
                 value={formData.contactId}
                 onChange={e => setFormData(prev => ({ ...prev, contactId: e.target.value }))}
@@ -138,7 +138,7 @@ export function NewDealDialog({ open, onOpenChange, stages, pipelineId, defaultS
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">Etapa de Entrada no Fluxo</label>
+              <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest">Etapa do Funil</label>
               <select 
                 value={formData.stageId}
                 onChange={e => setFormData(prev => ({ ...prev, stageId: e.target.value }))}
@@ -156,14 +156,14 @@ export function NewDealDialog({ open, onOpenChange, stages, pipelineId, defaultS
                onClick={() => onOpenChange(false)}
                className="w-full sm:flex-1 px-8 py-4 bg-[#1A1A1A] text-[#404040] rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest hover:text-[#F2F2F2] transition-all"
              >
-                Abortar Processo
+                CANCELAR
              </button>
              <button 
                onClick={() => createDeal.mutate(formData)}
                disabled={!formData.titulo || createDeal.isPending}
                className="w-full sm:flex-1 px-8 py-4 bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest shadow-lg shadow-[#F97316]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-30 disabled:grayscale"
              >
-                {createDeal.isPending ? 'Sincronizando...' : 'Concluir Registro'}
+                {createDeal.isPending ? 'CRIANDO...' : 'CRIAR NEGÓCIO'}
              </button>
           </div>
         </div>

@@ -69,15 +69,15 @@ export function DeleteStageModal({ isOpen, onClose, stages }: DeleteStageModalPr
     }}>
       <DialogContent className="max-w-md bg-[#0A0A0A] border border-white/[0.05] p-0 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] rounded-3xl">
         <DialogHeader className="p-8 bg-gradient-to-br from-red-500/10 via-transparent to-transparent border-b border-white/[0.03] relative">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-             <span className="material-symbols-outlined text-[60px]">delete_sweep</span>
+          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+             <span className="material-symbols-outlined text-[80px]">delete_sweep</span>
           </div>
           <DialogTitle className="text-2xl font-black text-white italic uppercase tracking-tighter relative z-10 flex items-center gap-3">
              <span className="w-2 h-8 bg-red-600 rounded-full" />
-             Descomissionar Nodes
+             Gerenciar Etapas
           </DialogTitle>
-          <p className="text-[#6B7280] text-[10px] font-black font-mono uppercase tracking-[0.3em] mt-2 pl-5">
-             // SELECIONE A UNIDADE PARA REMOÇÃO DEFINITIVA
+          <p className="text-[#6B7280] text-[10px] font-black uppercase tracking-[0.2em] mt-2 pl-5">
+             Selecione as etapas que deseja remover do funil
           </p>
         </DialogHeader>
 
@@ -105,7 +105,7 @@ export function DeleteStageModal({ isOpen, onClose, stages }: DeleteStageModalPr
                     <div className="flex flex-col">
                       <span className="text-[13px] font-black text-white uppercase tracking-widest">{stage.name}</span>
                       <span className="text-[9px] font-mono font-bold text-[#404040] uppercase tracking-tighter">
-                         DATA_LOAD: {stage.deals.length} active_deals
+                         Negócios: {stage.deals.length}
                       </span>
                     </div>
                   </div>
@@ -115,8 +115,8 @@ export function DeleteStageModal({ isOpen, onClose, stages }: DeleteStageModalPr
                       onClick={() => {
                         if (hasDeals) {
                           toast({
-                            title: "BLOQUEIO DE SEGURANÇA",
-                            description: "Não é possível remover nodes com dados ativos. Mova os negócios primeiro.",
+                            title: "AVISO",
+                            description: "Não é possível remover etapas com negócios ativos. Mova os negócios primeiro.",
                             variant: "destructive"
                           })
                           return
@@ -158,7 +158,7 @@ export function DeleteStageModal({ isOpen, onClose, stages }: DeleteStageModalPr
                 {isConfirming && (
                    <div className="mt-4 pt-4 border-t border-red-500/10 text-center animate-in slide-in-from-top-2 duration-300">
                       <p className="text-[10px] font-black text-red-500/80 uppercase tracking-[0.2em]">
-                         ⚠️ ESTA OPERAÇÃO É IRREVERSÍVEL NO CLUSTER
+                         ⚠️ ESTA OPERAÇÃO É IRREVERSÍVEL
                       </p>
                    </div>
                 )}
@@ -170,7 +170,7 @@ export function DeleteStageModal({ isOpen, onClose, stages }: DeleteStageModalPr
              <div className="text-center py-20 bg-[#050505] rounded-3xl border border-white/[0.02]">
                 <span className="material-symbols-outlined text-[60px] text-[#111111] mb-4">dataset_linked</span>
                 <p className="text-[#262626] text-[11px] font-black uppercase tracking-[0.4em] italic font-mono">
-                   NO_NODES_IN_INFRASTRUCTURE
+                   NENHUMA ETAPA ENCONTRADA
                 </p>
              </div>
           )}
@@ -182,7 +182,7 @@ export function DeleteStageModal({ isOpen, onClose, stages }: DeleteStageModalPr
              className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] text-[#404040] hover:text-[#F97316] transition-all"
            >
               <span className="w-6 h-[1px] bg-[#262626] group-hover:bg-[#F97316]/40 transition-all" />
-              FECHAR_MODAL
+              FECHAR
               <span className="w-6 h-[1px] bg-[#262626] group-hover:bg-[#F97316]/40 transition-all" />
            </button>
         </div>
