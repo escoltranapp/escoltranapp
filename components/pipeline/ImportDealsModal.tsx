@@ -13,6 +13,21 @@ export function ImportDealsModal({ isOpen, onClose }: ImportDealsModalProps) {
 
   if (!isOpen) return null
 
+  const handleDownloadTemplate = (type: "csv" | "xlsx") => {
+    const headers = "nome,telefone,email,titulo,valor,empresa"
+    const row = "João Silva,11999999999,joao@exemplo.com,Venda de Software,5000,Empresa ABC"
+    const csvContent = `${headers}\n${row}`
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.setAttribute("href", url)
+    link.setAttribute("download", `escoltran_modelo_deals.${type}`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -63,11 +78,17 @@ export function ImportDealsModal({ isOpen, onClose }: ImportDealsModalProps) {
         <div className="p-6 flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/[0.08] bg-transparent text-white text-xs font-bold hover:bg-white/[0.02] transition-colors">
+              <button 
+                onClick={() => handleDownloadTemplate("xlsx")}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/[0.08] bg-transparent text-white text-xs font-bold hover:bg-white/[0.02] transition-colors"
+              >
                 <span className="material-symbols-outlined text-[16px]">download</span>
                 Modelo .xlsx
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/[0.08] bg-transparent text-white text-xs font-bold hover:bg-white/[0.02] transition-colors">
+              <button 
+                onClick={() => handleDownloadTemplate("csv")}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/[0.08] bg-transparent text-white text-xs font-bold hover:bg-white/[0.02] transition-colors"
+              >
                 <span className="material-symbols-outlined text-[16px]">download</span>
                 Modelo .csv
               </button>
