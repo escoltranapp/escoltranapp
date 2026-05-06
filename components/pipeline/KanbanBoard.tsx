@@ -120,32 +120,25 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active } = event
-    
-    if (activeDeal) {
-      const activeId = active.id as string
-      let currentStageId = ""
-      for (const stage of stages) {
-        if (stage.deals.some(d => d.id === activeId)) {
-          currentStageId = stage.id
-          break
-        }
-      }
-
-      let originalStageId = ""
-      for (const stage of initialStages) {
-        if (stage.deals.some(d => d.id === activeId)) {
-          originalStageId = stage.id
-          break
-        }
-      }
-
-      if (currentStageId && originalStageId && currentStageId !== originalStageId) {
-        onDealMove(activeId, originalStageId, currentStageId)
-      }
-    }
-
+    const { active, over } = event
     setActiveDeal(null)
+
+    if (!over) return
+
+    const activeId = active.id as string
+    const overId = over.id as string
+
+    const sourceStage = stages.find(s => s.deals.some(d => d.id === activeId))
+    const destStage = stages.find(s => s.id === overId || s.deals.some(d => d.id === overId))
+
+    if (!sourceStage || !destStage) return
+
+    // Find original stage from initial data to check if actually moved
+    const originalStage = initialStages.find(s => s.deals.some(d => d.id === activeId))
+
+    if (originalStage && destStage.id !== originalStage.id) {
+      onDealMove(activeId, originalStage.id, destStage.id)
+    }
   }
 
   const handleUpdateStage = async (id: string) => {
@@ -268,7 +261,14 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
 
               {/* COLUMN BODY - GLASS COMPONENT */}
               <KanbanColumn id={stage.id} deals={stage.deals}>
-                <div className="flex flex-col gap-5 min-h-[400px] p-4 rounded-[32px] bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.04] shadow-[0_30px_60px_rgba(0,0,0,0.5)] group-hover/column:border-white/[0.08] transition-all relative overflow-hidden">
+                <div className={cn(
+                  "flex flex-col gap-5 min-h-[400px] p-4 rounded-[32px] bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.04] shadow-[0_30px_60px_rgba(0,0,0,0.5)] group-hover/column:border-white/[0.08] transition-all relative overflow-hidden",
+                  activeDeal && "ring-1 ring-white/[0.02]"
+                )}>
+                  <div className={cn(
+                    "absolute inset-0 bg-gradient-to-br from-[#F97316]/5 to-transparent transition-opacity duration-500",
+                    activeDeal ? "opacity-100" : "opacity-0"
+                  )} />
                   <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
                   
                   <div className="relative z-10 flex flex-col gap-5">
@@ -347,12 +347,12 @@ export function KanbanBoard({ stages: initialStages, onDealMove, onDealClick, on
       </div>
 
       <DragOverlay dropAnimation={{
-          duration: 400,
-          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+          duration: 350,
+          easing: 'cubic-bezier(0.2, 0, 0, 1)',
       }}>
         {activeDeal ? (
-          <div className="rotate-2 scale-[1.08] shadow-[0_50px_100px_rgba(0,0,0,0.9)] opacity-90 transition-transform">
-            <DealCard deal={activeDeal} />
+          <div className="rotate-[3deg] scale-[1.05] shadow-[0_30px_70px_rgba(0,0,0,0.8)] opacity-95 transition-transform cursor-grabbing">
+            <DealCard deal={activeDeal} isOverlay />
           </div>
         ) : null}
       </DragOverlay>

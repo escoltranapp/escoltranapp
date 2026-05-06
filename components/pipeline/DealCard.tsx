@@ -41,9 +41,10 @@ export interface Deal {
 interface DealCardProps {
   deal: Deal
   onClick?: () => void
+  isOverlay?: boolean
 }
 
-export function DealCard({ deal, onClick }: DealCardProps) {
+export function DealCard({ deal, onClick, isOverlay }: DealCardProps) {
   const router = useRouter()
   const {
     attributes,
@@ -55,9 +56,9 @@ export function DealCard({ deal, onClick }: DealCardProps) {
   } = useSortable({ id: deal.id })
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.4 : 1,
+    transform: CSS.Translate.toString(transform),
+    transition: transition || undefined,
+    opacity: isDragging && !isOverlay ? 0.3 : 1,
     zIndex: isDragging ? 100 : 1,
   }
 
@@ -71,10 +72,16 @@ export function DealCard({ deal, onClick }: DealCardProps) {
       {...listeners}
       onClick={onClick}
       className={cn(
-        "bg-[#1A1A1A]/40 backdrop-blur-xl rounded-[24px] p-5 border border-white/[0.04] transition-all duration-500 cursor-grab active:cursor-grabbing hover:bg-[#1A1A1A]/60 hover:border-[#F97316]/30 relative group overflow-hidden shadow-xl",
-        isDragging && "scale-[1.02] shadow-[0_0_50px_rgba(0,0,0,0.8)] border-[#F97316]/20"
+        "bg-[#1A1A1A]/40 backdrop-blur-xl rounded-[24px] p-5 border border-white/[0.04] transition-all duration-300 cursor-grab active:cursor-grabbing hover:bg-[#1A1A1A]/60 hover:border-[#F97316]/30 relative group overflow-hidden shadow-xl",
+        isDragging && !isOverlay && "grayscale opacity-20 border-dashed border-white/10 bg-transparent shadow-none",
+        isOverlay && "cursor-grabbing border-[#F97316]/50 bg-[#1A1A1A]/80 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
       )}
     >
+      {/* DRAG GLOW */}
+      {isOverlay && (
+        <div className="absolute inset-0 bg-gradient-to-br from-[#F97316]/10 to-transparent pointer-events-none" />
+      )}
+      
       <div className="flex items-start justify-between mb-4">
         <h3 className="text-[14px] font-black text-white tracking-tight leading-tight group-hover:text-[#F97316] transition-colors pr-4">
           {deal.titulo}
