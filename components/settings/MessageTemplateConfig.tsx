@@ -316,8 +316,3 @@ export function MessageTemplateConfig() {
     </div>
   )
 }
-        </DialogContent>
-      </Dialog>
-    </div>
-  )
-}
