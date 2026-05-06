@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { PipelineConfig } from "@/components/settings/PipelineConfig"
+import { MessageTemplateConfig } from "@/components/settings/MessageTemplateConfig"
 
 export default function SettingsPage() {
   const { data: session, update } = useSession()
@@ -658,18 +659,7 @@ export default function SettingsPage() {
            <PipelineConfig />
         </TabsContent>
         <TabsContent value="templates" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-           <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl rounded-3xl border border-white/[0.06] overflow-hidden shadow-2xl p-20 flex flex-col items-center justify-center text-center gap-6">
-              <div className="w-20 h-20 bg-[#F97316]/5 border border-[#F97316]/10 rounded-[32px] flex items-center justify-center relative">
-                 <div className="absolute inset-0 bg-[#F97316]/10 blur-[30px] rounded-full animate-pulse" />
-                 <span className="material-symbols-outlined text-[#F97316] text-[40px] relative z-10">auto_awesome_motion</span>
-              </div>
-              <div>
-                 <h4 className="text-[16px] font-black text-white uppercase italic tracking-tighter">Modelos de Mensagem</h4>
-                 <p className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] italic mt-4 max-w-[400px]">
-                   Módulo de padronização de comunicação via WhatsApp e E-mail em desenvolvimento.
-                 </p>
-              </div>
-           </div>
+           <MessageTemplateConfig />
         </TabsContent>
       </Tabs>
 
