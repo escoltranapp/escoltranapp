@@ -344,7 +344,6 @@ export default function ContactsPage() {
            setIsEditOpen(true)
         }}
       />
-      </div>
     </div>
   )
 }
