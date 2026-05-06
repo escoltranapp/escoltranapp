@@ -34,9 +34,25 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
         body: JSON.stringify({ status }),
       })
       if (!res.ok) throw new Error("Erro")
-      return res.json()
+      return { data: await res.json(), previousStatus: status === "DONE" ? "OPEN" : "DONE" }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["activities"] })
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["activities"] })
+      
+      const isDone = variables.status === "DONE"
+      toast({
+        title: isDone ? "ATIVIDADE CONCLUÍDA ✅" : "ATIVIDADE REABERTA 🔄",
+        description: isDone ? "A tarefa foi movida para o histórico." : "A tarefa voltou para sua lista de pendências.",
+        action: (
+          <button 
+            onClick={() => toggleMutation.mutate({ id: variables.id, status: data.previousStatus })}
+            className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
+          >
+            Desfazer
+          </button>
+        )
+      })
+    }
   })
 
   const deleteMutation = useMutation({
@@ -125,13 +141,17 @@ export function ActivityList({ activities, onEdit }: ActivityListProps) {
                   <button 
                     onClick={() => toggleMutation.mutate({ id: item.id, status: item.status === "OPEN" ? "DONE" : "OPEN" })}
                     className={cn(
-                      "mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                      "mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0 hover:scale-110 active:scale-90 shadow-lg shadow-black/20",
                       item.status === "DONE" 
-                        ? "bg-[#F97316] border-[#F97316]" 
-                        : "border-white/20 hover:border-[#F97316]/50"
+                        ? "bg-emerald-500 border-emerald-500 shadow-emerald-500/20" 
+                        : "border-white/20 hover:border-[#F97316]/50 hover:bg-[#F97316]/5"
                     )}
                   >
-                    {item.status === "DONE" && <span className="material-symbols-outlined text-[14px] text-white font-black">check</span>}
+                    {item.status === "DONE" ? (
+                      <span className="material-symbols-outlined text-[16px] text-white font-black animate-in zoom-in duration-300">check</span>
+                    ) : (
+                      <span className="material-symbols-outlined text-[16px] text-white/0 group-hover:text-[#F97316]/40 transition-all font-black">check</span>
+                    )}
                   </button>
 
                   {/* CONTENT */}
