@@ -18,6 +18,8 @@ export default function SettingsPage() {
   const [n8nUrl, setN8nUrl] = useState("")
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Fetch current data from database on mount
@@ -62,27 +64,40 @@ export default function SettingsPage() {
     }
   }
 
-  const handleSave = async () => {
-    setIsSaving(true)
+    if (password && password !== confirmPassword) {
+      setIsSaving(false)
+      return toast({ 
+        title: "SENHAS NÃO CONFEREM", 
+        description: "A confirmação deve ser igual à nova senha.",
+        variant: "destructive"
+      })
+    }
+
     try {
       const res = await fetch('/api/user/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ n8nWebhookUrl: n8nUrl, name, email })
+        body: JSON.stringify({ n8nWebhookUrl: n8nUrl, name, email, password: password || undefined })
       })
       
-      if (!res.ok) throw new Error("Erro ao salvar")
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || "Erro ao salvar")
+      }
       
       await update() // Update client-side next-auth session
+      
+      setPassword("")
+      setConfirmPassword("")
       
       toast({ 
         title: "CONFIGURAÇÕES SALVAS", 
         description: "Suas preferências foram atualizadas com sucesso." 
       })
-    } catch (e) {
+    } catch (e: any) {
       toast({ 
         title: "FALHA AO SALVAR", 
-        description: "Não foi possível salvar as configurações.",
+        description: e.message || "Não foi possível salvar as configurações.",
         variant: "destructive"
       })
     } finally {
@@ -369,6 +384,34 @@ export default function SettingsPage() {
                              onChange={(e) => setEmail(e.target.value)}
                              type="email"
                            />
+                       </div>
+
+                       <div className="space-y-3">
+                          <label className="text-[9px] font-mono font-black text-[#6B7280] uppercase tracking-[0.3em] flex items-center gap-2">
+                             <span className="material-symbols-outlined text-[14px]">lock</span>
+                             Alterar Senha
+                          </label>
+                          <Input 
+                            className="bg-[#0A0A0A]/60 border-white/[0.06] h-12 rounded-xl text-white font-black tracking-wide px-4 focus:border-[#F97316]/50 transition-all outline-none text-sm" 
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            type="password"
+                            placeholder="Deixe em branco para manter"
+                          />
+                       </div>
+
+                       <div className="space-y-3">
+                          <label className="text-[9px] font-mono font-black text-[#6B7280] uppercase tracking-[0.3em] flex items-center gap-2">
+                             <span className="material-symbols-outlined text-[14px]">lock_reset</span>
+                             Confirmar Senha
+                          </label>
+                          <Input 
+                            className="bg-[#0A0A0A]/60 border-white/[0.06] h-12 rounded-xl text-white font-black tracking-wide px-4 focus:border-[#F97316]/50 transition-all outline-none text-sm" 
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            type="password"
+                            placeholder="Confirme a nova senha"
+                          />
                        </div>
                     </div>
                  </div>

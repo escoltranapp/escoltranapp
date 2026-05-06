@@ -33,7 +33,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { n8nWebhookUrl, name, email } = await req.json()
+    const { n8nWebhookUrl, name, email, password } = await req.json()
 
     // Verificação de e-mail duplicado se houver alteração
     if (email && email !== session.user.email) {
@@ -45,13 +45,20 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
+    const data: any = {
+      n8nWebhookUrl,
+      name,
+      email
+    }
+
+    if (password) {
+      const bcrypt = await import("bcryptjs")
+      data.password = await bcrypt.hash(password, 10)
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
-      data: {
-        n8nWebhookUrl,
-        name,
-        email
-      }
+      data
     })
 
     return NextResponse.json(updatedUser)
