@@ -103,6 +103,8 @@ export default function SettingsPage() {
   const [isPermissionsOpen, setIsPermissionsOpen] = useState(false)
   const [isInviteOpen, setIsInviteOpen] = useState(false)
   const [inviteData, setInviteData] = useState({ name: "", email: "", password: "" })
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false)
+  const [resetPasswordData, setResetPasswordData] = useState({ userId: "", password: "" })
   const [teams, setTeams] = useState<any[]>([])
   const isAdmin = session?.user?.role === "ADMIN"
 
@@ -163,6 +165,44 @@ export default function SettingsPage() {
       }))
     } catch {
       toast({ title: "ERRO AO ATUALIZAR", variant: "destructive" })
+    }
+  }
+
+  const handleDeleteUser = async (userId: string) => {
+    if (userId === session?.user?.id) {
+       return toast({ title: "OPERAÇÃO BLOQUEADA", description: "Você não pode excluir sua própria conta.", variant: "destructive" })
+    }
+    if (!confirm("Tem certeza que deseja excluir permanentemente este usuário?")) return
+
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error)
+      }
+      toast({ title: "USUÁRIO REMOVIDO", description: "O acesso foi revogado permanentemente." })
+      setUsers(users.filter(u => u.id !== userId))
+    } catch (e: any) {
+      toast({ title: "ERRO AO EXCLUIR", description: e.message, variant: "destructive" })
+    }
+  }
+
+  const handleResetPassword = async () => {
+    if (!resetPasswordData.password) return toast({ title: "Insira uma nova senha", variant: "destructive" })
+    
+    try {
+      const res = await fetch(`/api/admin/users/${resetPasswordData.userId}/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newPassword: resetPasswordData.password })
+      })
+      if (!res.ok) throw new Error()
+      
+      toast({ title: "SENHA REFORMULADA", description: "A nova credencial já está ativa." })
+      setIsResetPasswordOpen(false)
+      setResetPasswordData({ userId: "", password: "" })
+    } catch {
+      toast({ title: "ERRO AO RESETAR SENHA", variant: "destructive" })
     }
   }
 
@@ -441,12 +481,21 @@ export default function SettingsPage() {
                                          <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest italic">{u.team?.name || "Sem Equipe"}</span>
                                       </td>
                                       <td className="px-8 py-4">
-                                         <div className={cn(
-                                           "inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest",
-                                           u.role === "ADMIN" ? "bg-red-500/10 text-red-500" : "bg-emerald-500/10 text-emerald-500"
-                                         )}>
-                                            {u.role === "ADMIN" ? "ADMINISTRADOR" : "EQUIPE"}
-                                         </div>
+                                         <Select 
+                                           value={u.role} 
+                                           onValueChange={(val) => handleUpdateRole(u.id, val)}
+                                         >
+                                           <SelectTrigger className={cn(
+                                             "h-8 w-[130px] border-none text-[9px] font-black uppercase tracking-widest rounded-lg",
+                                             u.role === "ADMIN" ? "bg-red-500/10 text-red-500" : "bg-emerald-500/10 text-emerald-500"
+                                           )}>
+                                             <SelectValue />
+                                           </SelectTrigger>
+                                           <SelectContent className="bg-[#1A1A1A] border-white/10">
+                                              <SelectItem value="ADMIN" className="text-[9px] font-black uppercase text-red-500">ADMINISTRADOR</SelectItem>
+                                              <SelectItem value="MEMBER" className="text-[9px] font-black uppercase text-emerald-500">EQUIPE</SelectItem>
+                                           </SelectContent>
+                                         </Select>
                                       </td>
                                       <td className="px-8 py-4">
                                          <span className={cn(
@@ -467,10 +516,21 @@ export default function SettingsPage() {
                                             >
                                                <span className="material-symbols-outlined text-[18px]">rule_settings</span>
                                             </button>
-                                            <button className="p-2 hover:bg-white/5 rounded-lg transition-colors text-[#6B7280] hover:text-white" title="Alterar Senha">
+                                            <button 
+                                              className="p-2 hover:bg-white/5 rounded-lg transition-colors text-[#6B7280] hover:text-white" 
+                                              title="Alterar Senha"
+                                              onClick={() => {
+                                                setResetPasswordData({ userId: u.id, password: "" })
+                                                setIsResetPasswordOpen(true)
+                                              }}
+                                            >
                                                <span className="material-symbols-outlined text-[18px]">lock_reset</span>
                                             </button>
-                                            <button className="p-2 hover:bg-white/5 rounded-lg transition-colors text-[#6B7280] hover:text-red-500" title="Remover Usuário">
+                                            <button 
+                                              className="p-2 hover:bg-white/5 rounded-lg transition-colors text-[#6B7280] hover:text-red-500" 
+                                              title="Remover Usuário"
+                                              onClick={() => handleDeleteUser(u.id)}
+                                            >
                                                <span className="material-symbols-outlined text-[18px]">person_remove</span>
                                             </button>
                                          </div>
@@ -685,6 +745,39 @@ export default function SettingsPage() {
                  className="w-full bg-[#F97316] text-white text-[9px] font-black uppercase tracking-widest py-4 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(249,115,22,0.2)]"
                >
                   Gerar Acesso e Convidar
+               </button>
+            </DialogFooter>
+         </DialogContent>
+      </Dialog>
+
+      {/* DIÁLOGO DE RESET DE SENHA */}
+      <Dialog open={isResetPasswordOpen} onOpenChange={setIsResetPasswordOpen}>
+         <DialogContent className="bg-[#0A0A0A] border-white/5 max-w-sm">
+            <DialogHeader>
+               <DialogTitle className="text-[12px] font-black uppercase tracking-widest text-white italic">
+                  Resetar Senha de Usuário
+               </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+               <div className="space-y-2">
+                  <label className="text-[9px] font-black text-[#404040] uppercase tracking-widest ml-1">Nova Senha</label>
+                  <Input 
+                    type="password"
+                    placeholder="••••••••" 
+                    className="bg-[#1A1A1A] border-white/5 text-white text-[11px] h-11"
+                    value={resetPasswordData.password}
+                    onChange={(e) => setResetPasswordData({ ...resetPasswordData, password: e.target.value })}
+                  />
+               </div>
+            </div>
+
+            <DialogFooter>
+               <button 
+                 onClick={handleResetPassword}
+                 className="w-full bg-white text-black text-[9px] font-black uppercase tracking-widest py-3 rounded-xl hover:bg-[#F97316] hover:text-white transition-all shadow-xl"
+               >
+                  Confirmar Nova Senha
                </button>
             </DialogFooter>
          </DialogContent>
