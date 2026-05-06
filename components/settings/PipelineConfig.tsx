@@ -133,29 +133,29 @@ export function PipelineConfig() {
                   {stages.map((stage) => (
                     <div 
                       key={stage.id} 
-                      className="group/item flex items-center justify-between p-4 bg-[#111111]/40 border border-white/[0.03] rounded-2xl hover:bg-[#1A1A1A]/60 hover:border-[#F97316]/20 transition-all"
+                      className="group/item flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-[#111111]/40 border border-white/[0.03] rounded-2xl hover:bg-[#1A1A1A]/60 hover:border-[#F97316]/20 transition-all gap-4"
                     >
-                      <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-4 md:gap-6">
                         <div 
-                          className="w-2 h-10 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)]" 
+                          className="w-1.5 h-10 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)] shrink-0" 
                           style={{ backgroundColor: stage.color }} 
                         />
-                        <div>
-                          <h4 className="text-[12px] font-black text-white uppercase tracking-tight italic">{stage.name}</h4>
+                        <div className="min-w-0">
+                          <h4 className="text-[12px] font-black text-white uppercase tracking-tight italic truncate">{stage.name}</h4>
                           <p className="text-[9px] font-mono text-[#404040] uppercase tracking-widest mt-0.5">ORDEM: {stage.order + 1}</p>
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-2 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-2 sm:opacity-0 group-hover/item:opacity-100 transition-opacity justify-end">
                         <button 
                           onClick={() => setIsEditing(stage)}
-                          className="p-2 hover:bg-white/5 rounded-lg text-[#404040] hover:text-[#F97316] transition-colors"
+                          className="p-2.5 bg-[#1A1A1A] sm:bg-transparent border border-white/5 sm:border-transparent rounded-xl text-[#6B7280] hover:text-[#F97316] transition-colors"
                         >
                           <span className="material-symbols-outlined text-[18px]">edit</span>
                         </button>
                         <button 
                           onClick={() => handleDelete(stage.id)}
-                          className="p-2 hover:bg-white/5 rounded-lg text-[#404040] hover:text-red-500 transition-colors"
+                          className="p-2.5 bg-[#1A1A1A] sm:bg-transparent border border-white/5 sm:border-transparent rounded-xl text-[#6B7280] hover:text-red-500 transition-colors"
                         >
                           <span className="material-symbols-outlined text-[18px]">delete</span>
                         </button>
