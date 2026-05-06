@@ -127,21 +127,21 @@ export function ActivityDialog({ open, onOpenChange, activity }: ActivityDialogP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#1A1A1A] border border-white/5 text-white max-w-2xl overflow-hidden rounded-[32px] p-0 shadow-2xl">
+      <DialogContent className="bg-[#1A1A1A] border border-white/5 text-white max-w-2xl overflow-hidden rounded-t-[32px] md:rounded-[32px] p-0 shadow-2xl h-[95vh] md:h-auto flex flex-col">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#F97316] to-transparent opacity-50" />
         
-        <DialogHeader className="p-8 pb-4">
-          <DialogTitle className="text-3xl font-black italic tracking-tighter uppercase flex items-center gap-4">
-            <span className="material-symbols-outlined text-primary text-[32px]">
+        <DialogHeader className="p-6 md:p-8 pb-4 shrink-0">
+          <DialogTitle className="text-2xl md:text-3xl font-black italic tracking-tighter uppercase flex items-center gap-3 md:gap-4">
+            <span className="material-symbols-outlined text-primary text-[28px] md:text-[32px]">
               {activity ? 'edit_note' : 'add_task'}
             </span>
             {activity ? 'Editar Atividade' : 'Nova Atividade'}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="px-8 py-4 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <div className="px-6 md:px-8 py-4 space-y-6 overflow-y-auto scrollbar-hide flex-1">
           {/* TYPE SELECTOR */}
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             {ACTIVITY_TYPES.map((t) => (
               <button
                 key={t.value}
@@ -226,17 +226,17 @@ export function ActivityDialog({ open, onOpenChange, activity }: ActivityDialogP
           </div>
         </div>
 
-        <DialogFooter className="p-8 pt-4 bg-background/50 border-t border-border">
+        <DialogFooter className="p-6 md:p-8 pt-4 bg-background/50 border-t border-border shrink-0 flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => onOpenChange(false)}
-            className="px-6 py-3 rounded-xl text-secondary font-black uppercase tracking-widest text-[11px] hover:text-foreground transition-all"
+            className="w-full sm:w-auto px-6 py-4 md:py-3 rounded-xl text-secondary font-black uppercase tracking-widest text-[10px] md:text-[11px] hover:text-foreground transition-all order-2 sm:order-1"
           >
             Cancelar
           </button>
           <button
             onClick={handleSave}
             disabled={mutation.isPending}
-            className="bg-gradient-to-br from-primary to-orange-400 text-white font-black px-8 py-3 rounded-xl hover:scale-105 transition-all shadow-lg shadow-primary/20 text-[11px] uppercase tracking-[0.2em] disabled:opacity-50"
+            className="w-full sm:flex-1 bg-gradient-to-br from-primary to-orange-400 text-white font-black px-8 py-4 md:py-3 rounded-xl hover:scale-105 transition-all shadow-lg shadow-primary/20 text-[10px] md:text-[11px] uppercase tracking-[0.2em] disabled:opacity-50 order-1 sm:order-2"
           >
             {mutation.isPending ? 'Salvando...' : 'Confirmar Registro'}
           </button>

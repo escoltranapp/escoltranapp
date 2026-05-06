@@ -137,96 +137,162 @@ export default function ContactsPage() {
         <div className="relative group">
            <div className="absolute -inset-1 bg-gradient-to-br from-[#F97316]/10 to-transparent rounded-[32px] blur-3xl opacity-20 group-hover:opacity-40 transition-opacity pointer-events-none" />
            <div className="relative bg-[#0A0A0A]/40 backdrop-blur-3xl border border-white/[0.06] rounded-[32px] overflow-hidden shadow-2xl">
-              <div className="overflow-x-auto scrollbar-hide">
-                <table className="w-full text-left border-collapse min-w-[1000px]">
-                  <thead>
-                    <tr className="bg-[#1A1A1A]/20">
-                      <th className="px-6 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Entidade</th>
-                      <th className="px-6 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Status</th>
-                      <th className="px-6 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Canal</th>
-                      <th className="px-6 py-4 text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Audit</th>
-                      <th className="px-6 py-4 text-right text-[9px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] border-b border-white/[0.03]">Ações</th>
-                    </tr>
-                  </thead>
-               <tbody>
-                  {contacts.length === 0 ? (
-                     <tr>
-                        <td colSpan={6} className="py-24 text-center text-[#404040]">
-                           <div className="flex flex-col items-center gap-4 italic opacity-20">
-                              <span className="material-symbols-outlined text-[60px]">contacts</span>
-                              <div className="font-black text-[12px] tracking-[0.3em] uppercase">NENHUM CONTATO</div>
-                           </div>
-                        </td>
-                     </tr>
-                  ) : (
-                      contacts.map((contact: any) => (
-                        <tr key={contact.id} className="group/row hover:bg-[#F97316]/[0.02] transition-colors border-b border-white/[0.03]">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                               <div className="w-10 h-10 rounded-lg bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-white font-black text-base group-hover/row:border-[#F97316]/40 group-hover/row:text-[#F97316] transition-all shadow-lg font-mono">
-                                 {contact.nome?.slice(0, 1).toUpperCase()}
-                               </div>
-                               <div className="space-y-0.5">
-                                 <div className="text-[14px] font-black text-white italic tracking-tighter uppercase group-hover/row:text-[#F97316] transition-colors leading-none">{contact.nome}</div>
-                                 <div className="flex items-center gap-2">
-                                    <span className="text-[8px] font-mono font-black text-[#404040] uppercase tracking-widest leading-none">{contact.empresa || "Pessoa Física"}</span>
-                                 </div>
-                               </div>
+              
+          {/* TABLE - DESKTOP ONLY */}
+          <div className="hidden md:block overflow-x-auto">
+             <table className="w-full text-left border-collapse">
+                <thead>
+                   <tr className="border-b border-white/[0.03]">
+                      <th className="px-6 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] italic">Identidade</th>
+                      <th className="px-6 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] italic">Status</th>
+                      <th className="px-6 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] italic">Canal</th>
+                      <th className="px-6 py-6 text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] italic">Logs</th>
+                      <th className="px-6 py-6 text-right text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.4em] italic">Ações</th>
+                   </tr>
+                </thead>
+                <tbody>
+                   {contacts.length === 0 ? (
+                      <tr>
+                         <td colSpan={5} className="py-24 text-center text-[#404040]">
+                            <div className="flex flex-col items-center gap-4 italic opacity-20">
+                               <span className="material-symbols-outlined text-[60px]">contacts</span>
+                               <div className="font-black text-[12px] tracking-[0.3em] uppercase">NENHUM CONTATO</div>
                             </div>
-                          </td>
-
-                          <td className="px-6 py-4">
-                            <div className={cn(
-                              "inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[8px] font-black uppercase tracking-[0.2em]",
-                              contact.status === "cliente" 
-                                ? "bg-green-500/10 text-green-500 border-green-500/30" 
-                                : "bg-[#F97316]/10 text-[#F97316] border-[#F97316]/30"
-                            )}>
-                              {contact.status || "Novo Lead"}
-                            </div>
-                          </td>
-
-                          <td className="px-6 py-4">
-                             <div className="flex items-center gap-2 text-[10px] font-black text-white uppercase italic tracking-widest">
-                                <ChannelIcon channel={contact.canalOrigem || "Direto"} />
-                                {contact.canalOrigem || "Direto"}
+                         </td>
+                      </tr>
+                   ) : (
+                       contacts.map((contact: any) => (
+                         <tr key={contact.id} className="group/row hover:bg-[#F97316]/[0.02] transition-colors border-b border-white/[0.03]">
+                           <td className="px-6 py-4">
+                             <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-white font-black text-base group-hover/row:border-[#F97316]/40 group-hover/row:text-[#F97316] transition-all shadow-lg font-mono">
+                                  {contact.nome?.slice(0, 1).toUpperCase()}
+                                </div>
+                                <div className="space-y-0.5">
+                                  <div className="text-[14px] font-black text-white italic tracking-tighter uppercase group-hover/row:text-[#F97316] transition-colors leading-none">{contact.nome}</div>
+                                  <div className="flex items-center gap-2">
+                                     <span className="text-[8px] font-mono font-black text-[#404040] uppercase tracking-widest leading-none">{contact.empresa || "Pessoa Física"}</span>
+                                  </div>
+                                </div>
                              </div>
-                          </td>
+                           </td>
 
-                          <td className="px-6 py-4">
-                             <div className="text-[8px] font-black text-[#404040] italic uppercase tracking-tighter">
-                                {contact.updatedAt ? `Atualizado em: ${new Date(contact.updatedAt).toLocaleDateString()}` : "Sem atividade"}
+                           <td className="px-6 py-4">
+                             <div className={cn(
+                               "inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[8px] font-black uppercase tracking-[0.2em]",
+                               contact.status === "cliente" 
+                                 ? "bg-green-500/10 text-green-500 border-green-500/30" 
+                                 : "bg-[#F97316]/10 text-[#F97316] border-[#F97316]/30"
+                             )}>
+                               {contact.status || "Novo Lead"}
                              </div>
-                          </td>
+                           </td>
 
-                          <td className="px-6 py-4 text-right">
-                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
-                                <button 
-                                  onClick={() => {
-                                     setSelectedContact(contact)
-                                     setIsDetailOpen(true)
-                                  }}
-                                  className="w-9 h-9 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-lg text-[#F2F2F2] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all shadow-xl"
-                                >
-                                   <span className="material-symbols-outlined text-[18px]">visibility</span>
-                                </button>
-                                <button 
-                                  onClick={() => {
-                                     setSelectedContact(contact)
-                                     setIsEditOpen(true)
-                                  }}
-                                  className="w-9 h-9 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-lg text-[#F2F2F2] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all shadow-xl"
-                                >
-                                   <span className="material-symbols-outlined text-[18px]">edit</span>
-                                </button>
-                             </div>
-                          </td>
-                        </tr>
-                      ))
-                  )}
-               </tbody>
-            </table>
+                           <td className="px-6 py-4">
+                              <div className="flex items-center gap-2 text-[10px] font-black text-white uppercase italic tracking-widest">
+                                 <ChannelIcon channel={contact.canalOrigem || "Direto"} />
+                                 {contact.canalOrigem || "Direto"}
+                              </div>
+                           </td>
+
+                           <td className="px-6 py-4">
+                              <div className="text-[8px] font-black text-[#404040] italic uppercase tracking-tighter">
+                                 {contact.updatedAt ? `Atualizado em: ${new Date(contact.updatedAt).toLocaleDateString()}` : "Sem atividade"}
+                              </div>
+                           </td>
+
+                           <td className="px-6 py-4 text-right">
+                              <div className="flex items-center justify-end gap-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
+                                 <button 
+                                   onClick={() => {
+                                      setSelectedContact(contact)
+                                      setIsDetailOpen(true)
+                                   }}
+                                   className="w-9 h-9 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-lg text-[#F2F2F2] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all shadow-xl"
+                                 >
+                                    <span className="material-symbols-outlined text-[18px]">visibility</span>
+                                 </button>
+                                 <button 
+                                   onClick={() => {
+                                      setSelectedContact(contact)
+                                      setIsEditOpen(true)
+                                   }}
+                                   className="w-9 h-9 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-lg text-[#F2F2F2] hover:text-[#F97316] hover:border-[#F97316]/30 transition-all shadow-xl"
+                                 >
+                                    <span className="material-symbols-outlined text-[18px]">edit</span>
+                                 </button>
+                              </div>
+                           </td>
+                         </tr>
+                       ))
+                   )}
+                </tbody>
+             </table>
           </div>
+
+          {/* CARD LIST - MOBILE ONLY */}
+          <div className="md:hidden divide-y divide-white/[0.03]">
+             {contacts.length === 0 ? (
+                <div className="py-24 text-center text-[#404040]">
+                   <div className="flex flex-col items-center gap-4 italic opacity-20">
+                      <span className="material-symbols-outlined text-[60px]">contacts</span>
+                      <div className="font-black text-[12px] tracking-[0.3em] uppercase">NENHUM CONTATO</div>
+                   </div>
+                </div>
+             ) : (
+                contacts.map((contact: any) => (
+                   <div key={contact.id} className="p-4 space-y-4 active:bg-[#F97316]/5 transition-colors">
+                      <div className="flex items-start justify-between">
+                         <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-[#0A0A0A] border border-white/5 flex items-center justify-center text-[#F97316] font-black text-base shadow-lg font-mono">
+                               {contact.nome?.slice(0, 1).toUpperCase()}
+                            </div>
+                            <div>
+                               <div className="text-[14px] font-black text-white italic tracking-tighter uppercase leading-none mb-1">{contact.nome}</div>
+                               <div className="text-[9px] font-mono font-black text-[#404040] uppercase tracking-widest">{contact.empresa || "Pessoa Física"}</div>
+                            </div>
+                         </div>
+                         <div className={cn(
+                            "px-2 py-0.5 rounded-full border text-[7px] font-black uppercase tracking-[0.1em]",
+                            contact.status === "cliente" 
+                              ? "bg-green-500/10 text-green-500 border-green-500/30" 
+                              : "bg-[#F97316]/10 text-[#F97316] border-[#F97316]/30"
+                         )}>
+                            {contact.status || "Novo Lead"}
+                         </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                         <div className="flex items-center gap-2 text-[9px] font-black text-[#6B7280] uppercase italic tracking-widest">
+                            <ChannelIcon channel={contact.canalOrigem || "Direto"} />
+                            {contact.canalOrigem || "Direto"}
+                         </div>
+                         <div className="flex items-center gap-2">
+                            <button 
+                              onClick={() => {
+                                 setSelectedContact(contact)
+                                 setIsDetailOpen(true)
+                              }}
+                              className="w-8 h-8 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-lg text-[#F2F2F2]"
+                            >
+                               <span className="material-symbols-outlined text-[16px]">visibility</span>
+                            </button>
+                            <button 
+                              onClick={() => {
+                                 setSelectedContact(contact)
+                                 setIsEditOpen(true)
+                              }}
+                              className="w-8 h-8 flex items-center justify-center border border-white/5 bg-[#1A1A1A] rounded-lg text-[#F2F2F2]"
+                            >
+                               <span className="material-symbols-outlined text-[16px]">edit</span>
+                            </button>
+                         </div>
+                      </div>
+                   </div>
+                ))
+             )}
+          </div>
+        </div>
 
           {/* LOAD MORE SECTION */}
           {hasMore && (

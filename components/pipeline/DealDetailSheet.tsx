@@ -129,14 +129,13 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
               </div>
             </div>
 
-            <div className="flex items-center justify-between mt-2">
-              <div className="text-2xl font-black text-[#F97316] tracking-tight">
+            <div className="flex flex-wrap items-center justify-between mt-2 gap-2">
+              <div className="text-xl md:text-2xl font-black text-[#F97316] tracking-tight">
                 {deal.valorEstimado?.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) ?? "R$ 0,00"}
               </div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-full bg-[#1A1A1A] border border-white/[0.05] text-[10px] font-bold text-white uppercase">{deal.status === "OPEN" ? "Aberto" : deal.status}</span>
-                <span className="px-2.5 py-1 rounded-full bg-[#1A1A1A] border border-white/[0.05] text-[10px] font-bold text-amber-500 uppercase">{deal.prioridade}</span>
-                <span className="px-2.5 py-1 rounded-full bg-white text-black text-[10px] font-bold uppercase">Nova Lead</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-2 py-0.5 md:px-2.5 md:py-1 rounded-full bg-[#1A1A1A] border border-white/[0.05] text-[9px] md:text-[10px] font-bold text-white uppercase">{deal.status === "OPEN" ? "Aberto" : deal.status}</span>
+                <span className="px-2 py-0.5 md:px-2.5 md:py-1 rounded-full bg-[#1A1A1A] border border-white/[0.05] text-[9px] md:text-[10px] font-bold text-amber-500 uppercase">{deal.prioridade}</span>
               </div>
             </div>
 
@@ -236,29 +235,29 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
                      Informações do Deal
                    </div>
                    <div className="bg-[#111111] border border-white/[0.05] rounded-2xl p-4">
-                     <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-                        <div>
-                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Produto</p>
-                          <p className="text-xs font-medium text-white">{deal.produtoInteresse || "—"}</p>
+                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 md:gap-y-6 gap-x-4">
+                        <div className="flex flex-col">
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-0.5 tracking-widest">Produto</p>
+                          <p className="text-xs font-medium text-white truncate">{deal.produtoInteresse || "—"}</p>
                         </div>
-                        <div>
-                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Origem</p>
-                          <p className="text-xs font-medium text-white">{deal.origem || "—"}</p>
+                        <div className="flex flex-col">
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-0.5 tracking-widest">Origem</p>
+                          <p className="text-xs font-medium text-white truncate">{deal.origem || "—"}</p>
                         </div>
-                        <div>
-                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Prioridade</p>
+                        <div className="flex flex-col">
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-0.5 tracking-widest">Prioridade</p>
                           <p className="text-xs font-medium text-white uppercase">{deal.prioridade}</p>
                         </div>
-                        <div>
-                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Status</p>
+                        <div className="flex flex-col">
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-0.5 tracking-widest">Status</p>
                           <p className="text-xs font-medium text-white uppercase">{deal.status}</p>
                         </div>
-                        <div>
-                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Criado</p>
+                        <div className="flex flex-col">
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-0.5 tracking-widest">Criado</p>
                           <p className="text-xs font-medium text-white">{new Date(deal.createdAt).toLocaleDateString("pt-BR")}</p>
                         </div>
-                        <div>
-                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-1 tracking-widest">Atualizado</p>
+                        <div className="flex flex-col">
+                          <p className="text-[9px] font-black uppercase text-[#6B7280] mb-0.5 tracking-widest">Atualizado</p>
                           <p className="text-xs font-medium text-white">{new Date(deal.updatedAt).toLocaleDateString("pt-BR")}</p>
                         </div>
                      </div>
@@ -385,33 +384,33 @@ export function DealDetailSheet({ deal, open, onOpenChange }: DealDetailSheetPro
           </div>
 
           {/* BOTTOM BAR */}
-          <div className="p-4 border-t border-white/[0.05] bg-[#0A0A0A] flex items-center justify-between">
-             <div className="flex items-center gap-1">
-               <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-white/[0.05] hover:bg-white/[0.05] text-[#A3A3A3] transition-colors">
-                 <span className="material-symbols-outlined text-[18px]">call</span>
+          <div className="p-4 border-t border-white/[0.05] bg-[#0A0A0A] flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between shrink-0">
+             <div className="flex items-center justify-center sm:justify-start gap-3">
+               <button className="w-12 h-12 flex items-center justify-center rounded-xl border border-white/[0.05] hover:bg-white/[0.05] text-[#A3A3A3] transition-colors">
+                 <span className="material-symbols-outlined text-[20px]">call</span>
                </button>
-               <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-white/[0.05] hover:bg-white/[0.05] text-[#A3A3A3] transition-colors">
-                 <span className="material-symbols-outlined text-[18px]">chat</span>
+               <button className="w-12 h-12 flex items-center justify-center rounded-xl border border-white/[0.05] hover:bg-white/[0.05] text-[#A3A3A3] transition-colors">
+                 <span className="material-symbols-outlined text-[20px]">chat</span>
                </button>
-               <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-white/[0.05] hover:bg-white/[0.05] text-[#A3A3A3] transition-colors">
-                 <span className="material-symbols-outlined text-[18px]">mail</span>
+               <button className="w-12 h-12 flex items-center justify-center rounded-xl border border-white/[0.05] hover:bg-white/[0.05] text-[#A3A3A3] transition-colors">
+                 <span className="material-symbols-outlined text-[20px]">mail</span>
                </button>
              </div>
              <div className="flex items-center gap-2">
-               <button 
-                 onClick={() => updateStatus.mutate({ status: "WON" })}
-                 className="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-green-500/20 text-green-500 font-bold text-xs hover:bg-green-500/10 transition-colors"
-               >
-                 <span className="material-symbols-outlined text-[16px]">emoji_events</span>
-                 Ganho
-               </button>
-               <button 
-                 onClick={() => setLossReasonOpen(true)}
-                 className="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-red-500/20 text-red-500 font-bold text-xs hover:bg-red-500/10 transition-colors"
-               >
-                 <span className="material-symbols-outlined text-[16px]">close</span>
-                 Perdido
-               </button>
+                <button 
+                  onClick={() => updateStatus.mutate({ status: "WON" })}
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-green-500/20 text-green-500 font-black text-[11px] uppercase tracking-widest hover:bg-green-500/10 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[18px]">emoji_events</span>
+                  Ganho
+                </button>
+                <button 
+                  onClick={() => setLossReasonOpen(true)}
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-red-500/20 text-red-500 font-black text-[11px] uppercase tracking-widest hover:bg-red-500/10 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[18px]">close</span>
+                  Perdido
+                </button>
              </div>
           </div>
 

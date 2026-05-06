@@ -109,25 +109,25 @@ function ActivitiesContent() {
     <div className="flex flex-col min-h-screen bg-[#0A0A0A] text-white">
       {/* HEADER - NEW DESIGN FROM SCREENSHOT */}
       <div className="px-4 md:px-10 py-6 md:py-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-4">
-            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">Atividades</h1>
-            <div className="flex items-center gap-3">
-              <div className="px-3 py-1 rounded-full bg-[#F97316]/20 text-[#F97316] text-[10px] font-black uppercase tracking-wider border border-[#F97316]/20">
-                {todayCount} para hoje
+            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight uppercase italic">Atividades</h1>
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="px-3 py-1 rounded-full bg-[#F97316]/10 text-[#F97316] text-[9px] md:text-[10px] font-black uppercase tracking-wider border border-[#F97316]/20">
+                {todayCount} HOJE
               </div>
-              <div className="px-3 py-1 rounded-full bg-white/5 text-secondary text-[10px] font-black uppercase tracking-wider border border-white/5">
-                {pendingCount} pendentes
+              <div className="px-3 py-1 rounded-full bg-white/5 text-secondary text-[9px] md:text-[10px] font-black uppercase tracking-wider border border-white/5">
+                {pendingCount} PENDENTES
               </div>
             </div>
           </div>
 
           <button
             onClick={openNew}
-            className="w-full sm:w-auto bg-[#F97316] hover:bg-[#FB923C] text-white px-6 py-3 rounded-xl font-black text-[11px] uppercase tracking-[0.1em] shadow-[0_0_20px_rgba(249,115,22,0.2)] transition-all flex items-center justify-center gap-2"
+            className="w-full lg:w-auto bg-gradient-to-br from-[#F97316] to-[#FB923C] text-white px-8 py-4 md:py-3 rounded-2xl font-black text-[10px] md:text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(249,115,22,0.2)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 group"
           >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            Nova Atividade
+            <span className="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform">add</span>
+            NOVA ATIVIDADE
           </button>
         </div>
 

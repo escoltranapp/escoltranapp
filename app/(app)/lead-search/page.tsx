@@ -160,30 +160,31 @@ export default function LeadSearchPage() {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F97316]/5 blur-[120px] rounded-full pointer-events-none" />
       
       {/* HEADER ESCOLTRAN STYLE */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
+      {/* HEADER ESCOLTRAN STYLE */}
+      <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
         <div className="space-y-2">
-           <h1 className="text-3xl font-black text-white italic tracking-tight uppercase leading-none">
+           <h1 className="text-2xl md:text-3xl font-black text-white italic tracking-tight uppercase leading-none">
              Busca de <span className="text-[#F97316]">Leads</span>
            </h1>
-           <div className="flex items-center gap-4">
-              <div className="h-px w-20 bg-gradient-to-r from-[#F97316] to-transparent" />
-              <p className="text-[#404040] font-mono font-black text-[11px] uppercase tracking-[0.3em]">
-                Encontre leads para alavancar seu negócio
+           <div className="flex items-center gap-3">
+              <div className="h-[2px] w-12 bg-gradient-to-r from-[#F97316] to-transparent" />
+              <p className="text-[#404040] font-mono font-black text-[9px] md:text-[11px] uppercase tracking-[0.3em] truncate">
+                INTELIGÊNCIA EM PROSPECÇÃO ESCOLTRAN
               </p>
            </div>
         </div>
 
-        <div className="flex bg-[#0A0A0A] p-1.5 rounded-2xl border border-white/5 relative group">
-           <div className={`absolute inset-y-1.5 w-[140px] bg-[#F97316] rounded-xl transition-all duration-500 shadow-[0_0_20px_rgba(249,115,22,0.3)] ${activeMode === 'cnpj' ? 'translate-x-[140px]' : 'translate-x-0'}`} />
+        <div className="flex bg-[#0D0D0D]/80 backdrop-blur-xl p-1 rounded-2xl border border-white/5 relative group w-full lg:w-fit">
+           <div className={`absolute inset-y-1 w-[calc(50%-4px)] lg:w-[140px] bg-[#F97316] rounded-xl transition-all duration-500 shadow-[0_0_20px_rgba(249,115,22,0.3)] ${activeMode === 'cnpj' ? 'translate-x-[calc(100%+4px)] lg:translate-x-[140px]' : 'translate-x-0'}`} />
            <button 
               onClick={() => setActiveMode("google")}
-              className={`relative z-10 px-5 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 w-[140px] ${activeMode === 'google' ? 'text-white' : 'text-[#404040]'}`}
+              className={`relative z-10 px-5 py-3 text-[9px] font-black uppercase tracking-widest transition-colors duration-300 flex-1 lg:w-[140px] ${activeMode === 'google' ? 'text-white' : 'text-[#404040]'}`}
            >
               Busca Google
            </button>
            <button 
               onClick={() => setActiveMode("cnpj")}
-              className={`relative z-10 px-5 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors duration-300 w-[140px] ${activeMode === 'cnpj' ? 'text-white' : 'text-[#404040]'}`}
+              className={`relative z-10 px-5 py-3 text-[9px] font-black uppercase tracking-widest transition-colors duration-300 flex-1 lg:w-[140px] ${activeMode === 'cnpj' ? 'text-white' : 'text-[#404040]'}`}
            >
               Busca CNPJ
            </button>
@@ -206,7 +207,7 @@ export default function LeadSearchPage() {
 
              {activeMode === "google" ? (
               <div className="space-y-6">
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       <div className="space-y-2">
                          <label className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-widest pl-1">ESTADO</label>
                           <Select onValueChange={(val) => setSearchData(s => ({...s, estado: val, cidade: ""}))}>
@@ -346,20 +347,20 @@ export default function LeadSearchPage() {
         </div>
 
         {/* STATS PREVIEW */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
            {[
              { label: "Total Google", value: stats?.totalGoogle || 0, icon: "public", color: "#F97316" },
              { label: "Leads Hoje", value: stats?.leadsHoje || 0, icon: "calendar_today", color: "#22C55E" },
              { label: "Conversões", value: stats?.conversoes || 0, icon: "trending_up", color: "#A855F7" },
              { label: "Na Semana", value: stats?.naSemana || 0, icon: "event", color: "#3B82F6" }
            ].map((stat, i) => (
-              <div key={i} className="bg-[#0D0D0D] border border-white/[0.03] p-6 rounded-[24px] flex flex-col items-center justify-center gap-4 group hover:border-[#F97316]/20 transition-all">
-                 <div className="h-10 w-10 rounded-xl bg-[#1A1A1A] border border-white/5 flex items-center justify-center group-hover:bg-[#F97316]/10 transition-all">
-                    <span className="material-symbols-outlined text-[18px]" style={{ color: stat.color }}>{stat.icon}</span>
+              <div key={i} className="bg-[#0D0D0D] border border-white/[0.03] p-4 md:p-6 rounded-3xl flex flex-col items-center justify-center gap-3 md:gap-4 group hover:border-[#F97316]/20 transition-all">
+                 <div className="h-10 w-10 md:h-12 md:w-12 rounded-2xl bg-[#1A1A1A] border border-white/5 flex items-center justify-center group-hover:bg-[#F97316]/10 transition-all shrink-0">
+                    <span className="material-symbols-outlined text-[18px] md:text-[22px]" style={{ color: stat.color }}>{stat.icon}</span>
                  </div>
                  <div className="text-center space-y-0.5">
-                    <div className="text-2xl font-black text-white italic tracking-tighter">{stat.value}</div>
-                    <div className="text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.2em]">{stat.label}</div>
+                    <div className="text-xl md:text-2xl font-black text-white italic tracking-tighter">{stat.value}</div>
+                    <div className="text-[8px] md:text-[10px] font-mono font-black text-[#404040] uppercase tracking-[0.2em]">{stat.label}</div>
                  </div>
               </div>
            ))}
