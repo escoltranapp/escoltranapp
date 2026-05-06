@@ -33,21 +33,16 @@ export function AppSidebar({ isOpen = true, onClose }: AppSidebarProps) {
         !onClose ? "fixed left-0 top-0 z-[100]" : "relative"
       )}>
         
-        {/* MOBILE MENU TRIGGER */}
-        <div className="flex items-center gap-4 flex-1">
-          <button 
-            onClick={onMenuClick}
-            className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-foreground/[0.03] border border-border text-secondary hover:text-primary transition-colors"
-          >
-            <span className="material-symbols-outlined text-[24px]">menu</span>
-          </button>
-          <div className="md:hidden flex items-center gap-2">
-             <div className="w-9 h-9 bg-gradient-to-br from-[#F97316] to-[#FB923C] rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(249,115,22,0.3)] shrink-0">
-                <span className="text-[14px] font-black text-white italic">E</span>
-             </div>
-             <span className="text-[13px] font-black text-foreground italic tracking-tighter uppercase truncate">Escoltran CRM</span>
-          </div>
-        </div>
+        {/* 1. FIXED HEADER */}
+        <div className="p-8 pb-10 flex items-center justify-between">
+          <Link href="/dashboard" className="flex items-center gap-4 group cursor-pointer active:scale-95 transition-transform">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#F97316] to-[#FB923C] rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(249,115,22,0.3)] group-hover:rotate-12 transition-transform duration-500 shrink-0">
+              <span className="text-2xl font-black text-white italic">E</span>
+            </div>
+            <div>
+              <h1 className="text-xl font-black text-foreground italic tracking-tighter leading-none mt-1">ESCOLTRAN</h1>
+            </div>
+          </Link>
 
           {onClose && (
             <button 
@@ -57,6 +52,7 @@ export function AppSidebar({ isOpen = true, onClose }: AppSidebarProps) {
               <span className="material-symbols-outlined text-[20px]">close</span>
             </button>
           )}
+        </div>
 
         {/* 2. SCROLLABLE NAVIGATION */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden px-4 space-y-1 py-4 custom-scrollbar">
@@ -112,18 +108,22 @@ export function AppSidebar({ isOpen = true, onClose }: AppSidebarProps) {
         <div className="p-4 pt-6 border-t border-border bg-sidebar/80 backdrop-blur-md">
            <div className="relative group">
               <div className="relative bg-foreground/[0.02] border border-border p-5 rounded-[22px] shadow-2xl overflow-hidden group/card">
-                 <div className="flex items-center gap-4 relative z-10">
-                    <div className="space-y-6">
-                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                          <div className="relative">
-                             <div className="absolute inset-0 bg-primary/10 rounded-full blur-sm" />
-                             <div className="w-10 h-10 rounded-full bg-background border border-primary/40 flex items-center justify-center text-[13px] font-black text-primary relative z-10">
-                                {session?.user?.name?.slice(0, 2).toUpperCase() || "EC"}
-                             </div>
-                          </div>
+                  <div className="flex items-center gap-4 relative z-10">
+                    <div className="relative">
+                       <div className="absolute inset-0 bg-primary/10 rounded-full blur-sm" />
+                       <div className="w-10 h-10 rounded-full bg-background border border-primary/40 flex items-center justify-center text-[13px] font-black text-primary relative z-10">
+                          {session?.user?.name?.slice(0, 2).toUpperCase() || "EC"}
                        </div>
                     </div>
-                 </div>
+                    <div className="flex-1 min-w-0">
+                       <div className="text-[12px] font-black text-foreground truncate uppercase tracking-tight italic">
+                          {(() => {
+                            const names = (session?.user?.name || "Operador").trim().split(/\s+/);
+                            return names.length > 1 ? `${names[0]} ${names[1]}` : names[0];
+                          })()}
+                       </div>
+                    </div>
+                  </div>
 
                  <button 
                    onClick={() => signOut()}
