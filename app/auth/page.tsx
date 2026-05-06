@@ -95,10 +95,6 @@ export default function AuthPage() {
              <span className="text-white font-black text-3xl italic">E</span>
           </div>
           <h1 className="text-3xl font-black text-white tracking-tighter italic uppercase">Escoltran</h1>
-          <div className="flex items-center gap-2 mt-2">
-             <div className="w-4 h-1 bg-[#F97316] rounded-full" />
-             <span className="text-[10px] text-[#6B7280] font-black tracking-[0.3em] uppercase">Enterprise CRM</span>
-          </div>
         </div>
 
         {/* AUTH CARD */}
@@ -220,9 +216,6 @@ export default function AuthPage() {
         </div>
 
         {/* FOOTER INFO */}
-        <p className="mt-12 text-center text-[9px] font-black text-[#262626] uppercase tracking-[0.4em] italic select-none">
-          Secured by Escoltran Engine Alpha-7
-        </p>
       </div>
     </div>
   )
